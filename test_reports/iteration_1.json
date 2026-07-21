@@ -1,0 +1,25 @@
+{
+  "summary": "Frontend-only prototype smoke test on mobile viewport (420x900). All 11 requested features validated end-to-end: today page render, timeline sorting, add-food sheet with nutrition preview and total calories update (1128 -> 1508 kcal), FAB with 4 pickers, snack add (5 -> 6 items), training sheet (anaerobic), event sheet, edit-time flow, history/library/plan navigation, plan save toast '计划已保存(模拟)'. No horizontal scroll at 420px width.",
+  "tested_scope": ["frontend", "integration"],
+  "passed": [
+    "Today page: today-date, nutrition-summary, total-calories, timeline visible",
+    "Default timeline items present: m1, w1, m2, s1, m3",
+    "add-food-btn-m1 opens add-food-sheet; 10 foods listed; grams-preset-100 works; food-preview-cal shows 380; confirm adds food",
+    "Total calories updated after add-food (1128 -> 1508)",
+    "fab-add reveals picker-snack, picker-anaerobic, picker-aerobic, picker-event",
+    "picker-snack adds item to timeline (count 5 -> 6)",
+    "picker-anaerobic opens add-training-sheet; name/duration/time fields fill; confirm works",
+    "picker-event opens add-event-sheet; title fill + confirm works",
+    "edit-time button opens edit-time-sheet; time change + confirm works",
+    "nav-history shows history-list",
+    "nav-library shows library-search-input, library-categories, library-list",
+    "nav-plan shows plan-input-{calories,protein,fat,carbs}; plan-save-btn triggers sonner toast",
+    "No horizontal scroll at 420px viewport",
+    "Bottom nav persists across page switches"
+  ],
+  "failed": [],
+  "action_items": [],
+  "success_rate": {"backend": "N/A (skipped)", "frontend": "100% (25/25)"},
+  "retest_needed": false,
+  "full_testing_deferred": true
+}

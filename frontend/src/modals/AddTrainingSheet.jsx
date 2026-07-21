@@ -1,0 +1,128 @@
+import React, { useState, useEffect } from 'react';
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from '../components/ui/sheet';
+import { Input } from '../components/ui/input';
+import { Button } from '../components/ui/button';
+import { Dumbbell, Footprints } from 'lucide-react';
+
+export const AddTrainingSheet = ({ open, onOpenChange, onConfirm }) => {
+  const [tab, setTab] = useState('anaerobic');
+  const [name, setName] = useState('');
+  const [duration, setDuration] = useState(45);
+  const [time, setTime] = useState('18:00');
+
+  useEffect(() => {
+    if (!open) {
+      setTab('anaerobic');
+      setName('');
+      setDuration(45);
+      setTime('18:00');
+    }
+  }, [open]);
+
+  const estimate = tab === 'anaerobic'
+    ? Math.round(duration * 6.2)
+    : Math.round(duration * 9.5);
+
+  const handleConfirm = () => {
+    onConfirm({
+      id: `t${Date.now()}`,
+      type: tab,
+      title: tab === 'anaerobic' ? '无氧训练' : '有氧训练',
+      time,
+      detail: `${name || (tab === 'anaerobic' ? '力量训练' : '有氧运动')} · ${duration} 分钟`,
+      caloriesBurned: estimate,
+    });
+    onOpenChange(false);
+  };
+
+  return (
+    <Sheet open={open} onOpenChange={onOpenChange}>
+      <SheetContent
+        side="bottom"
+        className="rounded-t-3xl border-[#E5E5E0] bg-[#F7F7F5] max-w-md mx-auto p-0"
+        data-testid="add-training-sheet"
+      >
+        <SheetHeader className="px-5 pt-5 pb-3 text-left">
+          <SheetTitle className="text-base font-medium text-[#2C332F]">添加训练</SheetTitle>
+        </SheetHeader>
+
+        <div className="px-5 pb-6">
+          {/* Tabs */}
+          <div className="grid grid-cols-2 gap-2 p-1 bg-white rounded-2xl border border-[#E5E5E0]">
+            {[
+              { id: 'anaerobic', label: '无氧', icon: Dumbbell },
+              { id: 'aerobic', label: '有氧', icon: Footprints },
+            ].map(({ id, label, icon: Icon }) => (
+              <button
+                key={id}
+                onClick={() => setTab(id)}
+                data-testid={`training-tab-${id}`}
+                className={`flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-[13px] ${
+                  tab === id ? 'bg-[#6B8067] text-white' : 'text-[#858C88]'
+                }`}
+              >
+                <Icon size={14} strokeWidth={1.6} />
+                {label}
+              </button>
+            ))}
+          </div>
+
+          <div className="mt-4 space-y-3">
+            <div>
+              <label className="text-[12px] text-[#858C88]">项目名称</label>
+              <Input
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder={tab === 'anaerobic' ? '例如：胸 + 三头' : '例如：跑步'}
+                className="mt-1.5 h-11 bg-white border-[#E5E5E0] rounded-xl"
+                data-testid="training-name-input"
+              />
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="text-[12px] text-[#858C88]">开始时间</label>
+                <Input
+                  type="time"
+                  value={time}
+                  onChange={(e) => setTime(e.target.value)}
+                  className="mt-1.5 h-11 bg-white border-[#E5E5E0] rounded-xl font-num"
+                  data-testid="training-time-input"
+                />
+              </div>
+              <div>
+                <label className="text-[12px] text-[#858C88]">时长 (分钟)</label>
+                <Input
+                  type="number"
+                  inputMode="numeric"
+                  value={duration}
+                  onChange={(e) => setDuration(Number(e.target.value) || 0)}
+                  className="mt-1.5 h-11 bg-white border-[#E5E5E0] rounded-xl font-num"
+                  data-testid="training-duration-input"
+                />
+              </div>
+            </div>
+
+            <div className="rounded-2xl p-4" style={{ background: '#FBEEE8' }}>
+              <p className="text-[11px] uppercase tracking-widest text-[#858C88]">预估消耗</p>
+              <div className="flex items-baseline gap-2 mt-1.5">
+                <span className="font-num text-3xl font-medium text-[#D27D67]" data-testid="training-preview-cal">
+                  {estimate}
+                </span>
+                <span className="text-xs text-[#858C88]">kcal</span>
+              </div>
+            </div>
+
+            <Button
+              onClick={handleConfirm}
+              data-testid="training-confirm-btn"
+              className="w-full h-12 rounded-2xl bg-[#6B8067] hover:bg-[#5a6d57] text-white text-[14px] mt-2"
+            >
+              确认添加
+            </Button>
+          </div>
+        </div>
+      </SheetContent>
+    </Sheet>
+  );
+};

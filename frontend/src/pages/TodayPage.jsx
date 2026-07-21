@@ -1,0 +1,176 @@
+import React, { useMemo, useState } from 'react';
+import { NutritionSummary } from '../components/NutritionSummary';
+import { TimelineItem } from '../components/TimelineItem';
+import { AddFoodSheet } from '../modals/AddFoodSheet';
+import { AddTrainingSheet } from '../modals/AddTrainingSheet';
+import { AddEventSheet } from '../modals/AddEventSheet';
+import { EditTimeSheet } from '../modals/EditTimeSheet';
+import { TODAY_TIMELINE_INIT, DAILY_PLAN, sumTimelineMacros } from '../mockData';
+import { Plus, Sparkles } from 'lucide-react';
+import { toast } from 'sonner';
+
+const timeToMinutes = (t) => {
+  if (!t) return 24 * 60;
+  const [h, m] = t.split(':').map(Number);
+  return h * 60 + m;
+};
+
+const todayLabel = () => {
+  const d = new Date();
+  const weekdays = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
+  return `${d.getMonth() + 1}月${d.getDate()}日 · ${weekdays[d.getDay()]}`;
+};
+
+export const TodayPage = () => {
+  const [timeline, setTimeline] = useState(TODAY_TIMELINE_INIT);
+  const [foodSheet, setFoodSheet] = useState({ open: false, target: null });
+  const [trainingOpen, setTrainingOpen] = useState(false);
+  const [eventOpen, setEventOpen] = useState(false);
+  const [timeSheet, setTimeSheet] = useState({ open: false, item: null });
+  const [pickerOpen, setPickerOpen] = useState(false);
+
+  const sorted = useMemo(
+    () => [...timeline].sort((a, b) => timeToMinutes(a.time) - timeToMinutes(b.time)),
+    [timeline]
+  );
+
+  const totals = useMemo(() => sumTimelineMacros(timeline), [timeline]);
+
+  const handleAddFood = (mealItem) => setFoodSheet({ open: true, target: mealItem });
+
+  const handleFoodConfirm = (food) => {
+    setTimeline((prev) =>
+      prev.map((it) =>
+        it.id === foodSheet.target.id ? { ...it, foods: [...(it.foods || []), food] } : it
+      )
+    );
+    toast.success(`已添加 ${food.name} 到 ${foodSheet.target.title}`);
+  };
+
+  const handleAddSnack = () => {
+    const id = `s${Date.now()}`;
+    setTimeline((prev) => [
+      ...prev,
+      { id, type: 'meal', subtype: 'snack', title: '加餐', time: '15:30', fixed: false, foods: [] },
+    ]);
+    setPickerOpen(false);
+    toast.success('已添加加餐');
+  };
+
+  const handleAddTraining = (item) => {
+    setTimeline((prev) => [...prev, item]);
+    toast.success(`已添加 ${item.title}`);
+  };
+
+  const handleAddEvent = (item) => {
+    setTimeline((prev) => [...prev, item]);
+    toast.success(`已添加 ${item.title}`);
+  };
+
+  const handleTimeConfirm = (newTime) => {
+    setTimeline((prev) =>
+      prev.map((it) => (it.id === timeSheet.item.id ? { ...it, time: newTime } : it))
+    );
+    toast.success('时间已更新');
+  };
+
+  return (
+    <div className="pb-32">
+      {/* Header */}
+      <header className="px-5 pt-6 pb-4">
+        <div className="flex items-center justify-between">
+          <div>
+            <p className="text-[11px] uppercase tracking-[0.22em] text-[#858C88]">TODAY</p>
+            <h1 className="text-[22px] font-medium text-[#2C332F] mt-1" data-testid="today-date">
+              {todayLabel()}
+            </h1>
+          </div>
+          <div className="w-10 h-10 rounded-full bg-white border border-[#E5E5E0] flex items-center justify-center text-[#6B8067]">
+            <Sparkles size={16} strokeWidth={1.5} />
+          </div>
+        </div>
+      </header>
+
+      {/* Summary */}
+      <div className="px-5">
+        <NutritionSummary totals={totals} plan={DAILY_PLAN} />
+      </div>
+
+      {/* Timeline */}
+      <section className="mt-6 px-3">
+        <div className="px-2 flex items-center justify-between mb-2">
+          <h2 className="text-[13px] font-medium text-[#2C332F] tracking-wide">今日时间轴</h2>
+          <span className="text-[11px] text-[#858C88]">{sorted.length} 项</span>
+        </div>
+
+        <div className="relative timeline-guide" data-testid="timeline">
+          {sorted.map((item) => (
+            <TimelineItem
+              key={item.id}
+              item={item}
+              onAddFood={handleAddFood}
+              onEditTime={(it) => setTimeSheet({ open: true, item: it })}
+            />
+          ))}
+        </div>
+      </section>
+
+      {/* Floating add button */}
+      <div className="fixed bottom-24 left-1/2 -translate-x-1/2 w-full max-w-md px-5 pointer-events-none z-30">
+        <div className="flex justify-end">
+          <button
+            onClick={() => setPickerOpen((v) => !v)}
+            data-testid="fab-add"
+            className="pointer-events-auto w-14 h-14 rounded-2xl bg-[#2C332F] text-white flex items-center justify-center shadow-[0_10px_24px_-8px_rgba(44,51,47,0.5)]"
+          >
+            <Plus size={22} strokeWidth={1.8} className={pickerOpen ? 'rotate-45 transition-transform' : 'transition-transform'} />
+          </button>
+        </div>
+
+        {pickerOpen && (
+          <div className="pointer-events-auto absolute bottom-16 right-5 w-56 rounded-2xl bg-white border border-[#E5E5E0] shadow-lg overflow-hidden" data-testid="add-picker">
+            {[
+              { label: '加餐', onClick: handleAddSnack, testId: 'picker-snack' },
+              { label: '无氧训练', onClick: () => { setTrainingOpen(true); setPickerOpen(false); }, testId: 'picker-anaerobic' },
+              { label: '有氧训练', onClick: () => { setTrainingOpen(true); setPickerOpen(false); }, testId: 'picker-aerobic' },
+              { label: '其他事件', onClick: () => { setEventOpen(true); setPickerOpen(false); }, testId: 'picker-event' },
+            ].map((it) => (
+              <button
+                key={it.label}
+                onClick={it.onClick}
+                data-testid={it.testId}
+                className="w-full px-4 py-3 text-left text-[13.5px] text-[#2C332F] hover:bg-[#F7F7F5] border-b border-[#F0EFE9] last:border-none"
+              >
+                {it.label}
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Sheets */}
+      <AddFoodSheet
+        open={foodSheet.open}
+        onOpenChange={(v) => setFoodSheet((s) => ({ ...s, open: v }))}
+        targetTitle={foodSheet.target?.title || ''}
+        onConfirm={handleFoodConfirm}
+      />
+      <AddTrainingSheet
+        open={trainingOpen}
+        onOpenChange={setTrainingOpen}
+        onConfirm={handleAddTraining}
+      />
+      <AddEventSheet
+        open={eventOpen}
+        onOpenChange={setEventOpen}
+        onConfirm={handleAddEvent}
+      />
+      <EditTimeSheet
+        open={timeSheet.open}
+        onOpenChange={(v) => setTimeSheet((s) => ({ ...s, open: v }))}
+        item={timeSheet.item}
+        onConfirm={handleTimeConfirm}
+      />
+    </div>
+  );
+};
