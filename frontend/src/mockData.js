@@ -96,12 +96,84 @@ export const TODAY_TIMELINE_INIT = [
   },
 ];
 
-// History mock: last 4 days
-export const HISTORY = [
-  { date: '2月17日 周一', cal: 1980, p: 132, f: 60, c: 225 },
-  { date: '2月16日 周日', cal: 2260, p: 145, f: 72, c: 250 },
-  { date: '2月15日 周六', cal: 2050, p: 138, f: 66, c: 232 },
-  { date: '2月14日 周五', cal: 1890, p: 128, f: 58, c: 215 },
+// History mock: last 4 days with full timelines
+const F = FOOD_LIBRARY;
+export const SEED_HISTORY = [
+  {
+    dateStr: '2026-02-17',
+    dateLabel: '2月17日 · 周一',
+    timeline: [
+      { id: 'h1-m1', type: 'meal', subtype: 'breakfast', title: '早餐', time: '07:50', fixed: true, foods: [
+        { foodId: 'f8', name: '全麦面包', grams: 80, ...scale(F[7], 80) },
+        { foodId: 'f9', name: '希腊酸奶', grams: 120, ...scale(F[8], 120) },
+      ]},
+      { id: 'h1-w1', type: 'aerobic', title: '有氧训练', time: '09:30', detail: '慢跑 · 30 分钟', caloriesBurned: 285 },
+      { id: 'h1-m2', type: 'meal', subtype: 'lunch', title: '午餐', time: '12:30', fixed: true, foods: [
+        { foodId: 'f2', name: '水煮鸡胸', grams: 140, ...scale(F[1], 140) },
+        { foodId: 'f5', name: '糙米饭', grams: 100, ...scale(F[4], 100) },
+      ]},
+      { id: 'h1-m3', type: 'meal', subtype: 'dinner', title: '晚餐', time: '18:50', fixed: true, foods: [
+        { foodId: 'f7', name: '三文鱼', grams: 120, ...scale(F[6], 120) },
+        { foodId: 'f6', name: '西兰花', grams: 100, ...scale(F[5], 100) },
+      ]},
+    ],
+  },
+  {
+    dateStr: '2026-02-16',
+    dateLabel: '2月16日 · 周日',
+    timeline: [
+      { id: 'h2-m1', type: 'meal', subtype: 'breakfast', title: '早餐', time: '09:00', fixed: true, foods: [
+        { foodId: 'f1', name: '燕麦片', grams: 80, ...scale(F[0], 80) },
+      ]},
+      { id: 'h2-e1', type: 'event', title: '朋友聚餐', time: '11:30', detail: '和朋友吃火锅' },
+      { id: 'h2-m2', type: 'meal', subtype: 'lunch', title: '午餐', time: '13:00', fixed: true, foods: [
+        { foodId: 'f2', name: '水煮鸡胸', grams: 180, ...scale(F[1], 180) },
+        { foodId: 'f5', name: '糙米饭', grams: 150, ...scale(F[4], 150) },
+      ]},
+      { id: 'h2-m3', type: 'meal', subtype: 'dinner', title: '晚餐', time: '19:30', fixed: true, foods: [
+        { foodId: 'f7', name: '三文鱼', grams: 150, ...scale(F[6], 150) },
+        { foodId: 'f3', name: '牛油果', grams: 60, ...scale(F[2], 60) },
+      ]},
+    ],
+  },
+  {
+    dateStr: '2026-02-15',
+    dateLabel: '2月15日 · 周六',
+    timeline: [
+      { id: 'h3-m1', type: 'meal', subtype: 'breakfast', title: '早餐', time: '08:30', fixed: true, foods: [
+        { foodId: 'f1', name: '燕麦片', grams: 60, ...scale(F[0], 60) },
+        { foodId: 'f4', name: '蓝莓', grams: 60, ...scale(F[3], 60) },
+      ]},
+      { id: 'h3-w1', type: 'anaerobic', title: '无氧训练', time: '10:00', detail: '背 + 二头 · 50 分钟', caloriesBurned: 310 },
+      { id: 'h3-m2', type: 'meal', subtype: 'lunch', title: '午餐', time: '12:45', fixed: true, foods: [
+        { foodId: 'f2', name: '水煮鸡胸', grams: 160, ...scale(F[1], 160) },
+        { foodId: 'f6', name: '西兰花', grams: 120, ...scale(F[5], 120) },
+      ]},
+      { id: 'h3-m3', type: 'meal', subtype: 'dinner', title: '晚餐', time: '19:00', fixed: true, foods: [
+        { foodId: 'f8', name: '全麦面包', grams: 60, ...scale(F[7], 60) },
+        { foodId: 'f9', name: '希腊酸奶', grams: 150, ...scale(F[8], 150) },
+      ]},
+    ],
+  },
+  {
+    dateStr: '2026-02-14',
+    dateLabel: '2月14日 · 周五',
+    timeline: [
+      { id: 'h4-m1', type: 'meal', subtype: 'breakfast', title: '早餐', time: '08:00', fixed: true, foods: [
+        { foodId: 'f9', name: '希腊酸奶', grams: 150, ...scale(F[8], 150) },
+      ]},
+      { id: 'h4-m2', type: 'meal', subtype: 'lunch', title: '午餐', time: '12:20', fixed: true, foods: [
+        { foodId: 'f2', name: '水煮鸡胸', grams: 130, ...scale(F[1], 130) },
+        { foodId: 'f5', name: '糙米饭', grams: 100, ...scale(F[4], 100) },
+      ]},
+      { id: 'h4-s1', type: 'meal', subtype: 'snack', title: '加餐', time: '16:30', fixed: false, foods: [
+        { foodId: 'f10', name: '杏仁', grams: 20, ...scale(F[9], 20) },
+      ]},
+      { id: 'h4-m3', type: 'meal', subtype: 'dinner', title: '晚餐', time: '19:10', fixed: true, foods: [
+        { foodId: 'f7', name: '三文鱼', grams: 110, ...scale(F[6], 110) },
+      ]},
+    ],
+  },
 ];
 
 // Sums helper

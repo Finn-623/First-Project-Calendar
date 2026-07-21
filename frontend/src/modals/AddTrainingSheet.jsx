@@ -4,20 +4,22 @@ import { Input } from '../components/ui/input';
 import { Button } from '../components/ui/button';
 import { Dumbbell, Footprints } from 'lucide-react';
 
-export const AddTrainingSheet = ({ open, onOpenChange, onConfirm }) => {
-  const [tab, setTab] = useState('anaerobic');
+export const AddTrainingSheet = ({ open, onOpenChange, onConfirm, initialKind = 'anaerobic' }) => {
+  const [tab, setTab] = useState(initialKind);
   const [name, setName] = useState('');
   const [duration, setDuration] = useState(45);
   const [time, setTime] = useState('18:00');
 
   useEffect(() => {
     if (!open) {
-      setTab('anaerobic');
+      setTab(initialKind);
       setName('');
       setDuration(45);
       setTime('18:00');
+    } else {
+      setTab(initialKind);
     }
-  }, [open]);
+  }, [open, initialKind]);
 
   const estimate = tab === 'anaerobic'
     ? Math.round(duration * 6.2)

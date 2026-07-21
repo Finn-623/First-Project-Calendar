@@ -16,7 +16,7 @@ const accentFor = (item) => {
   return '#E0B876';
 };
 
-export const TimelineItem = ({ item, onAddFood, onEditTime }) => {
+export const TimelineItem = ({ item, onAddFood, onEditTime, readOnly = false }) => {
   const Icon = iconFor(item);
   const accent = accentFor(item);
   const isMeal = item.type === 'meal';
@@ -45,8 +45,9 @@ export const TimelineItem = ({ item, onAddFood, onEditTime }) => {
             <div className="min-w-0">
               <p className="text-[13.5px] font-medium text-[#2C332F] truncate">{item.title}</p>
               <button
-                onClick={() => onEditTime && onEditTime(item)}
+                onClick={() => !readOnly && onEditTime && onEditTime(item)}
                 data-testid={`edit-time-${item.id}`}
+                disabled={readOnly}
                 className="mt-0.5 flex items-center gap-1 text-[11px] text-[#858C88]"
               >
                 <Clock size={11} strokeWidth={1.5} />
@@ -105,7 +106,7 @@ export const TimelineItem = ({ item, onAddFood, onEditTime }) => {
           <button
             onClick={() => onAddFood(item)}
             data-testid={`add-food-btn-${item.id}`}
-            className="mt-3 w-full flex items-center justify-center gap-1.5 text-[12.5px] text-[#6B8067] py-2 rounded-xl border border-dashed border-[#6B8067]/40 hover:bg-[#6B8067]/5"
+            className={`mt-3 w-full flex items-center justify-center gap-1.5 text-[12.5px] text-[#6B8067] py-2 rounded-xl border border-dashed border-[#6B8067]/40 hover:bg-[#6B8067]/5 ${readOnly ? 'hidden' : ''}`}
           >
             <Plus size={14} strokeWidth={1.8} />
             <span>添加食物</span>

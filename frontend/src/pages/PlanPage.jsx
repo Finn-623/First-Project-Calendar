@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
-import { DAILY_PLAN } from '../mockData';
+import React, { useState, useEffect } from 'react';
 import { Input } from '../components/ui/input';
 import { Button } from '../components/ui/button';
 import { toast } from 'sonner';
+import { useStore } from '../store';
 
 const FIELDS = [
   { key: 'calories', label: '目标热量', unit: 'kcal', color: '#2C332F' },
@@ -12,7 +12,10 @@ const FIELDS = [
 ];
 
 export const PlanPage = () => {
-  const [plan, setPlan] = useState(DAILY_PLAN);
+  const { plan: storedPlan, setPlan: setStoredPlan } = useStore();
+  const [plan, setPlan] = useState(storedPlan);
+
+  useEffect(() => { setPlan(storedPlan); }, [storedPlan]);
 
   // Simple derived preview: kcal from macros
   const kcalFromMacros = plan.protein * 4 + plan.carbs * 4 + plan.fat * 9;
@@ -66,7 +69,7 @@ export const PlanPage = () => {
         </div>
 
         <Button
-          onClick={() => toast.success('计划已保存（模拟）')}
+          onClick={() => { setStoredPlan(plan); toast.success('计划已保存（模拟）'); }}
           data-testid="plan-save-btn"
           className="w-full h-12 rounded-2xl bg-[#6B8067] hover:bg-[#5a6d57] text-white text-[14px] mt-2"
         >
