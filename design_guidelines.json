@@ -1,0 +1,134 @@
+{
+  "theme": "light",
+  "archetype": "Organic & Earthy",
+  "typography": {
+    "primary_font": "'Outfit', 'Noto Sans SC', sans-serif",
+    "secondary_font": "'Noto Sans SC', sans-serif",
+    "headings": "Tracking-tight, font-medium to font-bold. Avoid Inter/Roboto. Numbers must use 'Outfit'.",
+    "body": "Leading-relaxed for readability. Soft colors."
+  },
+  "colors": {
+    "background": "#F7F7F5",
+    "surface": "#FFFFFF",
+    "primary": "#6B8067",
+    "secondary": "#D27D67",
+    "tertiary": "#E0B876",
+    "text_main": "#2C332F",
+    "text_muted": "#858C88",
+    "border": "#E5E5E0"
+  },
+  "visual_enhancers": {
+    "surfaces": "Flat Solid surfaces with 1px border (border-border/40). No muddy shadows, use drop-shadow-sm for interactive elements.",
+    "progress_rings": "Crisp SVG circles. Background circle uses border color. Foreground uses primary (protein), secondary (fat), tertiary (carbs), and text_main (calories).",
+    "icons": "lucide-react, 1.5px stroke width for a refined look."
+  },
+  "grids": {
+    "general": "Mobile-first standard flow. Use Flexbox for timeline."
+  },
+  "layouts": {
+    "today_page": "Top section: Dashboard style summary. Calorie ring in center, P/F/C small rings below. Timeline section: Vertical line on left. Event nodes.",
+    "bottom_nav": "Fixed bottom. Backdrop-blur with solid fallback. Active state: primary color, inactive: text_muted."
+  },
+  "motion": {
+    "interactions": "Framer motion for sheet modals sliding up, list item entrance stagger.",
+    "hover": "Not extremely relevant for mobile, but add scale down (`active:scale-95`) for buttons."
+  },
+  "component_path": {
+    "modals": "Use Shadcn Sheet component for all 'Add' actions (bottom-up modal is mobile friendly).",
+    "inputs": "Shadcn Input, large text size for numbers."
+  },
+  "pages_blueprint": {
+    "TodayTimeline": {
+      "description": "Main dashboard showing today's progress and timeline of meals/workouts.",
+      "layout": [
+        "Header: Current Date, Settings/Profile icon.",
+        "Summary Card: Large circular progress for Calories (Intake vs Plan). 3 smaller horizontal progress bars or rings for Protein, Fat, Carbs. Gap to plan displayed clearly.",
+        "Timeline: Vertical line. Items sorted chronologically. Breakfast, Lunch, Dinner fixed placeholders if empty. Add FAB (Floating Action Button) or inline 'Add' buttons.",
+        "Timeline Items: Time, Icon, Title (e.g., Breakfast). Content: Foods with gram, Cal, P/F/C."
+      ]
+    },
+    "History": {
+      "description": "List of past days with summary.",
+      "layout": [
+        "Header: '历史记录' (History)",
+        "List of days. Each card shows Date, Total Calories, and P/F/C summary."
+      ]
+    },
+    "FoodDatabase": {
+      "description": "List of foods to search and select.",
+      "layout": [
+        "Search bar at top.",
+        "Categories (e.g., Meat, Veg, Carb).",
+        "List of food items showing Name, Cal/100g, Macros/100g."
+      ]
+    },
+    "IntakePlan": {
+      "description": "Settings for daily macros.",
+      "layout": [
+        "Form with 4 big number inputs: Target Calories, Target Protein(g), Target Fat(g), Target Carbs(g).",
+        "Save button."
+      ]
+    },
+    "AddFoodModal": {
+      "description": "Bottom sheet to add a specific food.",
+      "layout": [
+        "Food Name (or select from DB).",
+        "Weight input (g). Large keypad or number input.",
+        "Calculated Macros display.",
+        "Confirm button."
+      ]
+    },
+    "AddTrainingModal": {
+      "description": "Bottom sheet to add workout.",
+      "layout": [
+        "Tabs: 无氧 (Anaerobic) / 有氧 (Aerobic).",
+        "Input for Duration/Intensity or exercise name.",
+        "Estimated Calories burned.",
+        "Confirm button."
+      ]
+    },
+    "AddOtherEventModal": {
+      "description": "Bottom sheet to add non-diet/training event.",
+      "layout": [
+        "Event Title.",
+        "Time picker.",
+        "Confirm button."
+      ]
+    }
+  },
+  "image_urls": {
+    "food_breakfast": {
+      "url": "https://images.unsplash.com/photo-1497888329096-51c27beff665?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDQ2NDF8MHwxfHNlYXJjaHw0fHxoZWFsdGh5JTIwYnJlYWtmYXN0JTIwYm93bHxlbnwwfHx8fDE3ODQ2MTczNTB8MA&ixlib=rb-4.1.0&q=85",
+      "description": "two bowls of oatmeal with fruits"
+    },
+    "training_weight": {
+      "url": "https://images.unsplash.com/photo-1558611848-73f7eb4001a1?crop=entropy&cs=srgb&fm=jpg&ixid=M3w8NjA1NTN8MHwxfHNlYXJjaHw0fHxneW0lMjB3ZWlnaHQlMjB0cmFpbmluZ3xlbnwwfHx8fDE3ODQ2MTczNTB8MA&ixlib=rb-4.1.0&q=85",
+      "description": "barbell on rack"
+    },
+    "training_cardio": {
+      "url": "https://images.unsplash.com/photo-1758922769578-68c5ba000d87?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2NzZ8MHwxfHNlYXJjaHw0fHxydW5uaW5nJTIwb3V0ZG9vcnN8ZW58MHx8fHwxNzg0NjE3MzUwfDA&ixlib=rb-4.1.0&q=85",
+      "description": "Man running on track"
+    }
+  },
+  "instructions_to_main_agent": [
+    "Ensure the app is mobile-first, max-w-md mx-auto if viewed on desktop.",
+    "Install Noto Sans SC and Outfit via Google Fonts.",
+    "Implement Circular Progress component for the nutrition summary. Use SVG.",
+    "Use Shadcn Sheet component for all 'Add' modals to mimic native mobile bottom sheets.",
+    "Use lucide-react for all icons. Stroke width 1.5.",
+    "Apply 'data-testid' to all buttons and interactive elements.",
+    "Mock data should be minimal: 1-2 foods per meal, 1 training.",
+    "No horizontal scroll on the entire page."
+  ],
+  "UNIVERSAL GUIDELINES FOR MAIN AGENT": [
+    "You tend to converge toward generic, 'on distribution' outputs. Avoid this: make creative, distinctive frontends.",
+    "Do not apply universal transition 'transition: all'. Add transitions for specific interactive elements.",
+    "Do not center align the app container (.App { text-align: center; }).",
+    "Use 2-3x more spacing than feels comfortable. Cramped designs look cheap.",
+    "Never use AI assistant Emoji characters for icons.",
+    "Toasts: Use sonner."
+  ],
+  "accessibility": {
+    "contrast": "Ensure text contrast meets APCA standard. Buttons must clearly show active/focus state."
+  }
+}
