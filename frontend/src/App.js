@@ -10,13 +10,8 @@ import { FoodLibraryPage } from './pages/FoodLibraryPage';
 import { PlanPage } from './pages/PlanPage';
 import { LoginPage } from './pages/LoginPage';
 import { StoreProvider } from './store';
-import { supabase, supabaseConfigError } from './lib/supabaseClient';
+import { supabase, isSupabaseConfigured } from './lib/supabaseClient';
 import { registerAuthListener, unregisterAuthListener } from './lib/authState';
-
-// Make supabase client available globally for authState module
-if (supabase) {
-  window.supabaseClient = supabase;
-}
 
 /**
  * Configuration Error Page
@@ -51,8 +46,8 @@ function ConfigErrorPage() {
 }
 
 function App() {
-  // Show config error immediately if Supabase is not configured
-  if (supabaseConfigError) {
+  // Must check config first to avoid any Supabase calls before render
+  if (!isSupabaseConfigured) {
     return (
       <div className="App">
         <ConfigErrorPage />
@@ -73,6 +68,14 @@ function App() {
 
     // Initialize auth
     const setupAuth = async () => {
+      if (!supabase) {
+        if (mountedRef.current) {
+          setAuthInitError('Supabase 尚未配置');
+          setIsLoading(false);
+        }
+        return;
+      }
+
       try {
         // Check for existing session
         const { data: { session: existingSession }, error: sessionError } = await supabase.auth.getSession();
@@ -134,7 +137,7 @@ function App() {
    * Load user profile from Supabase
    */
   const loadUserProfile = async (userId) => {
-    if (!userId || !mountedRef.current) return;
+    if (!userId || !mountedRef.current || !supabase) return;
 
     try {
       const { data, error } = await supabase
@@ -169,6 +172,10 @@ function App() {
   };
 
   const handleLogout = async () => {
+    if (!supabase) {
+      return;
+    }
+
     await supabase.auth.signOut();
     if (mountedRef.current) {
       setUser(null);

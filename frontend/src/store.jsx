@@ -60,9 +60,16 @@ export const StoreProvider = ({ children, user: initialUser, session: initialSes
    * NOT called from onAuthStateChange callback - called after state update completes
    */
   const loadProfile = useCallback(async (userId) => {
+    if (!supabase) {
+      const errorMsg = 'Supabase 尚未配置';
+      setAuthError(errorMsg);
+      setProfile(null);
+      return { success: false, error: errorMsg };
+    }
+
     if (!userId) {
       setProfile(null);
-      return null;
+      return { success: false, error: '缺少用户 ID' };
     }
 
     try {
@@ -70,7 +77,7 @@ export const StoreProvider = ({ children, user: initialUser, session: initialSes
       const currentUserId = getCurrentUserId();
       if (currentUserId !== userId) {
         console.warn('User ID mismatch, skipping profile load');
-        return null;
+        return { success: false, error: '用户状态不匹配' };
       }
 
       const { data, error } = await supabase
@@ -82,21 +89,21 @@ export const StoreProvider = ({ children, user: initialUser, session: initialSes
       if (error) {
         console.error('Failed to load profile:', error);
         setProfile(null);
-        return null;
+        return { success: false, error: convertErrorToMessage(error) };
       }
 
       // Final check: ensure we're still loading for the same user
       const finalUserId = getCurrentUserId();
       if (finalUserId === userId) {
         setProfile(data);
-        return data;
+        return { success: true, data };
       }
 
-      return null;
+      return { success: false, error: '用户已切换，忽略旧请求结果' };
     } catch (err) {
       console.error('Error loading profile:', err);
       setProfile(null);
-      return null;
+      return { success: false, error: convertErrorToMessage(err) };
     }
   }, []);
 
@@ -107,6 +114,13 @@ export const StoreProvider = ({ children, user: initialUser, session: initialSes
   const signIn = useCallback(async (email, password) => {
     setAuthLoading(true);
     setAuthError(null);
+
+    if (!supabase) {
+      const errorMsg = 'Supabase 尚未配置';
+      setAuthError(errorMsg);
+      setAuthLoading(false);
+      return { success: false, error: errorMsg };
+    }
 
     try {
       const { data, error } = await supabase.auth.signInWithPassword({
@@ -146,6 +160,13 @@ export const StoreProvider = ({ children, user: initialUser, session: initialSes
    */
   const signOut = useCallback(async () => {
     setAuthLoading(true);
+
+    if (!supabase) {
+      const errorMsg = 'Supabase 尚未配置';
+      setAuthError(errorMsg);
+      setAuthLoading(false);
+      return { success: false, error: errorMsg };
+    }
 
     try {
       const { error } = await supabase.auth.signOut();

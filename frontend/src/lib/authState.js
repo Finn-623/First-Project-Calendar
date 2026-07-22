@@ -1,4 +1,6 @@
 // Module-level state to prevent duplicate auth initialization and listeners
+import { supabase } from './supabaseClient';
+
 let authSubscription = null;
 let authInitPromise = null;
 let currentUserId = null;
@@ -13,16 +15,20 @@ export async function initializeAuthGlobally() {
     return authInitPromise;
   }
 
+  if (!supabase) {
+    return { success: false, error: 'Supabase 尚未配置' };
+  }
+
   authInitPromise = (async () => {
     try {
       // Don't register listener here - let App.js handle it
       // This function only validates the client is ready
-      const { data, error } = await window.supabaseClient.auth.getSession();
+      const { error } = await supabase.auth.getSession();
       if (error) console.warn('Auth initialization check:', error);
-      return { success: !error };
+      return { success: !error, error: error?.message || null };
     } catch (err) {
       console.error('Auth initialization failed:', err);
-      return { success: false };
+      return { success: false, error: err?.message || '认证初始化失败' };
     }
   })();
 
@@ -34,26 +40,28 @@ export async function initializeAuthGlobally() {
  * Must be called only once from App component
  */
 export function registerAuthListener(onStateChange) {
+  if (!supabase) {
+    return null;
+  }
+
   if (authSubscription) {
     // Already registered
     return authSubscription;
   }
 
-  const { data: subscription } = window.supabaseClient.auth.onAuthStateChange(
-    (event, session) => {
-      // Update current user ID for profile loading
-      if (session?.user?.id) {
-        currentUserId = session.user.id;
-      } else {
-        currentUserId = null;
-      }
-
-      onStateChange(event, session);
+  const { data } = supabase.auth.onAuthStateChange((event, session) => {
+    // Update current user ID for profile loading
+    if (session?.user?.id) {
+      currentUserId = session.user.id;
+    } else {
+      currentUserId = null;
     }
-  );
 
-  authSubscription = subscription;
-  return subscription;
+    onStateChange(event, session);
+  });
+
+  authSubscription = data?.subscription || null;
+  return authSubscription;
 }
 
 /**
