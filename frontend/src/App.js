@@ -10,29 +10,74 @@ import { FoodLibraryPage } from './pages/FoodLibraryPage';
 import { PlanPage } from './pages/PlanPage';
 import { LoginPage } from './pages/LoginPage';
 import { StoreProvider } from './store';
-import { supabase } from './lib/supabaseClient';
+import { supabase, supabaseConfigError } from './lib/supabaseClient';
 import { registerAuthListener, unregisterAuthListener } from './lib/authState';
 
 // Make supabase client available globally for authState module
-window.supabaseClient = supabase;
+if (supabase) {
+  window.supabaseClient = supabase;
+}
+
+/**
+ * Configuration Error Page
+ */
+function ConfigErrorPage() {
+  return (
+    <div className="min-h-screen w-full bg-gradient-to-br from-[#F7F7F5] to-[#EFF2ED] flex items-center justify-center p-4">
+      <div className="text-center max-w-md">
+        <div className="w-16 h-16 rounded-2xl bg-[#FF6B6B] flex items-center justify-center mx-auto mb-6">
+          <span className="text-[32px]">⚠️</span>
+        </div>
+        <p className="text-[18px] font-medium text-[#2C332F] mb-4">Supabase 尚未配置</p>
+        <p className="text-[14px] text-[#858C88] mb-6 leading-relaxed">
+          请在 <code className="bg-[#E5E5E0] px-2 py-1 rounded">.env.local</code> 文件中设置以下环境变量：
+        </p>
+        <div className="bg-white border border-[#E5E5E0] rounded-2xl p-4 mb-6 text-left">
+          <p className="text-[12px] font-mono text-[#2C332F] mb-2">REACT_APP_SUPABASE_URL=your_supabase_url</p>
+          <p className="text-[12px] font-mono text-[#2C332F]">REACT_APP_SUPABASE_ANON_KEY=your_anon_key</p>
+        </div>
+        <p className="text-[12px] text-[#858C88] mb-6">
+          配置完成后，请重新启动应用（Ctrl+C 然后 yarn start）
+        </p>
+        <button
+          onClick={() => window.location.reload()}
+          className="px-4 py-2 rounded-2xl bg-[#2C332F] text-white text-[14px] font-medium"
+        >
+          重新检查
+        </button>
+      </div>
+    </div>
+  );
+}
 
 function App() {
+  // Show config error immediately if Supabase is not configured
+  if (supabaseConfigError) {
+    return (
+      <div className="App">
+        <ConfigErrorPage />
+      </div>
+    );
+  }
+
   const [user, setUser] = useState(null);
   const [session, setSession] = useState(null);
   const [profile, setProfile] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [authInitError, setAuthInitError] = useState(null);
-  const initRefRef = useRef(false);
+  const mountedRef = useRef(true);
 
   useEffect(() => {
-    // Initialize auth once on app startup
-    const setupAuth = async () => {
-      if (initRefRef.current) return;
-      initRefRef.current = true;
+    // Reset mounted flag on mount
+    mountedRef.current = true;
 
+    // Initialize auth
+    const setupAuth = async () => {
       try {
         // Check for existing session
         const { data: { session: existingSession }, error: sessionError } = await supabase.auth.getSession();
+
+        if (!mountedRef.current) return; // Component unmounted
 
         if (sessionError) {
           console.error('Session check error:', sessionError);
@@ -48,10 +93,14 @@ function App() {
           await loadUserProfile(existingSession.user.id);
         }
 
+        if (!mountedRef.current) return; // Component unmounted
+
         setIsLoading(false);
 
         // Register auth state listener
         registerAuthListener((event, newSession) => {
+          if (!mountedRef.current) return; // Component unmounted
+
           if (newSession?.user) {
             setSession(newSession);
             setUser(newSession.user);
@@ -65,8 +114,10 @@ function App() {
         });
       } catch (err) {
         console.error('Auth setup error:', err);
-        setAuthInitError('认证初始化失败');
-        setIsLoading(false);
+        if (mountedRef.current) {
+          setAuthInitError('认证初始化失败');
+          setIsLoading(false);
+        }
       }
     };
 
@@ -74,17 +125,16 @@ function App() {
 
     // Cleanup on unmount
     return () => {
+      mountedRef.current = false;
       unregisterAuthListener();
     };
   }, []);
 
   /**
    * Load user profile from Supabase
-   * NOT called from auth listener callback - called after state update
-   * Prevents async deadlock in onAuthStateChange
    */
   const loadUserProfile = async (userId) => {
-    if (!userId) return;
+    if (!userId || !mountedRef.current) return;
 
     try {
       const { data, error } = await supabase
@@ -92,6 +142,8 @@ function App() {
         .select('*')
         .eq('id', userId)
         .maybeSingle();
+
+      if (!mountedRef.current) return;
 
       if (error) {
         console.error('Failed to load profile:', error);
@@ -102,11 +154,14 @@ function App() {
       setProfile(data);
     } catch (err) {
       console.error('Error loading profile:', err);
-      setProfile(null);
+      if (mountedRef.current) {
+        setProfile(null);
+      }
     }
   };
 
   const handleLoginSuccess = (loggedInUser, loggedInSession) => {
+    if (!mountedRef.current) return;
     setUser(loggedInUser);
     setSession(loggedInSession);
     // Load profile after login
@@ -115,22 +170,26 @@ function App() {
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
-    setUser(null);
-    setSession(null);
-    setProfile(null);
+    if (mountedRef.current) {
+      setUser(null);
+      setSession(null);
+      setProfile(null);
+    }
   };
 
+  // State 1: Loading
   if (isLoading) {
     return (
       <div className="min-h-screen w-full bg-gradient-to-br from-[#F7F7F5] to-[#EFF2ED] flex items-center justify-center">
         <div className="text-center">
           <div className="w-12 h-12 border-4 border-[#E5E5E0] border-t-[#6B8067] rounded-full animate-spin mx-auto mb-4" />
-          <p className="text-[14px] text-[#858C88]">正在加载...</p>
+          <p className="text-[14px] text-[#858C88]">正在检查登录状态...</p>
         </div>
       </div>
     );
   }
 
+  // State 2: Auth Error
   if (authInitError) {
     return (
       <div className="min-h-screen w-full bg-gradient-to-br from-[#F7F7F5] to-[#EFF2ED] flex items-center justify-center p-4">
@@ -148,6 +207,7 @@ function App() {
     );
   }
 
+  // State 3: Not logged in
   if (!user || !session) {
     return (
       <div className="App">
@@ -157,6 +217,7 @@ function App() {
     );
   }
 
+  // State 4: Logged in
   return (
     <div className="App">
       <StoreProvider user={user} session={session} profile={profile}>
