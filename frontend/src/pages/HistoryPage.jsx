@@ -2,7 +2,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ChevronRight } from 'lucide-react';
 import { useStore } from '../store';
-import { sumTimelineMacros } from '../mockData';
+import { sumTimelineMacros } from '../lib/nutrition';
 
 export const HistoryPage = () => {
   const { history, plan } = useStore();
@@ -19,7 +19,7 @@ export const HistoryPage = () => {
       <div className="px-5 space-y-3" data-testid="history-list">
         {history.map((d, idx) => {
           const t = d.totals || sumTimelineMacros(d.timeline);
-          const pct = Math.round((t.cal / plan.calories) * 100);
+          const pct = plan?.calories ? Math.round((t.cal / plan.calories) * 100) : 0;
           return (
             <button
               key={d.dateStr}

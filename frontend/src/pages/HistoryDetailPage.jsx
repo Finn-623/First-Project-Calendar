@@ -4,7 +4,7 @@ import { ChevronLeft } from 'lucide-react';
 import { useStore } from '../store';
 import { TimelineItem } from '../components/TimelineItem';
 import { NutritionSummary } from '../components/NutritionSummary';
-import { sumTimelineMacros } from '../mockData';
+import { sumTimelineMacros } from '../lib/nutrition';
 
 const timeToMinutes = (t) => {
   if (!t) return 24 * 60;

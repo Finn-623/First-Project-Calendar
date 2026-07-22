@@ -1,6 +1,6 @@
 import React from 'react';
-import { UtensilsCrossed, Dumbbell, Footprints, MapPin, Plus, Clock } from 'lucide-react';
-import { sumMealMacros } from '../mockData';
+import { UtensilsCrossed, Dumbbell, Footprints, MapPin, Plus, Clock, Trash2 } from 'lucide-react';
+import { sumMealMacros } from '../lib/nutrition';
 
 const iconFor = (item) => {
   if (item.type === 'meal') return UtensilsCrossed;
@@ -16,12 +16,28 @@ const accentFor = (item) => {
   return '#E0B876';
 };
 
-export const TimelineItem = ({ item, onAddFood, onEditTime, readOnly = false }) => {
+export const TimelineItem = ({
+  item,
+  onAddFood,
+  onEditTime,
+  onDeleteFood,
+  onDeleteItem,
+  deletingFoodId = null,
+  deletingItemId = null,
+  readOnly = false,
+}) => {
   const Icon = iconFor(item);
   const accent = accentFor(item);
   const isMeal = item.type === 'meal';
   const totals = isMeal ? sumMealMacros(item.foods || []) : null;
   const empty = isMeal && (!item.foods || item.foods.length === 0);
+
+  const canDeleteItem = !readOnly && (
+    (item.type === 'meal' && item.subtype === 'snack')
+    || item.type === 'anaerobic'
+    || item.type === 'aerobic'
+    || item.type === 'event'
+  );
 
   return (
     <div className="relative pl-11 pr-1 py-2.5" data-testid={`timeline-item-${item.id}`}>
@@ -75,20 +91,45 @@ export const TimelineItem = ({ item, onAddFood, onEditTime, readOnly = false }) 
               <p className="text-[10px] text-[#858C88]">kcal</p>
             </div>
           )}
+
+          {canDeleteItem && (
+            <button
+              onClick={() => onDeleteItem && onDeleteItem(item)}
+              disabled={deletingItemId === item.id}
+              className="ml-2 h-9 min-w-9 px-2 rounded-xl border border-[#E5E5E0] text-[#858C88] hover:text-[#D27D67] hover:border-[#D27D67]/40 disabled:opacity-50"
+              data-testid={`delete-item-btn-${item.id}`}
+              aria-label="删除项目"
+            >
+              <Trash2 size={15} strokeWidth={1.7} className="mx-auto" />
+            </button>
+          )}
         </div>
 
         {/* Meal foods */}
         {isMeal && !empty && (
           <div className="mt-3 divide-y divide-[#F0EFE9]">
             {item.foods.map((f, idx) => (
-              <div key={idx} className="flex items-center justify-between py-2" data-testid={`food-row-${item.id}-${idx}`}>
+              <div key={f.id || idx} className="flex items-center justify-between py-2" data-testid={`food-row-${item.id}-${idx}`}>
                 <div className="min-w-0">
                   <p className="text-[13px] text-[#2C332F] truncate">{f.name}</p>
                   <p className="font-num text-[11px] text-[#858C88] mt-0.5">
-                    {f.grams}g · P{f.p} · F{f.f} · C{f.c}
+                    {f.grams}{f.unit || 'g'} · P{f.p} · F{f.f} · C{f.c}
                   </p>
                 </div>
-                <p className="font-num text-[13px] text-[#2C332F] shrink-0 ml-3">{f.cal} <span className="text-[10px] text-[#858C88]">kcal</span></p>
+                <div className="flex items-center gap-2 shrink-0 ml-3">
+                  <p className="font-num text-[13px] text-[#2C332F]">{f.cal} <span className="text-[10px] text-[#858C88]">kcal</span></p>
+                  {!readOnly && (
+                    <button
+                      onClick={() => onDeleteFood && onDeleteFood(item, f)}
+                      disabled={deletingFoodId === f.id}
+                      className="h-9 min-w-9 px-2 rounded-xl border border-[#E5E5E0] text-[#858C88] hover:text-[#D27D67] hover:border-[#D27D67]/40 disabled:opacity-50"
+                      data-testid={`delete-food-btn-${item.id}-${f.id || idx}`}
+                      aria-label="删除食物"
+                    >
+                      <Trash2 size={14} strokeWidth={1.7} className="mx-auto" />
+                    </button>
+                  )}
+                </div>
               </div>
             ))}
           </div>
