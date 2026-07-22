@@ -1,5 +1,6 @@
-import React, { createContext, useContext, useState, useCallback, useEffect, useRef } from 'react';
+import React, { createContext, useContext, useState, useCallback } from 'react';
 import { supabase } from './lib/supabaseClient';
+import { getCurrentUserId } from './lib/authState';
 import { TODAY_TIMELINE_INIT, DAILY_PLAN, SEED_HISTORY, sumTimelineMacros } from './mockData';
 
 const StoreContext = createContext(null);
@@ -17,21 +18,19 @@ const freshTimeline = () => ([
 /**
  * Main Store Provider
  * Manages both diet tracking state and Supabase authentication state
+ * 
+ * Authentication state is initialized in App.js only
+ * Store receives user/session/profile as props and stores them
  */
-export const StoreProvider = ({ children, user: initialUser }) => {
+export const StoreProvider = ({ children, user: initialUser, session: initialSession, profile: initialProfile }) => {
   // ============================================================================
-  // Auth State
+  // Auth State - Receives from App.js, never modifies directly
   // ============================================================================
   const [user, setUser] = useState(initialUser || null);
-  const [session, setSession] = useState(null);
-  const [profile, setProfile] = useState(null);
+  const [session, setSession] = useState(initialSession || null);
+  const [profile, setProfile] = useState(initialProfile || null);
   const [authLoading, setAuthLoading] = useState(false);
-  const [authInitialized, setAuthInitialized] = useState(false);
   const [authError, setAuthError] = useState(null);
-
-  // Track if auth listener is registered to prevent duplicates
-  const authListenerRef = useRef(null);
-  const initializingRef = useRef(false);
 
   // ============================================================================
   // Diet Tracking State (Original)
@@ -42,16 +41,38 @@ export const StoreProvider = ({ children, user: initialUser }) => {
   const [history, setHistory] = useState(SEED_HISTORY);
 
   // ============================================================================
-  // Auth Methods
+  // Auth Methods - Store-only operations
   // ============================================================================
 
   /**
-   * Load current user profile from profiles table
+   * Update user auth state from App.js
+   * Called from App.js when auth state changes
+   */
+  const updateAuthState = useCallback((newUser, newSession, newProfile) => {
+    setUser(newUser);
+    setSession(newSession);
+    setProfile(newProfile);
+  }, []);
+
+  /**
+   * Load profile from profiles table
+   * Safely fetches profile only if user ID matches current authenticated user
+   * NOT called from onAuthStateChange callback - called after state update completes
    */
   const loadProfile = useCallback(async (userId) => {
-    if (!userId) return;
+    if (!userId) {
+      setProfile(null);
+      return null;
+    }
 
     try {
+      // Verify user ID matches current authenticated user
+      const currentUserId = getCurrentUserId();
+      if (currentUserId !== userId) {
+        console.warn('User ID mismatch, skipping profile load');
+        return null;
+      }
+
       const { data, error } = await supabase
         .from('profiles')
         .select('*')
@@ -61,86 +82,27 @@ export const StoreProvider = ({ children, user: initialUser }) => {
       if (error) {
         console.error('Failed to load profile:', error);
         setProfile(null);
-        return;
+        return null;
       }
 
-      setProfile(data);
+      // Final check: ensure we're still loading for the same user
+      const finalUserId = getCurrentUserId();
+      if (finalUserId === userId) {
+        setProfile(data);
+        return data;
+      }
+
+      return null;
     } catch (err) {
       console.error('Error loading profile:', err);
       setProfile(null);
+      return null;
     }
   }, []);
 
   /**
-   * Initialize authentication on app startup
-   * Checks current session and registers listener for future changes
-   */
-  const initializeAuth = useCallback(async () => {
-    // Prevent multiple simultaneous initializations
-    if (initializingRef.current) {
-      return;
-    }
-
-    initializingRef.current = true;
-    setAuthLoading(true);
-
-    try {
-      // Check if we already have a Supabase session
-      const {
-        data: { session: currentSession },
-        error: sessionError,
-      } = await supabase.auth.getSession();
-
-      if (sessionError) {
-        console.error('Session check error:', sessionError);
-        setAuthError(convertErrorToMessage(sessionError));
-        setUser(null);
-        setSession(null);
-        setProfile(null);
-      } else if (currentSession?.user) {
-        setSession(currentSession);
-        setUser(currentSession.user);
-        // Load user profile if exists
-        await loadProfile(currentSession.user.id);
-        setAuthError(null);
-      } else {
-        setSession(null);
-        setUser(null);
-        setProfile(null);
-      }
-    } catch (err) {
-      console.error('Auth initialization error:', err);
-      setAuthError(convertErrorToMessage(err));
-    } finally {
-      setAuthLoading(false);
-      setAuthInitialized(true);
-
-      // Register auth state change listener (only once)
-      if (!authListenerRef.current) {
-        const { data: authListener } = supabase.auth.onAuthStateChange(
-          async (event, newSession) => {
-            if (newSession?.user) {
-              setSession(newSession);
-              setUser(newSession.user);
-              await loadProfile(newSession.user.id);
-              setAuthError(null);
-            } else {
-              setSession(null);
-              setUser(null);
-              setProfile(null);
-            }
-          }
-        );
-
-        authListenerRef.current = authListener;
-      }
-
-      initializingRef.current = false;
-    }
-  }, [loadProfile]);
-
-  /**
    * Sign in with email and password
+   * App.js should use authService.signIn instead - this is for Store-only operations
    */
   const signIn = useCallback(async (email, password) => {
     setAuthLoading(true);
@@ -159,9 +121,10 @@ export const StoreProvider = ({ children, user: initialUser }) => {
       }
 
       if (data.user && data.session) {
-        setSession(data.session);
         setUser(data.user);
-        await loadProfile(data.user.id);
+        setSession(data.session);
+        // Load profile asynchronously without blocking
+        loadProfile(data.user.id).catch(console.error);
         setAuthError(null);
         return { success: true, user: data.user, session: data.session };
       }
@@ -178,8 +141,8 @@ export const StoreProvider = ({ children, user: initialUser }) => {
   }, [loadProfile]);
 
   /**
-   * Sign out current user
-   * Clears user data from both Store and Supabase
+   * Sign out and clear all user data
+   * App.js should call supabase.auth.signOut() first
    */
   const signOut = useCallback(async () => {
     setAuthLoading(true);
@@ -193,7 +156,7 @@ export const StoreProvider = ({ children, user: initialUser }) => {
         return { success: false, error: convertErrorToMessage(error) };
       }
 
-      // Clear user-related state
+      // Clear user auth state
       setUser(null);
       setSession(null);
       setProfile(null);
@@ -223,16 +186,6 @@ export const StoreProvider = ({ children, user: initialUser }) => {
     setAuthError(null);
   }, []);
 
-  /**
-   * Cleanup auth listener when component unmounts
-   */
-  const cleanupAuthListener = useCallback(() => {
-    if (authListenerRef.current) {
-      authListenerRef.current.unsubscribe?.();
-      authListenerRef.current = null;
-    }
-  }, []);
-
   // ============================================================================
   // Diet Tracking Methods (Original)
   // ============================================================================
@@ -253,35 +206,23 @@ export const StoreProvider = ({ children, user: initialUser }) => {
   }, [currentDate, timeline]);
 
   // ============================================================================
-  // Cleanup on unmount
-  // ============================================================================
-
-  useEffect(() => {
-    return () => {
-      cleanupAuthListener();
-    };
-  }, [cleanupAuthListener]);
-
-  // ============================================================================
   // Prepare context value
   // ============================================================================
 
   const value = {
-    // Auth state
+    // Auth state (from App.js)
     user,
     session,
     profile,
     authLoading,
-    authInitialized,
     authError,
 
     // Auth methods
-    initializeAuth,
+    updateAuthState,
     signIn,
     signOut,
     clearAuthError,
     loadProfile,
-    cleanupAuthListener,
 
     // Diet tracking state
     currentDate,
