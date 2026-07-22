@@ -86,9 +86,9 @@ export const TodayPage = () => {
 
     setSavingFood(true);
     try {
-      let target = foodSheet.target;
-      if (target.virtual) {
-        target = await ensureMealTimelineItem({ userId: user.id, dateStr, subtype: target.subtype });
+      let timelineItem = foodSheet.target;
+      if (timelineItem.virtual) {
+        timelineItem = await ensureMealTimelineItem({ userId: user.id, dateStr, subtype: timelineItem.subtype });
       }
 
       let finalSourceFoodId = sourceFoodId || null;
@@ -99,21 +99,21 @@ export const TodayPage = () => {
 
       const savedFood = await createFoodEntry({
         userId: user.id,
-        timelineItemId: target.id,
+        timelineItemId: timelineItem.id,
         sourceFoodId: finalSourceFoodId,
         food,
       });
 
       setTimeline((prev) => {
-        const hasTarget = prev.some((item) => item.id === target.id);
+        const hasTarget = prev.some((item) => item.id === timelineItem.id);
         if (!hasTarget) {
-          const next = prev.filter((item) => !(item.virtual && item.subtype === target.subtype));
-          return [...next, { ...target, foods: [savedFood] }];
+          const next = prev.filter((item) => !(item.virtual && item.subtype === timelineItem.subtype));
+          return [...next, { ...timelineItem, foods: [savedFood] }];
         }
-        return prev.map((it) => (it.id === target.id ? { ...it, foods: [...(it.foods || []), savedFood], virtual: false } : it));
+        return prev.map((it) => (it.id === timelineItem.id ? { ...it, foods: [...(it.foods || []), savedFood], virtual: false } : it));
       });
 
-      toast.success(`已添加 ${savedFood.name} 到 ${target.title}`);
+      toast.success(`已添加 ${savedFood.name} 到 ${timelineItem.title}`);
       return true;
     } catch (e) {
       toast.error(e?.message || '添加食物失败');

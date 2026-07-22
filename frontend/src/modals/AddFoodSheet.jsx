@@ -92,13 +92,14 @@ export const AddFoodSheet = ({ open, onOpenChange, targetTitle, onConfirm, loadi
   const handleConfirm = async () => {
     if (!resolved) {
       toast.error('请先选择或填写有效食物');
-      return;
+      return false;
     }
     const success = await onConfirm({
       ...resolved,
       saveToLibrary: !!saveToLibrary,
     });
     if (success) onOpenChange(false);
+    return success;
   };
 
   return (
