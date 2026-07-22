@@ -9,6 +9,17 @@ import { sumTimelineMacros } from '../mockData';
 import { Plus, Check } from 'lucide-react';
 import { toast } from 'sonner';
 import { useStore } from '../store';
+import { timelineService } from '../services/timelineService';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '../components/ui/alert-dialog';
 
 const timeToMinutes = (t) => {
   if (!t) return 24 * 60;
@@ -45,6 +56,9 @@ export const TodayPage = () => {
   const [timeSheet, setTimeSheet] = useState({ open: false, item: null });
   const [fabOpen, setFabOpen] = useState(false);
   const [topOpen, setTopOpen] = useState(false);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [pendingDeleteItem, setPendingDeleteItem] = useState(null);
+  const [deletingItemId, setDeletingItemId] = useState(null);
 
   const sorted = useMemo(
     () => [...timeline].sort((a, b) => timeToMinutes(a.time) - timeToMinutes(b.time)),
@@ -96,6 +110,38 @@ export const TodayPage = () => {
   const handleTimeConfirm = (newTime) => {
     setTimeline(timeline.map((it) => (it.id === timeSheet.item.id ? { ...it, time: newTime } : it)));
     toast.success('时间已更新');
+  };
+
+  const handleDeleteClick = (item) => {
+    setPendingDeleteItem(item);
+    setDeleteDialogOpen(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!pendingDeleteItem) return;
+
+    const item = pendingDeleteItem;
+    setDeletingItemId(item.id);
+
+    const isLikelySupabaseUuid = typeof item.id === 'string' && /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(item.id);
+
+    if (isLikelySupabaseUuid) {
+      const { error } = await timelineService.deleteTimelineItem(item.id);
+      if (error) {
+        toast.error('删除失败，请稍后重试');
+        setDeletingItemId(null);
+        setDeleteDialogOpen(false);
+        setPendingDeleteItem(null);
+        return;
+      }
+    }
+
+    setTimeline((prev) => prev.filter((it) => it.id !== item.id));
+    toast.success('活动已删除');
+
+    setDeletingItemId(null);
+    setDeleteDialogOpen(false);
+    setPendingDeleteItem(null);
   };
 
   const handleEndDay = () => {
@@ -153,6 +199,8 @@ export const TodayPage = () => {
               item={item}
               onAddFood={handleAddFood}
               onEditTime={(it) => setTimeSheet({ open: true, item: it })}
+              onDelete={handleDeleteClick}
+              deleting={deletingItemId === item.id}
             />
           ))}
         </div>
@@ -216,6 +264,30 @@ export const TodayPage = () => {
         item={timeSheet.item}
         onConfirm={handleTimeConfirm}
       />
+
+      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <AlertDialogContent className="max-w-[92vw] sm:max-w-md rounded-2xl">
+          <AlertDialogHeader>
+            <AlertDialogTitle>确认删除活动</AlertDialogTitle>
+            <AlertDialogDescription>
+              确定删除这个活动吗？删除后无法恢复。
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={Boolean(deletingItemId)}>取消</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={(e) => {
+                e.preventDefault();
+                if (!deletingItemId) handleConfirmDelete();
+              }}
+              disabled={Boolean(deletingItemId)}
+              className="bg-[#D27D67] hover:bg-[#bf6e59]"
+            >
+              {deletingItemId ? '删除中...' : '确认删除'}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };

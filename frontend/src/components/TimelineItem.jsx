@@ -1,5 +1,5 @@
 import React from 'react';
-import { UtensilsCrossed, Dumbbell, Footprints, MapPin, Plus, Clock } from 'lucide-react';
+import { UtensilsCrossed, Dumbbell, Footprints, MapPin, Plus, Clock, Trash2, Loader2 } from 'lucide-react';
 import { sumMealMacros } from '../mockData';
 
 const iconFor = (item) => {
@@ -16,12 +16,19 @@ const accentFor = (item) => {
   return '#E0B876';
 };
 
-export const TimelineItem = ({ item, onAddFood, onEditTime, readOnly = false }) => {
+export const TimelineItem = ({ item, onAddFood, onEditTime, onDelete, deleting = false, readOnly = false }) => {
   const Icon = iconFor(item);
   const accent = accentFor(item);
   const isMeal = item.type === 'meal';
   const totals = isMeal ? sumMealMacros(item.foods || []) : null;
   const empty = isMeal && (!item.foods || item.foods.length === 0);
+
+  const canDelete = !readOnly && (
+    item.subtype === 'snack'
+    || item.type === 'anaerobic'
+    || item.type === 'aerobic'
+    || item.type === 'event'
+  );
 
   return (
     <div className="relative pl-11 pr-1 py-2.5" data-testid={`timeline-item-${item.id}`}>
@@ -33,7 +40,7 @@ export const TimelineItem = ({ item, onAddFood, onEditTime, readOnly = false }) 
       </div>
 
       <div className="rounded-2xl bg-white border border-[#E5E5E0] p-3.5">
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between gap-2">
           <div className="flex items-center gap-2 min-w-0">
             <div
               className="w-8 h-8 rounded-xl flex items-center justify-center shrink-0"
@@ -55,16 +62,30 @@ export const TimelineItem = ({ item, onAddFood, onEditTime, readOnly = false }) 
             </div>
           </div>
 
-          {isMeal && totals && totals.cal > 0 && (
-            <div className="text-right shrink-0">
-              <p className="font-num text-sm font-medium text-[#2C332F]">
-                {totals.cal} <span className="text-[10px] text-[#858C88] font-normal">kcal</span>
-              </p>
-              <p className="font-num text-[10px] text-[#858C88] mt-0.5">
-                P{totals.p} F{totals.f} C{totals.c}
-              </p>
-            </div>
-          )}
+          <div className="flex items-center gap-2 shrink-0">
+            {isMeal && totals && totals.cal > 0 && (
+              <div className="text-right">
+                <p className="font-num text-sm font-medium text-[#2C332F]">
+                  {totals.cal} <span className="text-[10px] text-[#858C88] font-normal">kcal</span>
+                </p>
+                <p className="font-num text-[10px] text-[#858C88] mt-0.5">
+                  P{totals.p} F{totals.f} C{totals.c}
+                </p>
+              </div>
+            )}
+
+            {canDelete && (
+              <button
+                onClick={() => onDelete && onDelete(item)}
+                disabled={deleting}
+                aria-label={`删除${item.title}`}
+                data-testid={`delete-timeline-${item.id}`}
+                className="w-9 h-9 rounded-xl border border-[#E5E5E0] text-[#858C88] hover:text-[#D27D67] hover:border-[#D27D67]/40 disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center"
+              >
+                {deleting ? <Loader2 size={15} className="animate-spin" /> : <Trash2 size={15} />}
+              </button>
+            )}
+          </div>
         </div>
 
         {isMeal && (
