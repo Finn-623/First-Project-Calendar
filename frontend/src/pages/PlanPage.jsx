@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Input } from '../components/ui/input';
 import { Button } from '../components/ui/button';
 import { toast } from 'sonner';
@@ -11,15 +11,93 @@ const FIELDS = [
   { key: 'carbs', label: '碳水化合物', unit: 'g', color: '#E0B876' },
 ];
 
+const EMPTY_PLAN_FORM = {
+  calories: '',
+  protein: '',
+  fat: '',
+  carbs: '',
+};
+
+const toForm = (plan) => {
+  if (!plan) return EMPTY_PLAN_FORM;
+  return {
+    calories: plan.calories != null ? String(plan.calories) : '',
+    protein: plan.protein != null ? String(plan.protein) : '',
+    fat: plan.fat != null ? String(plan.fat) : '',
+    carbs: plan.carbs != null ? String(plan.carbs) : '',
+  };
+};
+
+const parseNumber = (value) => {
+  if (value === '' || value == null) return NaN;
+  const n = Number(value);
+  return Number.isFinite(n) ? n : NaN;
+};
+
 export const PlanPage = () => {
   const { plan: storedPlan, setPlan: setStoredPlan } = useStore();
-  const [plan, setPlan] = useState(storedPlan);
+  const [form, setForm] = useState(() => toForm(storedPlan));
+  const [isDirty, setIsDirty] = useState(false);
 
-  useEffect(() => { setPlan(storedPlan); }, [storedPlan]);
+  useEffect(() => {
+    if (isDirty) return;
+    setForm(toForm(storedPlan));
+  }, [storedPlan, isDirty]);
 
-  // Simple derived preview: kcal from macros
-  const kcalFromMacros = plan.protein * 4 + plan.carbs * 4 + plan.fat * 9;
-  const delta = kcalFromMacros - plan.calories;
+  const formNumbers = useMemo(() => ({
+    calories: parseNumber(form.calories),
+    protein: parseNumber(form.protein),
+    fat: parseNumber(form.fat),
+    carbs: parseNumber(form.carbs),
+  }), [form]);
+
+  const safeForPreview = {
+    calories: Number.isFinite(formNumbers.calories) ? formNumbers.calories : 0,
+    protein: Number.isFinite(formNumbers.protein) ? formNumbers.protein : 0,
+    fat: Number.isFinite(formNumbers.fat) ? formNumbers.fat : 0,
+    carbs: Number.isFinite(formNumbers.carbs) ? formNumbers.carbs : 0,
+  };
+
+  const kcalFromMacros = safeForPreview.protein * 4 + safeForPreview.carbs * 4 + safeForPreview.fat * 9;
+  const delta = safeForPreview.calories > 0 ? kcalFromMacros - safeForPreview.calories : 0;
+
+  const handleChange = (key, value) => {
+    setIsDirty(true);
+    setForm((prev) => ({ ...prev, [key]: value }));
+  };
+
+  const handleSave = () => {
+    const calories = parseNumber(form.calories);
+    const protein = parseNumber(form.protein);
+    const fat = parseNumber(form.fat);
+    const carbs = parseNumber(form.carbs);
+
+    if (!Number.isFinite(calories) || calories <= 0) {
+      toast.error('目标热量必须是大于 0 的数字');
+      return;
+    }
+
+    if (!Number.isFinite(protein) || protein < 0) {
+      toast.error('蛋白质必须是大于或等于 0 的数字');
+      return;
+    }
+
+    if (!Number.isFinite(fat) || fat < 0) {
+      toast.error('脂肪必须是大于或等于 0 的数字');
+      return;
+    }
+
+    if (!Number.isFinite(carbs) || carbs < 0) {
+      toast.error('碳水化合物必须是大于或等于 0 的数字');
+      return;
+    }
+
+    const nextPlan = { calories, protein, fat, carbs };
+    setStoredPlan(nextPlan);
+    setIsDirty(false);
+    setForm(toForm(nextPlan));
+    toast.success('计划已保存');
+  };
 
   return (
     <div className="pb-32">
@@ -30,6 +108,12 @@ export const PlanPage = () => {
       </header>
 
       <div className="px-5 space-y-3">
+        {!storedPlan && (
+          <div className="rounded-2xl bg-white border border-[#E5E5E0] p-4">
+            <p className="text-[13px] text-[#858C88]">尚未设置目标</p>
+          </div>
+        )}
+
         {FIELDS.map((f) => (
           <div
             key={f.key}
@@ -48,10 +132,8 @@ export const PlanPage = () => {
             <Input
               type="number"
               inputMode="numeric"
-              value={plan[f.key]}
-              onChange={(e) =>
-                setPlan((p) => ({ ...p, [f.key]: Number(e.target.value) || 0 }))
-              }
+              value={form[f.key]}
+              onChange={(e) => handleChange(f.key, e.target.value)}
               className="mt-2 h-14 text-2xl font-num bg-transparent border-none px-0 focus-visible:ring-0"
               data-testid={`plan-input-${f.key}`}
             />
@@ -69,7 +151,7 @@ export const PlanPage = () => {
         </div>
 
         <Button
-          onClick={() => { setStoredPlan(plan); toast.success('计划已保存（模拟）'); }}
+          onClick={handleSave}
           data-testid="plan-save-btn"
           className="w-full h-12 rounded-2xl bg-[#6B8067] hover:bg-[#5a6d57] text-white text-[14px] mt-2"
         >
