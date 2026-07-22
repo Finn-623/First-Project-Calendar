@@ -238,10 +238,6 @@ export const TodayPage = () => {
     if (confirmState.type === 'food' && confirmState.food) {
       const food = confirmState.food;
       const item = confirmState.item;
-      if (!food.id) {
-        toast.error('该记录缺少ID，无法删除');
-        return;
-      }
       setDeletingFoodId(food.id);
       try {
         await deleteFoodEntryById({ entryId: food.id, userId: user.id });

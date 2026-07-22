@@ -79,15 +79,27 @@ const tryInsertTimeline = async (payloads) => {
 
 export const fetchTimelineForDate = async ({ userId, dateStr }) => {
   const supabase = getSupabaseClient();
-  const { data: timelineRows, error: timelineError } = await supabase
-    .from('timeline_items')
-    .select('*')
-    .eq('user_id', userId)
-    .order('time', { ascending: true, nullsFirst: false });
+  const timelineQueries = [
+    () => supabase.from('timeline_items').select('*').eq('user_id', userId).eq('item_date', dateStr).order('time', { ascending: true, nullsFirst: false }),
+    () => supabase.from('timeline_items').select('*').eq('user_id', userId).eq('date', dateStr).order('time', { ascending: true, nullsFirst: false }),
+    () => supabase.from('timeline_items').select('*').eq('user_id', userId).eq('target_date', dateStr).order('time', { ascending: true, nullsFirst: false }),
+    () => supabase.from('timeline_items').select('*').eq('user_id', userId).eq('timeline_date', dateStr).order('time', { ascending: true, nullsFirst: false }),
+  ];
 
-  if (timelineError) throw timelineError;
+  let dayRows = [];
+  let lastError = null;
+  for (const query of timelineQueries) {
+    const { data, error } = await query();
+    if (!error) {
+      dayRows = data || [];
+      lastError = null;
+      break;
+    }
+    lastError = error;
+    if (!isMissingColumnError(error)) break;
+  }
+  if (lastError) throw lastError;
 
-  const dayRows = (timelineRows || []).filter((row) => getDateValue(row) === dateStr);
   const timelineItems = dayRows.map(normalizeTimelineItem);
   const timelineIds = timelineItems.map((item) => item.id);
 

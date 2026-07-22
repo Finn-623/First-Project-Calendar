@@ -43,7 +43,7 @@ export const fetchFoodLibrary = async ({ userId }) => {
   }
 
   const favoriteIds = favoriteRows
-    .map((row) => row.food_id || row.source_food_id || row.foods_id)
+    .map((row) => row.food_id || row.source_food_id)
     .filter(Boolean);
 
   const favorites = favoriteIds.map((id) => byId.get(id)).filter(Boolean);
