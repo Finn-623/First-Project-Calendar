@@ -49,7 +49,7 @@ const AddPickerMenu = ({ onSnack, onAnaerobic, onAerobic, onEvent, testIdPrefix 
 );
 
 export const TodayPage = () => {
-  const { timeline, setTimeline, plan, dateLabel, dateStr, user, todayLoading, todayError, reloadToday, reloadPlan } = useStore();
+  const { timeline, setTimeline, plan, dateLabel, dateStr, user, todayLoading, todayError, reloadToday, reloadPlan, endDay } = useStore();
   const [foodSheet, setFoodSheet] = useState({ open: false, target: null });
   const [trainingOpen, setTrainingOpen] = useState(false);
   const [trainingKind, setTrainingKind] = useState('anaerobic');
@@ -275,6 +275,11 @@ export const TodayPage = () => {
     setConfirmState({ open: false, type: null, item: null, food: null });
   };
 
+  const handleEndDay = () => {
+    endDay();
+    toast.success('本日已归档，开启新的一天');
+  };
+
   return (
     <div className="pb-32">
       <header className="px-5 pt-6 pb-4 relative">
@@ -339,9 +344,9 @@ export const TodayPage = () => {
 
         <div className="px-2 mt-4">
           <button
+            onClick={handleEndDay}
             data-testid="end-day-btn"
-            className="w-full h-12 rounded-2xl bg-white border border-[#2C332F] text-[#2C332F] text-[14px] flex items-center justify-center gap-2 opacity-60 cursor-not-allowed"
-            disabled
+            className="w-full h-12 rounded-2xl bg-white border border-[#2C332F] text-[#2C332F] text-[14px] flex items-center justify-center gap-2 hover:bg-[#2C332F] hover:text-white"
           >
             <Check size={16} strokeWidth={1.8} />
             结束本日 · 进入下一日

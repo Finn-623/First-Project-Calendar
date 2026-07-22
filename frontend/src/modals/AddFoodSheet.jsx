@@ -61,7 +61,10 @@ export const AddFoodSheet = ({ open, onOpenChange, targetTitle, onConfirm, loadi
     const f100 = Number(custom.f100);
     const c100 = Number(custom.c100);
     const q = Number(grams || 0);
-    if (!custom.name.trim() || q <= 0 || [cal100, p100, f100, c100].some((x) => !Number.isFinite(x) || x < 0)) return null;
+    const hasName = !!custom.name.trim();
+    const validQuantity = q > 0;
+    const validMacros = [cal100, p100, f100, c100].every((x) => Number.isFinite(x) && x >= 0);
+    if (!hasName || !validQuantity || !validMacros) return null;
 
     const ratio = q / 100;
     return {

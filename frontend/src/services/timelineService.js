@@ -10,6 +10,14 @@ const FIXED_MEALS = [
 const getDateValue = (row) => row.item_date || row.target_date || row.date || row.timeline_date || null;
 const getTypeValue = (row) => row.item_type || row.type || null;
 const getSubtypeValue = (row) => row.item_subtype || row.subtype || null;
+const isMissingColumnError = (error) => error?.code === '42703';
+const titleForSubtype = (subtype) => {
+  if (subtype === 'breakfast') return '早餐';
+  if (subtype === 'lunch') return '午餐';
+  if (subtype === 'dinner') return '晚餐';
+  if (subtype === 'snack') return '加餐';
+  return '事件';
+};
 
 const normalizeTimelineItem = (row) => {
   const type = getTypeValue(row);
@@ -27,7 +35,7 @@ const normalizeTimelineItem = (row) => {
     type: mappedType,
     rawType: type,
     subtype,
-    title: row.title || (subtype === 'breakfast' ? '早餐' : subtype === 'lunch' ? '午餐' : subtype === 'dinner' ? '晚餐' : subtype === 'snack' ? '加餐' : '事件'),
+    title: row.title || titleForSubtype(subtype),
     time: row.time || row.start_time || null,
     detail: row.detail || row.description || row.notes || null,
     caloriesBurned: row.calories_burned ?? row.caloriesBurned ?? null,
@@ -64,7 +72,7 @@ const tryInsertTimeline = async (payloads) => {
     const { data, error } = await supabase.from('timeline_items').insert(payload).select('*').single();
     if (!error) return data;
     lastError = error;
-    if (!String(error.message || '').includes('column')) break;
+    if (!isMissingColumnError(error)) break;
   }
   throw lastError || new Error('创建时间轴失败');
 };
@@ -194,7 +202,7 @@ export const updateTimelineTime = async ({ itemId, userId, time }) => {
       .eq('user_id', userId);
     if (!error) return;
     lastError = error;
-    if (!String(error.message || '').includes('column')) break;
+    if (!isMissingColumnError(error)) break;
   }
 
   throw lastError || new Error('更新时间失败');

@@ -1,6 +1,8 @@
 import { getSupabaseClient } from '../lib/supabaseClient';
 import { round1, roundCalories, scaleFoodByQuantity } from '../lib/nutrition';
 
+const isMissingColumnError = (error) => error?.code === '42703';
+
 const normalizeFoodLibraryItem = (row) => {
   const p100 = Number(row.protein_per_100g ?? row.protein_100g ?? row.protein_per100 ?? row.p100 ?? row.protein ?? 0);
   const f100 = Number(row.fat_per_100g ?? row.fat_100g ?? row.fat_per100 ?? row.f100 ?? row.fat ?? 0);
@@ -79,7 +81,7 @@ export const createFoodInLibrary = async ({ userId, food }) => {
     const { data, error } = await supabase.from('foods').insert(payload).select('*').single();
     if (!error) return normalizeFoodLibraryItem(data);
     lastError = error;
-    if (!String(error.message || '').includes('column')) break;
+    if (!isMissingColumnError(error)) break;
   }
   throw lastError || new Error('保存食物库失败');
 };

@@ -1,6 +1,8 @@
 import { getSupabaseClient } from '../lib/supabaseClient';
 import { round1, roundCalories } from '../lib/nutrition';
 
+const isMissingColumnError = (error) => error?.code === '42703';
+
 const normalizeTarget = (row) => {
   if (!row) return null;
   return {
@@ -53,7 +55,7 @@ export const upsertDailyTarget = async ({ userId, dateStr, plan }) => {
     const { data, error } = await supabase.from('daily_targets').upsert(payload, { onConflict }).select('*').single();
     if (!error) return normalizeTarget(data);
     lastError = error;
-    if (!String(error.message || '').includes('column')) break;
+    if (!isMissingColumnError(error)) break;
   }
 
   throw lastError || new Error('保存目标失败');

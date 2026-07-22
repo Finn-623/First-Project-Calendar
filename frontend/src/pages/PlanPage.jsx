@@ -93,11 +93,13 @@ export const PlanPage = () => {
       carbs: autoKey === 'carbs' ? autoValue : toNumber(draft.carbs),
     };
 
-    if (Object.values(resolved).some((v) => v === null || !Number.isFinite(v))) {
+    const hasInvalid = Object.values(resolved).some((v) => v === null || !Number.isFinite(v));
+    const hasNegative = !hasInvalid && (resolved.calories <= 0 || resolved.protein < 0 || resolved.fat < 0 || resolved.carbs < 0);
+    if (hasInvalid) {
       toast.error('请填写完整且有效的数字');
       return;
     }
-    if (resolved.calories <= 0 || resolved.protein < 0 || resolved.fat < 0 || resolved.carbs < 0) {
+    if (hasNegative) {
       toast.error('当前三个数值无法计算出有效目标，请调整输入');
       return;
     }
