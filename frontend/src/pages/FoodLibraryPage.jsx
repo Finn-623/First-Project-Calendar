@@ -1,20 +1,23 @@
 import React, { useState, useMemo } from 'react';
-import { FOOD_LIBRARY, FOOD_CATEGORIES } from '../mockData';
 import { Search, Plus } from 'lucide-react';
 import { Input } from '../components/ui/input';
 import { toast } from 'sonner';
+import { useStore } from '../store';
+
+const FOOD_CATEGORIES = ['全部', '主食', '蛋白', '脂肪', '蔬菜', '水果'];
 
 export const FoodLibraryPage = () => {
+  const { foods } = useStore();
   const [query, setQuery] = useState('');
   const [cat, setCat] = useState('全部');
 
   const list = useMemo(() => {
-    return FOOD_LIBRARY.filter((f) => {
-      const matchQ = f.name.includes(query.trim());
+    return (foods || []).filter((f) => {
+      const matchQ = (f.name || '').includes(query.trim());
       const matchC = cat === '全部' || f.category === cat;
       return matchQ && matchC;
     });
-  }, [query, cat]);
+  }, [foods, query, cat]);
 
   return (
     <div className="pb-32">
@@ -65,33 +68,33 @@ export const FoodLibraryPage = () => {
       </div>
 
       <div className="mt-4 px-5 space-y-2" data-testid="library-list">
-        {list.map((f) => (
+        {list.map((f, index) => (
           <div
-            key={f.id}
-            data-testid={`library-item-${f.id}`}
+            key={f.id || `${f.name}-${index}`}
+            data-testid={`library-item-${f.id || index}`}
             className="rounded-2xl bg-white border border-[#E5E5E0] p-3.5 flex items-center justify-between"
           >
             <div className="min-w-0">
               <div className="flex items-center gap-2">
                 <p className="text-[13.5px] text-[#2C332F]">{f.name}</p>
                 <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-[#F0EFE9] text-[#858C88]">
-                  {f.category}
+                  {f.category || '未分类'}
                 </span>
               </div>
               <p className="font-num text-[11px] text-[#858C88] mt-1">
-                每100g · P{f.p100} · F{f.f100} · C{f.c100}
+                每100g · P{f.p100 || 0} · F{f.f100 || 0} · C{f.c100 || 0}
               </p>
             </div>
             <div className="text-right shrink-0 ml-3">
               <p className="font-num text-[15px] font-medium text-[#2C332F]">
-                {f.cal100} <span className="text-[10px] text-[#858C88] font-normal">kcal</span>
+                {f.cal100 || 0} <span className="text-[10px] text-[#858C88] font-normal">kcal</span>
               </p>
             </div>
           </div>
         ))}
 
         {list.length === 0 && (
-          <p className="text-center text-sm text-[#858C88] py-8">没有匹配的食物</p>
+          <p className="text-center text-sm text-[#858C88] py-8">食物库还是空的，请添加第一个食物</p>
         )}
       </div>
     </div>

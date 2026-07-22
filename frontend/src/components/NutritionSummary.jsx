@@ -1,47 +1,68 @@
 import React from 'react';
-import { CircularProgress, MacroBar } from './CircularProgress';
-import { Flame } from 'lucide-react';
+import { Flame, Drumstick, Droplets, Wheat } from 'lucide-react';
+
+const Item = ({ icon: Icon, label, value, unit, color }) => (
+  <div className="rounded-2xl bg-white border border-[#E5E5E0] p-3.5">
+    <div className="flex items-center gap-2 text-[#858C88] text-[11px]">
+      <Icon size={14} strokeWidth={1.6} style={{ color }} />
+      <span>{label}</span>
+    </div>
+    <div className="mt-2 flex items-end gap-1">
+      <span className="font-num text-[22px] leading-none text-[#2C332F]" data-testid={`sum-${label}`}>
+        {value}
+      </span>
+      <span className="text-[11px] text-[#858C88] mb-0.5">{unit}</span>
+    </div>
+  </div>
+);
+
+const safePlan = (plan) => {
+  if (!plan) return null;
+  return {
+    calories: Number(plan.calories) || 0,
+    protein: Number(plan.protein) || 0,
+    fat: Number(plan.fat) || 0,
+    carbs: Number(plan.carbs) || 0,
+  };
+};
 
 export const NutritionSummary = ({ totals, plan }) => {
-  const calGap = plan.calories - totals.cal;
+  const normalizedPlan = safePlan(plan);
+  const pct = normalizedPlan && normalizedPlan.calories > 0
+    ? Math.round((totals.cal / normalizedPlan.calories) * 100)
+    : 0;
 
   return (
-    <section
-      className="rounded-3xl bg-white border border-[#E5E5E0] p-5 grain"
-      data-testid="nutrition-summary"
-    >
-      <div className="flex items-center justify-between mb-4">
+    <section className="rounded-3xl bg-[#EFF2ED] border border-[#E1E6DE] p-4" data-testid="nutrition-summary">
+      <div className="flex items-end justify-between">
         <div>
-          <p className="text-[11px] uppercase tracking-[0.18em] text-[#858C88]">今日摄入</p>
-          <p className="text-sm text-[#2C332F] mt-0.5">距离目标还差 <span className="font-num font-medium" data-testid="cal-gap">{calGap > 0 ? calGap : 0}</span> kcal</p>
+          <p className="text-[11px] uppercase tracking-[0.18em] text-[#7E867F]">今日摄入</p>
+          <div className="mt-1 flex items-end gap-1.5">
+            <span className="font-num text-[30px] leading-none text-[#2C332F]" data-testid="sum-cal">
+              {totals.cal}
+            </span>
+            <span className="text-[11px] text-[#7E867F] mb-1">kcal</span>
+          </div>
+          {normalizedPlan ? (
+            <p className="text-[11px] text-[#7E867F] mt-1" data-testid="sum-progress">
+              目标 {normalizedPlan.calories} kcal · 完成 <span className="font-num">{pct}%</span>
+            </p>
+          ) : (
+            <p className="text-[11px] text-[#7E867F] mt-1" data-testid="sum-progress">
+              尚未设置目标
+            </p>
+          )}
         </div>
-        <div className="flex items-center gap-1.5 text-[#6B8067]">
-          <Flame size={16} strokeWidth={1.5} />
-          <span className="text-xs">摄入 · 目标</span>
+
+        <div className="h-16 w-16 rounded-2xl bg-white/70 border border-[#DCE3D8] flex items-center justify-center">
+          <Flame size={24} strokeWidth={1.8} color="#6B8067" />
         </div>
       </div>
 
-      <div className="flex items-center justify-center py-2">
-        <CircularProgress
-          value={totals.cal}
-          max={plan.calories}
-          size={172}
-          stroke={14}
-          color="#6B8067"
-          trackColor="#E5E5E0"
-        >
-          <span className="font-num text-4xl font-medium text-[#2C332F]" data-testid="total-calories">
-            {totals.cal}
-          </span>
-          <span className="text-[11px] text-[#858C88] mt-1 tracking-widest">kcal</span>
-          <span className="font-num text-[11px] text-[#858C88] mt-1">目标 {plan.calories}</span>
-        </CircularProgress>
-      </div>
-
-      <div className="mt-4 grid grid-cols-3 gap-3">
-        <MacroBar label="蛋白质" value={totals.p} max={plan.protein} color="#6B8067" testId="macro-protein" />
-        <MacroBar label="脂肪" value={totals.f} max={plan.fat} color="#D27D67" testId="macro-fat" />
-        <MacroBar label="碳水" value={totals.c} max={plan.carbs} color="#E0B876" testId="macro-carbs" />
+      <div className="mt-3 grid grid-cols-3 gap-2">
+        <Item icon={Drumstick} label="蛋白质" value={totals.p} unit="g" color="#6B8067" />
+        <Item icon={Droplets} label="脂肪" value={totals.f} unit="g" color="#D27D67" />
+        <Item icon={Wheat} label="碳水" value={totals.c} unit="g" color="#E0B876" />
       </div>
     </section>
   );

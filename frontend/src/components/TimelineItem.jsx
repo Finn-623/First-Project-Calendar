@@ -25,7 +25,6 @@ export const TimelineItem = ({ item, onAddFood, onEditTime, readOnly = false }) 
 
   return (
     <div className="relative pl-11 pr-1 py-2.5" data-testid={`timeline-item-${item.id}`}>
-      {/* node */}
       <div
         className="absolute left-[10px] top-4 w-4 h-4 rounded-full flex items-center justify-center"
         style={{ background: '#F7F7F5', border: `1.5px solid ${accent}` }}
@@ -62,55 +61,57 @@ export const TimelineItem = ({ item, onAddFood, onEditTime, readOnly = false }) 
                 {totals.cal} <span className="text-[10px] text-[#858C88] font-normal">kcal</span>
               </p>
               <p className="font-num text-[10px] text-[#858C88] mt-0.5">
-                P{totals.p} · F{totals.f} · C{totals.c}
+                P{totals.p} F{totals.f} C{totals.c}
               </p>
-            </div>
-          )}
-
-          {!isMeal && item.caloriesBurned && (
-            <div className="text-right shrink-0">
-              <p className="font-num text-sm font-medium" style={{ color: accent }}>
-                -{item.caloriesBurned}
-              </p>
-              <p className="text-[10px] text-[#858C88]">kcal</p>
             </div>
           )}
         </div>
 
-        {/* Meal foods */}
-        {isMeal && !empty && (
-          <div className="mt-3 divide-y divide-[#F0EFE9]">
-            {item.foods.map((f, idx) => (
-              <div key={idx} className="flex items-center justify-between py-2" data-testid={`food-row-${item.id}-${idx}`}>
-                <div className="min-w-0">
-                  <p className="text-[13px] text-[#2C332F] truncate">{f.name}</p>
-                  <p className="font-num text-[11px] text-[#858C88] mt-0.5">
-                    {f.grams}g · P{f.p} · F{f.f} · C{f.c}
-                  </p>
-                </div>
-                <p className="font-num text-[13px] text-[#2C332F] shrink-0 ml-3">{f.cal} <span className="text-[10px] text-[#858C88]">kcal</span></p>
+        {isMeal && (
+          <div className="mt-3">
+            {empty ? (
+              <button
+                onClick={() => !readOnly && onAddFood && onAddFood(item)}
+                data-testid={`add-food-${item.id}`}
+                disabled={readOnly}
+                className="w-full h-10 rounded-xl border border-dashed border-[#D9DDD8] text-[#858C88] text-[12px] flex items-center justify-center gap-1.5 hover:border-[#6B8067]/40 hover:text-[#6B8067]"
+              >
+                <Plus size={14} strokeWidth={1.8} /> 添加食物
+              </button>
+            ) : (
+              <div className="space-y-1.5" data-testid={`meal-foods-${item.id}`}>
+                {(item.foods || []).map((f, i) => (
+                  <div key={`${f.foodId}-${i}`} className="flex items-center justify-between text-[12px]">
+                    <div className="min-w-0">
+                      <p className="text-[#2C332F] truncate">{f.name}</p>
+                      <p className="font-num text-[#858C88]">{f.grams}g</p>
+                    </div>
+                    <p className="font-num text-[#2C332F]">
+                      {f.cal} <span className="text-[10px] text-[#858C88]">kcal</span>
+                    </p>
+                  </div>
+                ))}
+                {!readOnly && (
+                  <button
+                    onClick={() => onAddFood && onAddFood(item)}
+                    className="mt-1 text-[12px] text-[#6B8067]"
+                    data-testid={`add-more-food-${item.id}`}
+                  >
+                    + 继续添加
+                  </button>
+                )}
               </div>
-            ))}
+            )}
           </div>
         )}
 
-        {isMeal && empty && (
-          <p className="text-[12px] text-[#858C88] mt-2.5">还没有添加食物</p>
-        )}
-
-        {!isMeal && item.detail && (
-          <p className="text-[12.5px] text-[#2C332F]/80 mt-2">{item.detail}</p>
-        )}
-
-        {isMeal && (
-          <button
-            onClick={() => onAddFood(item)}
-            data-testid={`add-food-btn-${item.id}`}
-            className={`mt-3 w-full flex items-center justify-center gap-1.5 text-[12.5px] text-[#6B8067] py-2 rounded-xl border border-dashed border-[#6B8067]/40 hover:bg-[#6B8067]/5 ${readOnly ? 'hidden' : ''}`}
-          >
-            <Plus size={14} strokeWidth={1.8} />
-            <span>添加食物</span>
-          </button>
+        {!isMeal && (
+          <div className="mt-2.5">
+            <p className="text-[12px] text-[#2C332F]">{item.detail || '—'}</p>
+            {typeof item.caloriesBurned === 'number' && (
+              <p className="font-num text-[11px] text-[#858C88] mt-1">消耗 {item.caloriesBurned} kcal</p>
+            )}
+          </div>
         )}
       </div>
     </div>

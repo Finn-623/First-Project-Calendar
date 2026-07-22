@@ -18,8 +18,8 @@ export const HistoryPage = () => {
 
       <div className="px-5 space-y-3" data-testid="history-list">
         {history.map((d, idx) => {
-          const t = d.totals || sumTimelineMacros(d.timeline);
-          const pct = Math.round((t.cal / plan.calories) * 100);
+          const t = d.totals || sumTimelineMacros(d.timeline || []);
+          const pct = plan?.calories ? Math.round((t.cal / plan.calories) * 100) : 0;
           return (
             <button
               key={d.dateStr}
@@ -51,7 +51,7 @@ export const HistoryPage = () => {
           );
         })}
         {history.length === 0 && (
-          <p className="text-center text-sm text-[#858C88] py-10">还没有归档记录</p>
+          <p className="text-center text-sm text-[#858C88] py-10">暂无历史记录</p>
         )}
       </div>
 

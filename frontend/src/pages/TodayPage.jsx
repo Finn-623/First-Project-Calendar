@@ -105,7 +105,6 @@ export const TodayPage = () => {
 
   return (
     <div className="pb-32">
-      {/* Header */}
       <header className="px-5 pt-6 pb-4 relative">
         <div className="flex items-start justify-between">
           <div>
@@ -137,12 +136,10 @@ export const TodayPage = () => {
         )}
       </header>
 
-      {/* Summary */}
       <div className="px-5">
         <NutritionSummary totals={totals} plan={plan} />
       </div>
 
-      {/* Timeline */}
       <section className="mt-6 px-3">
         <div className="px-2 flex items-center justify-between mb-2">
           <h2 className="text-[13px] font-medium text-[#2C332F] tracking-wide">今日时间轴</h2>
@@ -160,7 +157,6 @@ export const TodayPage = () => {
           ))}
         </div>
 
-        {/* End Day button */}
         <div className="px-2 mt-4">
           <button
             onClick={handleEndDay}
@@ -173,7 +169,6 @@ export const TodayPage = () => {
         </div>
       </section>
 
-      {/* Floating add button */}
       <div className="fixed bottom-24 left-1/2 -translate-x-1/2 w-full max-w-md px-5 pointer-events-none z-30">
         <div className="flex justify-end">
           <button
@@ -198,7 +193,6 @@ export const TodayPage = () => {
         )}
       </div>
 
-      {/* Sheets */}
       <AddFoodSheet
         open={foodSheet.open}
         onOpenChange={(v) => setFoodSheet((s) => ({ ...s, open: v }))}
