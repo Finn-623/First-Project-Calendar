@@ -70,7 +70,7 @@ DECLARE
   policy_name TEXT;
 BEGIN
   FOR policy_name IN
-    SELECT polname
+    SELECT policyname
     FROM pg_policies
     WHERE schemaname = 'public'
       AND tablename = 'foods'
