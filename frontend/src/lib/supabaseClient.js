@@ -3,7 +3,17 @@ import { createClient } from '@supabase/supabase-js';
 const supabaseUrl = process.env.REACT_APP_SUPABASE_URL;
 const supabaseAnonKey = process.env.REACT_APP_SUPABASE_ANON_KEY;
 
-export const isSupabaseConfigured = Boolean(supabaseUrl && supabaseAnonKey);
+const hasValidUrl = Boolean(
+  supabaseUrl
+  && supabaseUrl !== 'your_supabase_url'
+  && /^https?:\/\//.test(supabaseUrl)
+);
+const hasValidAnonKey = Boolean(
+  supabaseAnonKey
+  && supabaseAnonKey !== 'your_anon_key'
+);
+
+export const isSupabaseConfigured = hasValidUrl && hasValidAnonKey;
 export const supabaseConfigError = !isSupabaseConfigured;
 
 if (supabaseConfigError) {
@@ -15,5 +25,11 @@ if (supabaseConfigError) {
 }
 
 export const supabase = isSupabaseConfigured
-  ? createClient(supabaseUrl, supabaseAnonKey)
+  ? createClient(supabaseUrl, supabaseAnonKey, {
+    auth: {
+      persistSession: true,
+      autoRefreshToken: true,
+      detectSessionInUrl: true,
+    },
+  })
   : null;

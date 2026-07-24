@@ -9,6 +9,16 @@ const USERNAME_REGEX = /^[a-z0-9_]{3,30}$/;
 const INVALID_CREDENTIALS_MESSAGE = '用户名或密码错误';
 const SERVICE_UNAVAILABLE_MESSAGE = '登录服务暂时不可用，请稍后重试';
 const USERNAME_FORMAT_MESSAGE = '用户名只能包含3至30位小写字母、数字或下划线。';
+const USERNAME_LOGIN_PATH = '/functions/v1/username-login';
+
+function isTransientErrorMessage(message) {
+  if (!message) return false;
+  return /(network|fetch|timeout|session|token|temporar|lock|jwt|auth)/i.test(String(message));
+}
+
+function wait(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
 
 function normalizeUsername(username) {
   if (typeof username !== 'string') return null;
@@ -47,26 +57,53 @@ export const authService = {
     }
 
     try {
-      const { data, error } = await supabase.functions.invoke('username-login', {
-        body: {
-          username: normalizedUsername,
-          password,
-        },
+      const supabaseUrl = process.env.REACT_APP_SUPABASE_URL;
+      const supabaseAnonKey = process.env.REACT_APP_SUPABASE_ANON_KEY;
+      if (!supabaseUrl || !supabaseAnonKey) {
+        return { user: null, session: null, error: new Error(SERVICE_UNAVAILABLE_MESSAGE) };
+      }
+
+      const endpoint = `${supabaseUrl}${USERNAME_LOGIN_PATH}`;
+      const requestBody = JSON.stringify({
+        username: normalizedUsername,
+        password,
       });
+      const requestOptions = {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          apikey: supabaseAnonKey,
+        },
+        body: requestBody,
+      };
 
-      if (error) {
-        const status = error?.context?.status;
+      let response;
+      try {
+        response = await fetch(endpoint, requestOptions);
+      } catch {
+        await wait(150);
+        response = await fetch(endpoint, requestOptions);
+      }
 
-        if (status === 400) {
+      if (response.status >= 500) {
+        await wait(150);
+        response = await fetch(endpoint, requestOptions);
+      }
+
+      if (!response.ok) {
+        if (response.status === 400) {
           return { user: null, session: null, error: new Error(USERNAME_FORMAT_MESSAGE) };
         }
-        if (status === 401) {
+        if (response.status === 401) {
           return { user: null, session: null, error: new Error(INVALID_CREDENTIALS_MESSAGE) };
         }
-        if (status >= 500 || typeof status === 'number') {
-          return { user: null, session: null, error: new Error(SERVICE_UNAVAILABLE_MESSAGE) };
-        }
+        return { user: null, session: null, error: new Error(SERVICE_UNAVAILABLE_MESSAGE) };
+      }
 
+      let data;
+      try {
+        data = await response.json();
+      } catch {
         return { user: null, session: null, error: new Error(SERVICE_UNAVAILABLE_MESSAGE) };
       }
 
@@ -76,10 +113,20 @@ export const authService = {
         return { user: null, session: null, error: new Error(SERVICE_UNAVAILABLE_MESSAGE) };
       }
 
-      const { data: sessionData, error: setSessionError } = await supabase.auth.setSession({
+      let { data: sessionData, error: setSessionError } = await supabase.auth.setSession({
         access_token: accessToken,
         refresh_token: refreshToken,
       });
+
+      if (setSessionError && isTransientErrorMessage(setSessionError.message)) {
+        await wait(150);
+        const retryResult = await supabase.auth.setSession({
+          access_token: accessToken,
+          refresh_token: refreshToken,
+        });
+        sessionData = retryResult.data;
+        setSessionError = retryResult.error;
+      }
 
       if (setSessionError) {
         return { user: null, session: null, error: setSessionError };

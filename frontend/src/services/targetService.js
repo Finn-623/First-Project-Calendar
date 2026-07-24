@@ -87,4 +87,45 @@ export const targetService = {
       return { data: null, error: err };
     }
   },
+
+  /**
+   * List target history for a user
+   * @param {string} userId
+   * @param {number} limit
+   * @returns {Promise<{data, error}>}
+   */
+  async getTargetHistory(userId, limit = 100) {
+    try {
+      const { data, error } = await supabase
+        .from('daily_targets')
+        .select('*')
+        .eq('user_id', userId)
+        .order('target_date', { ascending: false })
+        .limit(limit);
+
+      return { data: data || [], error };
+    } catch (err) {
+      return { data: [], error: err };
+    }
+  },
+
+  /**
+   * Delete a target for a date
+   * @param {string} userId
+   * @param {string} dateStr
+   * @returns {Promise<{error}>}
+   */
+  async deleteTarget(userId, dateStr) {
+    try {
+      const { error } = await supabase
+        .from('daily_targets')
+        .delete()
+        .eq('user_id', userId)
+        .eq('target_date', dateStr);
+
+      return { error };
+    } catch (err) {
+      return { error: err };
+    }
+  },
 };

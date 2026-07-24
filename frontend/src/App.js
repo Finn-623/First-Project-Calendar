@@ -136,7 +136,7 @@ function App() {
   /**
    * Load user profile from Supabase
    */
-  const fetchIsAdmin = async (userId) => {
+  const fetchLegacyAdminFlag = async (userId) => {
     if (!userId || !supabase) return false;
 
     try {
@@ -178,10 +178,17 @@ function App() {
         return;
       }
 
-      const isAdmin = await fetchIsAdmin(userId);
+      const role = String(data?.role || '').toLowerCase();
+      const accountType = String(data?.account_type || '').toLowerCase();
+      const legacyAdmin = await fetchLegacyAdminFlag(userId);
+      const computedRole = role === 'admin' || accountType === 'admin' || data?.is_admin === true || legacyAdmin
+        ? 'admin'
+        : 'user';
+
       setProfile({
         ...(data || {}),
-        is_admin: isAdmin,
+        role: computedRole,
+        is_admin: computedRole === 'admin',
       });
     } catch (err) {
       console.error('Error loading profile:', err);
@@ -199,18 +206,7 @@ function App() {
     loadUserProfile(loggedInUser.id).catch(console.error);
   };
 
-  const handleLogout = async () => {
-    if (!supabase) {
-      return;
-    }
-
-    await supabase.auth.signOut();
-    if (mountedRef.current) {
-      setUser(null);
-      setSession(null);
-      setProfile(null);
-    }
-  };
+  const isAuthenticated = Boolean(user && session);
 
   // State 1: Loading
   if (isLoading) {
@@ -242,35 +238,35 @@ function App() {
     );
   }
 
-  // State 3: Not logged in
-  if (!user || !session) {
-    return (
-      <div className="App">
-        <LoginPage onLoginSuccess={handleLoginSuccess} />
-        <Toaster position="top-center" richColors closeButton />
-      </div>
-    );
-  }
-
-  // State 4: Logged in
+  // State 3: Route app
   return (
     <div className="App">
-      <StoreProvider user={user} session={session} profile={profile}>
-        <BrowserRouter>
+      <BrowserRouter>
+        {isAuthenticated ? (
+          <StoreProvider user={user} session={session} profile={profile}>
+            <div className="app-shell">
+              <Routes>
+                <Route path="/" element={<TodayPage />} />
+                <Route path="/history" element={<HistoryPage />} />
+                <Route path="/history/:dateStr" element={<HistoryDetailPage />} />
+                <Route path="/library" element={<FoodLibraryPage />} />
+                <Route path="/plan" element={<PlanPage />} />
+                <Route path="/login" element={<Navigate to="/" replace />} />
+                <Route path="*" element={<Navigate to="/" replace />} />
+              </Routes>
+              <BottomNav />
+            </div>
+          </StoreProvider>
+        ) : (
           <div className="app-shell">
             <Routes>
-              <Route path="/" element={<TodayPage onLogout={handleLogout} />} />
-              <Route path="/history" element={<HistoryPage onLogout={handleLogout} />} />
-              <Route path="/history/:dateStr" element={<HistoryDetailPage onLogout={handleLogout} />} />
-              <Route path="/library" element={<FoodLibraryPage onLogout={handleLogout} />} />
-              <Route path="/plan" element={<PlanPage onLogout={handleLogout} />} />
-              <Route path="*" element={<Navigate to="/" replace />} />
+              <Route path="/login" element={<LoginPage onLoginSuccess={handleLoginSuccess} />} />
+              <Route path="*" element={<Navigate to="/login" replace />} />
             </Routes>
-            <BottomNav onLogout={handleLogout} />
-            <Toaster position="top-center" richColors closeButton />
           </div>
-        </BrowserRouter>
-      </StoreProvider>
+        )}
+        <Toaster position="top-center" richColors closeButton />
+      </BrowserRouter>
     </div>
   );
 }

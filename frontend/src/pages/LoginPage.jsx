@@ -1,16 +1,21 @@
 import React, { useState } from 'react';
 import { LogIn } from 'lucide-react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { authService } from '../services/authService';
+import { Alert, AlertDescription } from '../components/ui/alert';
 
 const INVALID_CREDENTIALS_MESSAGE = '用户名或密码错误';
 const SERVICE_UNAVAILABLE_MESSAGE = '登录服务暂时不可用，请稍后重试';
 const USERNAME_FORMAT_MESSAGE = '用户名只能包含3至30位小写字母、数字或下划线。';
 
 export const LoginPage = ({ onLoginSuccess }) => {
+  const navigate = useNavigate();
+  const location = useLocation();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const isSwitchingAccount = location.state?.switchingAccount === true;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -47,6 +52,7 @@ export const LoginPage = ({ onLoginSuccess }) => {
       toast.success('欢迎回来');
       setIsLoading(false);
       onLoginSuccess(user, session);
+      navigate('/', { replace: true });
     } else {
       toast.error(INVALID_CREDENTIALS_MESSAGE);
       setIsLoading(false);
@@ -68,6 +74,12 @@ export const LoginPage = ({ onLoginSuccess }) => {
         </div>
 
         {/* Login Form */}
+        {isSwitchingAccount && (
+          <Alert className="mb-4 rounded-2xl border-[#E5E5E0] bg-white text-[#2C332F]">
+            <AlertDescription>当前账户已退出，请登录其他账户。</AlertDescription>
+          </Alert>
+        )}
+
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Username Input */}
           <div>

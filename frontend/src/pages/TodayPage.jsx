@@ -10,6 +10,7 @@ import { Plus, Check } from 'lucide-react';
 import { toast } from 'sonner';
 import { useStore } from '../store';
 import { timelineService } from '../services/timelineService';
+import { getSydneyDateString } from '../services/historyService';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -48,7 +49,7 @@ const AddPickerMenu = ({ onSnack, onAnaerobic, onAerobic, onEvent, testIdPrefix 
 );
 
 export const TodayPage = () => {
-  const { timeline, setTimeline, plan, dateLabel, endDay } = useStore();
+  const { timeline, setTimeline, plan, dateLabel, endDay, dayInitialized, currentDate } = useStore();
   const [foodSheet, setFoodSheet] = useState({ open: false, target: null });
   const [trainingOpen, setTrainingOpen] = useState(false);
   const [trainingKind, setTrainingKind] = useState('anaerobic');
@@ -64,6 +65,10 @@ export const TodayPage = () => {
     () => [...timeline].sort((a, b) => timeToMinutes(a.time) - timeToMinutes(b.time)),
     [timeline]
   );
+
+  const currentDateStr = useMemo(() => getSydneyDateString(currentDate), [currentDate]);
+  const todaySydneyStr = useMemo(() => getSydneyDateString(), []);
+  const isAutoAdvancedDay = currentDateStr !== todaySydneyStr;
 
   const totals = useMemo(() => sumTimelineMacros(timeline), [timeline]);
 
@@ -145,12 +150,31 @@ export const TodayPage = () => {
   };
 
   const handleEndDay = () => {
-    endDay();
-    toast.success('本日已归档，开启新的一天');
+    Promise.resolve(endDay()).then((result) => {
+      if (result?.success || result?.skipped) {
+        if (result?.success) {
+          toast.success('本日已归档，开启新的一天');
+        }
+        return;
+      }
+
+      toast.error(result?.error?.message || '归档失败，请稍后重试');
+    });
   };
 
   return (
     <div className="pb-32">
+      {!dayInitialized ? (
+        <div className="px-5 pt-10 text-[13px] text-[#858C88]">正在同步今日日期...</div>
+      ) : null}
+      {dayInitialized && isAutoAdvancedDay ? (
+        <div className="mx-5 mt-5 rounded-2xl border border-[#D7E8E0] bg-[#EEF7F2] px-4 py-3 text-[#2C332F]">
+          <div className="text-[11px] uppercase tracking-[0.22em] text-[#6D8376]">NEXT DAY</div>
+          <div className="mt-1 text-[13px] leading-5">
+            前一天已结束，当前正在记录下一日。
+          </div>
+        </div>
+      ) : null}
       <header className="px-5 pt-6 pb-4 relative">
         <div className="flex items-start justify-between">
           <div>

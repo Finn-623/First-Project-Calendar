@@ -16,18 +16,63 @@ const scale = (food, grams) => {
 };
 
 export const AddFoodSheet = ({ open, onOpenChange, targetTitle, onConfirm }) => {
-  const { foods } = useStore();
+  const { foods, user, refreshFoods } = useStore();
   const [query, setQuery] = useState('');
   const [selected, setSelected] = useState(null);
   const [grams, setGrams] = useState(100);
+  const [loadingFoods, setLoadingFoods] = useState(false);
+
+  const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
   useEffect(() => {
     if (!open) {
       setQuery('');
       setSelected(null);
       setGrams(100);
+      setLoadingFoods(false);
     }
   }, [open]);
+
+  useEffect(() => {
+    let disposed = false;
+
+    const loadFoodsOnOpen = async () => {
+      if (!open || !user?.id) return;
+
+      setLoadingFoods(true);
+
+      for (let attempt = 0; attempt < 5; attempt += 1) {
+        if (disposed) return;
+
+        const { data } = await refreshFoods(user.id);
+        const currentFoods = data || [];
+        const hasPrivateFoods = currentFoods.some(
+          (item) => item?.user_id === user.id && item?.visibility !== 'public'
+        );
+
+        // If private foods are present, we are done. If only public foods are
+        // present, retry briefly to avoid a false-empty private list right after
+        // account switch/login.
+        if (hasPrivateFoods || attempt === 4) {
+          break;
+        }
+
+        await wait(120 * (attempt + 1));
+      }
+
+      if (!disposed) {
+        setLoadingFoods(false);
+      }
+    };
+
+    loadFoodsOnOpen().catch(() => {
+      if (!disposed) setLoadingFoods(false);
+    });
+
+    return () => {
+      disposed = true;
+    };
+  }, [open, refreshFoods, user?.id]);
 
   const list = useMemo(
     () => (foods || []).filter((f) => (f.name || '').includes(query.trim())),
@@ -78,7 +123,11 @@ export const AddFoodSheet = ({ open, onOpenChange, targetTitle, onConfirm }) => 
               </div>
               <div className="flex-1 overflow-y-auto px-5 pb-4">
                 <div className="space-y-2">
-                  {list.map((f, index) => (
+                  {loadingFoods && (
+                    <p className="text-center text-sm text-[#858C88] py-8">正在加载食物库...</p>
+                  )}
+
+                  {!loadingFoods && list.map((f, index) => (
                     <button
                       key={f.id || `${f.name}-${index}`}
                       onClick={() => setSelected(f)}
@@ -96,7 +145,8 @@ export const AddFoodSheet = ({ open, onOpenChange, targetTitle, onConfirm }) => 
                       </p>
                     </button>
                   ))}
-                  {list.length === 0 && (
+
+                  {!loadingFoods && list.length === 0 && (
                     <p className="text-center text-sm text-[#858C88] py-8">食物库还是空的，请添加第一个食物</p>
                   )}
                 </div>
