@@ -254,7 +254,13 @@ function convertErrorToMessage(error) {
   if (!error) return '未知错误';
 
   if (error.message) {
-    if (error.message.includes('Invalid login credentials')) return '用户名或密码错误。';
+    if (error.message.includes('用户名只能包含3至30位小写字母、数字或下划线') || error.message.includes('用户名格式不正确')) {
+      return '用户名只能包含3至30位小写字母、数字或下划线。';
+    }
+    if (error.message.includes('用户名或密码错误') || error.message.includes('Invalid login credentials')) return '用户名或密码错误';
+    if (error.message.includes('登录服务暂时不可用') || error.message.includes('Supabase 尚未配置')) {
+      return '登录服务暂时不可用，请稍后重试';
+    }
     if (error.message.includes('Email not confirmed')) return '邮箱未验证';
     if (error.message.includes('User already registered')) return '该邮箱已注册';
     if (error.message.includes('Network')) return '网络连接错误';

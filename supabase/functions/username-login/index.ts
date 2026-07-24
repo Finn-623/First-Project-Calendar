@@ -8,7 +8,8 @@ const CORS_HEADERS = {
 };
 
 const INVALID_CREDENTIALS_MESSAGE = "用户名或密码错误";
-const INVALID_USERNAME_MESSAGE = "用户名只能包含3至30位小写字母、数字或下划线。";
+const INVALID_USERNAME_MESSAGE = "用户名格式不正确";
+const SERVICE_UNAVAILABLE_MESSAGE = "登录服务暂时不可用，请稍后重试";
 const MAX_CONTENT_LENGTH_BYTES = 8 * 1024;
 const MAX_USERNAME_INPUT_LENGTH = 128;
 const MAX_PASSWORD_INPUT_LENGTH = 1024;
@@ -58,6 +59,8 @@ serve(async (req) => {
     });
   }
 
+  try {
+
   const contentLengthHeader = req.headers.get("content-length");
   if (contentLengthHeader) {
     const contentLength = Number(contentLengthHeader);
@@ -70,13 +73,14 @@ serve(async (req) => {
   }
 
   const supabaseUrl = Deno.env.get("SUPABASE_URL");
-  const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") || Deno.env.get("SUPABASE_SECRET_KEY");
-  const loginPublishableKey = Deno.env.get("SUPABASE_LOGIN_PUBLISHABLE_KEY") || Deno.env.get("SUPABASE_ANON_KEY");
+  const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+  const anonKey = Deno.env.get("SUPABASE_ANON_KEY");
 
-  if (!supabaseUrl || !serviceRoleKey || !loginPublishableKey) {
+  if (!supabaseUrl || !serviceRoleKey || !anonKey) {
+    console.error("FUNCTION_CONFIG_MISSING");
     return jsonResponse(500, {
       success: false,
-      error: "服务暂不可用",
+      error: SERVICE_UNAVAILABLE_MESSAGE,
     });
   }
 
@@ -138,7 +142,16 @@ serve(async (req) => {
     .eq("username", normalizedUsername)
     .maybeSingle();
 
-  if (profileError || !profile?.id) {
+  if (profileError) {
+    console.error("PROFILE_QUERY_FAILED");
+    return jsonResponse(500, {
+      success: false,
+      error: SERVICE_UNAVAILABLE_MESSAGE,
+    });
+  }
+
+  if (!profile?.id) {
+    console.info("USERNAME_PROFILE_NOT_FOUND");
     return jsonResponse(401, {
       success: false,
       error: INVALID_CREDENTIALS_MESSAGE,
@@ -146,16 +159,41 @@ serve(async (req) => {
   }
 
   const { data: authUserData, error: authUserError } = await adminClient.auth.admin.getUserById(profile.id);
-  const existingEmail = authUserData?.user?.email;
 
-  if (authUserError || !existingEmail) {
+  if (authUserError) {
+    if (authUserError.status === 404 || authUserError.code === "user_not_found") {
+      console.info("AUTH_USER_NOT_FOUND");
+      return jsonResponse(401, {
+        success: false,
+        error: INVALID_CREDENTIALS_MESSAGE,
+      });
+    }
+
+    console.error("AUTH_ADMIN_API_FAILED");
+    return jsonResponse(500, {
+      success: false,
+      error: SERVICE_UNAVAILABLE_MESSAGE,
+    });
+  }
+
+  if (!authUserData?.user) {
+    console.info("AUTH_USER_NOT_FOUND");
     return jsonResponse(401, {
       success: false,
       error: INVALID_CREDENTIALS_MESSAGE,
     });
   }
 
-  const loginClient = createClient(supabaseUrl, loginPublishableKey, {
+  const existingEmail = authUserData.user.email;
+  if (!existingEmail) {
+    console.info("AUTH_USER_EMAIL_MISSING");
+    return jsonResponse(401, {
+      success: false,
+      error: INVALID_CREDENTIALS_MESSAGE,
+    });
+  }
+
+  const loginClient = createClient(supabaseUrl, anonKey, {
     auth: {
       persistSession: false,
       autoRefreshToken: false,
@@ -173,15 +211,25 @@ serve(async (req) => {
   const expiresAt = signInData?.session?.expires_at;
 
   if (signInError || !accessToken || !refreshToken || !expiresAt) {
+    console.info("PASSWORD_SIGNIN_FAILED");
     return jsonResponse(401, {
       success: false,
       error: INVALID_CREDENTIALS_MESSAGE,
     });
   }
 
+  console.info("LOGIN_SUCCESS");
+
   return jsonResponse(200, {
     access_token: accessToken,
     refresh_token: refreshToken,
     expires_at: expiresAt,
   });
+  } catch {
+    console.error("FUNCTION_INTERNAL_ERROR");
+    return jsonResponse(500, {
+      success: false,
+      error: SERVICE_UNAVAILABLE_MESSAGE,
+    });
+  }
 });

@@ -6,6 +6,9 @@
 import { supabase } from '../lib/supabaseClient';
 
 const USERNAME_REGEX = /^[a-z0-9_]{3,30}$/;
+const INVALID_CREDENTIALS_MESSAGE = '用户名或密码错误';
+const SERVICE_UNAVAILABLE_MESSAGE = '登录服务暂时不可用，请稍后重试';
+const USERNAME_FORMAT_MESSAGE = '用户名只能包含3至30位小写字母、数字或下划线。';
 
 function normalizeUsername(username) {
   if (typeof username !== 'string') return null;
@@ -31,7 +34,7 @@ export const authService = {
       return {
         user: null,
         session: null,
-        error: new Error('用户名只能包含3至30位小写字母、数字或下划线。'),
+        error: new Error(USERNAME_FORMAT_MESSAGE),
       };
     }
 
@@ -39,7 +42,7 @@ export const authService = {
       return {
         user: null,
         session: null,
-        error: new Error('用户名或密码错误。'),
+        error: new Error(INVALID_CREDENTIALS_MESSAGE),
       };
     }
 
@@ -52,13 +55,25 @@ export const authService = {
       });
 
       if (error) {
-        return { user: null, session: null, error: new Error('用户名或密码错误。') };
+        const status = error?.context?.status;
+
+        if (status === 400) {
+          return { user: null, session: null, error: new Error(USERNAME_FORMAT_MESSAGE) };
+        }
+        if (status === 401) {
+          return { user: null, session: null, error: new Error(INVALID_CREDENTIALS_MESSAGE) };
+        }
+        if (status >= 500 || typeof status === 'number') {
+          return { user: null, session: null, error: new Error(SERVICE_UNAVAILABLE_MESSAGE) };
+        }
+
+        return { user: null, session: null, error: new Error(SERVICE_UNAVAILABLE_MESSAGE) };
       }
 
       const accessToken = data?.access_token;
       const refreshToken = data?.refresh_token;
       if (!accessToken || !refreshToken) {
-        return { user: null, session: null, error: new Error('用户名或密码错误。') };
+        return { user: null, session: null, error: new Error(SERVICE_UNAVAILABLE_MESSAGE) };
       }
 
       const { data: sessionData, error: setSessionError } = await supabase.auth.setSession({
@@ -74,12 +89,12 @@ export const authService = {
       const user = sessionData?.user || session?.user;
 
       if (!user || !session) {
-        return { user: null, session: null, error: new Error('登录失败，请稍后重试') };
+        return { user: null, session: null, error: new Error(SERVICE_UNAVAILABLE_MESSAGE) };
       }
 
       return { user, session, error: null };
     } catch (err) {
-      return { user: null, session: null, error: err };
+      return { user: null, session: null, error: new Error(SERVICE_UNAVAILABLE_MESSAGE) };
     }
   },
 

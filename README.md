@@ -72,7 +72,7 @@ Set these secrets for functions runtime:
 
 1. `SUPABASE_URL`
 2. `SUPABASE_SERVICE_ROLE_KEY`
-3. `SUPABASE_LOGIN_PUBLISHABLE_KEY` (recommended; fallback can use anon/publishable key)
+3. `SUPABASE_ANON_KEY`
 
 Do not commit real secret values into Git.
 

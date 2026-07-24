@@ -3,6 +3,10 @@ import { LogIn } from 'lucide-react';
 import { toast } from 'sonner';
 import { authService } from '../services/authService';
 
+const INVALID_CREDENTIALS_MESSAGE = '用户名或密码错误';
+const SERVICE_UNAVAILABLE_MESSAGE = '登录服务暂时不可用，请稍后重试';
+const USERNAME_FORMAT_MESSAGE = '用户名只能包含3至30位小写字母、数字或下划线。';
+
 export const LoginPage = ({ onLoginSuccess }) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -11,15 +15,16 @@ export const LoginPage = ({ onLoginSuccess }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const normalizedUsername = username.trim().toLowerCase();
+    const trimmedUsername = username.trim();
+    const normalizedUsername = trimmedUsername.toLowerCase();
 
-    if (!normalizedUsername || !password) {
+    if (!trimmedUsername || !password) {
       toast.error('请输入用户名和密码');
       return;
     }
 
-    if (!/^[a-z0-9_]{3,30}$/.test(normalizedUsername)) {
-      toast.error('用户名只能包含3至30位小写字母、数字或下划线。');
+    if (!/^[a-zA-Z0-9_]{3,30}$/.test(trimmedUsername)) {
+      toast.error(USERNAME_FORMAT_MESSAGE);
       return;
     }
 
@@ -27,10 +32,12 @@ export const LoginPage = ({ onLoginSuccess }) => {
     const { user, session, error } = await authService.signInWithUsername(normalizedUsername, password);
 
     if (error) {
-      if (error.message === '用户名只能包含3至30位小写字母、数字或下划线。') {
-        toast.error(error.message);
+      if (error.message === USERNAME_FORMAT_MESSAGE || error.message === '用户名格式不正确') {
+        toast.error(USERNAME_FORMAT_MESSAGE);
+      } else if (error.message === INVALID_CREDENTIALS_MESSAGE) {
+        toast.error(INVALID_CREDENTIALS_MESSAGE);
       } else {
-        toast.error('用户名或密码错误。');
+        toast.error(SERVICE_UNAVAILABLE_MESSAGE);
       }
       setIsLoading(false);
       return;
@@ -41,7 +48,7 @@ export const LoginPage = ({ onLoginSuccess }) => {
       setIsLoading(false);
       onLoginSuccess(user, session);
     } else {
-      toast.error('用户名或密码错误。');
+      toast.error(INVALID_CREDENTIALS_MESSAGE);
       setIsLoading(false);
     }
   };
@@ -68,7 +75,7 @@ export const LoginPage = ({ onLoginSuccess }) => {
             <input
               type="text"
               value={username}
-              onChange={(e) => setUsername(e.target.value.toLowerCase())}
+              onChange={(e) => setUsername(e.target.value)}
               placeholder="请输入用户名"
               disabled={isLoading}
               className="w-full h-12 px-4 rounded-2xl border border-[#E5E5E0] bg-white text-[14px] text-[#2C332F] placeholder-[#858C88] focus:outline-none focus:border-[#6B8067] focus:ring-2 focus:ring-[#6B8067]/20 disabled:opacity-50 disabled:cursor-not-allowed"
