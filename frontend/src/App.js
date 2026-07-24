@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, useCallback } from 'react';
 import '@/App.css';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { Toaster } from 'sonner';
@@ -52,6 +52,68 @@ function App() {
   const [isLoading, setIsLoading] = useState(true);
   const [authInitError, setAuthInitError] = useState(null);
   const mountedRef = useRef(true);
+
+  const fetchLegacyAdminFlag = useCallback(async (userId) => {
+    if (!userId || !supabase) return false;
+
+    try {
+      const { data, error } = await supabase
+        .from('app_admins')
+        .select('user_id')
+        .eq('user_id', userId)
+        .maybeSingle();
+
+      if (!error && data) return true;
+
+      const fallback = await supabase
+        .from('app_admins')
+        .select('id')
+        .eq('id', userId)
+        .maybeSingle();
+
+      return Boolean(!fallback.error && fallback.data);
+    } catch {
+      return false;
+    }
+  }, []);
+
+  const loadUserProfile = useCallback(async (userId) => {
+    if (!userId || !mountedRef.current || !supabase) return;
+
+    try {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', userId)
+        .maybeSingle();
+
+      if (!mountedRef.current) return;
+
+      if (error) {
+        console.error('Failed to load profile:', error);
+        setProfile(null);
+        return;
+      }
+
+      const role = String(data?.role || '').toLowerCase();
+      const accountType = String(data?.account_type || '').toLowerCase();
+      const legacyAdmin = await fetchLegacyAdminFlag(userId);
+      const computedRole = role === 'admin' || accountType === 'admin' || data?.is_admin === true || legacyAdmin
+        ? 'admin'
+        : 'user';
+
+      setProfile({
+        ...(data || {}),
+        role: computedRole,
+        is_admin: computedRole === 'admin',
+      });
+    } catch (err) {
+      console.error('Error loading profile:', err);
+      if (mountedRef.current) {
+        setProfile(null);
+      }
+    }
+  }, [fetchLegacyAdminFlag]);
 
   useEffect(() => {
     // Reset mounted flag on mount
@@ -122,7 +184,7 @@ function App() {
       mountedRef.current = false;
       unregisterAuthListener();
     };
-  }, []);
+  }, [loadUserProfile]);
 
   // Keep hook order stable: render config error after hooks are declared.
   if (!isSupabaseConfigured) {
@@ -132,71 +194,6 @@ function App() {
       </div>
     );
   }
-
-  /**
-   * Load user profile from Supabase
-   */
-  const fetchLegacyAdminFlag = async (userId) => {
-    if (!userId || !supabase) return false;
-
-    try {
-      const { data, error } = await supabase
-        .from('app_admins')
-        .select('user_id')
-        .eq('user_id', userId)
-        .maybeSingle();
-
-      if (!error && data) return true;
-
-      const fallback = await supabase
-        .from('app_admins')
-        .select('id')
-        .eq('id', userId)
-        .maybeSingle();
-
-      return Boolean(!fallback.error && fallback.data);
-    } catch {
-      return false;
-    }
-  };
-
-  const loadUserProfile = async (userId) => {
-    if (!userId || !mountedRef.current || !supabase) return;
-
-    try {
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', userId)
-        .maybeSingle();
-
-      if (!mountedRef.current) return;
-
-      if (error) {
-        console.error('Failed to load profile:', error);
-        setProfile(null);
-        return;
-      }
-
-      const role = String(data?.role || '').toLowerCase();
-      const accountType = String(data?.account_type || '').toLowerCase();
-      const legacyAdmin = await fetchLegacyAdminFlag(userId);
-      const computedRole = role === 'admin' || accountType === 'admin' || data?.is_admin === true || legacyAdmin
-        ? 'admin'
-        : 'user';
-
-      setProfile({
-        ...(data || {}),
-        role: computedRole,
-        is_admin: computedRole === 'admin',
-      });
-    } catch (err) {
-      console.error('Error loading profile:', err);
-      if (mountedRef.current) {
-        setProfile(null);
-      }
-    }
-  };
 
   const handleLoginSuccess = (loggedInUser, loggedInSession) => {
     if (!mountedRef.current) return;
