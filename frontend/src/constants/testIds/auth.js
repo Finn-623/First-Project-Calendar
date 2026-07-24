@@ -12,7 +12,7 @@
 // and the lint rule `emergent(kebab-case-testid)`.
 
 export const LOGIN = {
-	emailInput: 'login-email-input',
+	usernameInput: 'login-username-input',
 	passwordInput: 'login-password-input',
 	submitButton: 'login-submit-button',
 	forgotPasswordLink: 'login-forgot-password-link',

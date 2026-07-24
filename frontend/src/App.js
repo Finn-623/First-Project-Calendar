@@ -46,15 +46,6 @@ function ConfigErrorPage() {
 }
 
 function App() {
-  // Must check config first to avoid any Supabase calls before render
-  if (!isSupabaseConfigured) {
-    return (
-      <div className="App">
-        <ConfigErrorPage />
-      </div>
-    );
-  }
-
   const [user, setUser] = useState(null);
   const [session, setSession] = useState(null);
   const [profile, setProfile] = useState(null);
@@ -133,9 +124,42 @@ function App() {
     };
   }, []);
 
+  // Keep hook order stable: render config error after hooks are declared.
+  if (!isSupabaseConfigured) {
+    return (
+      <div className="App">
+        <ConfigErrorPage />
+      </div>
+    );
+  }
+
   /**
    * Load user profile from Supabase
    */
+  const fetchIsAdmin = async (userId) => {
+    if (!userId || !supabase) return false;
+
+    try {
+      const { data, error } = await supabase
+        .from('app_admins')
+        .select('user_id')
+        .eq('user_id', userId)
+        .maybeSingle();
+
+      if (!error && data) return true;
+
+      const fallback = await supabase
+        .from('app_admins')
+        .select('id')
+        .eq('id', userId)
+        .maybeSingle();
+
+      return Boolean(!fallback.error && fallback.data);
+    } catch {
+      return false;
+    }
+  };
+
   const loadUserProfile = async (userId) => {
     if (!userId || !mountedRef.current || !supabase) return;
 
@@ -154,7 +178,11 @@ function App() {
         return;
       }
 
-      setProfile(data);
+      const isAdmin = await fetchIsAdmin(userId);
+      setProfile({
+        ...(data || {}),
+        is_admin: isAdmin,
+      });
     } catch (err) {
       console.error('Error loading profile:', err);
       if (mountedRef.current) {

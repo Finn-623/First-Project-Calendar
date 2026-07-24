@@ -1,7 +1,9 @@
-import React, { createContext, useContext, useState, useCallback } from 'react';
+import React, { createContext, useContext, useState, useCallback, useEffect } from 'react';
 import { supabase } from './lib/supabaseClient';
 import { getCurrentUserId } from './lib/authState';
 import { sumTimelineMacros } from './mockData';
+import { foodService } from './services/foodService';
+import { authService } from './services/authService';
 
 const StoreContext = createContext(null);
 
@@ -31,6 +33,37 @@ export const StoreProvider = ({ children, user: initialUser, session: initialSes
   const [history, setHistory] = useState([]);
   const [foods, setFoods] = useState([]);
   const [favorites, setFavorites] = useState([]);
+
+  const refreshFoods = useCallback(async (userId) => {
+    if (!userId) {
+      setFoods([]);
+      return;
+    }
+
+    const { data, error } = await foodService.getAllFoods(userId);
+    if (error) {
+      console.error('Failed to load foods:', error);
+      return;
+    }
+
+    setFoods(data || []);
+  }, []);
+
+  useEffect(() => {
+    refreshFoods(initialUser?.id || user?.id).catch(console.error);
+  }, [initialUser?.id, user?.id, refreshFoods]);
+
+  useEffect(() => {
+    setUser(initialUser || null);
+  }, [initialUser]);
+
+  useEffect(() => {
+    setSession(initialSession || null);
+  }, [initialSession]);
+
+  useEffect(() => {
+    setProfile(initialProfile || null);
+  }, [initialProfile]);
 
   const updateAuthState = useCallback((newUser, newSession, newProfile) => {
     setUser(newUser);
@@ -81,7 +114,7 @@ export const StoreProvider = ({ children, user: initialUser, session: initialSes
     }
   }, []);
 
-  const signIn = useCallback(async (email, password) => {
+  const signIn = useCallback(async (username, password) => {
     setAuthLoading(true);
     setAuthError(null);
 
@@ -93,7 +126,7 @@ export const StoreProvider = ({ children, user: initialUser, session: initialSes
     }
 
     try {
-      const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+      const { user: signedInUser, session: signedInSession, error } = await authService.signInWithUsername(username, password);
 
       if (error) {
         const errorMsg = convertErrorToMessage(error);
@@ -101,12 +134,12 @@ export const StoreProvider = ({ children, user: initialUser, session: initialSes
         return { success: false, error: errorMsg };
       }
 
-      if (data.user && data.session) {
-        setUser(data.user);
-        setSession(data.session);
-        loadProfile(data.user.id).catch(console.error);
+      if (signedInUser && signedInSession) {
+        setUser(signedInUser);
+        setSession(signedInSession);
+        loadProfile(signedInUser.id).catch(console.error);
         setAuthError(null);
-        return { success: true, user: data.user, session: data.session };
+        return { success: true, user: signedInUser, session: signedInSession };
       }
 
       setAuthError('登录失败，请稍后重试');
@@ -202,6 +235,7 @@ export const StoreProvider = ({ children, user: initialUser, session: initialSes
     setHistory,
     foods,
     setFoods,
+    refreshFoods,
     favorites,
     setFavorites,
     endDay,
@@ -220,7 +254,7 @@ function convertErrorToMessage(error) {
   if (!error) return '未知错误';
 
   if (error.message) {
-    if (error.message.includes('Invalid login credentials')) return '邮箱或密码错误';
+    if (error.message.includes('Invalid login credentials')) return '用户名或密码错误。';
     if (error.message.includes('Email not confirmed')) return '邮箱未验证';
     if (error.message.includes('User already registered')) return '该邮箱已注册';
     if (error.message.includes('Network')) return '网络连接错误';

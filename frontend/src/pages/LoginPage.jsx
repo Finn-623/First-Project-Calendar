@@ -4,33 +4,44 @@ import { toast } from 'sonner';
 import { authService } from '../services/authService';
 
 export const LoginPage = ({ onLoginSuccess }) => {
-  const [email, setEmail] = useState('');
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!email || !password) {
-      toast.error('请输入邮箱和密码');
+    const normalizedUsername = username.trim().toLowerCase();
+
+    if (!normalizedUsername || !password) {
+      toast.error('请输入用户名和密码');
+      return;
+    }
+
+    if (!/^[a-z0-9_]{3,30}$/.test(normalizedUsername)) {
+      toast.error('用户名只能包含3至30位小写字母、数字或下划线。');
       return;
     }
 
     setIsLoading(true);
-    const { user, session, error } = await authService.signIn(email, password);
+    const { user, session, error } = await authService.signInWithUsername(normalizedUsername, password);
 
     if (error) {
-      toast.error(`登录失败: ${error.message}`);
+      if (error.message === '用户名只能包含3至30位小写字母、数字或下划线。') {
+        toast.error(error.message);
+      } else {
+        toast.error('用户名或密码错误。');
+      }
       setIsLoading(false);
       return;
     }
 
     if (user && session) {
-      toast.success(`欢迎回来, ${email}!`);
+      toast.success('欢迎回来');
       setIsLoading(false);
       onLoginSuccess(user, session);
     } else {
-      toast.error('登录失败，请稍后重试');
+      toast.error('用户名或密码错误。');
       setIsLoading(false);
     }
   };
@@ -51,17 +62,17 @@ export const LoginPage = ({ onLoginSuccess }) => {
 
         {/* Login Form */}
         <form onSubmit={handleSubmit} className="space-y-4">
-          {/* Email Input */}
+          {/* Username Input */}
           <div>
-            <label className="block text-[12px] text-[#858C88] mb-2 font-medium">邮箱</label>
+            <label className="block text-[12px] text-[#858C88] mb-2 font-medium">用户名</label>
             <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="your@email.com"
+              type="text"
+              value={username}
+              onChange={(e) => setUsername(e.target.value.toLowerCase())}
+              placeholder="请输入用户名"
               disabled={isLoading}
               className="w-full h-12 px-4 rounded-2xl border border-[#E5E5E0] bg-white text-[14px] text-[#2C332F] placeholder-[#858C88] focus:outline-none focus:border-[#6B8067] focus:ring-2 focus:ring-[#6B8067]/20 disabled:opacity-50 disabled:cursor-not-allowed"
-              data-testid="login-email-input"
+              data-testid="login-username-input"
             />
           </div>
 
