@@ -73,4 +73,67 @@ export const intakePlanService = {
       return { success: false, error: normalizeError(error) };
     }
   },
+
+  async updateHistory({ historyId, calories, protein, fat, carbs }) {
+    if (!supabase) {
+      return { success: false, error: 'Supabase 尚未配置' };
+    }
+
+    if (!historyId) {
+      return { success: false, error: '缺少历史记录ID' };
+    }
+
+    try {
+      const { data, error } = await supabase
+        .from('intake_plan_history')
+        .update({
+          calories_kcal: calories,
+          protein_g: protein,
+          fat_g: fat,
+          carbs_g: carbs,
+        })
+        .eq('id', historyId)
+        .select();
+
+      if (error) {
+        return { success: false, error: normalizeError(error) };
+      }
+
+      if (!data || data.length === 0) {
+        return { success: false, error: '记录不存在或已被删除' };
+      }
+
+      return {
+        success: true,
+        data: normalizeHistoryRow(data[0]),
+      };
+    } catch (error) {
+      return { success: false, error: normalizeError(error) };
+    }
+  },
+
+  async deleteHistory({ historyId }) {
+    if (!supabase) {
+      return { success: false, error: 'Supabase 尚未配置' };
+    }
+
+    if (!historyId) {
+      return { success: false, error: '缺少历史记录ID' };
+    }
+
+    try {
+      const { error } = await supabase
+        .from('intake_plan_history')
+        .delete()
+        .eq('id', historyId);
+
+      if (error) {
+        return { success: false, error: normalizeError(error) };
+      }
+
+      return { success: true };
+    } catch (error) {
+      return { success: false, error: normalizeError(error) };
+    }
+  },
 };
