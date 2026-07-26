@@ -9,6 +9,7 @@ export const AddTrainingSheet = ({ open, onOpenChange, onConfirm, initialKind = 
   const [name, setName] = useState('');
   const [duration, setDuration] = useState(45);
   const [time, setTime] = useState('18:00');
+  const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
     if (!open) {
@@ -16,6 +17,7 @@ export const AddTrainingSheet = ({ open, onOpenChange, onConfirm, initialKind = 
       setName('');
       setDuration(45);
       setTime('18:00');
+      setSubmitting(false);
     } else {
       setTab(initialKind);
     }
@@ -25,16 +27,25 @@ export const AddTrainingSheet = ({ open, onOpenChange, onConfirm, initialKind = 
     ? Math.round(duration * 6.2)
     : Math.round(duration * 9.5);
 
-  const handleConfirm = () => {
-    onConfirm({
+  const handleConfirm = async () => {
+    if (submitting) return;
+
+    const payload = {
       id: `t${Date.now()}`,
       type: tab,
       title: tab === 'anaerobic' ? '无氧训练' : '有氧训练',
       time,
       detail: `${name || (tab === 'anaerobic' ? '力量训练' : '有氧运动')} · ${duration} 分钟`,
       caloriesBurned: estimate,
-    });
-    onOpenChange(false);
+    };
+
+    try {
+      setSubmitting(true);
+      await Promise.resolve(onConfirm(payload));
+      onOpenChange(false);
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -45,7 +56,7 @@ export const AddTrainingSheet = ({ open, onOpenChange, onConfirm, initialKind = 
         data-testid="add-training-sheet"
       >
         <SheetHeader className="px-5 pt-5 pb-3 text-left">
-          <SheetTitle className="text-base font-medium text-[#2C332F]">添加训练</SheetTitle>
+          <SheetTitle className="text-base font-medium text-[#2C332F]">训练</SheetTitle>
         </SheetHeader>
 
         <div className="px-5 pb-6">
@@ -57,8 +68,10 @@ export const AddTrainingSheet = ({ open, onOpenChange, onConfirm, initialKind = 
             ].map(({ id, label, icon: Icon }) => (
               <button
                 key={id}
+                type="button"
                 onClick={() => setTab(id)}
                 data-testid={`training-tab-${id}`}
+                disabled={submitting}
                 className={`flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-[13px] ${
                   tab === id ? 'bg-[#6B8067] text-white' : 'text-[#858C88]'
                 }`}
@@ -76,8 +89,9 @@ export const AddTrainingSheet = ({ open, onOpenChange, onConfirm, initialKind = 
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder={tab === 'anaerobic' ? '例如：胸 + 三头' : '例如：跑步'}
-                className="mt-1.5 h-11 bg-white border-[#E5E5E0] rounded-xl"
+                className="mt-1.5 h-11 bg-white border-[#E5E5E0] rounded-xl text-base"
                 data-testid="training-name-input"
+                disabled={submitting}
               />
             </div>
 
@@ -88,8 +102,9 @@ export const AddTrainingSheet = ({ open, onOpenChange, onConfirm, initialKind = 
                   type="time"
                   value={time}
                   onChange={(e) => setTime(e.target.value)}
-                  className="mt-1.5 h-11 bg-white border-[#E5E5E0] rounded-xl font-num"
+                  className="mt-1.5 h-11 bg-white border-[#E5E5E0] rounded-xl font-num text-base"
                   data-testid="training-time-input"
+                  disabled={submitting}
                 />
               </div>
               <div>
@@ -99,8 +114,9 @@ export const AddTrainingSheet = ({ open, onOpenChange, onConfirm, initialKind = 
                   inputMode="numeric"
                   value={duration}
                   onChange={(e) => setDuration(Number(e.target.value) || 0)}
-                  className="mt-1.5 h-11 bg-white border-[#E5E5E0] rounded-xl font-num"
+                  className="mt-1.5 h-11 bg-white border-[#E5E5E0] rounded-xl font-num text-base"
                   data-testid="training-duration-input"
+                  disabled={submitting}
                 />
               </div>
             </div>
@@ -118,9 +134,10 @@ export const AddTrainingSheet = ({ open, onOpenChange, onConfirm, initialKind = 
             <Button
               onClick={handleConfirm}
               data-testid="training-confirm-btn"
+              disabled={submitting}
               className="w-full h-12 rounded-2xl bg-[#6B8067] hover:bg-[#5a6d57] text-white text-[14px] mt-2"
             >
-              确认添加
+              {submitting ? '添加中...' : '确认添加'}
             </Button>
           </div>
         </div>

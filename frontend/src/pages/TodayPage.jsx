@@ -40,12 +40,11 @@ const getWeekDateStrings = (dateStr) => {
   return Array.from({ length: 7 }, (_, idx) => addDaysToDateString(mondayDateStr, idx));
 };
 
-const AddPickerMenu = ({ onSnack, onAnaerobic, onAerobic, onEvent, testIdPrefix = 'picker' }) => (
+const AddPickerMenu = ({ onSnack, onTraining, onEvent, testIdPrefix = 'picker' }) => (
   <div className="w-56 rounded-2xl bg-white border border-[#E5E5E0] shadow-lg overflow-hidden" data-testid="add-picker">
     {[
       { label: '加餐', onClick: onSnack, testId: `${testIdPrefix}-snack` },
-      { label: '无氧训练', onClick: onAnaerobic, testId: `${testIdPrefix}-anaerobic` },
-      { label: '有氧训练', onClick: onAerobic, testId: `${testIdPrefix}-aerobic` },
+      { label: '训练', onClick: onTraining, testId: `${testIdPrefix}-training` },
       { label: '其他事件', onClick: onEvent, testId: `${testIdPrefix}-event` },
     ].map((it) => (
       <button
@@ -65,7 +64,6 @@ export const TodayPage = () => {
   const [foodSheet, setFoodSheet] = useState({ open: false, target: null });
   const [snackSheetOpen, setSnackSheetOpen] = useState(false);
   const [trainingOpen, setTrainingOpen] = useState(false);
-  const [trainingKind, setTrainingKind] = useState('anaerobic');
   const [eventOpen, setEventOpen] = useState(false);
   const [timeSheet, setTimeSheet] = useState({ open: false, item: null });
   const [fabOpen, setFabOpen] = useState(false);
@@ -138,8 +136,7 @@ export const TodayPage = () => {
     toast.success('已添加加餐');
   };
 
-  const openTraining = (kind) => {
-    setTrainingKind(kind);
+  const openTraining = () => {
     setTrainingOpen(true);
     setFabOpen(false);
   };
@@ -355,9 +352,8 @@ export const TodayPage = () => {
         {fabOpen && (
           <div className="pointer-events-auto absolute bottom-16 right-5">
             <AddPickerMenu
-                onSnack={handleOpenSnackSheet}
-              onAnaerobic={() => openTraining('anaerobic')}
-              onAerobic={() => openTraining('aerobic')}
+              onSnack={handleOpenSnackSheet}
+              onTraining={openTraining}
               onEvent={openEvent}
               testIdPrefix="picker"
             />
@@ -380,7 +376,6 @@ export const TodayPage = () => {
         open={trainingOpen}
         onOpenChange={setTrainingOpen}
         onConfirm={handleAddTraining}
-        initialKind={trainingKind}
       />
       <AddEventSheet
         open={eventOpen}
