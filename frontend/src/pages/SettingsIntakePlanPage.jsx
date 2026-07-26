@@ -2,6 +2,8 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import { useStore } from '../store';
 import { SettingsSubpageHeader } from '../components/settings/SettingsSubpageHeader';
+import { intakePlanService } from '../services/intakePlanService';
+import { formatLocalDateTime } from '../lib/versionInfoUtils';
 import { formatNumberByField } from '../lib/intakePlanCalculations';
 import { validateIntakePlanDraft, hasIntakePlanChanged } from '../lib/intakePlanValidation';
 
@@ -74,6 +76,46 @@ export const SettingsIntakePlanPage = () => {
   const [currentPlan, setCurrentPlan] = useState(plan || null);
   const [draft, setDraft] = useState(() => toDraft(plan));
   const [errorMessage, setErrorMessage] = useState('');
+  const [loadingHistory, setLoadingHistory] = useState(false);
+  const [historyError, setHistoryError] = useState('');
+  const [historyItems, setHistoryItems] = useState([]);
+  const [historyCursor, setHistoryCursor] = useState(null);
+  const [historyHasMore, setHistoryHasMore] = useState(false);
+
+  const loadHistory = useCallback(async ({ append = false, cursor = null } = {}) => {
+    if (!user?.id) return;
+
+    if (append) {
+      if (loadingHistory || !historyHasMore || !cursor) return;
+    } else {
+      setLoadingHistory(true);
+      setHistoryError('');
+    }
+
+    const result = await intakePlanService.listHistory({
+      userId: user.id,
+      limit: 5,
+      cursor: append ? cursor : null,
+    });
+
+    if (!result.success) {
+      if (!append) {
+        setHistoryError(result.error || '历史记录加载失败，请重试');
+        setLoadingHistory(false);
+      }
+      return;
+    }
+
+    if (append) {
+      setHistoryItems((prev) => [...prev, ...(result.data || [])]);
+    } else {
+      setHistoryItems(result.data || []);
+      setLoadingHistory(false);
+    }
+
+    setHistoryHasMore(Boolean(result.hasMore));
+    setHistoryCursor(result.nextCursor || null);
+  }, [historyHasMore, loadingHistory, user?.id]);
 
   useEffect(() => {
     if (!user?.id) return;
@@ -83,6 +125,7 @@ export const SettingsIntakePlanPage = () => {
         setDraft(toDraft(result.data));
       }
     });
+    loadHistory({ append: false });
   }, [loadPlan, user?.id]);
 
   const autoValue = calculateAutoField(draft);
@@ -129,6 +172,7 @@ export const SettingsIntakePlanPage = () => {
     setDraft(toDraft(nextPlan));
     setSaving(false);
     toast.success('摄入计划已更新');
+    await loadHistory({ append: false });
   };
 
   const handleCancel = () => {
@@ -149,7 +193,7 @@ export const SettingsIntakePlanPage = () => {
           <p className="text-[12px] text-[#858C88] mt-1">填写任意 3 项，第 4 项自动计算</p>
         </div>
 
-        <div className="px-4 py-3 space-y-2">
+        <div className="px-4 py-3 grid grid-cols-2 gap-3">
           {FIELD_DEFINITIONS.map((field) => {
             const emptyFields = Object.entries(draft).filter(([, v]) => !v || Number(v) === 0).map(([k]) => k);
             const isAutoField = autoValue !== null && emptyFields.length === 1 && emptyFields[0] === field.key;
@@ -160,7 +204,7 @@ export const SettingsIntakePlanPage = () => {
                 <label htmlFor={`intake-${field.key}`} className="text-[12px] text-[#6A6F6C]">
                   {field.label}
                 </label>
-                <div className="mt-1 flex items-center gap-2">
+                <div className="mt-1 flex items-center gap-1">
                   <input
                     id={`intake-${field.key}`}
                     inputMode="decimal"
@@ -170,10 +214,10 @@ export const SettingsIntakePlanPage = () => {
                       setDraft((prev) => ({ ...prev, [field.key]: event.target.value }));
                       setErrorMessage('');
                     }}
-                    className={`w-full min-h-11 rounded-lg border px-3 text-[14px] ${isAutoField ? 'border-[#E5E5E0] bg-[#F7F7F5] text-[#6A6F6C]' : 'border-[#D5DCD2] bg-white text-[#2C332F]'}`}
+                    className={`flex-1 min-h-10 rounded-lg border px-2 text-[13px] ${isAutoField ? 'border-[#E5E5E0] bg-[#F7F7F5] text-[#6A6F6C]' : 'border-[#D5DCD2] bg-white text-[#2C332F]'}`}
                     placeholder="0"
                   />
-                  <span className="text-[12px] text-[#858C88] w-10 text-right">{field.unit}</span>
+                  <span className="text-[11px] text-[#858C88] w-8 text-right">{field.unit}</span>
                 </div>
               </div>
             );
@@ -204,6 +248,53 @@ export const SettingsIntakePlanPage = () => {
             {saving ? '保存中...' : '保存'}
           </button>
         </div>
+      </section>
+
+      <section className="rounded-2xl border border-[#E5E5E0] bg-white overflow-hidden mt-4">
+        <div className="px-4 py-3 border-b border-[#F0EFE9]">
+          <p className="text-[14px] font-medium text-[#2C332F]">摄入计划历史记录</p>
+        </div>
+
+        {loadingHistory ? (
+          <p className="px-4 py-3 text-[13px] text-[#6A6F6C]">正在加载历史记录...</p>
+        ) : null}
+
+        {!loadingHistory && historyError ? (
+          <div className="px-4 py-3">
+            <p className="text-[13px] text-[#A8483E]">{historyError}</p>
+          </div>
+        ) : null}
+
+        {!loadingHistory && !historyError && historyItems.length === 0 ? (
+          <p className="px-4 py-3 text-[13px] text-[#6A6F6C]">暂无摄入计划记录</p>
+        ) : null}
+
+        {!loadingHistory && !historyError && historyItems.map((item, index) => (
+          <article key={item.id} className="px-4 py-3 border-b border-[#F0EFE9] last:border-b-0">
+            <div className="flex items-center justify-between gap-2">
+              <p className="text-[12px] text-[#6A6F6C]">{formatLocalDateTime(item.createdAt)}</p>
+              {index === 0 ? (
+                <span className="text-[10px] px-2 py-0.5 rounded-full bg-[#EEF2EC] text-[#6B8067]">当前计划</span>
+              ) : null}
+            </div>
+            <p className="text-[14px] text-[#2C332F] mt-1">{formatNumberByField(item.calories, 'calories')} kcal</p>
+            <p className="text-[12px] text-[#6A6F6C] mt-1">
+              蛋白质 {formatNumberByField(item.protein, 'protein')}g · 脂肪 {formatNumberByField(item.fat, 'fat')}g · 碳水 {formatNumberByField(item.carbs, 'carbs')}g
+            </p>
+          </article>
+        ))}
+
+        {!loadingHistory && !historyError && historyItems.length > 0 && historyHasMore ? (
+          <div className="px-4 py-3 border-t border-[#F0EFE9]">
+            <button
+              type="button"
+              onClick={() => loadHistory({ append: true, cursor: historyCursor })}
+              className="w-full min-h-11 rounded-lg border border-[#D5DCD2] text-[13px] text-[#2C332F]"
+            >
+              查看更多
+            </button>
+          </div>
+        ) : null}
       </section>
     </div>
   );
