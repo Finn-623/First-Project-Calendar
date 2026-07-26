@@ -63,6 +63,7 @@ export const StoreProvider = ({ children, user: initialUser, session: initialSes
   const [authError, setAuthError] = useState(null);
 
   const [currentDate, setCurrentDate] = useState(() => createDateFromString(getSydneyDateString()));
+  const [recordingDateStr, setRecordingDateStr] = useState(() => getSydneyDateString());
   const [timeline, setTimeline] = useState(freshTimeline());
   const [plan, setPlan] = useState(null);
   const [planDate, setPlanDate] = useState(null);
@@ -109,6 +110,7 @@ export const StoreProvider = ({ children, user: initialUser, session: initialSes
     setFoods((prev) => (prev || []).filter((item) => item?.visibility === 'public'));
     setPublicFoods([]);
     setCurrentDate(createDateFromString(getSydneyDateString()));
+    setRecordingDateStr(getSydneyDateString());
     setDayInitialized(false);
     setAuthError(null);
   }, []);
@@ -132,6 +134,7 @@ export const StoreProvider = ({ children, user: initialUser, session: initialSes
 
       const initialDate = completion?.is_completed ? addDaysToDateString(today, 1) : today;
       selectedTodayDateRef.current = today;
+      setRecordingDateStr(initialDate);
       setCurrentDate(createDateFromString(initialDate));
       setDayInitialized(true);
 
@@ -796,6 +799,7 @@ export const StoreProvider = ({ children, user: initialUser, session: initialSes
         await loadHistory(userId);
 
         const nextDateStr = addDaysToDateString(toDateStr(currentDate), 1);
+        setRecordingDateStr(nextDateStr);
         setCurrentDate(createDateFromString(nextDateStr));
         setTimeline(freshTimeline());
 
@@ -832,6 +836,7 @@ export const StoreProvider = ({ children, user: initialUser, session: initialSes
     deletePlan,
 
     currentDate,
+    recordingDateStr,
     setSelectedDate,
     dateLabel: formatDateLabel(currentDate),
     timeline,

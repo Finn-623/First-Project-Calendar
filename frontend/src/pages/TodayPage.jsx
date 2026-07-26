@@ -60,7 +60,7 @@ const AddPickerMenu = ({ onSnack, onAnaerobic, onAerobic, onEvent, testIdPrefix 
 );
 
 export const TodayPage = () => {
-  const { timeline, setTimeline, plan, dateLabel, endDay, dayInitialized, currentDate, setSelectedDate } = useStore();
+  const { timeline, setTimeline, plan, dateLabel, endDay, dayInitialized, currentDate, recordingDateStr, setSelectedDate } = useStore();
   const [foodSheet, setFoodSheet] = useState({ open: false, target: null });
   const [trainingOpen, setTrainingOpen] = useState(false);
   const [trainingKind, setTrainingKind] = useState('anaerobic');
@@ -78,7 +78,10 @@ export const TodayPage = () => {
 
   const currentDateStr = useMemo(() => getSydneyDateString(currentDate), [currentDate]);
   const todaySydneyStr = useMemo(() => getSydneyDateString(), []);
-  const isAutoAdvancedDay = currentDateStr !== todaySydneyStr;
+  const isViewingToday = currentDateStr === todaySydneyStr;
+  const isViewingRecordingDate = currentDateStr === recordingDateStr;
+  const isAutoAdvancedDay = isViewingRecordingDate && recordingDateStr !== todaySydneyStr;
+  const dateSectionTitle = isViewingToday ? 'TODAY' : '历史记录';
   const weekDateStrings = useMemo(() => getWeekDateStrings(currentDateStr), [currentDateStr]);
   const [currentYear, currentMonth] = currentDateStr.split('-').map(Number);
   const showBackToToday = currentDateStr !== todaySydneyStr;
@@ -202,7 +205,7 @@ export const TodayPage = () => {
       ) : null}
       <header className="px-5 pt-6 pb-4">
         <div>
-          <p className="text-[11px] uppercase tracking-[0.22em] text-[#858C88]">TODAY</p>
+          <p className="text-[11px] uppercase tracking-[0.22em] text-[#858C88]">{dateSectionTitle}</p>
           <h1 className="text-[22px] font-medium text-[#2C332F] mt-1" data-testid="today-date">
             {dateLabel}
           </h1>
