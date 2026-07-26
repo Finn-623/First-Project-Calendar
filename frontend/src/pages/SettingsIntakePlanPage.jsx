@@ -193,8 +193,9 @@ export const SettingsIntakePlanPage = () => {
           <p className="text-[12px] text-[#858C88] mt-1">填写任意 3 项，第 4 项自动计算</p>
         </div>
 
-        <div className="px-4 py-3 grid grid-cols-2 gap-3">
-          {FIELD_DEFINITIONS.map((field) => {
+        <div className="px-4 py-3 space-y-3">
+          {/* 热量字段单独一行 */}
+          {FIELD_DEFINITIONS.slice(0, 1).map((field) => {
             const emptyFields = Object.entries(draft).filter(([, v]) => !v || Number(v) === 0).map(([k]) => k);
             const isAutoField = autoValue !== null && emptyFields.length === 1 && emptyFields[0] === field.key;
             const displayValue = isAutoField ? formatNumberByField(autoValue, field.key) : draft[field.key];
@@ -222,6 +223,38 @@ export const SettingsIntakePlanPage = () => {
               </div>
             );
           })}
+
+          {/* 其他3个字段排成一行（响应式） */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            {FIELD_DEFINITIONS.slice(1).map((field) => {
+              const emptyFields = Object.entries(draft).filter(([, v]) => !v || Number(v) === 0).map(([k]) => k);
+              const isAutoField = autoValue !== null && emptyFields.length === 1 && emptyFields[0] === field.key;
+              const displayValue = isAutoField ? formatNumberByField(autoValue, field.key) : draft[field.key];
+
+              return (
+                <div key={field.key}>
+                  <label htmlFor={`intake-${field.key}`} className="text-[12px] text-[#6A6F6C]">
+                    {field.label}
+                  </label>
+                  <div className="mt-1 flex items-center gap-1">
+                    <input
+                      id={`intake-${field.key}`}
+                      inputMode="decimal"
+                      value={displayValue}
+                      readOnly={isAutoField || saving}
+                      onChange={(event) => {
+                        setDraft((prev) => ({ ...prev, [field.key]: event.target.value }));
+                        setErrorMessage('');
+                      }}
+                      className={`flex-1 min-h-10 rounded-lg border px-2 text-[13px] ${isAutoField ? 'border-[#E5E5E0] bg-[#F7F7F5] text-[#6A6F6C]' : 'border-[#D5DCD2] bg-white text-[#2C332F]'}`}
+                      placeholder="0"
+                    />
+                    <span className="text-[11px] text-[#858C88] w-8 text-right">{field.unit}</span>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
         </div>
 
         {errorMessage ? (
