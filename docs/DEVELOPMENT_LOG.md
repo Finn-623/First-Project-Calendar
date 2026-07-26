@@ -258,6 +258,44 @@
 - 测试结果：
 	- 构建通过。
 	- 变更文件无语法/类型错误。
+
+	## DEV-20260726-009
+
+	- 日期：2026-07-26
+	- 状态：已完成
+	- 任务目标：修复并完善“生活”项目中事件与训练的实时记录与编辑流程，统一时间显示为时刻 `HH:mm` 与时长 `HH:mm:ss`，补齐运行中计时、字段校验、编辑约束与数据持久化一致性。
+	- 实际完成内容：
+		- 扩展本地时间工具，新增时刻格式化、秒级时长格式化、秒级差值计算与兼容旧分钟数据的时长解析。
+		- 时间轴卡片统一显示：左侧开始时刻显示 `HH:mm`；结束时刻显示 `HH:mm`；时长显示 `HH:mm:ss`；进行中记录展示实时已进行计时。
+		- 训练与事件弹窗规则修正：实时模式明确锁定开始时间；无氧训练移除项目名称输入；有氧训练项目名称改为必填并增加错误提示“请输入有氧项目名称”。
+		- 新增事件/训练编辑弹窗，支持进行中与已结束记录的差异化编辑约束：
+			- 进行中：允许修改描述类字段，锁定开始/结束时间。
+			- 已结束：允许修改日期与时间，自动重算时长。
+		- 首页与历史详情页接入编辑入口与编辑弹窗。
+		- 修复旧列回退路径的数据覆盖问题：结束记录或更新记录时，保留原有 `details` 结构，避免覆盖训练部位等元数据。
+	- 主要修改文件或模块：`frontend/src/lib/localDateTime.js`、`frontend/src/components/TimelineItem.jsx`、`frontend/src/constants/trainingBodyParts.js`、`frontend/src/modals/AddTrainingSheet.jsx`、`frontend/src/modals/AddEventSheet.jsx`、`frontend/src/modals/EditActivitySheet.jsx`、`frontend/src/pages/TodayPage.jsx`、`frontend/src/pages/HistoryDetailPage.jsx`、`frontend/src/services/timelineService.js`、`docs/DEVELOPMENT_LOG.md`
+	- 遇到的问题：
+		- 旧数据库列缺失时，回退分支中 `details` 存在被整体覆盖风险。
+		- 现有时间展示逻辑混用了“时刻”和“时长”，导致 `18:51:00` 直接显示在时刻位置、时长仍为分钟制。
+	- 解决方式：
+		- 在服务层回退分支增加 `details` 合并逻辑，并统一维护 `live_session` 子结构。
+		- 在时间工具层拆分“时刻格式化”和“时长格式化”职责，并在页面与组件层统一接入。
+	- 执行的测试：
+		- `get_errors` 检查文件：`frontend/src/pages/TodayPage.jsx`、`frontend/src/pages/HistoryDetailPage.jsx`、`frontend/src/components/TimelineItem.jsx`、`frontend/src/modals/EditActivitySheet.jsx`、`frontend/src/modals/AddTrainingSheet.jsx`、`frontend/src/services/timelineService.js`、`frontend/src/lib/localDateTime.js`
+		- `cd frontend && npm run build`
+		- `git status --short`
+	- 测试结果：
+		- `get_errors`：以上变更文件均无错误。
+		- 前端构建：通过（Compiled successfully）。
+		- Git 工作区：确认保留既有未提交改动，未执行提交、推送、切分支或重置。
+	- 未完成事项：
+		- 尚未执行真实设备交互回归（当前为构建与静态检查通过）。
+		- 尚未提交本次代码，待用户确认后再执行提交流程。
+	- 风险或注意事项：
+		- 历史详情页中的编辑为归档草稿编辑，需点击“保存”后才写回归档。
+		- 若线上环境未应用实时会话迁移，系统将走旧列回退分支，建议尽快完成迁移以统一行为。
+	- Git 分支：supabase-v1
+	- Git Commit ID：7d5c326f9ad7e5363154439cf7e5803dbcb948b0
 	- 未登录态访问受保护路由会跳转登录页，且登录页不显示底部导航，符合预期。
 	- 导航顺序与设置页入口文案在源码中已按要求配置。
 	- 受限于当前未提供可用登录会话，未完成“登录后点击流”全链路手工验证，存在发布前验证缺口。
@@ -805,8 +843,35 @@
 - 数据库迁移结果：本次无数据库迁移。
 - 前端构建结果：通过。
 - 风险或注意事项：工作区存在未纳入本次提交的无关改动（`frontend/src/components/BottomNav.jsx`、`frontend/src/index.css`），已保持隔离。
+
+## DEV-20260726-029
+
+- 日期：2026-07-26
+- 状态：已完成
+- 修改类型：缺陷修复 / 实时记录结束写库
+- 修改模块：首页结束记录、历史详情结束记录、时间工具、时间轴服务层
+- 任务目标：修复结束事件/训练时出现 `invalid input syntax for type integer: "0.5"` 报错。
+- 问题现象：开始后短时间内结束记录，会把秒级差值换算为小数分钟（如 `0.5`）写入 `duration_minutes`，触发数据库整数列类型错误。
+- 根因：前端结束和编辑流程使用 `Number((seconds / 60).toFixed(2))` 生成小数分钟并写库。
+- 实际完成内容：
+	- 在时间工具新增 `secondsToDurationMinutes`，统一把秒差转换为整数分钟（向下取整）。
+	- 首页结束记录与编辑重算时长改为使用该工具，避免写入小数分钟。
+	- 历史详情结束记录与编辑草稿重算时长改为使用该工具。
+	- 服务层新增 `normalizeDurationMinutes` 兜底：`create/update/complete` 路径统一将 `duration_minutes` 归一化为非负整数或 `null`，防止其他入口再次写入小数。
+- 主要修改文件或模块：`frontend/src/lib/localDateTime.js`、`frontend/src/pages/TodayPage.jsx`、`frontend/src/pages/HistoryDetailPage.jsx`、`frontend/src/services/timelineService.js`、`docs/DEVELOPMENT_LOG.md`
+- 执行的测试：
+	- `get_errors` 检查：`frontend/src/lib/localDateTime.js`、`frontend/src/pages/TodayPage.jsx`、`frontend/src/pages/HistoryDetailPage.jsx`、`frontend/src/services/timelineService.js`
+	- 前端构建：`cd frontend && npm run build`
+- 测试结果：
+	- 以上文件无语法/诊断错误。
+	- 前端构建通过（Compiled successfully）。
+- 未完成事项：
+	- 待登录态手工复测“开始后 1 分钟内结束”场景，确认线上接口返回与 UI 提示符合预期。
+- 风险或注意事项：
+	- 本次修复不影响 UI 秒级时长展示；页面时长展示仍优先依据 `started_at/ended_at` 计算。
+	- 小于 1 分钟的记录会入库为 `0` 分钟（展示仍可显示秒级时长）。
 - 当前分支：supabase-v1
-- Git Commit ID：80db763d18d2884d15be505029c3ca1d97b6a923
+- Git Commit ID：7d5c326f9ad7e5363154439cf7e5803dbcb948b0
 
 ## DEV-20260726-022
 
