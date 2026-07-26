@@ -59,3 +59,73 @@
 - 完成修改后执行相关测试。
 - 更新 `docs/DEVELOPMENT_LOG.md`。
 - 仅在确实涉及数据库、正式版本或重要决策时更新其他文档。
+
+## DEV-20260726-002
+
+- 日期：2026-07-26
+- 状态：已完成
+- Git Commit ID：未提交
+
+### 任务目标
+
+- 录入产品Roadmap和Phase 1版本路线。
+- 对当前仓库进行实际进度审查并给出版本判断。
+- 建立项目状态和版本历史文档。
+
+### 实际完成内容
+
+- 更新 `docs/ROADMAP.md`，写入产品发展路径、Phase 0-4框架、Phase 1详细版本（V0.1-V1.0）。
+- 新建 `docs/PROJECT_STATUS.md`，基于仓库证据输出当前阶段、版本判断、完成度与下一里程碑。
+- 新建 `docs/VERSION_HISTORY.md`，追加“文档与Roadmap初始化”记录。
+- 未修改业务代码、数据库结构、部署配置和依赖。
+
+### 主要修改文件或模块
+
+- `docs/ROADMAP.md`
+- `docs/PROJECT_STATUS.md`
+- `docs/VERSION_HISTORY.md`
+- `docs/DEVELOPMENT_LOG.md`
+
+### 遇到的问题
+
+- 仅通过本地仓库无法确认线上Supabase与Vercel运行态是否满足全部验收标准。
+- `rg` 命令在当前终端不可用，需要以 `grep` 替代文本检索。
+
+### 解决方式
+
+- 对所有“需要线上环境才能确认”的条目标记为“无法验证”或“被阻塞”，避免越权结论。
+- 使用 `grep` 与文件读取组合完成证据抽取，覆盖页面、状态管理、服务层、迁移、函数与测试资产。
+
+### 执行的测试
+
+- 执行 `git status --short`：确认基线与最终文档变更范围。
+- 执行 `find tests -maxdepth 3 -type f | sort`：确认自动化测试资产现状。
+- 执行 `git --no-pager log --oneline -n 12`：确认近期版本演进证据。
+- 执行 `grep -RIn "createTimelineItem|updateTimelineItem|getTimelineByDate|food_entries|timeline_items" frontend/src | head -n 80`：确认饮食记录持久化链路使用情况。
+- 执行 `grep -RIn "createPublicFood|updatePublicFood|setPublicFoodActive|createFood|updateFood|deleteFood|savePlan|deletePlan|endDay|loadHistory" ...`：确认页面到服务调用证据。
+- 执行 `grep -RIn "REACT_APP_SUPABASE_URL|REACT_APP_SUPABASE_ANON_KEY|functions/v1/username-login" ...`：确认环境变量与登录函数接入证据。
+- 读取关键文件：`frontend/src/App.js`、`frontend/src/store.jsx`、`frontend/src/services/*`、`frontend/src/pages/*`、`supabase/migrations/*.sql`、`supabase/functions/username-login/index.ts`、`supabase/config.toml`。
+
+### 测试结果
+
+- 通过：文档路径可用、Roadmap结构完整、Phase 2-4仅保留总体框架、身体记录与减脂模式在Roadmap中已明确分离、项目状态判断包含代码路径证据。
+- 通过：版本顺序检查为 V0.1 → V0.11 → V1.0。
+- 未通过：无。
+- 无法确认：线上Supabase真实权限生效、线上登录稳定性、多账户隔离线上回归（需要线上环境验证）。
+
+### 未完成事项
+
+- 尚未在本任务中补齐自动化测试体系。
+- 尚未完成V0.1全部线上验收闭环。
+- 尚未执行Git提交与版本发布。
+
+### 风险或注意事项
+
+- 本次结论基于仓库证据，线上运行态可能与本地代码状态存在偏差。
+- 若后续对认证、RLS或环境变量做调整，需重新执行V0.1验收与进度评估。
+
+### 下一步
+
+- 优先完成V0.1线上验收闭环（登录、会话、隔离、管理员权限）。
+- 建立最小自动化测试集并纳入回归。
+- 完成每次任务后持续更新 `docs/DEVELOPMENT_LOG.md` 与 `docs/VERSION_HISTORY.md`。
