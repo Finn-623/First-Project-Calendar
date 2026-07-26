@@ -841,3 +841,40 @@
 - 风险或注意事项：工作区存在未纳入本次提交的无关改动（`frontend/src/components/BottomNav.jsx`、`frontend/src/index.css`），已保持隔离。
 - 当前分支：supabase-v1
 - Git Commit ID：5557c8a584ff9ea36bf826046546b40256b5a40d
+
+## DEV-20260726-023
+
+- 日期：2026-07-26
+- 状态：已完成
+- 修改类型：表单输入修复
+- 修改模块：训练弹窗 / 时长输入
+- 任务目标：修复训练时长输入框删除后自动补回 0，及重新输入出现前导 0（05/030/060）的问题。
+- 修改前问题：时长字段在清空时立即回填 0；随后输入会变成 05、030 等，影响正常输入体验。
+- 问题原因：时长输入在 `onChange` 中直接执行 `setDuration(Number(value) || 0)`，把空字符串强制转换为 0。
+- 原 state 类型：`number`（`duration`）。
+- 修改后 state 类型：`string`（`durationInput`）。
+- 是否允许空字符串：是，输入过程中允许空字符串。
+- 数字转换发生的时机：仅在提交 `handleConfirm` 时进行校验和转换。
+- 前导零规范化方式：在 `onBlur` 时对纯数字字符串执行 `String(Number(value))` 规范化（例如 005 -> 5，060 -> 60）。
+- 新建训练默认值：空字符串（不再默认显示 0）。
+- 编辑训练回显方式：当前项目无训练条目完整编辑弹窗（仅支持改时间），本次未涉及训练编辑回显逻辑。
+- 是否涉及自动计算时长：否，当前时长为手动输入，未由开始/结束时间自动计算。
+- 是否修改数据库结构：否。
+- 是否新增 migration：否。
+- 实际修改文件：`frontend/src/modals/AddTrainingSheet.jsx`、`CHANGELOG.md`、`docs/DEVELOPMENT_LOG.md`、`docs/PROJECT_STATUS.md`、`docs/VERSION_HISTORY.md`
+- 实际执行的测试：
+	- 修改前检查：`git status --short`、`git branch --show-current`
+	- 代码检查：确认旧实现存在 `setDuration(Number(e.target.value) || 0)`
+	- 语法检查：`get_errors` 检查 `frontend/src/modals/AddTrainingSheet.jsx`
+	- 逻辑检查：确认 `durationInput`（字符串）、`durationError`、`onBlur` 规范化、提交时校验与数字转换已接入
+	- 前端构建：`cd frontend && npm run build`
+- 测试结果：
+	- 本次改动文件无语法错误。
+	- 构建通过。
+	- 已实现“可清空、输入时不自动补 0、提交时再校验转换、失焦可规范化前导零”。
+	- 受当前会话无登录态限制，未在首页完成训练弹窗端到端点击与移动端实机输入验证；本次以代码路径、静态检查与构建验证为主。
+- 前端构建结果：通过。
+- 未完成事项：待提供可用登录态后补充真实交互验证（新增训练、类型切换、移动端触摸输入）。
+- 风险或注意事项：工作区存在未纳入本次提交的无关改动（`frontend/src/components/BottomNav.jsx`、`frontend/src/index.css`），已保持隔离。
+- 当前分支：supabase-v1
+- Git Commit ID：afd6b50ab2e8d93a9b3486525736e01c026a598a

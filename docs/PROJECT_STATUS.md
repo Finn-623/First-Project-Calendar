@@ -161,6 +161,10 @@
   - 证据：frontend/src/pages/TodayPage.jsx
   - 说明：菜单打开后点击菜单外区域可关闭；点击菜单内部不会误关闭；菜单项点击后按原流程关闭并打开对应弹窗。
   - 相关 Commit：5557c8a584ff9ea36bf826046546b40256b5a40d
+- `已完成` 训练时长输入前导零与回填问题修复
+  - 证据：frontend/src/modals/AddTrainingSheet.jsx
+  - 说明：训练时长输入已改为字符串态，支持清空后重新输入，不再出现删除后自动补 0 或 05/030 等前导零问题。
+  - 相关 Commit：afd6b50ab2e8d93a9b3486525736e01c026a598a
 
 ## 4. 部分完成
 
