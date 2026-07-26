@@ -40,6 +40,10 @@ export const TimelineItem = ({
   const timeLabel = formatClockTime(item.time || item.started_at) || '未设置';
   const snackType = item?.subtype === 'snack' ? normalizeSnackType(item?.snackType) : null;
   const mealTitle = snackType ? `${SNACK_TYPE_LABELS[snackType]}加餐` : item.title;
+  const activityTitle = item?.type === 'aerobic'
+    ? (String(item?.details?.name || '').trim() || item.title)
+    : item.title;
+  const activityNote = typeof item?.notes === 'string' ? item.notes.trim() : '';
   const strengthBodyPartLabels = item?.type === 'anaerobic' ? getStrengthBodyPartLabels(item?.bodyParts) : [];
   const isRunning = item?.status === 'running';
   const completedEndTime = formatClockTime(item?.ended_at);
@@ -78,7 +82,7 @@ export const TimelineItem = ({
             <Icon size={16} strokeWidth={1.6} />
           </div>
           <div className="min-w-0">
-            <p className={titleClass}>{mealTitle}</p>
+            <p className={titleClass}>{isMeal ? mealTitle : activityTitle}</p>
             {isMeal ? (
               <button
                 onClick={() => !readOnly && onEditTime && onEditTime(item)}
@@ -161,7 +165,7 @@ export const TimelineItem = ({
 
       {!isMeal && (
         <div className="mt-2.5">
-          <p className="text-[12px] text-[#2C332F] break-words">{item.detail || '—'}</p>
+          {activityNote ? <p className="text-[12px] text-[#2C332F] break-words">{activityNote}</p> : null}
           {strengthBodyPartLabels.length ? (
             <div className="mt-1.5 flex flex-wrap gap-1.5" data-testid={`training-body-part-badges-${item.id}`}>
               {strengthBodyPartLabels.map((label) => (

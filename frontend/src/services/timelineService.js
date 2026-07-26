@@ -62,13 +62,15 @@ const normalizeTimelineItem = (item) => ({
     ? null
     : Number(readLiveSessionValue(item, 'duration_minutes')),
   id: item?.id,
-  title: item?.title,
+  title: item?.item_type === 'aerobic_training'
+    ? (String(item?.details?.name || '').trim() || item?.title)
+    : item?.title,
   event_date: item?.event_date || item?.eventDate,
   event_time: item?.event_time || item?.time,
   time: item?.event_time || item?.time,
   details: item?.details || {},
   fixed: Boolean(item?.fixed),
-  detail: item?.notes || item?.detail || item?.details?.summary || item?.details?.name || '',
+  detail: item?.notes || '',
   notes: item?.notes || null,
   bodyParts: item?.details?.bodyParts ? normalizeStrengthBodyParts(item.details.bodyParts) : item?.bodyParts ? normalizeStrengthBodyParts(item.bodyParts) : undefined,
   snackType: item?.item_type === 'snack' ? normalizeSnackType(item?.details?.snackType || item?.snackType) : undefined,

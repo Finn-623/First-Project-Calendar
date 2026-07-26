@@ -318,14 +318,15 @@ export const TodayPage = () => {
     }
 
     const itemType = payload.tab === 'anaerobic' ? 'anaerobic_training' : 'aerobic_training';
-    const title = payload.tab === 'anaerobic' ? '无氧训练' : '有氧训练';
+    const aerobicProjectName = payload.tab === 'aerobic' ? String(payload.name || '').trim() : '';
+    const title = payload.tab === 'anaerobic' ? '无氧训练' : aerobicProjectName;
 
     if (payload.mode === 'live') {
       await startLiveSession({
         item_type: itemType,
         title,
-        notes: payload.name || null,
-        details: { mode: 'live', name: payload.name || '', tab: payload.tab },
+        notes: null,
+        details: { mode: 'live', name: aerobicProjectName, tab: payload.tab },
         bodyParts: payload.bodyParts || [],
       });
       return;
@@ -336,17 +337,15 @@ export const TodayPage = () => {
     const endedAt = startedAt && durationMinutes > 0
       ? new Date(startedAt.getTime() + durationMinutes * 60000)
       : null;
-    const detailText = `${payload.name || (payload.tab === 'anaerobic' ? '力量训练' : '有氧运动')} · ${durationMinutes} 分钟`;
-
     const payloadToSave = {
       event_date: currentDateStr,
       event_time: payload.time,
       item_type: itemType,
       title,
-      notes: detailText,
+      notes: null,
       details: {
         mode: 'manual',
-        name: payload.name || '',
+        name: aerobicProjectName,
         tab: payload.tab,
         bodyParts: payload.bodyParts || [],
       },

@@ -18,12 +18,27 @@ const toDateInput = (value) => {
   return `${y}-${m}-${d}`;
 };
 
+const normalizeText = (value) => (typeof value === 'string' ? value : '').trim();
 const isAerobic = (item) => item?.type === 'aerobic';
 const isAnaerobic = (item) => item?.type === 'anaerobic';
+const isTrainingItem = (item) => isAnaerobic(item) || isAerobic(item);
+
+const resolveAerobicProjectName = (item) => {
+  const detailsName = normalizeText(item?.details?.name);
+  if (detailsName) return detailsName;
+
+  const title = normalizeText(item?.title);
+  if (title && title !== '有氧训练' && title !== '无氧训练') {
+    return title;
+  }
+
+  return '';
+};
 
 export const EditActivitySheet = ({ open, onOpenChange, item, onConfirm }) => {
   const [tab, setTab] = useState('event');
-  const [name, setName] = useState('');
+  const [eventTitle, setEventTitle] = useState('');
+  const [aerobicProjectName, setAerobicProjectName] = useState('');
   const [note, setNote] = useState('');
   const [date, setDate] = useState('');
   const [startTime, setStartTime] = useState('');
@@ -45,17 +60,17 @@ export const EditActivitySheet = ({ open, onOpenChange, item, onConfirm }) => {
     }
 
     const nextTab = isAnaerobic(item) ? 'anaerobic' : isAerobic(item) ? 'aerobic' : 'event';
-    const nextName = isAerobic(item)
-      ? String(item?.details?.name || item?.title || '').trim()
-      : String(item?.title || '').trim();
-    const nextNote = String(item?.notes || item?.detail || '').trim();
+    const nextEventTitle = normalizeText(item?.title);
+    const nextAerobicProjectName = isAerobic(item) ? resolveAerobicProjectName(item) : '';
+    const nextNote = normalizeText(item?.notes);
     const nextDate = toDateInput(item?.event_date);
     const nextStartTime = formatTimeInputWithSeconds(item?.started_at || item?.time);
     const nextEndTime = formatTimeInputWithSeconds(item?.ended_at);
     const nextBodyParts = normalizeStrengthBodyParts(item?.bodyParts || item?.details?.bodyParts);
 
     setTab(nextTab);
-    setName(nextName);
+    setEventTitle(nextEventTitle);
+    setAerobicProjectName(nextAerobicProjectName);
     setNote(nextNote);
     setDate(nextDate);
     setStartTime(nextStartTime);
@@ -68,6 +83,10 @@ export const EditActivitySheet = ({ open, onOpenChange, item, onConfirm }) => {
 
     initialRef.current = {
       tab: nextTab,
+      eventTitle: nextEventTitle,
+      aerobicProjectName: nextAerobicProjectName,
+      note: nextNote,
+      bodyParts: nextBodyParts,
       date: nextDate,
       startTime: nextStartTime,
       endTime: nextEndTime,
@@ -91,11 +110,12 @@ export const EditActivitySheet = ({ open, onOpenChange, item, onConfirm }) => {
   const handleConfirm = async () => {
     if (!item) return;
 
-    const nextName = name.trim();
+    const nextEventTitle = eventTitle.trim();
+    const nextAerobicProjectName = aerobicProjectName.trim();
     const nextNote = note.trim();
     const normalizedBodyParts = normalizeStrengthBodyParts(selectedBodyParts);
 
-    if (tab === 'aerobic' && !nextName) {
+    if (tab === 'aerobic' && !nextAerobicProjectName) {
       setNameError('请输入有氧项目名称');
       return;
     }
@@ -105,28 +125,18 @@ export const EditActivitySheet = ({ open, onOpenChange, item, onConfirm }) => {
       return;
     }
 
-    if (!running) {
-      if (!date || !startTime) {
-        setTimeError('请填写完整的开始日期和开始时间');
-        return;
-      }
-
-      if (endTime) {
-        const startAt = new Date(`${date}T${startTime}`);
-        let endAt = new Date(`${date}T${endTime}`);
-        if (!Number.isNaN(startAt.getTime()) && !Number.isNaN(endAt.getTime()) && endAt.getTime() < startAt.getTime()) {
-          endAt = new Date(endAt.getTime() + 24 * 60 * 60 * 1000);
-        }
-      }
+    if (!running && (!date || !startTime)) {
+      setTimeError('请填写完整的开始日期和开始时间');
+      return;
     }
 
     const nextType = tab === 'anaerobic' ? 'anaerobic_training' : tab === 'aerobic' ? 'aerobic_training' : 'other';
-    const nextTitle = tab === 'anaerobic' ? '无氧训练' : tab === 'aerobic' ? nextName : nextName;
+    const nextTitle = tab === 'anaerobic' ? '无氧训练' : tab === 'aerobic' ? nextAerobicProjectName : nextEventTitle;
 
     const nextDetails = {
       ...(item?.details || {}),
       tab,
-      name: tab === 'aerobic' ? nextName : '',
+      name: tab === 'aerobic' ? nextAerobicProjectName : '',
       bodyParts: tab === 'anaerobic' ? normalizedBodyParts : [],
     };
 
@@ -134,15 +144,36 @@ export const EditActivitySheet = ({ open, onOpenChange, item, onConfirm }) => {
     const changedDate = date !== initial.date;
     const changedStart = startTime !== initial.startTime;
     const changedEnd = endTime !== initial.endTime;
+    const changedType = nextType !== item?.item_type;
+    const changedTitle = nextTitle !== (item?.title || '');
+    const changedNotes = (nextNote || null) !== (item?.notes || null);
+    const changedDetails = JSON.stringify(nextDetails) !== JSON.stringify(item?.details || {});
 
-    const updates = {
-      item_type: nextType,
-      title: nextTitle || item?.title,
-      notes: nextNote || null,
-      details: nextDetails,
-      event_date: running ? item?.event_date : date,
-      event_time: running ? (item?.event_time || formatClockTime(item?.time)) : formatClockTime(startTime),
-    };
+    const updates = {};
+
+    if (changedType) {
+      updates.item_type = nextType;
+    }
+
+    if (changedTitle) {
+      updates.title = nextTitle || item?.title;
+    }
+
+    if (changedNotes) {
+      updates.notes = nextNote || null;
+    }
+
+    if (changedDetails) {
+      updates.details = nextDetails;
+    }
+
+    if (!running && changedDate) {
+      updates.event_date = date;
+    }
+
+    if (!running && changedStart) {
+      updates.event_time = formatClockTime(startTime);
+    }
 
     if (!running) {
       if ((changedDate || changedStart) && date && startTime) {
@@ -157,6 +188,7 @@ export const EditActivitySheet = ({ open, onOpenChange, item, onConfirm }) => {
         const startBase = updates.started_at || item?.started_at;
         const startDate = startBase ? new Date(startBase) : null;
         let nextEnd = new Date(`${baseDate}T${endTime}`);
+
         if (startDate && !Number.isNaN(startDate.getTime()) && !Number.isNaN(nextEnd.getTime()) && nextEnd.getTime() < startDate.getTime()) {
           nextEnd = new Date(nextEnd.getTime() + 24 * 60 * 60 * 1000);
         }
@@ -167,6 +199,11 @@ export const EditActivitySheet = ({ open, onOpenChange, item, onConfirm }) => {
       } else if (changedEnd) {
         updates.ended_at = null;
       }
+    }
+
+    if (!Object.keys(updates).length) {
+      onOpenChange(false);
+      return;
     }
 
     try {
@@ -193,12 +230,16 @@ export const EditActivitySheet = ({ open, onOpenChange, item, onConfirm }) => {
         </SheetHeader>
 
         <div className="px-5 pb-6 min-h-0 flex-1 overflow-y-auto overscroll-contain space-y-3">
-          {(isAnaerobic(item) || isAerobic(item)) ? (
-            <div className="grid grid-cols-2 gap-2 p-1 bg-white rounded-2xl border border-[#E5E5E0]">
+          {isTrainingItem(item) ? (
+            <div className="grid grid-cols-2 gap-2 p-1 bg-white rounded-2xl border border-[#E5E5E0]" data-testid="edit-training-type-toggle">
               <button
                 type="button"
                 className={`py-2.5 rounded-xl text-[13px] ${tab === 'anaerobic' ? 'bg-[#6B8067] text-white' : 'text-[#858C88]'}`}
-                onClick={() => setTab('anaerobic')}
+                onClick={() => {
+                  setTab('anaerobic');
+                  if (nameError) setNameError('');
+                  if (bodyPartError) setBodyPartError('');
+                }}
                 disabled={submitting}
               >
                 无氧
@@ -206,7 +247,11 @@ export const EditActivitySheet = ({ open, onOpenChange, item, onConfirm }) => {
               <button
                 type="button"
                 className={`py-2.5 rounded-xl text-[13px] ${tab === 'aerobic' ? 'bg-[#6B8067] text-white' : 'text-[#858C88]'}`}
-                onClick={() => setTab('aerobic')}
+                onClick={() => {
+                  setTab('aerobic');
+                  if (nameError) setNameError('');
+                  if (bodyPartError) setBodyPartError('');
+                }}
                 disabled={submitting}
               >
                 有氧
@@ -214,17 +259,30 @@ export const EditActivitySheet = ({ open, onOpenChange, item, onConfirm }) => {
             </div>
           ) : null}
 
-          {(tab === 'event' || tab === 'aerobic') ? (
+          {tab === 'event' ? (
             <div>
-              <label className="text-[12px] text-[#858C88]">{tab === 'aerobic' ? '项目名称' : '事件名称'}</label>
+              <label className="text-[12px] text-[#858C88]">事件名称</label>
               <Input
-                value={name}
+                value={eventTitle}
+                onChange={(e) => setEventTitle(e.target.value)}
+                className="mt-1.5 h-11 bg-white border-[#E5E5E0] rounded-xl text-base"
+                data-testid="edit-activity-name-input"
+                disabled={submitting}
+              />
+            </div>
+          ) : null}
+
+          {tab === 'aerobic' ? (
+            <div>
+              <label className="text-[12px] text-[#858C88]">项目名称</label>
+              <Input
+                value={aerobicProjectName}
                 onChange={(e) => {
-                  setName(e.target.value);
+                  setAerobicProjectName(e.target.value);
                   if (nameError) setNameError('');
                 }}
                 className="mt-1.5 h-11 bg-white border-[#E5E5E0] rounded-xl text-base"
-                data-testid="edit-activity-name-input"
+                data-testid="edit-training-aerobic-name-input"
                 disabled={submitting}
               />
               {nameError ? <p className="mt-1 text-[12px] text-[#D27D67]">{nameError}</p> : null}

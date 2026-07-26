@@ -76,6 +76,7 @@ const normalizeArchivedTimelineItem = (item) => ({
   fixed: Boolean(item.fixed),
   foods: Array.isArray(item.foods) ? item.foods : [],
   detail: item.detail,
+  notes: item.notes || null,
   caloriesBurned: item.caloriesBurned,
   status: item.status || 'completed',
   started_at: item.started_at || null,
@@ -96,11 +97,13 @@ const normalizeDbTimelineItem = (item) => {
   return {
     id: item.id,
     ...mapped,
-    title: item.title,
+    title: itemType === 'aerobic_training'
+      ? (String(item?.details?.name || '').trim() || item.title)
+      : item.title,
     time: item.event_time || item.time,
     fixed: Boolean(item.fixed),
     foods: Array.isArray(item.foods) ? item.foods : [],
-    detail: item.notes || item.detail || item.details?.summary || item.details?.name || '',
+    detail: item.notes || '',
     notes: item.notes || null,
     snackType: itemType === 'snack' ? normalizeSnackType(item?.details?.snackType || item?.snackType) : undefined,
     bodyParts: itemType === 'anaerobic_training' ? normalizeStrengthBodyParts(item?.details?.bodyParts || item?.bodyParts) : undefined,
