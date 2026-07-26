@@ -1,3 +1,34 @@
+## DEV-20260727-058
+
+- 日期：2026-07-27
+- 状态：已完成
+- 修改类型：功能精简 / 设置-摄入计划历史记录管理
+- 修改背景：用户要求简化功能，只保留删除历史记录功能，移除编辑功能。
+- 任务目标：移除摄入计划历史记录的编辑功能，保留删除功能。
+- 实际完成内容：
+	- 移除 React 状态变量：`editingHistoryId`、`editingDraft`、`editingLoading`、`editingError`。
+	- 替换为单一状态变量 `deletingLoading` 用于追踪删除操作。
+	- 移除处理函数：`openEditHistory()`、`closeEditHistory()`、`handleSaveEdit()`。
+	- 保留函数：`handleDeleteHistory()` 并更新为使用 `deletingLoading`。
+	- 移除 UI 元素：历史记录行中的"编辑"按钮。
+	- 移除 UI 元素：底部编辑模态框（所有编辑相关的 JSX）。
+	- 服务层：移除 `intakePlanService.updateHistory()` 方法，保留 `deleteHistory()` 方法。
+	- 改进错误处理：删除错误改为使用 `toast.error()` 而非在状态中保存。
+- 主要修改文件或模块：
+	- `frontend/src/pages/SettingsIntakePlanPage.jsx`
+	- `frontend/src/services/intakePlanService.js`
+- 执行的测试与检查：
+	- `cd frontend && npm run build` - 构建成功，减少 546 字节（-546 JS -18 CSS）。
+	- `cd frontend && CI=true npm test -- --watch=false --runInBand src/pages/SettingsIntakePlanPage.test.jsx` - 7 个测试通过。
+- 测试结果：
+	- 前端构建通过，文件大小减少。
+	- 1 个测试套件通过，7 个测试通过（无回归）。
+- 当前分支：supabase-v1
+- Git Commit ID：ead1961
+- 风险或注意事项：
+	- 删除历史记录功能保持不变，仍包含用户确认对话框。
+	- 数据库中 RLS 策略 `intake_plan_history_update_own` 仍存在但不再使用（可以在将来需要时恢复）。
+
 ## DEV-20260727-057
 
 - 日期：2026-07-27
