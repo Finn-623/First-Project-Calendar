@@ -179,6 +179,16 @@
   - 证据：frontend/src/modals/AddTrainingSheet.jsx
   - 说明：为训练弹窗增加移动端宽高边界与内部滚动容器，覆盖无氧/有氧切换、输入聚焦与软键盘场景，避免弹窗外层异常缩小。
   - 相关 Commit：1b22f1b5656e2111d57b269f232be1626f3a8c3f
+- `已完成` 首页本地实时时钟与新增弹窗时间快照默认值
+  - 证据：frontend/src/components/LiveClock.jsx
+  - 证据：frontend/src/hooks/useCurrentTime.js
+  - 证据：frontend/src/lib/localDateTime.js
+  - 证据：frontend/src/pages/TodayPage.jsx
+  - 证据：frontend/src/modals/AddSnackSheet.jsx
+  - 证据：frontend/src/modals/AddTrainingSheet.jsx
+  - 证据：frontend/src/modals/AddEventSheet.jsx
+  - 说明：首页日期区域新增本地实时时钟（`HH:mm:ss`）并在后台返回时立即校准；新增加餐/训练/其他事件弹窗默认时间改为打开瞬间本地时间快照（`HH:mm`），不会在填写过程中自动跳变，编辑时间回显逻辑保持不变。
+  - 相关 Commit：0d56866400f7e9f365b8674b14cc4984545c4fce
 
 ## 4. 部分完成
 

@@ -982,3 +982,52 @@
 - 风险或注意事项：工作区存在未纳入本次提交的无关改动（`frontend/src/components/BottomNav.jsx`、`frontend/src/index.css`），已保持隔离。
 - 当前分支：supabase-v1
 - Git Commit ID：1b22f1b5656e2111d57b269f232be1626f3a8c3f
+
+## DEV-20260726-027
+
+- 日期：2026-07-26
+- 状态：已完成
+- 修改类型：功能新增 / 时间系统
+- 修改模块：首页日期区域、记录弹窗（加餐/训练/其他事件）
+- 任务目标：引入统一本地实时时间能力，在首页显示 24 小时制实时钟，并将新增记录弹窗默认时间改为“打开时快照”。
+- 实时时间显示位置：首页日期区域（`TODAY/历史记录` 与日期文案下方）。
+- 实时时间显示格式：`HH:mm:ss`（24 小时制）。
+- 更新时间频率：每秒 1 次。
+- 本地时区策略：使用设备本地时区（`Date` 本地时间），未使用 UTC 硬编码或固定 GMT 偏移。
+- 时间格式化方法：统一复用 `frontend/src/lib/localDateTime.js` 中的 `formatLiveTime`、`getLocalTimeInputValue`、`getLocalDateKey`（通过 `Date#getHours/getMinutes/getSeconds` 组装，避免 `toISOString` 的 UTC 偏差）。
+- 是否使用 `Intl.DateTimeFormat`：否（本次未使用，避免午夜 `24:00:00` 差异，统一输出 `00:00:00`）。
+- 实时时间 Hook/组件位置：
+	- Hook：`frontend/src/hooks/useCurrentTime.js`
+	- 组件：`frontend/src/components/LiveClock.jsx`
+	- 接入页：`frontend/src/pages/TodayPage.jsx`
+- interval 创建和清理方式：`useCurrentTime` 在 `useEffect` 中创建 `window.setInterval(syncNow, 1000)`，卸载时 `window.clearInterval(intervalId)`。
+- 页面后台恢复校准：`useCurrentTime` 监听 `visibilitychange`，当 `document.visibilityState === 'visible'` 时立即执行 `syncNow()`。
+- 是否使用全局 Store：否。实时钟状态仅在 `LiveClock` 组件内维护，避免每秒触发全局状态更新。
+- 新增表单默认时间初始化方式：在弹窗 `open` 由 `false -> true` 时调用 `getLocalTimeInputValue(new Date())` 初始化 `time`。
+	- `AddSnackSheet`：`frontend/src/modals/AddSnackSheet.jsx`
+	- `AddTrainingSheet`：`frontend/src/modals/AddTrainingSheet.jsx`
+	- `AddEventSheet`：`frontend/src/modals/AddEventSheet.jsx`
+- 为什么表单时间是快照而不是持续更新：时间值存入弹窗本地 `useState`，仅在打开时初始化一次，未绑定实时时钟状态，也未注册按秒更新。
+- 编辑记录时间回显方式：保持原逻辑不变，`EditTimeSheet` 继续使用 `item.time` 初始化，未被当前时间覆盖。
+- selectedDate 与真实日期区分：保持现有业务逻辑；首页显示的实时时钟仅反映“当前真实本地时间”，不改变周日历选中日期、不改变归档日期计算。
+- 是否新增依赖：否。
+- 是否修改数据库结构：否。
+- 是否新增 migration：否。
+- 是否将实时时间写入数据库：否。
+- 实际修改文件：`frontend/src/lib/localDateTime.js`、`frontend/src/hooks/useCurrentTime.js`、`frontend/src/components/LiveClock.jsx`、`frontend/src/pages/TodayPage.jsx`、`frontend/src/modals/AddSnackSheet.jsx`、`frontend/src/modals/AddTrainingSheet.jsx`、`frontend/src/modals/AddEventSheet.jsx`、`CHANGELOG.md`、`docs/DEVELOPMENT_LOG.md`、`docs/PROJECT_STATUS.md`、`docs/VERSION_HISTORY.md`
+- 实际执行的测试：
+	- 修改前检查：`git status --short`、`git branch --show-current`
+	- 代码定位：检索首页日期区、TODAY/历史记录切换、selectedDate 来源、新增/编辑时间逻辑
+	- 语法检查：`get_errors` 检查新增/修改的时间相关文件
+	- 规则检索：确认存在 `today-live-time`、`setInterval/clearInterval`、`visibilitychange`、`getLocalTimeInputValue(new Date())`
+	- 前端构建：`cd frontend && npm run build`
+- 测试结果：
+	- 本次改动文件无语法错误。
+	- 前端构建通过。
+	- 代码层确认首页实时时钟按秒更新、后台恢复即时校准、新增弹窗默认时间为打开时快照、编辑时间回显逻辑未改。
+	- 受当前会话缺少可复现移动端真机与登录态 E2E 条件限制，未完成完整交互清单中的实机条目；本次以代码路径校验与构建验证为主。
+- 前端构建结果：通过。
+- 未完成事项：待提供可用登录态后补充真机回归（后台恢复、锁屏恢复、历史日期下新增记录手工链路）。
+- 风险或注意事项：工作区存在未纳入本次提交的无关改动（`frontend/src/components/BottomNav.jsx`、`frontend/src/index.css`），已保持隔离。
+- 当前分支：supabase-v1
+- Git Commit ID：0d56866400f7e9f365b8674b14cc4984545c4fce
