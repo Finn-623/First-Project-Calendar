@@ -912,3 +912,43 @@
 - 风险或注意事项：工作区存在未纳入本次提交的无关改动（`frontend/src/components/BottomNav.jsx`、`frontend/src/index.css`），已保持隔离。
 - 当前分支：supabase-v1
 - Git Commit ID：1330c03b53a17bf6d040e4de8cc0259da915f852
+
+## DEV-20260726-025
+
+- 日期：2026-07-26
+- 状态：已完成
+- 修改类型：功能新增 / 无氧训练
+- 修改模块：训练弹窗、训练记录
+- 任务目标：无氧训练新增“训练部位”多选功能，支持胸、背、腿、肩、二头、三头、核心，并在时间轴/历史中显示。
+- 可选训练部位：胸、背、腿、肩、二头、三头、核心（固定顺序）。
+- 是否支持多选：是。
+- 内部字段值和中文映射：`chest`/胸、`back`/背、`legs`/腿、`shoulders`/肩、`biceps`/二头、`triceps`/三头、`core`/核心。
+- 表单状态结构：训练弹窗使用 `selectedBodyParts: string[]` 存储无氧训练部位，提交前执行规范化排序与去重。
+- 无氧和有氧切换行为：无氧显示并校验训练部位；有氧隐藏且不校验，提交有氧时不携带 `bodyParts`。
+- 表单验证规则：无氧保存前至少选择一个部位，未选择提示“请选择至少一个训练部位”。
+- 是否复用现有数据库字段：是。当前项目训练新增主要走前端时间轴状态 + `daily_archives.timeline` JSON 归档，无需新增结构化训练字段。
+- 是否新增 body_parts 字段：否。
+- 是否新增 migration：否。
+- 数据库存储格式：无氧记录在时间轴对象和 `daily_archives.timeline` JSON 中存储 `bodyParts` 数组，值为内部英文值数组（例如 `['chest','triceps']`）。
+- 旧训练记录兼容方式：旧记录没有 `bodyParts` 时归一化为空数组，不报错、不伪造默认值。
+- 编辑记录回显方式：当前项目无训练条目独立编辑弹窗（仅支持改时间），因此无训练部位编辑回显入口；历史读取已兼容 `bodyParts`。
+- 时间轴和历史展示方式：无氧记录在现有摘要区新增一行中文部位列表（按固定顺序）；有氧不显示部位列表。
+- 实际修改文件：`frontend/src/constants/trainingBodyParts.js`、`frontend/src/modals/AddTrainingSheet.jsx`、`frontend/src/components/TimelineItem.jsx`、`frontend/src/services/historyService.js`、`CHANGELOG.md`、`docs/DEVELOPMENT_LOG.md`、`docs/PROJECT_STATUS.md`、`docs/VERSION_HISTORY.md`
+- 数据库 migration 文件：无。
+- 实际执行的测试：
+	- 修改前检查：`git status --short`、`git branch --show-current`
+	- 语法检查：`get_errors` 检查 `AddTrainingSheet.jsx`、`trainingBodyParts.js`、`TimelineItem.jsx`、`historyService.js`
+	- 功能检索：确认七个部位选项、多选切换、无氧必填提示、有氧不提交 `bodyParts`
+	- 结构检索：确认 `supabase/migrations` 无 `body_parts` 字段与约束变更（本次无 migration）
+	- 前端构建：`cd frontend && npm run build`
+- 测试结果：
+	- 本次功能文件无语法错误。
+	- 构建通过。
+	- 无氧部位多选、校验、归档字段保留与展示链路代码均已接入。
+	- 受当前会话无登录态限制，未完成登录后端到端手工点击测试；本次以代码路径、静态检查与构建结果为主。
+- migration 执行结果：本次无 migration。
+- 前端构建结果：通过。
+- 未完成事项：待提供登录态后补充手工交互验证（新增无氧多选、类型切换、历史回看）。
+- 风险或注意事项：工作区存在未纳入本次提交的无关改动（`frontend/src/components/BottomNav.jsx`、`frontend/src/index.css`），已保持隔离。
+- 当前分支：supabase-v1
+- Git Commit ID：abef063f250053bec4238b1c24ac3b73684fb246

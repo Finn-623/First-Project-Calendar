@@ -169,6 +169,12 @@
   - 证据：frontend/src/modals/AddTrainingSheet.jsx
   - 说明：统一训练弹窗已移除“预估消耗”展示和对应提交参数，训练记录不再要求填写预估消耗。
   - 相关 Commit：1330c03b53a17bf6d040e4de8cc0259da915f852
+- `已完成` 无氧训练支持训练部位多选
+  - 证据：frontend/src/modals/AddTrainingSheet.jsx
+  - 证据：frontend/src/constants/trainingBodyParts.js
+  - 证据：frontend/src/components/TimelineItem.jsx
+  - 说明：无氧训练可选择胸、背、腿、肩、二头、三头、核心并支持多选；有氧不显示该字段；保存后可在时间轴/历史查看部位列表。
+  - 相关 Commit：abef063f250053bec4238b1c24ac3b73684fb246
 
 ## 4. 部分完成
 
