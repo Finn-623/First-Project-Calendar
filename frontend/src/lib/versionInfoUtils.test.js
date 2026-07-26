@@ -8,12 +8,12 @@ import {
 
 describe('versionInfoUtils', () => {
   test('development release time should show not released text', () => {
-    expect(formatReleaseTime(null)).toBe('开发中，尚未上线');
+    expect(formatReleaseTime(null)).toBe('尚未正式上线');
   });
 
   test('released time should format fixed timestamp', () => {
     const result = formatReleaseTime('2026-07-26T18:30:00+10:00');
-    expect(result).not.toBe('开发中，尚未上线');
+    expect(result).not.toBe('尚未正式上线');
     expect(result).toMatch(/2026/);
   });
 

@@ -1,4 +1,8 @@
-import { validateFeedbackForm, validateFeedbackStatus } from './versionFeedbackValidation';
+import {
+  validateCompletedVersion,
+  validateFeedbackForm,
+  validateFeedbackStatus,
+} from './versionFeedbackValidation';
 
 describe('versionFeedbackValidation', () => {
   test('title is required', () => {
@@ -35,5 +39,15 @@ describe('versionFeedbackValidation', () => {
     expect(validateFeedbackStatus('pending')).toBe(true);
     expect(validateFeedbackStatus('completed')).toBe(true);
     expect(validateFeedbackStatus('other')).toBe(false);
+  });
+
+  test('completed version should be required and trimmed', () => {
+    const emptyResult = validateCompletedVersion('   ');
+    expect(emptyResult.valid).toBe(false);
+    expect(emptyResult.error).toBe('请选择完成版本');
+
+    const validResult = validateCompletedVersion('  v0.2.0  ');
+    expect(validResult.valid).toBe(true);
+    expect(validResult.normalized).toBe('v0.2.0');
   });
 });

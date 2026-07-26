@@ -37,3 +37,29 @@ export function validateFeedbackForm({ title, description }) {
 export function validateFeedbackStatus(status) {
   return status === 'pending' || status === 'completed';
 }
+
+export function validateCompletedVersion(version) {
+  const normalized = normalizeFeedbackInput(version);
+
+  if (!normalized) {
+    return {
+      valid: false,
+      error: '请选择完成版本',
+      normalized: '',
+    };
+  }
+
+  if (normalized.length < 2 || normalized.length > 30) {
+    return {
+      valid: false,
+      error: '完成版本长度需在 2 到 30 个字符之间',
+      normalized,
+    };
+  }
+
+  return {
+    valid: true,
+    error: '',
+    normalized,
+  };
+}

@@ -1,5 +1,4 @@
 import { supabase } from '../lib/supabaseClient';
-import { validateFeedbackStatus } from '../lib/versionFeedbackValidation';
 
 function normalizeError(error) {
   const message = String(error?.message || '').toLowerCase();
@@ -28,6 +27,7 @@ function normalizeFeedbackRow(row) {
     status: row.status,
     created_at: row.created_at,
     completed_at: row.completed_at,
+    completed_version: row.completed_version,
     updated_at: row.updated_at,
   };
 }
@@ -79,7 +79,7 @@ export const versionFeedbackService = {
     }
   },
 
-  async listFeedback({ userId, isAdmin }) {
+  async listFeedback({ userId, isAdmin, limit = 10, cursor = null }) {
     if (!supabase) {
       return { success: false, error: 'Supabase 尚未配置' };
     }
@@ -89,13 +89,20 @@ export const versionFeedbackService = {
     }
 
     try {
+      const safeLimit = Math.max(1, Math.min(Number(limit) || 10, 30));
+
       let query = supabase
         .from('version_feedback')
         .select('*')
-        .order('created_at', { ascending: false });
+        .order('created_at', { ascending: false })
+        .limit(safeLimit + 1);
 
       if (!isAdmin) {
         query = query.eq('user_id', userId);
+      }
+
+      if (cursor) {
+        query = query.lt('created_at', cursor);
       }
 
       const { data, error } = await query;
@@ -103,9 +110,19 @@ export const versionFeedbackService = {
         return { success: false, error: normalizeError(error) };
       }
 
-      const rows = (data || []).map(normalizeFeedbackRow);
+      const rawRows = data || [];
+      const hasMore = rawRows.length > safeLimit;
+      const selectedRows = hasMore ? rawRows.slice(0, safeLimit) : rawRows;
+      const rows = selectedRows.map(normalizeFeedbackRow);
+      const nextCursor = hasMore ? rows[rows.length - 1]?.created_at : null;
+
       if (!isAdmin) {
-        return { success: true, data: rows };
+        return {
+          success: true,
+          data: rows,
+          hasMore,
+          nextCursor,
+        };
       }
 
       const submitterIds = [...new Set(rows.map((item) => item.user_id).filter(Boolean))];
@@ -115,13 +132,18 @@ export const versionFeedbackService = {
         submitter: submitterMap[item.user_id] || null,
       }));
 
-      return { success: true, data: enriched };
+      return {
+        success: true,
+        data: enriched,
+        hasMore,
+        nextCursor,
+      };
     } catch (error) {
       return { success: false, error: normalizeError(error) };
     }
   },
 
-  async updateFeedbackStatus({ feedbackId, status }) {
+  async updateFeedbackContent({ feedbackId, title, description }) {
     if (!supabase) {
       return { success: false, error: 'Supabase 尚未配置' };
     }
@@ -130,19 +152,93 @@ export const versionFeedbackService = {
       return { success: false, error: '缺少任务 ID' };
     }
 
-    if (!validateFeedbackStatus(status)) {
-      return { success: false, error: '不支持的任务状态' };
-    }
-
     try {
-      const payload = { status };
-
       const { data, error } = await supabase
         .from('version_feedback')
-        .update(payload)
+        .update({ title, description })
         .eq('id', feedbackId)
         .select('*')
         .single();
+
+      if (error) {
+        return { success: false, error: normalizeError(error) };
+      }
+
+      return { success: true, data: normalizeFeedbackRow(data) };
+    } catch (error) {
+      return { success: false, error: normalizeError(error) };
+    }
+  },
+
+  async deleteFeedback({ feedbackId }) {
+    if (!supabase) {
+      return { success: false, error: 'Supabase 尚未配置' };
+    }
+
+    if (!feedbackId) {
+      return { success: false, error: '缺少任务 ID' };
+    }
+
+    try {
+      const { error } = await supabase
+        .from('version_feedback')
+        .delete()
+        .eq('id', feedbackId);
+
+      if (error) {
+        return { success: false, error: normalizeError(error) };
+      }
+
+      return { success: true };
+    } catch (error) {
+      return { success: false, error: normalizeError(error) };
+    }
+  },
+
+  async completeFeedback({ feedbackId, completedVersion }) {
+    if (!supabase) {
+      return { success: false, error: 'Supabase 尚未配置' };
+    }
+
+    if (!feedbackId) {
+      return { success: false, error: '缺少任务 ID' };
+    }
+
+    if (!completedVersion || !String(completedVersion).trim()) {
+      return { success: false, error: '完成版本不能为空' };
+    }
+
+    try {
+      const { data, error } = await supabase
+        .rpc('complete_version_feedback', {
+          feedback_id: feedbackId,
+          version_number: String(completedVersion).trim(),
+        });
+
+      if (error) {
+        return { success: false, error: normalizeError(error) };
+      }
+
+      return { success: true, data: normalizeFeedbackRow(data) };
+    } catch (error) {
+      return { success: false, error: normalizeError(error) };
+    }
+  },
+
+  async reopenFeedback({ feedbackId }) {
+    if (!supabase) {
+      return { success: false, error: 'Supabase 尚未配置' };
+    }
+
+    if (!feedbackId) {
+      return { success: false, error: '缺少任务 ID' };
+    }
+
+    try {
+      const { data, error } = await supabase
+        .rpc('reopen_version_feedback', {
+          feedback_id: feedbackId,
+        });
 
       if (error) {
         return { success: false, error: normalizeError(error) };
