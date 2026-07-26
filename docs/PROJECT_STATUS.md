@@ -152,6 +152,11 @@
   - 证据：frontend/src/services/historyService.js
   - 说明：新增加餐先填写时间与类型（普通/练前/练后）后再创建记录；旧加餐类型默认按普通处理。
   - 相关 Commit：5f229f865016715b7dbfcf1fb746e7a35df9e7c7
+- `已完成` 训练入口与训练弹窗统一
+  - 证据：frontend/src/pages/TodayPage.jsx
+  - 证据：frontend/src/modals/AddTrainingSheet.jsx
+  - 说明：加号菜单中的“无氧训练/有氧训练”已合并为单一“训练”入口；点击后进入同一个训练弹窗，在弹窗内选择无氧或有氧。
+  - 相关 Commit：80db763d18d2884d15be505029c3ca1d97b6a923
 
 ## 4. 部分完成
 

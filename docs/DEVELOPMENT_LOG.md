@@ -767,3 +767,43 @@
 	- `snackType` 当前存储于前端时间轴对象与归档 JSON，未新增数据库字段。
 - 当前分支：supabase-v1
 - Git Commit ID：5f229f865016715b7dbfcf1fb746e7a35df9e7c7
+
+## DEV-20260726-021
+
+- 日期：2026-07-26
+- 状态：已完成
+- 修改类型：功能整合 / 训练记录
+- 修改模块：加号菜单、训练弹窗
+- 任务目标：将加号菜单里的“无氧训练”“有氧训练”合并为单一“训练”入口，并继续使用同一个训练弹窗在弹窗内选择训练类型。
+- 修改前训练入口：`加餐`、`无氧训练`、`有氧训练`、`其他事件`。
+- 修改后训练入口：`加餐`、`训练`、`其他事件`。
+- 统一训练弹窗结构：标题统一为“训练”；弹窗内保留类型二选一（无氧/有氧）、项目名称、开始时间、时长、预估消耗、确认添加按钮。
+- 无氧和有氧类型内部值：`anaerobic`（无氧）、`aerobic`（有氧），沿用既有实现。
+- 公共字段：训练类型、项目名称、开始时间、时长、预估消耗、确认添加。
+- 无氧专属字段：本次无独立专属输入字段（无氧通过类型值、标题“无氧训练”和默认文案“力量训练”区分）。
+- 有氧专属字段：本次无独立专属输入字段（有氧通过类型值、标题“有氧训练”和默认文案“有氧运动”区分）。
+- 类型切换时的表单处理：仅切换 `tab` 类型值；项目名称、开始时间和时长为公共字段并保留；提交时仅按当前选中类型生成 `type/title/detail`。
+- 新增和编辑是否都使用统一弹窗：新增使用统一训练弹窗；当前项目未提供训练条目完整编辑弹窗（仅支持改时间），因此本次不涉及训练编辑弹窗合并。
+- 是否复用原保存逻辑：是，继续由 `TodayPage.handleAddTraining` 将训练条目写入当天时间轴状态，未改动历史归档保存链路。
+- 是否修改数据库结构：否。
+- 是否新增 migration：否。
+- 旧训练记录兼容结果：兼容；未修改训练记录结构和历史读取逻辑，既有无氧/有氧记录保持不变。
+- 实际修改文件：`frontend/src/pages/TodayPage.jsx`、`frontend/src/modals/AddTrainingSheet.jsx`、`CHANGELOG.md`、`docs/DEVELOPMENT_LOG.md`、`docs/PROJECT_STATUS.md`、`docs/VERSION_HISTORY.md`
+- 实际执行的测试：
+	- 修改前检查：`git status --short`、`git branch --show-current`
+	- 语法检查：`get_errors` 检查 `TodayPage.jsx`、`AddTrainingSheet.jsx`
+	- 静态链路检查：检索 `onAnaerobic|onAerobic|picker-anaerobic|picker-aerobic` 已移除，`onTraining|picker-training` 已接入
+	- 弹窗结构检查：检索训练弹窗标题为“训练”，并保留 `training-tab-anaerobic` 与 `training-tab-aerobic`
+	- 去重检查：确认训练弹窗新增 `submitting` 提交保护，连续点击确认按钮不会重复创建
+	- 本地可访问性检查：`curl -I http://localhost:3002` 返回 `HTTP/1.1 200 OK`
+	- 前端构建：`cd frontend && npm run build`
+- 测试结果：
+	- 构建通过。
+	- 训练菜单入口已合并为单一“训练”，无“无氧训练/有氧训练”重复入口残留。
+	- 训练弹窗标题已统一为“训练”，类型仍在弹窗内部二选一。
+	- 受当前会话限制（未提供可用登录态账号），未完成登录后页面的端到端点击验证与移动端实机验证；本次以代码路径、静态检查和构建结果为主。
+- 数据库迁移结果：本次无数据库迁移。
+- 前端构建结果：通过。
+- 风险或注意事项：工作区存在未纳入本次提交的无关改动（`frontend/src/components/BottomNav.jsx`、`frontend/src/index.css`），已保持隔离。
+- 当前分支：supabase-v1
+- Git Commit ID：80db763d18d2884d15be505029c3ca1d97b6a923
