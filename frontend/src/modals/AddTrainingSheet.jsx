@@ -25,13 +25,6 @@ export const AddTrainingSheet = ({ open, onOpenChange, onConfirm, initialKind = 
     }
   }, [open, initialKind]);
 
-  const parsedDuration = Number(durationInput.trim());
-  const durationForEstimate = Number.isFinite(parsedDuration) && parsedDuration > 0 ? parsedDuration : 0;
-
-  const estimate = tab === 'anaerobic'
-    ? Math.round(durationForEstimate * 6.2)
-    : Math.round(durationForEstimate * 9.5);
-
   const normalizeDurationOnBlur = () => {
     const normalizedInput = durationInput.trim();
     if (!normalizedInput) return;
@@ -76,7 +69,6 @@ export const AddTrainingSheet = ({ open, onOpenChange, onConfirm, initialKind = 
       title: tab === 'anaerobic' ? '无氧训练' : '有氧训练',
       time,
       detail: `${name || (tab === 'anaerobic' ? '力量训练' : '有氧运动')} · ${normalizedDuration} 分钟`,
-      caloriesBurned: estimate,
     };
 
     try {
@@ -172,16 +164,6 @@ export const AddTrainingSheet = ({ open, onOpenChange, onConfirm, initialKind = 
                 {durationError ? (
                   <p className="mt-1 text-[12px] text-[#D27D67]">{durationError}</p>
                 ) : null}
-              </div>
-            </div>
-
-            <div className="rounded-2xl p-4" style={{ background: '#FBEEE8' }}>
-              <p className="text-[11px] uppercase tracking-widest text-[#858C88]">预估消耗</p>
-              <div className="flex items-baseline gap-2 mt-1.5">
-                <span className="font-num text-3xl font-medium text-[#D27D67]" data-testid="training-preview-cal">
-                  {estimate}
-                </span>
-                <span className="text-xs text-[#858C88]">kcal</span>
               </div>
             </div>
 
