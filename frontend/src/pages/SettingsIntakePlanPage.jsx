@@ -225,18 +225,18 @@ export const SettingsIntakePlanPage = () => {
           })}
 
           {/* 其他3个字段排成一行（响应式） */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-1">
             {FIELD_DEFINITIONS.slice(1).map((field) => {
               const emptyFields = Object.entries(draft).filter(([, v]) => !v || Number(v) === 0).map(([k]) => k);
               const isAutoField = autoValue !== null && emptyFields.length === 1 && emptyFields[0] === field.key;
               const displayValue = isAutoField ? formatNumberByField(autoValue, field.key) : draft[field.key];
 
               return (
-                <div key={field.key}>
+                <div key={field.key} className="min-w-0">
                   <label htmlFor={`intake-${field.key}`} className="text-[12px] text-[#6A6F6C]">
                     {field.label}
                   </label>
-                  <div className="mt-1 flex items-center gap-1">
+                  <div className="mt-1 flex items-center gap-1 min-w-0">
                     <input
                       id={`intake-${field.key}`}
                       inputMode="decimal"
@@ -246,10 +246,10 @@ export const SettingsIntakePlanPage = () => {
                         setDraft((prev) => ({ ...prev, [field.key]: event.target.value }));
                         setErrorMessage('');
                       }}
-                      className={`flex-1 min-h-10 rounded-lg border px-1.5 text-[13px] ${isAutoField ? 'border-[#E5E5E0] bg-[#F7F7F5] text-[#6A6F6C]' : 'border-[#D5DCD2] bg-white text-[#2C332F]'}`}
+                      className={`flex-1 min-w-0 min-h-10 rounded-lg border px-1 text-[13px] ${isAutoField ? 'border-[#E5E5E0] bg-[#F7F7F5] text-[#6A6F6C]' : 'border-[#D5DCD2] bg-white text-[#2C332F]'}`}
                       placeholder="0"
                     />
-                    <span className="text-[11px] text-[#858C88] w-7 text-right">{field.unit}</span>
+                    <span className="text-[11px] text-[#858C88] w-6 flex-shrink-0 text-right">{field.unit}</span>
                   </div>
                 </div>
               );
