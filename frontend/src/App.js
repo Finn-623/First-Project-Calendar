@@ -12,6 +12,7 @@ import { SettingsPage } from './pages/SettingsPage';
 import { AccountInfoPage } from './pages/AccountInfoPage';
 import { ProfileInfoPage } from './pages/ProfileInfoPage';
 import { SettingsVersionPage } from './pages/SettingsVersionPage';
+import { VersionFeedbackPage } from './pages/VersionFeedbackPage';
 import { SettingsIntakePlanPage } from './pages/SettingsIntakePlanPage';
 import { SettingsRecordHistoryPage } from './pages/SettingsRecordHistoryPage';
 import { SettingsRecordSettingsPage } from './pages/SettingsRecordSettingsPage';
@@ -295,6 +296,7 @@ function App() {
                 <Route path="/settings/personal-info" element={<ProfileInfoPage />} />
                 <Route path="/settings/profile" element={<Navigate to="/settings/personal-info" replace />} />
                 <Route path="/settings/version" element={<SettingsVersionPage />} />
+                <Route path="/settings/version/feedback" element={<VersionFeedbackPage />} />
                 <Route path="/settings/intake-plan" element={<SettingsIntakePlanPage />} />
                 <Route path="/settings/record-history" element={<SettingsRecordHistoryPage />} />
                 <Route path="/settings/record-settings" element={<SettingsRecordSettingsPage />} />

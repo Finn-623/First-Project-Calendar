@@ -45,7 +45,7 @@ const sections = [
         to: '/settings/version',
         icon: Info,
         label: '版本信息',
-        description: '版本号、更新日志与修改意见',
+        description: '查看版本更新记录并提交改进建议',
       },
     ],
   },
