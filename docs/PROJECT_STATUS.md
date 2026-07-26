@@ -74,6 +74,12 @@
   - 证据：frontend/public/index.html
   - 说明：仅更新用户可见的品牌展示位，功能语境中的“饮食记录”未改动。
   - 相关 Commit：cfbe92167a145b800ccbc67f2efc3f17e461c534
+- `已完成` 登录页显示统一版本号
+  - 证据：frontend/src/config/appVersion.js
+  - 证据：frontend/src/pages/LoginPage.jsx
+  - 证据：frontend/package.json
+  - 说明：登录页底部显示 `当前版本：v0.1.1`，版本来源统一为 `frontend/package.json`。
+  - 相关 Commit：737188e4b8619edd172bedce8ff518d1519b3b5c
 
 ## 4. 部分完成
 

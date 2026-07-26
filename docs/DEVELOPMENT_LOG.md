@@ -106,7 +106,7 @@
 - 未完成事项：待完成
 - 风险或注意事项：统一版本来源采用 `frontend/package.json` 的标准 `version` 字段；登录页仅展示版本号，不改变认证逻辑或其他页面。
 - Git 分支：supabase-v1
-- Git Commit ID：未提交
+- Git Commit ID：737188e4b8619edd172bedce8ff518d1519b3b5c
 
 ## DEV-20260726-002
 

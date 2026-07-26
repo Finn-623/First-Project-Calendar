@@ -12,9 +12,11 @@
 ### Added
 
 - 登录页面新增当前版本号显示：`当前版本：v0.1.1`。
+	- 相关 Commit：737188e4b8619edd172bedce8ff518d1519b3b5c
 
 ### Changed
 
 - 建立正式上传时同步更新版本号和版本记录的规则。
+	- 相关 Commit：737188e4b8619edd172bedce8ff518d1519b3b5c
 
 
