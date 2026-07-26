@@ -1606,3 +1606,87 @@
 - Git Commit ID：8026e90619b26a005530f4508439b1f77602f45d
 - 版本状态：本次为本地功能修改，未正式上传，正式版本号保持 `v0.1.1`。
 
+## DEV-20260726-036
+
+- 日期：2026-07-26
+- 状态：已完成
+- 修改类型：历史记录删除修复
+- 修改模块：历史餐次、食物明细、历史详情标题、历史列表
+- 任务目标：
+	- 历史餐次支持删除单个食物。
+	- 删除后保持当前历史日期并更新营养汇总。
+	- 将整日删除入口从历史列表/单条记录中移除，改到历史详情顶部右上角。
+- 修改前检查：
+	- 已执行：`git status --short`
+	- 已执行：`git branch --show-current`
+	- 已检查历史详情：`frontend/src/pages/HistoryDetailPage.jsx`
+	- 已检查历史列表：`frontend/src/pages/HistoryPage.jsx`
+	- 已检查单条记录组件：`frontend/src/components/TimelineItem.jsx`
+	- 已检查食物弹窗：`frontend/src/modals/AddFoodSheet.jsx`
+	- 已检查历史服务：`frontend/src/services/historyService.js`
+	- 已确认工作区存在其他未提交改动：`BottomNav.jsx`、`index.css`
+- 历史食物原来无法删除的实际原因：
+	- 历史餐次食物行没有独立删除入口。
+	- 食物条目缺少稳定的摄入条目主键字段，无法精确定位“同名食物中的某一条”。
+- 食物定义 ID 与摄入明细 ID 的区分：
+	- `foodId` 指向食物库定义（foods），不能用于删除历史餐次内单次摄入。
+	- 新增并统一使用 `entryId` 作为历史餐次单个食物摄入条目标识。
+- 单个食物删除使用的数据表和字段：
+	- 历史详情编辑态下删除的是 `daily_archives.timeline[*].foods[*]` 中的单条摄入快照。
+	- 删除定位字段：`entryId`（兼容旧数据回退 `id/foodEntryId/index` 键）。
+- 删除成功后的本地状态更新方式：
+	- 仅更新当前餐次：按 `mealItemId + foodEntryId` 过滤 `foods` 数组。
+	- 不删除其他餐次、不删除其他记录、不跳转路由。
+- 餐次小计和全天汇总更新方式：
+	- 复用现有 `sumMealMacros` / `sumTimelineMacros`，基于更新后的 `draftTimeline` 自动重算。
+- 删除最后一个食物的处理：
+	- 保留餐次容器（foods 为空），继续停留当前历史详情；保存后按现有空餐次展示规则呈现。
+- 删除失败处理：
+	- 当前实现为“本地删除并保存后生效”流程；网络失败场景由保存动作统一处理：保存失败时不写入数据库并提示失败。
+- 整日删除按钮原位置：
+	- 之前位于历史列表日期卡片右上角（`HistoryPage`）。
+- 整日删除按钮新位置：
+	- 历史详情页标题区右上角（`HistoryDetailPage` 顶部）。
+- 移除按钮的组件列表：
+	- `frontend/src/pages/HistoryPage.jsx`（移除每个日期卡片上的整日删除按钮和对应确认弹窗）。
+- 整日删除的数据范围：
+	- 使用现有 RPC `delete_day_records` 删除当前用户指定日期的 `timeline_items` 与 `daily_archives`。
+	- 关联 `food_entries` 通过外键级联删除。
+	- 不删除 foods 定义表数据。
+- 是否使用 RPC 或事务：
+	- 复用现有 RPC（数据库函数）路径。
+	- 本次未新增新 RPC。
+- 整日删除后的导航位置：
+	- 历史详情整日删除成功后返回 `/history`（历史列表），不返回首页。
+- 用户数据隔离方式：
+	- 复用 RPC 内 `auth.uid()` 约束，仅删除当前登录用户数据。
+- 是否修改数据库结构：否。
+- 是否新增 migration 或数据库函数：否（本次仅复用既有 `012_delete_day_records_rpc.sql`）。
+- 实际修改文件：
+	- `frontend/src/components/TimelineItem.jsx`
+	- `frontend/src/pages/HistoryDetailPage.jsx`
+	- `frontend/src/pages/HistoryPage.jsx`
+	- `frontend/src/modals/AddFoodSheet.jsx`
+	- `frontend/src/services/historyService.js`
+	- `CHANGELOG.md`
+	- `docs/DEVELOPMENT_LOG.md`
+	- `docs/PROJECT_STATUS.md`
+	- `docs/VERSION_HISTORY.md`
+- 实际执行的测试：
+	- 修改前检查：`git status --short`、`git branch --show-current`
+	- 语法检查：`get_errors`（HistoryDetailPage / HistoryPage / TimelineItem / AddFoodSheet / historyService）
+	- 链路检查：确认历史列表中无 `history-delete-date-*` 按钮；确认历史详情顶部保留 `history-delete-day` 按钮；确认食物行新增 `delete-food-entry-*` 删除入口
+	- 前端构建：`cd frontend && npm run build`
+- migration 或 RPC 执行结果：
+	- 本次未新增迁移。
+	- 复用既有 RPC，当前会话未连接 Supabase SQL 执行环境，未新增数据库执行回执。
+- 测试结果：
+	- 目标文件无语法错误。
+	- 前端构建通过（Compiled successfully）。
+	- 静态链路确认：整日删除按钮已从历史列表移除并放置到历史详情顶部。
+	- 受当前会话缺少可用登录态与在线数据库执行环境限制，未完成端到端点击与 Network 面板人工验收。
+- 前端构建结果：通过。
+- 当前分支：supabase-v1
+- Git Commit ID：959d81eaba77fb8d784eb24bc75afbd4e1a8a345
+- 版本状态：本次为本地修复，未正式上传，正式版本号保持 `v0.1.1`。
+

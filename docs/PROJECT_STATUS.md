@@ -235,6 +235,14 @@
   - 证据：supabase/migrations/012_delete_day_records_rpc.sql
   - 说明：历史详情单条删除后保持当前历史日期；历史事件支持删除与开始/结束时间编辑；历史列表卡片右上角可直接执行整日删除并移除该日期。
   - 相关 Commit：8026e90619b26a005530f4508439b1f77602f45d
+- `已完成` 历史餐次单个食物删除与整日删除入口位置调整
+  - 证据：frontend/src/components/TimelineItem.jsx
+  - 证据：frontend/src/pages/HistoryDetailPage.jsx
+  - 证据：frontend/src/pages/HistoryPage.jsx
+  - 证据：frontend/src/modals/AddFoodSheet.jsx
+  - 证据：frontend/src/services/historyService.js
+  - 说明：历史餐次食物条目支持按 entryId 删除；整日删除入口从历史列表卡片移除并固定到历史详情页顶部右上角，避免遮挡单条记录信息。
+  - 相关 Commit：959d81eaba77fb8d784eb24bc75afbd4e1a8a345
 
 ## 4. 部分完成
 
