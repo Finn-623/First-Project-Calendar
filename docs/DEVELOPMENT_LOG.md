@@ -2024,3 +2024,24 @@
 - 当前分支：supabase-v1
 - Git Commit ID：0ccfe51d087f82e4877f7705a6b09bb9dfa85d2d
 
+## DEV-20260726-045
+
+- 日期：2026-07-26
+- 状态：已完成
+- 任务目标：修复“输入 4 位仍显示密码至少 3 位”的误导提示问题。
+- 实际完成内容：
+	- 保持前端最小长度校验为 3 位。
+	- 调整后端错误映射逻辑：当后端返回更高长度要求（例如 6 位）时，前端提示显示后端真实长度，避免误导。
+- 主要修改文件或模块：`frontend/src/lib/accountUtils.js`、`frontend/src/lib/accountUtils.test.js`、`docs/DEVELOPMENT_LOG.md`
+- 是否涉及数据库迁移：否。
+- 执行的测试：
+	- `cd frontend && CI=true npm test -- --watch=false --runInBand accountUtils.test.js`
+	- `get_errors` 检查 `frontend/src/lib/accountUtils.js`、`frontend/src/lib/accountUtils.test.js`
+- 测试结果：
+	- 自动化测试通过：1 个测试套件，9 个测试全部通过。
+	- 目标文件无语法错误。
+- 风险或注意事项：
+	- 前端最小长度仍为 3 位，但如果 Supabase 后台策略更高，会以后台策略报错为准。
+- 当前分支：supabase-v1
+- Git Commit ID：176c4de2213dcd4d8e5d3b4322756d36571f0760
+
