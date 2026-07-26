@@ -32,3 +32,4 @@ yarn-error.log*
 
 # Generated
 .eslintcache
+.vercel
