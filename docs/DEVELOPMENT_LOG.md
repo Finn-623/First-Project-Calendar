@@ -348,3 +348,46 @@
 	- 本次仅移除首页右上角入口，不删除新增业务能力本身与相关弹窗/逻辑。
 - 当前分支：supabase-v1
 - Git Commit ID：e8810246d53e4039526c3184e0f5770750dece5c
+
+## DEV-20260726-011
+
+- 日期：2026-07-26
+- 状态：已完成
+- 修改类型：UI 布局调整
+- 修改模块：首页 / 今日摄入
+- 任务目标：将首页“今日摄入”模块调整为两行展示，第一行显示当前摄入，第二行显示目标摄入。
+- 修改前布局：组件顶部显示当前热量大数字与目标完成度，蛋白质/脂肪/碳水为单行三卡片展示，未分离“当前/目标”两行。
+- 修改后布局：在首页启用两行结构，第一行为“当前”行（热量、蛋白质、脂肪、碳水），第二行为“目标”行（热量、蛋白质、脂肪、碳水），每行保持水平排列与一致字段顺序。
+- 第一行显示内容：当前热量、当前蛋白质、当前脂肪、当前碳水。
+- 第二行显示内容：目标热量、目标蛋白质、目标脂肪、目标碳水（未设置目标时显示占位值）。
+- 当前摄入数据字段：`totals.cal`、`totals.p`、`totals.f`、`totals.c`。
+- 目标摄入数据字段：`plan.calories`、`plan.protein`、`plan.fat`、`plan.carbs`（通过 `safePlan` 归一化）。
+- 当前和目标数据来源：首页 `TodayPage` 通过 `sumTimelineMacros(timeline)` 计算 `totals`，并从 `store` 获取 `plan` 后传入 `NutritionSummary`。
+- 当前模块移动端宽度：位于 `TodayPage` 的 `px-5` 容器内，受 `app-shell` 的 `max-width: 28rem` 限制。
+- 移动端适配方式：使用紧凑字号与双行网格（每行标签列 + 四列营养项），缩小单元格间距并保持数值与单位同一行。
+- 确认未使用横向滚动：未使用 `overflow-x-auto`、`overflow-x-scroll` 或横向滚动条。
+- 是否使用公共营养统计组件：是，使用 `NutritionSummary`。
+- 是否修改公共组件：是；仅新增 `layout="splitRows"` 的首页局部开关，默认布局保留给其他页面（如历史详情页）。
+- 实际修改文件：`frontend/src/components/NutritionSummary.jsx`、`frontend/src/pages/TodayPage.jsx`、`CHANGELOG.md`、`docs/DEVELOPMENT_LOG.md`、`docs/PROJECT_STATUS.md`、`docs/VERSION_HISTORY.md`
+- 实际测试内容：
+	- 修改前检查：`git status --short`、`git branch --show-current`
+	- 代码定位：检查 `NutritionSummary` 组件字段与数据来源；检查 `TodayPage` 中 `totals` 与 `plan` 传参
+	- 复用检查：确认 `NutritionSummary` 同时被首页与历史详情页使用
+	- 布局检查：确认首页启用 `layout="splitRows"`，历史详情页保持默认布局
+	- 结构检查：确认存在 `sum-current-row` 与 `sum-target-row`，字段顺序为热量/蛋白质/脂肪/碳水
+	- 滚动检查：确认组件内无横向滚动样式
+	- 语法检查：`get_errors` 检查 `NutritionSummary.jsx`、`TodayPage.jsx`
+	- 构建检查：`cd frontend && npm run build`
+- 测试结果：
+	- 首页“今日摄入”已实现“当前一行、目标一行”。
+	- 当前与目标字段顺序一致，热量与三大营养素信息保留完整。
+	- 未引入模块内部横向滚动，也未发现页面级横向滚动相关改动。
+	- 公共组件改动已做首页局部化，历史详情页展示未被同步改为两行。
+	- 构建通过，变更文件无语法错误。
+- 构建结果：通过。
+- 未完成事项：
+	- 待在已登录会话补充一次首页实机视觉验收（当前以代码结构与构建验证为主）。
+- 风险或注意事项：
+	- 本次仅调整展示结构，不修改摄入/目标计算逻辑、状态管理、查询与数据库逻辑。
+- 当前分支：supabase-v1
+- Git Commit ID：5e695da769e309a46cf9838e9aadf906b0a11040

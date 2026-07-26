@@ -102,6 +102,11 @@
   - 证据：frontend/src/pages/TodayPage.jsx
   - 说明：首页顶部右上角不再显示加号按钮；新增业务能力仍通过页面内其他入口保留。
   - 相关 Commit：e8810246d53e4039526c3184e0f5770750dece5c
+- `已完成` 首页“今日摄入”模块两行布局展示
+  - 证据：frontend/src/components/NutritionSummary.jsx
+  - 证据：frontend/src/pages/TodayPage.jsx
+  - 说明：首页“今日摄入”模块已调整为当前摄入和目标摄入两行展示，并保持字段顺序一致。
+  - 相关 Commit：5e695da769e309a46cf9838e9aadf906b0a11040
 
 ## 4. 部分完成
 
