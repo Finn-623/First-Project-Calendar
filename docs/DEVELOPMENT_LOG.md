@@ -2002,3 +2002,25 @@
 - 当前分支：supabase-v1
 - Git Commit ID：1409c82a1c4b0b9435d2750be7a755ba26d307b1
 
+## DEV-20260726-044
+
+- 日期：2026-07-26
+- 状态：已完成
+- 任务目标：修复改密提示文案显示为“6个字符”的问题，统一显示为“密码至少需要 3 个字符”。
+- 实际完成内容：
+	- 调整密码错误映射逻辑，不再解析后端返回中的数字长度，统一按 `MIN_PASSWORD_LENGTH` 输出文案。
+	- 继续保持前端最小长度常量为 `MIN_PASSWORD_LENGTH = 3`。
+	- 更新测试：当后端返回 “at least 6 characters” 时，界面文案仍为“密码至少需要 3 个字符”。
+- 主要修改文件或模块：`frontend/src/lib/accountUtils.js`、`frontend/src/lib/accountUtils.test.js`、`docs/DEVELOPMENT_LOG.md`、`CHANGELOG.md`、`docs/VERSION_HISTORY.md`
+- 是否涉及数据库迁移：否。
+- 执行的测试：
+	- `cd frontend && CI=true npm test -- --watch=false --runInBand accountUtils.test.js`
+	- `cd frontend && npm run build`
+- 测试结果：
+	- 自动化测试通过：1 个测试套件，9 个测试全部通过。
+	- 前端构建通过（Compiled successfully）。
+- 风险或注意事项：
+	- 若 Supabase 后台实际策略高于 3，前端文案仍显示 3；后端会拒绝更新并返回失败，这属于后端策略与前端展示规则不一致风险。
+- 当前分支：supabase-v1
+- Git Commit ID：0ccfe51d087f82e4877f7705a6b09bb9dfa85d2d
+
