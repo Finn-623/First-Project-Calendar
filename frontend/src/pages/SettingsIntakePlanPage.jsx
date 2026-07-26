@@ -81,10 +81,7 @@ export const SettingsIntakePlanPage = () => {
   const [historyItems, setHistoryItems] = useState([]);
   const [historyCursor, setHistoryCursor] = useState(null);
   const [historyHasMore, setHistoryHasMore] = useState(false);
-  const [editingHistoryId, setEditingHistoryId] = useState(null);
-  const [editingDraft, setEditingDraft] = useState({});
-  const [editingLoading, setEditingLoading] = useState(false);
-  const [editingError, setEditingError] = useState('');
+  const [deletingLoading, setDeletingLoading] = useState(false);
 
   const loadHistory = useCallback(async ({ append = false, cursor = null } = {}) => {
     if (!user?.id) return;
@@ -184,86 +181,23 @@ export const SettingsIntakePlanPage = () => {
     setDraft(toDraft(currentPlan));
   };
 
-  const openEditHistory = (item) => {
-    setEditingHistoryId(item.id);
-    setEditingDraft({
-      calories: String(item.calories || ''),
-      protein: String(item.protein || ''),
-      fat: String(item.fat || ''),
-      carbs: String(item.carbs || ''),
-    });
-    setEditingError('');
-  };
-
-  const closeEditHistory = () => {
-    setEditingHistoryId(null);
-    setEditingDraft({});
-    setEditingError('');
-  };
-
-  const handleSaveEdit = async () => {
-    if (editingLoading || !editingHistoryId) return;
-
-    const validated = validateIntakePlanDraft(editingDraft, 'calories');
-    if (!validated.success) {
-      setEditingError(validated.error || '请输入有效数值');
-      return;
-    }
-
-    setEditingLoading(true);
-    setEditingError('');
-
-    const result = await intakePlanService.updateHistory({
-      historyId: editingHistoryId,
-      calories: Number(editingDraft.calories),
-      protein: Number(editingDraft.protein),
-      fat: Number(editingDraft.fat),
-      carbs: Number(editingDraft.carbs),
-    });
-
-    if (!result.success) {
-      setEditingError(result.error || '更新失败，请稍后重试');
-      setEditingLoading(false);
-      return;
-    }
-
-    setHistoryItems((prev) =>
-      prev.map((item) =>
-        item.id === editingHistoryId
-          ? {
-              ...item,
-              calories: Number(editingDraft.calories),
-              protein: Number(editingDraft.protein),
-              fat: Number(editingDraft.fat),
-              carbs: Number(editingDraft.carbs),
-            }
-          : item
-      )
-    );
-
-    setEditingLoading(false);
-    toast.success('历史记录已更新');
-    closeEditHistory();
-  };
-
   const handleDeleteHistory = async (historyId) => {
     if (!window.confirm('确定要删除这条历史记录吗？')) {
       return;
     }
 
-    setEditingLoading(true);
-    setEditingError('');
+    setDeletingLoading(true);
 
     const result = await intakePlanService.deleteHistory({ historyId });
 
     if (!result.success) {
-      setEditingError(result.error || '删除失败，请稍后重试');
-      setEditingLoading(false);
+      toast.error(result.error || '删除失败，请稍后重试');
+      setDeletingLoading(false);
       return;
     }
 
     setHistoryItems((prev) => prev.filter((item) => item.id !== historyId));
-    setEditingLoading(false);
+    setDeletingLoading(false);
     toast.success('历史记录已删除');
   };
 
@@ -399,16 +333,8 @@ export const SettingsIntakePlanPage = () => {
                 ) : null}
                 <button
                   type="button"
-                  onClick={() => openEditHistory(item)}
-                  disabled={editingLoading}
-                  className="text-[12px] px-2 py-1 rounded-lg border border-[#D5DCD2] text-[#2C332F] disabled:opacity-55 hover:bg-[#F7F7F5]"
-                >
-                  编辑
-                </button>
-                <button
-                  type="button"
                   onClick={() => handleDeleteHistory(item.id)}
-                  disabled={editingLoading}
+                  disabled={deletingLoading}
                   className="text-[12px] px-2 py-1 rounded-lg border border-[#E5A8A0] text-[#A8483E] disabled:opacity-55 hover:bg-[#FEF3F2]"
                 >
                   删除
@@ -434,64 +360,6 @@ export const SettingsIntakePlanPage = () => {
           </div>
         ) : null}
       </section>
-
-      {editingHistoryId && (
-        <div className="fixed inset-0 bg-black/50 flex items-end z-50">
-          <div className="w-full bg-white rounded-t-2xl px-4 py-4 space-y-4">
-            <div>
-              <h2 className="text-[16px] font-medium text-[#2C332F]">编辑历史记录</h2>
-              <p className="text-[12px] text-[#858C88] mt-1">修改历史记录的数值</p>
-            </div>
-
-            <div className="space-y-3">
-              {FIELD_DEFINITIONS.map((field) => (
-                <div key={field.key} className="min-w-0">
-                  <label htmlFor={`edit-${field.key}`} className="text-[12px] text-[#6A6F6C]">
-                    {field.label}
-                  </label>
-                  <div className="mt-1 flex items-center gap-0.5 min-w-0">
-                    <input
-                      id={`edit-${field.key}`}
-                      inputMode="decimal"
-                      value={editingDraft[field.key] || ''}
-                      onChange={(event) => {
-                        setEditingDraft((prev) => ({ ...prev, [field.key]: event.target.value }));
-                        setEditingError('');
-                      }}
-                      className="flex-1 min-w-0 min-h-10 rounded-lg border px-2 py-1.5 text-[13px] text-center border-[#D5DCD2] bg-white text-[#2C332F]"
-                      placeholder="0"
-                    />
-                    <span className="text-[11px] text-[#858C88] w-6 flex-shrink-0 text-left">{field.unit}</span>
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            {editingError ? (
-              <p className="text-[12px] text-[#A8483E]">{editingError}</p>
-            ) : null}
-
-            <div className="flex items-center gap-2 pt-2">
-              <button
-                type="button"
-                onClick={closeEditHistory}
-                disabled={editingLoading}
-                className="min-h-11 px-3 rounded-lg border border-[#D5DCD2] text-[13px] text-[#2C332F] disabled:opacity-55 flex-1"
-              >
-                取消
-              </button>
-              <button
-                type="button"
-                onClick={handleSaveEdit}
-                disabled={editingLoading}
-                className="min-h-11 px-3 rounded-lg bg-[#6B8067] text-[13px] text-white disabled:opacity-55 flex-1"
-              >
-                {editingLoading ? '更新中...' : '更新'}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 };
