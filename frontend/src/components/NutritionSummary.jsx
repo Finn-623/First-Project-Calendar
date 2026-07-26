@@ -66,24 +66,9 @@ export const NutritionSummary = ({ totals, plan, layout = 'default' }) => {
   if (layout === 'splitRows') {
     return (
       <section className="rounded-3xl bg-[#EFF2ED] border border-[#E1E6DE] p-4" data-testid="nutrition-summary">
-        <div className="flex items-start justify-between gap-3">
-          <div className="min-w-0">
-            <p className="text-[11px] uppercase tracking-[0.18em] text-[#7E867F]">今日摄入</p>
-            <p className="text-[11px] text-[#7E867F] mt-1" data-testid="sum-progress">
-              {normalizedPlan
-                ? <>目标 {normalizedPlan.calories} kcal · 完成 <span className="font-num">{pct}%</span></>
-                : '尚未设置目标'}
-            </p>
-          </div>
-
-          <div className="h-12 w-12 rounded-xl bg-white/70 border border-[#DCE3D8] flex items-center justify-center shrink-0">
-            <Flame size={20} strokeWidth={1.8} color="#6B8067" />
-          </div>
-        </div>
-
-        <div className="mt-3 space-y-2">
+        <div className="space-y-2">
           <div className="grid grid-cols-[2.6rem_repeat(4,minmax(0,1fr))] gap-1.5 items-stretch" data-testid="sum-current-row">
-            <div className="text-[11px] text-[#5E6660] font-medium flex items-center justify-start pl-0.5">当前</div>
+            <div className="text-[11px] text-[#5E6660] font-medium flex items-center justify-start pl-0.5">今日摄入</div>
             {nutrientFields.map((field) => (
               <div key={`current-${field.key}`} className="rounded-xl bg-white border border-[#E5E5E0] px-1.5 py-2 text-center">
                 <div className="text-[10px] leading-tight text-[#858C88]">{field.label}</div>
