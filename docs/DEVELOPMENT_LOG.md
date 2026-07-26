@@ -391,3 +391,46 @@
 	- 本次仅调整展示结构，不修改摄入/目标计算逻辑、状态管理、查询与数据库逻辑。
 - 当前分支：supabase-v1
 - Git Commit ID：5e695da769e309a46cf9838e9aadf906b0a11040
+
+## DEV-20260726-012
+
+- 日期：2026-07-26
+- 状态：已完成
+- 修改类型：UI 布局调整
+- 修改模块：首页 / 今日摄入
+- 任务目标：精简首页“今日摄入”模块，移除上方标题/目标提示/火焰图标区域，仅保留两行营养信息，并将首行标签改为“今日摄入”。
+- 删除的界面元素：
+	- 上方“今日摄入”标题文本（splitRows 模式顶部区）
+	- “尚未设置目标/目标完成度”提示文本（splitRows 模式顶部区）
+	- 右上角火焰图标及其容器区域（splitRows 模式顶部区）
+	- 删除上述内容后对应的顶部留白区域
+- 第一行标签修改：由“当前”改为“今日摄入”。
+- 第二行标签：保持“目标”不变。
+- 保留的数据字段：热量、蛋白质、脂肪、碳水；当前值与目标值；kcal 与 g 单位；未设置目标时目标行占位值（`--`）保留。
+- 火焰按钮原有功能：无点击逻辑，原为模块顶部的静态装饰图标容器。
+- 是否修改公共组件：是。修改了公共 `NutritionSummary` 组件，但仅影响首页使用的 `layout="splitRows"` 分支；默认分支能力保留。
+- 当前与目标数据来源：继续来自 `totals` 与 `plan`（`safePlan` 归一化），未调整计算和数据流。
+- 实际修改文件：`frontend/src/components/NutritionSummary.jsx`、`CHANGELOG.md`、`docs/DEVELOPMENT_LOG.md`、`docs/PROJECT_STATUS.md`、`docs/VERSION_HISTORY.md`
+- 实际测试内容：
+	- 修改前检查：`git status --short`、`git branch --show-current`
+	- 组件定位：确认顶部标题、目标提示和火焰容器来源于 `NutritionSummary` 的 splitRows 分支
+	- 结构检查：确认 splitRows 保留 `sum-current-row` 与 `sum-target-row`
+	- 标签检查：确认首行标签为“今日摄入”，次行标签仍为“目标”
+	- 信息完整性检查：确认热量/蛋白质/脂肪/碳水字段及单位仍在
+	- 滚动检查：确认未使用 `overflow-x-auto`、`overflow-x-scroll` 或横向滚动样式
+	- 语法检查：`get_errors` 检查 `NutritionSummary.jsx`
+	- 控制台检查：浏览器 reload 后 console error 为 0（登录页）
+	- 构建检查：`cd frontend && npm run build`
+- 测试结果：
+	- 上方标题区、目标提示与火焰图标区域已从首页 splitRows 视图删除。
+	- 首行标签已更新为“今日摄入”，次行“目标”保持不变。
+	- 当前与目标两行营养信息完整保留，字段顺序与单位未变。
+	- 未引入横向滚动或语法错误。
+	- 构建通过。
+- 构建结果：通过。
+- 未完成事项：
+	- 待在已登录会话补充首页可视化验收（当前以代码与构建验证为主）。
+- 风险或注意事项：
+	- 本次仅调整首页 splitRows 展示，不修改业务逻辑、状态管理、数据库与认证链路。
+- 当前分支：supabase-v1
+- Git Commit ID：514d9d5d2a6fc7b16ee462a83368190e28024ac2

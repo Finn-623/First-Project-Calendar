@@ -107,6 +107,10 @@
   - 证据：frontend/src/pages/TodayPage.jsx
   - 说明：首页“今日摄入”模块已调整为当前摄入和目标摄入两行展示，并保持字段顺序一致。
   - 相关 Commit：5e695da769e309a46cf9838e9aadf906b0a11040
+- `已完成` 首页“今日摄入”模块顶部信息精简
+  - 证据：frontend/src/components/NutritionSummary.jsx
+  - 说明：首页两行营养信息保留，移除上方标题、目标提示与火焰图标区域，第一行标签更新为“今日摄入”。
+  - 相关 Commit：514d9d5d2a6fc7b16ee462a83368190e28024ac2
 
 ## 4. 部分完成
 
