@@ -243,6 +243,14 @@
   - 证据：frontend/src/services/historyService.js
   - 说明：历史餐次食物条目支持按 entryId 删除；整日删除入口从历史列表卡片移除并固定到历史详情页顶部右上角，避免遮挡单条记录信息。
   - 相关 Commit：959d81eaba77fb8d784eb24bc75afbd4e1a8a345
+- `已完成` 历史批量删除、空餐次清理与时间轴展示统一
+  - 证据：frontend/src/pages/HistoryPage.jsx
+  - 证据：frontend/src/pages/HistoryDetailPage.jsx
+  - 证据：frontend/src/components/TimelineItem.jsx
+  - 证据：frontend/src/services/historyService.js
+  - 证据：supabase/migrations/013_delete_history_days_rpc.sql
+  - 说明：历史主页顶部新增批量删除入口并支持多日期选择/全选/确认删除；历史详情删除最后一个食物会自动删除整餐并过滤旧空餐次；历史详情时间轴改为与首页一致的左侧时间布局，并在记录右上角统一编辑/删除操作区。
+  - 相关 Commit：51fe1233ac68817c97b8d28f12eeb67c2a4e1398
 
 ## 4. 部分完成
 

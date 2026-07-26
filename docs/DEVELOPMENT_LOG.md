@@ -1690,3 +1690,86 @@
 - Git Commit ID：959d81eaba77fb8d784eb24bc75afbd4e1a8a345
 - 版本状态：本次为本地修复，未正式上传，正式版本号保持 `v0.1.1`。
 
+## DEV-20260726-037
+
+- 日期：2026-07-26
+- 状态：已完成
+- 修改类型：历史记录功能与展示调整
+- 修改模块：历史主页、历史详情、共享时间轴组件、历史服务、Supabase migration
+- 任务目标：
+	- 在历史记录主页右上角新增批量删除入口，并支持多日期选择后一次删除。
+	- 删除餐次最后一个食物时自动删除整餐，避免空餐次卡片。
+	- 历史详情记录样式、层级和操作区与首页时间轴统一，记录右上角显示编辑/删除按钮。
+- 批量删除入口位置：
+	- 位于 `HistoryPage` 标题区域右上角，仅显示一次，不放在日期卡片内部。
+- 批量选择状态设计：
+	- 使用前端临时状态 `isBatchDeleteMode` 与 `selectedDateKeys`（日期键 `YYYY-MM-DD`）。
+	- 普通模式点击日期卡片进入详情；批量模式点击日期卡片仅切换选中状态。
+- 全选和取消全选方式：
+	- 在批量模式顶部提供“全选/取消全选”按钮，作用于当前已加载日期列表。
+- 批量删除确认流程：
+	- 先弹出确认窗口。
+	- 显示选择数量；数量少时列出日期，数量多时展示最早/最晚日期。
+	- 删除中显示“删除中...”，并禁用重复操作与选择切换。
+- 批量删除的数据范围：
+	- 当前用户所选日期的 `timeline_items`。
+	- 当前用户所选日期的 `daily_archives`（包含日期完成状态）。
+	- `food_entries` 通过外键级联随 `timeline_items` 删除。
+	- 不删除 foods 食物定义、用户资料、目标、计划、模板及未选日期。
+- 是否使用批量 RPC 或事务：
+	- 是。新增 `delete_history_days(target_dates date[])` 批量 RPC。
+	- 在数据库函数内统一删除，单次调用在同一事务中执行，失败整体回滚。
+- 用户数据隔离方式：
+	- 函数内部仅使用 `auth.uid()` 识别用户，不接受前端传入 `user_id`。
+	- 执行权限仅授予 `authenticated`。
+- 最后一个食物删除后原空餐次产生原因：
+	- 历史详情删除食物后仅过滤了 `foods` 数组，未同步清理 `foods.length === 0` 的餐次父记录。
+- 食物明细与餐次父记录关系：
+	- 餐次父记录为时间轴 `meal` 项；食物明细为该项下 `foods[]` 快照条目（使用 `entryId` 标识）。
+- 空餐次清理方式：
+	- 删除食物后若目标餐次 `foods` 为空，立即从时间轴中移除该餐次。
+	- 渲染层和保存层统一过滤空餐次，避免旧空餐次展示。
+- 是否使用事务型删除函数（单食物）：
+	- 历史详情单食物删除采用归档快照更新（`updateDayArchive`）方式完成原子落库。
+	- 本次未新增单食物专用数据库函数。
+- 旧空餐次显示或清理方式：
+	- 历史详情读取与渲染时对空餐次进行过滤，不渲染仅标题无食物的卡片。
+- 首页与历史原展示差异：
+	- 历史详情此前使用默认布局，时间不在左侧列，操作区位置与首页不一致。
+- 复用或提取的共享组件：
+	- 复用 `TimelineItem`，历史详情改用与首页一致的 `layout="home-time-left"` 展示。
+	- 统一记录头部操作区在右上角显示编辑/删除。
+- history mode 与 today mode 的区别：
+	- 历史详情不显示“现在”位置标记。
+	- 历史详情不显示首页专属开始流程，仅保留记录级编辑/删除与历史数据更新。
+- 编辑和删除操作区恢复方式：
+	- `TimelineItem` 统一在卡片右上角渲染操作区。
+	- 历史详情中的餐次、事件、训练等可操作记录均从该区域触发编辑/删除。
+- 是否修改数据库结构：否。
+- 是否新增 migration 或数据库函数：是。
+	- 新增 migration：`supabase/migrations/013_delete_history_days_rpc.sql`
+	- 新增函数：`public.delete_history_days(target_dates DATE[])`
+- 实际修改文件：
+	- `frontend/src/pages/HistoryPage.jsx`
+	- `frontend/src/pages/HistoryDetailPage.jsx`
+	- `frontend/src/components/TimelineItem.jsx`
+	- `frontend/src/services/historyService.js`
+	- `supabase/migrations/013_delete_history_days_rpc.sql`
+	- `CHANGELOG.md`
+	- `docs/DEVELOPMENT_LOG.md`
+	- `docs/PROJECT_STATUS.md`
+	- `docs/VERSION_HISTORY.md`
+- 实际执行的测试：
+	- 修改前检查：`git status --short`、`git branch --show-current`
+	- 静态链路检查：批量删除入口/全选/确认控件、旧卡片整日删除入口移除、历史详情食物删除入口与餐次清理路径。
+	- 语法检查：`get_errors`（HistoryPage / HistoryDetailPage / TimelineItem / historyService）
+	- 前端构建：`cd frontend && npm run build`
+	- 关键文本检索：`grep` 校验 `delete_history_days`、`allowMealDelete`、`history-batch-*`、`delete-food-entry-*`。
+- migration 或 RPC 执行结果：
+	- 迁移文件已新增并通过静态检查。
+	- 当前会话未连接 Supabase SQL 环境，未执行实库迁移；待部署环境执行验证。
+- 前端构建结果：通过（Compiled successfully）。
+- 当前分支：supabase-v1
+- 功能 Commit ID：51fe1233ac68817c97b8d28f12eeb67c2a4e1398
+- 版本状态：本次为本地功能提交，未正式上传，正式版本号保持 `v0.1.1`。
+
