@@ -16,6 +16,7 @@ import { timelineService } from '../services/timelineService';
 import { addDaysToDateString, getSydneyDateString } from '../services/historyService';
 import { combineLocalDateAndTime, diffSecondsBetween, getLocalTimeInputValue, secondsToDurationMinutes } from '../lib/localDateTime';
 import { useCurrentTime } from '../hooks/useCurrentTime';
+import { beginCreatePerfFlow, markCreatePerf, summarizeCreatePerfFlow } from '../lib/timelineCreatePerf';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -115,10 +116,14 @@ export const TodayPage = () => {
   const [editActivitySheet, setEditActivitySheet] = useState({ open: false, item: null });
   const fabButtonRef = useRef(null);
   const addMenuRef = useRef(null);
+  const pendingOpenPerfRef = useRef(null);
   const now = useCurrentTime();
 
   useEffect(() => {
     if (!fabOpen) {
+      if (pendingOpenPerfRef.current?.flowId) {
+        markCreatePerf(pendingOpenPerfRef.current.flowId, 'menu_closed');
+      }
       return undefined;
     }
 
@@ -169,9 +174,22 @@ export const TodayPage = () => {
     }
   };
 
-  const appendTimelineItem = async (item) => {
-    setTimeline((prev) => [...prev, item]);
-    await refreshDayState();
+  const appendTimelineItem = (item, flowId = null) => {
+    setTimeline((prev) => {
+      const existingIndex = prev.findIndex((currentItem) => currentItem.id === item.id);
+
+      if (existingIndex >= 0) {
+        const next = [...prev];
+        next[existingIndex] = item;
+        return next;
+      }
+
+      return [...prev, item];
+    });
+
+    if (flowId) {
+      markCreatePerf(flowId, 'timeline_state_updated', { itemId: item?.id || null });
+    }
   };
 
   const updateTimelineItemInState = (itemId, updater) => {
@@ -199,6 +217,11 @@ export const TodayPage = () => {
   const createSessionTime = (dateStr, timeStr) => combineLocalDateAndTime(dateStr, timeStr);
 
   const runningSessionConflictMessage = '请先结束当前正在进行的记录';
+  const createHandledError = (message) => {
+    const error = new Error(message);
+    error.alreadyToasted = true;
+    return error;
+  };
 
   const handlePickDate = (dateStr) => {
     if (dateStr === currentDateStr) return;
@@ -249,25 +272,42 @@ export const TodayPage = () => {
   };
 
   const openTraining = () => {
-    setTrainingOpen(true);
-    setFabOpen(false);
-  };
-  const openEvent = () => { setEventOpen(true); setFabOpen(false); };
+    const flowId = beginCreatePerfFlow('open-training-sheet');
+    pendingOpenPerfRef.current = { flowId, type: 'training' };
+    markCreatePerf(flowId, 'menu_item_click');
 
-  const startLiveSession = async ({ item_type, title, notes, details, bodyParts }) => {
+    setFabOpen(false);
+    markCreatePerf(flowId, 'sheet_open_state_set');
+    setTrainingOpen(true);
+  };
+  const openEvent = () => {
+    const flowId = beginCreatePerfFlow('open-event-sheet');
+    pendingOpenPerfRef.current = { flowId, type: 'event' };
+    markCreatePerf(flowId, 'menu_item_click');
+
+    setFabOpen(false);
+    markCreatePerf(flowId, 'sheet_open_state_set');
+    setEventOpen(true);
+  };
+
+  const startLiveSession = async ({ item_type, title, notes, details, bodyParts, perfFlowId = null }) => {
+    if (perfFlowId) {
+      markCreatePerf(perfFlowId, 'submit_validation_finished', { mode: 'live', item_type });
+    }
+
     if (!isViewingToday) {
       toast.error('只能在今天开始实时记录');
-      return;
+      throw createHandledError('只能在今天开始实时记录');
     }
 
     if (hasRunningTimelineItem) {
       toast.error(runningSessionConflictMessage);
-      return;
+      throw createHandledError(runningSessionConflictMessage);
     }
 
     if (!user?.id) {
       toast.error('请先登录');
-      return;
+      throw createHandledError('请先登录');
     }
 
     const now = new Date();
@@ -291,29 +331,50 @@ export const TodayPage = () => {
     };
 
     try {
+      if (perfFlowId) {
+        markCreatePerf(perfFlowId, 'insert_request_sent');
+      }
       const { data, error } = await timelineService.createTimelineItem(user.id, payload);
+      if (perfFlowId) {
+        markCreatePerf(perfFlowId, 'insert_request_returned', { hasError: Boolean(error) });
+      }
+
       if (error) {
         if (String(error.message || '').includes('timeline_items_one_running_per_user')) {
           toast.error(runningSessionConflictMessage);
-          return;
+          throw createHandledError(runningSessionConflictMessage);
         }
         throw error;
       }
 
       if (data) {
-        await appendTimelineItem(data);
+        appendTimelineItem(data, perfFlowId);
       }
 
       toast.success(`已开始${title}`);
+
+      if (perfFlowId) {
+        markCreatePerf(perfFlowId, 'create_success');
+      }
+
+      Promise.resolve(refreshDayState()).catch(() => null);
     } catch (error) {
-      toast.error(error?.message || '开始失败，请稍后重试');
+      if (!error?.alreadyToasted) {
+        toast.error(error?.message || '开始失败，请稍后重试');
+      }
+      if (perfFlowId) {
+        markCreatePerf(perfFlowId, 'create_failed', { message: String(error?.message || '') });
+      }
+      throw error;
     }
   };
 
   const handleAddEvent = async (payload) => {
+    const perfFlowId = payload?.perfFlowId || null;
+
     if (!user?.id) {
       toast.error('请先登录');
-      return;
+      throw new Error('请先登录');
     }
 
     const eventDate = currentDateStr;
@@ -324,8 +385,13 @@ export const TodayPage = () => {
         title: payload.title,
         notes: payload.detail,
         details: { mode: 'live' },
+        perfFlowId,
       });
       return;
+    }
+
+    if (perfFlowId) {
+      markCreatePerf(perfFlowId, 'submit_validation_finished', { mode: 'manual', item_type: 'other' });
     }
 
     const startedAt = createSessionTime(eventDate, payload.time);
@@ -344,21 +410,40 @@ export const TodayPage = () => {
     };
 
     try {
+      if (perfFlowId) {
+        markCreatePerf(perfFlowId, 'insert_request_sent');
+      }
       const { data, error } = await timelineService.createTimelineItem(user.id, payloadToSave);
+      if (perfFlowId) {
+        markCreatePerf(perfFlowId, 'insert_request_returned', { hasError: Boolean(error) });
+      }
       if (error) throw error;
       if (data) {
-        await appendTimelineItem(data);
+        appendTimelineItem(data, perfFlowId);
       }
+
+      Promise.resolve(refreshDayState()).catch(() => null);
+
       toast.success(`已添加 ${payload.title}`);
+
+      if (perfFlowId) {
+        markCreatePerf(perfFlowId, 'create_success');
+      }
     } catch (error) {
       toast.error(error?.message || '添加失败，请稍后重试');
+      if (perfFlowId) {
+        markCreatePerf(perfFlowId, 'create_failed', { message: String(error?.message || '') });
+      }
+      throw error;
     }
   };
 
   const handleAddTraining = async (payload) => {
+    const perfFlowId = payload?.perfFlowId || null;
+
     if (!user?.id) {
       toast.error('请先登录');
-      return;
+      throw new Error('请先登录');
     }
 
     const itemType = payload.tab === 'anaerobic' ? 'anaerobic_training' : 'aerobic_training';
@@ -372,8 +457,13 @@ export const TodayPage = () => {
         notes: null,
         details: { mode: 'live', name: aerobicProjectName, tab: payload.tab },
         bodyParts: payload.bodyParts || [],
+        perfFlowId,
       });
       return;
+    }
+
+    if (perfFlowId) {
+      markCreatePerf(perfFlowId, 'submit_validation_finished', { mode: 'manual', item_type: itemType });
     }
 
     const startedAt = createSessionTime(currentDateStr, payload.time);
@@ -401,14 +491,31 @@ export const TodayPage = () => {
     };
 
     try {
+      if (perfFlowId) {
+        markCreatePerf(perfFlowId, 'insert_request_sent');
+      }
       const { data, error } = await timelineService.createTimelineItem(user.id, payloadToSave);
+      if (perfFlowId) {
+        markCreatePerf(perfFlowId, 'insert_request_returned', { hasError: Boolean(error) });
+      }
       if (error) throw error;
       if (data) {
-        await appendTimelineItem(data);
+        appendTimelineItem(data, perfFlowId);
       }
+
+      Promise.resolve(refreshDayState()).catch(() => null);
+
       toast.success(`已添加 ${title}`);
+
+      if (perfFlowId) {
+        markCreatePerf(perfFlowId, 'create_success');
+      }
     } catch (error) {
       toast.error(error?.message || '添加失败，请稍后重试');
+      if (perfFlowId) {
+        markCreatePerf(perfFlowId, 'create_failed', { message: String(error?.message || '') });
+      }
+      throw error;
     }
   };
 
@@ -773,12 +880,34 @@ export const TodayPage = () => {
         onOpenChange={setTrainingOpen}
         onConfirm={handleAddTraining}
         allowLiveStart={isViewingToday}
+        onOpenPerfEvent={(eventName) => {
+          const flowId = pendingOpenPerfRef.current?.type === 'training' ? pendingOpenPerfRef.current.flowId : null;
+          if (!flowId) return;
+
+          markCreatePerf(flowId, eventName);
+
+          if (eventName === 'sheet_first_frame_rendered') {
+            summarizeCreatePerfFlow(flowId);
+            pendingOpenPerfRef.current = null;
+          }
+        }}
       />
       <AddEventSheet
         open={eventOpen}
         onOpenChange={setEventOpen}
         onConfirm={handleAddEvent}
         allowLiveStart={isViewingToday}
+        onOpenPerfEvent={(eventName) => {
+          const flowId = pendingOpenPerfRef.current?.type === 'event' ? pendingOpenPerfRef.current.flowId : null;
+          if (!flowId) return;
+
+          markCreatePerf(flowId, eventName);
+
+          if (eventName === 'sheet_first_frame_rendered') {
+            summarizeCreatePerfFlow(flowId);
+            pendingOpenPerfRef.current = null;
+          }
+        }}
       />
       <EditTimeSheet
         open={timeSheet.open}

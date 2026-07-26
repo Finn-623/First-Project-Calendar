@@ -7,8 +7,9 @@ import { RecordModeToggle } from '../components/RecordModeToggle';
 import { RECORD_MODES } from '../constants/recordModes';
 import { STRENGTH_BODY_PART_OPTIONS, normalizeStrengthBodyParts } from '../constants/trainingBodyParts';
 import { getLocalTimeInputValue } from '../lib/localDateTime';
+import { beginCreatePerfFlow, markCreatePerf, summarizeCreatePerfFlow } from '../lib/timelineCreatePerf';
 
-export const AddTrainingSheet = ({ open, onOpenChange, onConfirm, initialKind = 'anaerobic', allowLiveStart = true }) => {
+export const AddTrainingSheet = ({ open, onOpenChange, onConfirm, initialKind = 'anaerobic', allowLiveStart = true, onOpenPerfEvent }) => {
   const [tab, setTab] = useState(initialKind);
   const [mode, setMode] = useState(RECORD_MODES.manual);
   const [name, setName] = useState('');
@@ -37,6 +38,18 @@ export const AddTrainingSheet = ({ open, onOpenChange, onConfirm, initialKind = 
       setTime(getLocalTimeInputValue(new Date()));
     }
   }, [open, initialKind]);
+
+  useEffect(() => {
+    if (!open) return;
+
+    onOpenPerfEvent?.('sheet_open_state_visible');
+
+    const rafId = window.requestAnimationFrame(() => {
+      onOpenPerfEvent?.('sheet_first_frame_rendered');
+    });
+
+    return () => window.cancelAnimationFrame(rafId);
+  }, [onOpenPerfEvent, open]);
 
   const isLive = mode === RECORD_MODES.live;
 
@@ -79,6 +92,12 @@ export const AddTrainingSheet = ({ open, onOpenChange, onConfirm, initialKind = 
   const handleConfirm = async () => {
     if (submitting) return;
 
+    const flowType = isLive
+      ? (tab === 'anaerobic' ? 'submit-training-anaerobic-live' : 'submit-training-aerobic-live')
+      : (tab === 'anaerobic' ? 'submit-training-anaerobic-manual' : 'submit-training-aerobic-manual');
+    const perfFlowId = beginCreatePerfFlow(flowType);
+    markCreatePerf(perfFlowId, 'submit_click');
+
     const normalizedInput = durationInput.trim();
     const shouldValidateDuration = !isLive;
 
@@ -120,6 +139,8 @@ export const AddTrainingSheet = ({ open, onOpenChange, onConfirm, initialKind = 
       return;
     }
 
+    markCreatePerf(perfFlowId, 'submit_validation_passed');
+
     const payload = {
       mode,
       tab,
@@ -131,14 +152,25 @@ export const AddTrainingSheet = ({ open, onOpenChange, onConfirm, initialKind = 
 
     try {
       setSubmitting(true);
+      markCreatePerf(perfFlowId, 'submit_loading_state_set');
       setDurationError('');
       setBodyPartError('');
       setNameError('');
       setDurationInput(normalizedDuration);
-      await Promise.resolve(onConfirm(payload));
+      await Promise.resolve(onConfirm({
+        ...payload,
+        perfFlowId,
+      }));
+      markCreatePerf(perfFlowId, 'sheet_close_requested');
       onOpenChange(false);
+      markCreatePerf(perfFlowId, 'sheet_closed');
+      summarizeCreatePerfFlow(perfFlowId);
+    } catch {
+      // Keep the sheet open and user input unchanged on failure.
+      markCreatePerf(perfFlowId, 'submit_failed_sheet_kept_open');
     } finally {
       setSubmitting(false);
+      markCreatePerf(perfFlowId, 'submit_loading_state_cleared');
     }
   };
 

@@ -6,8 +6,9 @@ import { Textarea } from '../components/ui/textarea';
 import { RecordModeToggle } from '../components/RecordModeToggle';
 import { RECORD_MODES } from '../constants/recordModes';
 import { getLocalTimeInputValue } from '../lib/localDateTime';
+import { beginCreatePerfFlow, markCreatePerf, summarizeCreatePerfFlow } from '../lib/timelineCreatePerf';
 
-export const AddEventSheet = ({ open, onOpenChange, onConfirm, allowLiveStart = true }) => {
+export const AddEventSheet = ({ open, onOpenChange, onConfirm, allowLiveStart = true, onOpenPerfEvent }) => {
   const [title, setTitle] = useState('');
   const [mode, setMode] = useState(RECORD_MODES.manual);
   const [time, setTime] = useState('');
@@ -27,21 +28,50 @@ export const AddEventSheet = ({ open, onOpenChange, onConfirm, allowLiveStart = 
     }
   }, [allowLiveStart, open]);
 
+  useEffect(() => {
+    if (!open) return;
+
+    onOpenPerfEvent?.('sheet_open_state_visible');
+
+    const rafId = window.requestAnimationFrame(() => {
+      onOpenPerfEvent?.('sheet_first_frame_rendered');
+    });
+
+    return () => window.cancelAnimationFrame(rafId);
+  }, [onOpenPerfEvent, open]);
+
   const isLive = mode === RECORD_MODES.live;
 
   const handleConfirm = async () => {
+    if (submitting) return;
+
+    const perfFlowId = beginCreatePerfFlow(isLive ? 'submit-event-live' : 'submit-event-manual');
+    markCreatePerf(perfFlowId, 'submit_click');
+
     if (!title.trim()) return;
+
+    markCreatePerf(perfFlowId, 'submit_validation_passed');
+
     try {
       setSubmitting(true);
+      markCreatePerf(perfFlowId, 'submit_loading_state_set');
       await Promise.resolve(onConfirm({
         mode,
         title: title.trim(),
         time,
         detail: detail.trim() || undefined,
+        perfFlowId,
       }));
+      markCreatePerf(perfFlowId, 'sheet_close_requested');
       onOpenChange(false);
+      markCreatePerf(perfFlowId, 'sheet_closed');
+      summarizeCreatePerfFlow(perfFlowId);
+    } catch {
+      // Keep the sheet open and user input unchanged on failure.
+      markCreatePerf(perfFlowId, 'submit_failed_sheet_kept_open');
     } finally {
       setSubmitting(false);
+      markCreatePerf(perfFlowId, 'submit_loading_state_cleared');
     }
   };
 
