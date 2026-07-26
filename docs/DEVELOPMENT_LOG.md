@@ -1869,3 +1869,110 @@
 - 当前分支：supabase-v1
 - Git Commit ID：34ddd64aeaa51c9e0d88fe8123e1ef0c522fca5e
 
+## DEV-20260726-040
+
+- 日期：2026-07-26
+- 状态：已完成
+- 任务目标：将设置页“账号操作”入口改为点击后直接弹出退出确认窗口，不再先跳转到子页面再展示。
+- 实际完成内容：
+	- 设置首页的“账号操作”入口从路由跳转改为直接打开退出确认弹窗。
+	- 在设置首页接入退出逻辑（复用既有 `logout`、私有查询清理与登录页跳转流程）。
+	- 扩展 `SettingsNavigationItem` 支持按钮模式（`onClick`），以保持“整行可点击”样式一致。
+- 主要修改文件或模块：`frontend/src/pages/SettingsPage.jsx`、`frontend/src/components/settings/SettingsNavigationItem.jsx`、`docs/DEVELOPMENT_LOG.md`
+- 遇到的问题：无。
+- 解决方式：无。
+- 执行的测试：
+	- `get_errors` 检查：`frontend/src/pages/SettingsPage.jsx`、`frontend/src/components/settings/SettingsNavigationItem.jsx`
+	- `cd frontend && npm run build`
+- 测试结果：
+	- 目标文件无语法错误。
+	- 前端构建通过（Compiled successfully）。
+- 未完成事项：
+	- 受当前会话限制，未执行登录态下的手工点击回归（仅完成静态与构建验证）。
+- 风险或注意事项：
+	- 路由 `/settings/account-actions` 仍保留兼容访问；但设置首页入口已改为直接弹窗，不再跳转。
+- 当前分支：supabase-v1
+- Git Commit ID：未提交
+
+## DEV-20260726-041
+
+- 日期：2026-07-26
+- 状态：已完成
+- 任务目标：调整设置页“账号操作”分组文案，入口小标题改为“退出账号”，避免出现“账号操作：账号操作退出账号”的重复表达。
+- 实际完成内容：
+	- 保留分组标题“账号操作”。
+	- 将该分组下唯一入口的标题从“账号操作”改为“退出账号”。
+	- 描述文案保持退出语义（“退出当前账户”）。
+- 主要修改文件或模块：`frontend/src/pages/SettingsPage.jsx`、`docs/DEVELOPMENT_LOG.md`
+- 遇到的问题：无。
+- 解决方式：无。
+- 执行的测试：
+	- `get_errors` 检查：`frontend/src/pages/SettingsPage.jsx`
+- 测试结果：
+	- 目标文件无语法错误。
+- 未完成事项：
+	- 未执行登录态下手工点击回归（本次为纯文案调整）。
+- 风险或注意事项：
+	- 本次仅为前端展示文案调整，不影响退出逻辑与路由行为。
+- 当前分支：supabase-v1
+- Git Commit ID：未提交
+
+## DEV-20260726-042
+
+- 日期：2026-07-26
+- 状态：已完成
+- 任务目标：完成账户设置模块改造，包含账户页结构调整、展示名称用户自主编辑、修改密码独立弹窗及认证校验流程。
+- 修改背景：原账户页仅静态展示，缺少展示名称编辑与密码修改闭环；设置首页账户入口说明过于字段化，不符合概括说明要求。
+- 设置首页账户说明调整：
+	- 账户入口标题保持“账户”。
+	- 账户入口说明改为“管理个人账号资料与登录安全”。
+	- 不在设置首页入口逐项列出用户名、角色、邮箱等字段。
+- 账户页面结构：
+	- 页面标题：账户。
+	- 顶部说明：管理你的基本账号信息、展示名称与密码安全。
+	- 页面拆分为“账号信息”“登录安全”两个区域。
+	- 账号信息区显示：用户名、展示名称、用户角色、账号状态、邮箱。
+	- 登录安全区仅保留“修改密码”入口，采用独立弹窗，不在页面常驻三密码输入表单。
+- 展示名称编辑逻辑：
+	- 仅展示名称可编辑，其余字段只读。
+	- 点击“编辑”后进入局部编辑态，输入框自动聚焦，支持 Escape 取消。
+	- 保存前执行首尾空格处理、空值校验、长度上限 30 校验。
+	- 若新值与旧值一致，直接退出编辑态，不发送数据库更新请求。
+	- 保存时禁用重复提交；失败保留用户输入并提示；成功后更新 `profiles.display_name` 并调用 `loadProfile` 同步全局状态。
+	- 设置首页顶部展示名称通过共享 Store 的 `profile.display_name` 自动同步。
+- 密码修改流程：
+	- 使用独立弹窗收集“现有密码 / 新密码 / 再次输入新密码”。
+	- 前端校验：必填、新密码长度至少 8、新旧密码不同、两次新密码一致。
+	- 认证邮箱来源：优先 `auth user.email`，回退 `profile.email`；缺失时阻止提交并提示“无法获取当前账号认证信息，请重新登录”。
+	- 先用 `supabase.auth.signInWithPassword` 验证现有密码，验证成功后再用 `supabase.auth.updateUser` 更新新密码。
+	- 修改成功：清空密码输入、关闭弹窗、提示“密码修改成功”。
+	- 修改失败：保留输入，不关闭弹窗，恢复按钮可点击，并展示中文可理解错误。
+	- 未在日志与文档记录任何密码、Token 或敏感认证数据。
+- 是否涉及数据库迁移：否。本次复用现有 `profiles` 字段与现有 RLS 策略，不新增迁移。
+- 主要修改文件或模块：
+	- `frontend/src/pages/SettingsPage.jsx`
+	- `frontend/src/pages/AccountInfoPage.jsx`
+	- `frontend/src/components/settings/ChangePasswordDialog.jsx`
+	- `frontend/src/lib/accountUtils.js`
+	- `frontend/src/lib/accountUtils.test.js`
+	- `CHANGELOG.md`
+	- `docs/DEVELOPMENT_LOG.md`
+	- `docs/PROJECT_STATUS.md`
+	- `docs/VERSION_HISTORY.md`
+- 执行的测试：
+	- `get_errors` 检查账户相关改动文件。
+	- `cd frontend && npm run build`。
+	- `cd frontend && CI=true npm test -- --watch=false --runInBand accountUtils.test.js`。
+- 测试结果：
+	- 账户相关改动文件无语法错误。
+	- 前端构建通过（Compiled successfully）。
+	- 自动化测试通过：1 个测试套件、5 个用例全部通过。
+- 人工验收结果：
+	- 已完成代码级与构建级验证。
+	- 当前会话未提供可复用的管理员/普通用户双账号登录态，未完成完整手工验收矩阵（例如现有密码错误、改密成功后重新登录、手机端实机交互）。
+- 风险或注意事项：
+	- 工作区存在与本任务无关的既有未提交改动：`frontend/src/components/BottomNav.jsx`、`frontend/src/index.css`、`frontend/src/pages/HistoryDetailPage.jsx`，本次不会纳入提交。
+	- 若线上 RLS 与本地推断不一致，展示名称更新可能在部分账号上被策略拒绝，需在真实环境补充验证。
+- 当前分支：supabase-v1
+- Git Commit ID：693f3f861bea25629528fbee4d793092e427f2bf
+
