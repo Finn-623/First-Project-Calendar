@@ -1,3 +1,25 @@
+## DEV-20260726-053
+
+- 日期：2026-07-26
+- 状态：已完成
+- 修改类型：UI改进 / 设置-摄入计划输入框紧凑化
+- 修改背景：第二行 3 列网格布局中，输入框过长导致视觉拥挤，用户需要缩短输入框确保 3 个字段都清晰可见且不被覆盖。
+- 任务目标：减少间距和 padding，紧凑化蛋白质、脂肪、碳水 3 个输入框，确保 3 列布局下每个字段都能清晰显示。
+- 实际完成内容：
+	- 减少 3 列网格间距：从 `gap-3`（12px）改为 `gap-2`（8px）。
+	- 减少输入框左右 padding：从 `px-2` 改为 `px-1.5`。
+	- 缩短单位标签宽度：从 `w-8` 改为 `w-7`。
+- 主要修改文件或模块：
+	- `frontend/src/pages/SettingsIntakePlanPage.jsx`
+- 执行的测试与检查：
+	- `cd frontend && npm run build` - 构建成功。
+	- `cd frontend && CI=true npm test -- --watch=false --runInBand src/pages/SettingsIntakePlanPage.test.jsx` - 7 个测试通过。
+- 测试结果：
+	- 前端构建通过，文件大小增加 4 字节。
+	- 1 个测试套件通过，7 个测试通过（无失败）。
+- 当前分支：supabase-v1
+- Git Commit ID：aa3e8fb
+
 ## DEV-20260726-052
 
 - 日期：2026-07-26
