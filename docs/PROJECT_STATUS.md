@@ -65,6 +65,9 @@
   - 证据：supabase/migrations/008_fix_foods_admin_rls_compat.sql
   - 证据：supabase/migrations/009_fix_is_app_admin_missing_columns.sql
   - 证据：supabase/migrations/010_restrict_admin_foods_select.sql
+- `已完成` 登录页面非必要提示精简
+  - 证据：frontend/src/pages/LoginPage.jsx
+  - 说明：保留真实错误反馈与加载态，移除页面中面向用户展示的说明性提示文案。
 
 ## 4. 部分完成
 
