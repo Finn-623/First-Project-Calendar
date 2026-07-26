@@ -2,7 +2,6 @@ import React from 'react';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { SettingsIntakePlanPage } from './SettingsIntakePlanPage';
 import { useStore } from '../store';
-import { intakePlanService } from '../services/intakePlanService';
 
 jest.mock('../components/settings/SettingsSubpageHeader', () => ({
   SettingsSubpageHeader: ({ title, description }) => (
@@ -17,12 +16,6 @@ jest.mock('../store', () => ({
   useStore: jest.fn(),
 }));
 
-jest.mock('../services/intakePlanService', () => ({
-  intakePlanService: {
-    listHistory: jest.fn(),
-  },
-}));
-
 const savePlanMock = jest.fn();
 const loadPlanMock = jest.fn();
 
@@ -34,7 +27,6 @@ function mockStore(overrides = {}) {
       protein: 180,
       fat: 60,
       carbs: 185,
-      calculatedField: 'calories',
     },
     loadPlan: loadPlanMock,
     savePlan: savePlanMock,
@@ -47,98 +39,127 @@ describe('SettingsIntakePlanPage', () => {
     jest.clearAllMocks();
     loadPlanMock.mockResolvedValue({ success: true, data: null });
     savePlanMock.mockResolvedValue({ success: true, data: null });
-    intakePlanService.listHistory.mockResolvedValue({
-      success: true,
-      data: [
-        {
-          id: 'h1',
-          calories: 2000,
-          protein: 180,
-          fat: 60,
-          carbs: 185,
-          calculatedField: 'calories',
-          createdAt: '2026-07-26T10:00:00.000Z',
-        },
-      ],
-      hasMore: false,
-      nextCursor: null,
-    });
     mockStore();
   });
 
-  test('shows current intake plan by default', async () => {
+  test('displays edit form with all four fields', async () => {
     render(<SettingsIntakePlanPage />);
 
-    expect(screen.getByText('当前摄入计划')).toBeTruthy();
-    expect(await screen.findByText('2000 kcal')).toBeTruthy();
+    await screen.findByText('编辑摄入计划');
+    expect(screen.getByText('填写任意 3 项，第 4 项自动计算')).toBeTruthy();
+    expect(screen.getByLabelText('热量')).toBeTruthy();
+    expect(screen.getByLabelText('蛋白质')).toBeTruthy();
+    expect(screen.getByLabelText('脂肪')).toBeTruthy();
+    expect(screen.getByLabelText('碳水')).toBeTruthy();
   });
 
-  test('enters edit mode and allows selecting one auto-calculated field', async () => {
+  test('auto-calculates calories when other three fields are filled', async () => {
     render(<SettingsIntakePlanPage />);
-    await screen.findByText('2000 kcal');
 
-    fireEvent.click(screen.getByRole('button', { name: '编辑计划' }));
-    expect(screen.getByText('选择一项自动计算，其余三项由你填写。')).toBeTruthy();
-
-    fireEvent.click(screen.getByRole('button', { name: '自动计算蛋白质' }));
+    const caloriesInput = screen.getByLabelText('热量');
     const proteinInput = screen.getByLabelText('蛋白质');
-    expect(proteinInput.readOnly).toBe(true);
+    const fatInput = screen.getByLabelText('脂肪');
+    const carbsInput = screen.getByLabelText('碳水');
+
+    fireEvent.change(caloriesInput, { target: { value: '' } });
+    fireEvent.change(proteinInput, { target: { value: '150' } });
+    fireEvent.change(fatInput, { target: { value: '60' } });
+    fireEvent.change(carbsInput, { target: { value: '150' } });
+
+    await waitFor(() => {
+      expect(caloriesInput.readOnly).toBe(true);
+      // 150*4 + 60*9 + 150*4 = 600 + 540 + 600 = 1740
+      expect(caloriesInput.value).toBe('1740');
+    });
   });
 
-  test('cancel restores view mode', async () => {
+  test('auto-calculates protein when calories, fat, and carbs are filled', async () => {
     render(<SettingsIntakePlanPage />);
-    await screen.findByText('2000 kcal');
 
-    fireEvent.click(screen.getByRole('button', { name: '编辑计划' }));
+    const caloriesInput = screen.getByLabelText('热量');
+    const proteinInput = screen.getByLabelText('蛋白质');
+    const fatInput = screen.getByLabelText('脂肪');
+    const carbsInput = screen.getByLabelText('碳水');
+
+    fireEvent.change(caloriesInput, { target: { value: '2000' } });
+    fireEvent.change(proteinInput, { target: { value: '' } });
+    fireEvent.change(fatInput, { target: { value: '60' } });
+    fireEvent.change(carbsInput, { target: { value: '150' } });
+
+    await waitFor(() => {
+      expect(proteinInput.readOnly).toBe(true);
+    });
+  });
+
+  test('shows error when not exactly one field is empty', async () => {
+    render(<SettingsIntakePlanPage />);
+
+    const caloriesInput = screen.getByLabelText('热量');
+    const proteinInput = screen.getByLabelText('蛋白质');
+    const fatInput = screen.getByLabelText('脂肪');
+
+    fireEvent.change(caloriesInput, { target: { value: '' } });
+    fireEvent.change(proteinInput, { target: { value: '' } });
+    fireEvent.change(fatInput, { target: { value: '60' } });
+
+    fireEvent.click(screen.getByRole('button', { name: '保存' }));
+
+    await waitFor(() => {
+      expect(screen.getByText('请填写其中任意 3 项，第 4 项将自动计算')).toBeTruthy();
+    });
+  });
+
+  test('cancel clears changes and restores original values', async () => {
+    render(<SettingsIntakePlanPage />);
+
+    const caloriesInput = screen.getByLabelText('热量');
+    fireEvent.change(caloriesInput, { target: { value: '2500' } });
     fireEvent.click(screen.getByRole('button', { name: '取消' }));
 
-    expect(screen.getByRole('button', { name: '编辑计划' })).toBeTruthy();
+    await waitFor(() => {
+      expect(caloriesInput.value).toBe('2000');
+    });
   });
 
-  test('does not send save request when plan is unchanged', async () => {
+  test('saves plan with auto-calculated field when changed', async () => {
     render(<SettingsIntakePlanPage />);
-    await screen.findByText('2000 kcal');
 
-    fireEvent.click(screen.getByRole('button', { name: '编辑计划' }));
+    const caloriesInput = screen.getByLabelText('热量');
+    const proteinInput = screen.getByLabelText('蛋白质');
+    const fatInput = screen.getByLabelText('脂肪');
+    const carbsInput = screen.getByLabelText('碳水');
+
+    // Clear carbs to trigger auto-calculation
+    fireEvent.change(caloriesInput, { target: { value: '2500' } });
+    fireEvent.change(proteinInput, { target: { value: '200' } });
+    fireEvent.change(fatInput, { target: { value: '70' } });
+    fireEvent.change(carbsInput, { target: { value: '' } });
+
+    fireEvent.click(screen.getByRole('button', { name: '保存' }));
+
+    await waitFor(() => {
+      expect(savePlanMock).toHaveBeenCalledWith(
+        'user-1',
+        expect.objectContaining({
+          calories: 2500,
+          protein: 200,
+          fat: 70,
+        }),
+        undefined,
+        'calories'
+      );
+    });
+  });
+
+  test('does not send save when plan is unchanged', async () => {
+    render(<SettingsIntakePlanPage />);
+
+    const caloriesInput = screen.getByLabelText('热量');
+    fireEvent.change(caloriesInput, { target: { value: '2000' } });
     fireEvent.click(screen.getByRole('button', { name: '保存' }));
 
     await waitFor(() => {
       expect(savePlanMock).not.toHaveBeenCalled();
-    });
-  });
-
-  test('loads history with default page size 5 and supports loading more', async () => {
-    intakePlanService.listHistory
-      .mockResolvedValueOnce({
-        success: true,
-        data: [
-          { id: 'h1', calories: 2000, protein: 180, fat: 60, carbs: 185, calculatedField: 'calories', createdAt: '2026-07-26T10:00:00.000Z' },
-          { id: 'h2', calories: 2100, protein: 180, fat: 60, carbs: 210, calculatedField: 'calories', createdAt: '2026-07-25T10:00:00.000Z' },
-          { id: 'h3', calories: 1900, protein: 170, fat: 58, carbs: 170, calculatedField: 'calories', createdAt: '2026-07-24T10:00:00.000Z' },
-          { id: 'h4', calories: 1800, protein: 165, fat: 55, carbs: 165, calculatedField: 'calories', createdAt: '2026-07-23T10:00:00.000Z' },
-          { id: 'h5', calories: 1750, protein: 160, fat: 52, carbs: 160, calculatedField: 'calories', createdAt: '2026-07-22T10:00:00.000Z' },
-        ],
-        hasMore: true,
-        nextCursor: '2026-07-22T10:00:00.000Z',
-      })
-      .mockResolvedValueOnce({
-        success: true,
-        data: [
-          { id: 'h6', calories: 1700, protein: 155, fat: 50, carbs: 155, calculatedField: 'calories', createdAt: '2026-07-21T10:00:00.000Z' },
-        ],
-        hasMore: false,
-        nextCursor: null,
-      });
-
-    render(<SettingsIntakePlanPage />);
-
-    await screen.findByText('当前计划');
-    expect(intakePlanService.listHistory).toHaveBeenCalledWith({ userId: 'user-1', limit: 5, cursor: null });
-
-    fireEvent.click(await screen.findByRole('button', { name: '查看更多' }));
-
-    await waitFor(() => {
-      expect(intakePlanService.listHistory).toHaveBeenLastCalledWith({ userId: 'user-1', limit: 5, cursor: '2026-07-22T10:00:00.000Z' });
     });
   });
 });
