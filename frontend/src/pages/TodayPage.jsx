@@ -56,7 +56,6 @@ export const TodayPage = () => {
   const [eventOpen, setEventOpen] = useState(false);
   const [timeSheet, setTimeSheet] = useState({ open: false, item: null });
   const [fabOpen, setFabOpen] = useState(false);
-  const [topOpen, setTopOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [pendingDeleteItem, setPendingDeleteItem] = useState(null);
   const [deletingItemId, setDeletingItemId] = useState(null);
@@ -90,7 +89,6 @@ export const TodayPage = () => {
       { id, type: 'meal', subtype: 'snack', title: '加餐', time: '15:30', fixed: false, foods: [] },
     ]);
     setFabOpen(false);
-    setTopOpen(false);
     toast.success('已添加加餐');
   };
 
@@ -98,9 +96,8 @@ export const TodayPage = () => {
     setTrainingKind(kind);
     setTrainingOpen(true);
     setFabOpen(false);
-    setTopOpen(false);
   };
-  const openEvent = () => { setEventOpen(true); setFabOpen(false); setTopOpen(false); };
+  const openEvent = () => { setEventOpen(true); setFabOpen(false); };
 
   const handleAddTraining = (item) => {
     setTimeline([...timeline, item]);
@@ -175,35 +172,13 @@ export const TodayPage = () => {
           </div>
         </div>
       ) : null}
-      <header className="px-5 pt-6 pb-4 relative">
-        <div className="flex items-start justify-between">
-          <div>
-            <p className="text-[11px] uppercase tracking-[0.22em] text-[#858C88]">TODAY</p>
-            <h1 className="text-[22px] font-medium text-[#2C332F] mt-1" data-testid="today-date">
-              {dateLabel}
-            </h1>
-          </div>
-          <button
-            onClick={() => setTopOpen((v) => !v)}
-            data-testid="top-add-btn"
-            aria-label="添加"
-            className="w-10 h-10 rounded-full bg-[#2C332F] text-white flex items-center justify-center shadow-[0_6px_16px_-6px_rgba(44,51,47,0.4)]"
-          >
-            <Plus size={18} strokeWidth={1.8} className={topOpen ? 'rotate-45 transition-transform' : 'transition-transform'} />
-          </button>
+      <header className="px-5 pt-6 pb-4">
+        <div>
+          <p className="text-[11px] uppercase tracking-[0.22em] text-[#858C88]">TODAY</p>
+          <h1 className="text-[22px] font-medium text-[#2C332F] mt-1" data-testid="today-date">
+            {dateLabel}
+          </h1>
         </div>
-
-        {topOpen && (
-          <div className="absolute right-5 top-16 z-30" data-testid="top-add-menu">
-            <AddPickerMenu
-              onSnack={handleAddSnack}
-              onAnaerobic={() => openTraining('anaerobic')}
-              onAerobic={() => openTraining('aerobic')}
-              onEvent={openEvent}
-              testIdPrefix="top-picker"
-            />
-          </div>
-        )}
       </header>
 
       <div className="px-5">
