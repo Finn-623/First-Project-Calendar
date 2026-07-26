@@ -120,14 +120,14 @@ export const AddTrainingSheet = ({ open, onOpenChange, onConfirm, initialKind = 
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent
         side="bottom"
-        className="rounded-t-3xl border-[#E5E5E0] bg-[#F7F7F5] max-w-md mx-auto p-0"
+        className="rounded-t-3xl border-[#E5E5E0] bg-[#F7F7F5] w-[calc(100vw-32px)] max-w-md max-h-[calc(100dvh-24px)] mx-auto p-0 flex flex-col overflow-hidden"
         data-testid="add-training-sheet"
       >
-        <SheetHeader className="px-5 pt-5 pb-3 text-left">
+        <SheetHeader className="px-5 pt-5 pb-3 text-left shrink-0">
           <SheetTitle className="text-base font-medium text-[#2C332F]">训练</SheetTitle>
         </SheetHeader>
 
-        <div className="px-5 pb-6">
+        <div className="px-5 pb-6 min-h-0 flex-1 overflow-y-auto overscroll-contain">
           {/* Tabs */}
           <div className="grid grid-cols-2 gap-2 p-1 bg-white rounded-2xl border border-[#E5E5E0]">
             {[
@@ -163,7 +163,7 @@ export const AddTrainingSheet = ({ open, onOpenChange, onConfirm, initialKind = 
               />
             </div>
 
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
               <div>
                 <label className="text-[12px] text-[#858C88]">开始时间</label>
                 <Input
