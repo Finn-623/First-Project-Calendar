@@ -3,6 +3,7 @@ import { LogIn } from 'lucide-react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { authService } from '../services/authService';
+import { APP_VERSION } from '../config/appVersion';
 const INVALID_CREDENTIALS_MESSAGE = '用户名或密码错误';
 const SERVICE_UNAVAILABLE_MESSAGE = '登录服务暂时不可用，请稍后重试';
 const USERNAME_FORMAT_MESSAGE = '用户名只能包含3至30位小写字母、数字或下划线。';
@@ -143,6 +144,10 @@ export const LoginPage = ({ onLoginSuccess }) => {
             )}
           </button>
         </form>
+
+        <p className="mt-4 text-center text-[11px] text-[#A2A8A4]">
+          当前版本：{APP_VERSION}
+        </p>
 
       </div>
     </div>

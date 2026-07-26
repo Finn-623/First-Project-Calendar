@@ -92,6 +92,22 @@
 - Git 分支：supabase-v1
 - Git Commit ID：cfbe92167a145b800ccbc67f2efc3f17e461c534
 
+## DEV-20260726-005
+
+- 日期：2026-07-26
+- 状态：进行中
+- 任务目标：在登录页面显示当前正式版本号 v0.1.1，并建立统一版本来源与正式上传同步版本记录的规则。
+- 实际完成内容：待完成
+- 主要修改文件或模块：`frontend/package.json`、`frontend/src/config/appVersion.js`、`frontend/src/pages/LoginPage.jsx`、`CHANGELOG.md`、`docs/DEVELOPMENT_LOG.md`、`docs/PROJECT_STATUS.md`、`docs/VERSION_HISTORY.md`
+- 遇到的问题：待完成
+- 解决方式：待完成
+- 执行的测试：待完成
+- 测试结果：待完成
+- 未完成事项：待完成
+- 风险或注意事项：统一版本来源采用 `frontend/package.json` 的标准 `version` 字段；登录页仅展示版本号，不改变认证逻辑或其他页面。
+- Git 分支：supabase-v1
+- Git Commit ID：未提交
+
 ## DEV-20260726-002
 
 - 日期：2026-07-26
