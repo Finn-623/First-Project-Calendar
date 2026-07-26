@@ -1289,3 +1289,62 @@
 - 风险或注意事项：
 	- 受当前会话无登录态限制，未在真实网络面板中采集前后毫秒级耗时对比；建议在登录态补充一次 Network 面板实测记录。
 
+## DEV-20260726-032
+
+- 日期：2026-07-26
+- 状态：已完成
+- 修改类型：功能新增 / 时间轴
+- 修改模块：首页时间轴
+- 任务目标：在首页今天时间轴中增加“现在”位置标记，并随本地实时时间自动调整位置。
+- 修改前检查：
+	- 已执行：`git status --short`
+	- 已执行：`git branch --show-current`
+	- 已检查首页时间轴主渲染与单条时间轴组件：`frontend/src/pages/TodayPage.jsx`、`frontend/src/components/TimelineItem.jsx`
+	- 已确认复用现有实时时间 Hook：`frontend/src/hooks/useCurrentTime.js`
+	- 已确认 today 判断逻辑复用当前页面的本地日期键比较（`currentDateStr === todaySydneyStr`）
+- 当前时间轴结构：普通列表（按事件时间排序后渲染），不是 24 小时比例绝对定位时间轴。
+- “现在”标记定位方案：
+	- 采用“普通列表插入方案”。
+	- 在排序后的时间轴列表中，找到第一条 `item.time` 晚于当前分钟的记录，并在其前插入“现在”标记。
+	- 若当前时间早于所有有时间记录，标记位于第一条之前。
+	- 若当前时间晚于所有有时间记录，标记位于最后一条有时间记录之后（若有无时间记录位于底部，则标记位于无时间记录之前）。
+- 当前时间格式：`HH:mm`（界面不显示秒）。
+- 今天判断方式：复用页面现有本地日期比较 `isViewingToday`，仅在今天显示标记。
+- 同一分钟事件处理规则：
+	- 比较使用“严格大于当前分钟”插入点。
+	- 同一分钟事件保持在“现在”标记之前，避免秒级更新导致标记在同一分钟内前后抖动。
+- 无时间记录处理规则：
+	- 无时间记录继续按现有排序规则（位于时间列表后段）处理。
+	- “现在”标记插入位置仅由有时间记录与当前分钟决定，不把无时间记录强制解析为 00:00。
+- 是否复用现有实时时间 Hook：是，复用 `useCurrentTime`。
+- 更新时间频率：复用现有每秒更新的 `now`。
+- `visibilitychange` 校准方式：复用 `useCurrentTime` 现有后台恢复校准，不新增监听器。
+- 是否新增 interval：否。
+- 性能处理方式：
+	- 不新增数据库请求。
+	- 不新增全局 Store 秒级更新。
+	- 使用 `useMemo` 构建展示列表，仅在 `sorted / isViewingToday / 当前分钟值` 变化时重算插入位置。
+- 是否修改数据库结构：否。
+- 是否新增 migration：否。
+- 实际修改文件：
+	- `frontend/src/pages/TodayPage.jsx`
+	- `CHANGELOG.md`
+	- `docs/DEVELOPMENT_LOG.md`
+	- `docs/PROJECT_STATUS.md`
+	- `docs/VERSION_HISTORY.md`
+- 实际执行的测试：
+	- 修改前检查：`git status --short`、`git branch --show-current`
+	- 逻辑检索：确认新增 `buildTimelineDisplayItems`、`timeline-now-marker`、`isViewingToday` 显示条件
+	- 语法检查：`get_errors` 检查 `frontend/src/pages/TodayPage.jsx`
+	- 构建检查：`cd frontend && npm run build`
+	- 链路检查：确认本次新增逻辑未引入 Supabase 查询/写入、未新增 interval
+- 测试结果：
+	- 目标文件无语法错误。
+	- 前端构建通过（Compiled successfully）。
+	- 静态链路确认：仅今天显示“现在”标记，且插入逻辑与现有排序一致。
+	- 受当前会话缺少登录态与真实设备交互条件限制，未完成登录后可视化点击与 Network 面板的人工验收。
+- 前端构建结果：通过。
+- 当前分支：supabase-v1
+- Git Commit ID：ee3341fab9cb29d0f10ca5dd96a7f53f18be4450
+- 版本状态：本次为本地功能新增，未正式上传，正式版本号保持 `v0.1.1`。
+

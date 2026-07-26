@@ -213,6 +213,10 @@
   - 证据：frontend/src/pages/TodayPage.jsx
   - 说明：事件编辑保存不再等待全量历史刷新；数据库更新成功后立即替换本地时间轴记录并返回，弹窗可更快关闭且减少重复提交风险。
   - 相关 Commit：8ac5e18ea58f0ea5b3125f617e8d630fd6ecfe8e
+- `已完成` 首页时间轴“现在”位置标记
+  - 证据：frontend/src/pages/TodayPage.jsx
+  - 说明：首页时间轴在查看今天时新增随本地实时时间移动的“现在”标记；查看历史或未来日期时不显示，且不触发数据库请求。
+  - 相关 Commit：ee3341fab9cb29d0f10ca5dd96a7f53f18be4450
 
 ## 4. 部分完成
 
