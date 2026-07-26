@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { NutritionSummary } from '../components/NutritionSummary';
 import { TimelineItem } from '../components/TimelineItem';
+import { LiveClock } from '../components/LiveClock';
 import { AddFoodSheet } from '../modals/AddFoodSheet';
 import { AddSnackSheet } from '../modals/AddSnackSheet';
 import { AddTrainingSheet } from '../modals/AddTrainingSheet';
@@ -248,6 +249,7 @@ export const TodayPage = () => {
           <h1 className="text-[22px] font-medium text-[#2C332F] mt-1" data-testid="today-date">
             {dateLabel}
           </h1>
+          <LiveClock />
         </div>
       </header>
 

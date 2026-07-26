@@ -4,12 +4,13 @@ import { Input } from '../components/ui/input';
 import { Button } from '../components/ui/button';
 import { Dumbbell, Footprints } from 'lucide-react';
 import { STRENGTH_BODY_PART_OPTIONS, normalizeStrengthBodyParts } from '../constants/trainingBodyParts';
+import { getLocalTimeInputValue } from '../lib/localDateTime';
 
 export const AddTrainingSheet = ({ open, onOpenChange, onConfirm, initialKind = 'anaerobic' }) => {
   const [tab, setTab] = useState(initialKind);
   const [name, setName] = useState('');
   const [durationInput, setDurationInput] = useState('');
-  const [time, setTime] = useState('18:00');
+  const [time, setTime] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [durationError, setDurationError] = useState('');
   const [selectedBodyParts, setSelectedBodyParts] = useState([]);
@@ -20,13 +21,14 @@ export const AddTrainingSheet = ({ open, onOpenChange, onConfirm, initialKind = 
       setTab(initialKind);
       setName('');
       setDurationInput('');
-      setTime('18:00');
+      setTime('');
       setSubmitting(false);
       setDurationError('');
       setSelectedBodyParts([]);
       setBodyPartError('');
     } else {
       setTab(initialKind);
+      setTime(getLocalTimeInputValue(new Date()));
     }
   }, [open, initialKind]);
 

@@ -3,13 +3,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle } from '../components/ui/s
 import { Input } from '../components/ui/input';
 import { Button } from '../components/ui/button';
 import { SNACK_TYPES, normalizeSnackType } from '../constants/snackTypes';
-
-const toCurrentLocalTimeHHMM = () => {
-  const now = new Date();
-  const h = String(now.getHours()).padStart(2, '0');
-  const m = String(now.getMinutes()).padStart(2, '0');
-  return `${h}:${m}`;
-};
+import { getLocalTimeInputValue } from '../lib/localDateTime';
 
 export const AddSnackSheet = ({ open, onOpenChange, onConfirm }) => {
   const [time, setTime] = useState('');
@@ -19,7 +13,7 @@ export const AddSnackSheet = ({ open, onOpenChange, onConfirm }) => {
 
   useEffect(() => {
     if (open) {
-      setTime(toCurrentLocalTimeHHMM());
+      setTime(getLocalTimeInputValue(new Date()));
       setSnackType('normal');
       setSubmitting(false);
       setError('');

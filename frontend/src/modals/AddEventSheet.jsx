@@ -3,16 +3,19 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle } from '../components/ui/s
 import { Input } from '../components/ui/input';
 import { Button } from '../components/ui/button';
 import { Textarea } from '../components/ui/textarea';
+import { getLocalTimeInputValue } from '../lib/localDateTime';
 
 export const AddEventSheet = ({ open, onOpenChange, onConfirm }) => {
   const [title, setTitle] = useState('');
-  const [time, setTime] = useState('14:00');
+  const [time, setTime] = useState('');
   const [detail, setDetail] = useState('');
 
   useEffect(() => {
-    if (!open) {
+    if (open) {
+      setTime(getLocalTimeInputValue(new Date()));
+    } else {
       setTitle('');
-      setTime('14:00');
+      setTime('');
       setDetail('');
     }
   }, [open]);
