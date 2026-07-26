@@ -182,7 +182,7 @@ export const TodayPage = () => {
       </header>
 
       <div className="px-5">
-        <NutritionSummary totals={totals} plan={plan} />
+        <NutritionSummary totals={totals} plan={plan} layout="splitRows" />
       </div>
 
       <section className="mt-6 px-3">
