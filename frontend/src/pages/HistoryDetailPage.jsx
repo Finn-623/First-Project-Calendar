@@ -54,6 +54,7 @@ export const HistoryDetailPage = () => {
   }, [entry]);
 
   const entryTimeline = useMemo(() => entry?.timeline || [], [entry]);
+  const isEmptyDay = Boolean(entry?.isEmptyDay) && entryTimeline.length === 0;
   const activeTimeline = useMemo(
     () => (isEditing ? draftTimeline : entryTimeline),
     [draftTimeline, entryTimeline, isEditing]
@@ -234,28 +235,39 @@ export const HistoryDetailPage = () => {
         ) : null}
       </header>
 
-      <div className="px-5">
-        <NutritionSummary totals={totals} plan={plan} />
-      </div>
+      {isEmptyDay ? (
+        <section className="mt-4 px-5" data-testid="history-empty-day-state">
+          <div className="rounded-2xl border border-dashed border-[#E5E5E0] bg-white p-6 text-center">
+            <p className="text-[14px] text-[#2C332F]">本日无记录</p>
+            <p className="mt-2 text-[12px] text-[#858C88]">该日期已结束，但没有摄入、训练或其他事件。</p>
+          </div>
+        </section>
+      ) : (
+        <>
+          <div className="px-5">
+            <NutritionSummary totals={totals} plan={plan} />
+          </div>
 
-      <section className="mt-6 px-3">
-        <div className="px-2 flex items-center justify-between mb-2">
-          <h2 className="text-[13px] font-medium text-[#2C332F] tracking-wide">时间轴回顾</h2>
-          <span className="text-[11px] text-[#858C88]">{sorted.length} 项</span>
-        </div>
-        <div className="relative timeline-guide" data-testid="history-detail-timeline">
-          {sorted.map((item) => (
-            <TimelineItem
-              key={item.id}
-              item={item}
-              readOnly={!isEditing}
-              onAddFood={handleAddFood}
-              onEditTime={(it) => setTimeSheet({ open: true, item: it })}
-              onDelete={handleDeleteItem}
-            />
-          ))}
-        </div>
-      </section>
+          <section className="mt-6 px-3">
+            <div className="px-2 flex items-center justify-between mb-2">
+              <h2 className="text-[13px] font-medium text-[#2C332F] tracking-wide">时间轴回顾</h2>
+              <span className="text-[11px] text-[#858C88]">{sorted.length} 项</span>
+            </div>
+            <div className="relative timeline-guide" data-testid="history-detail-timeline">
+              {sorted.map((item) => (
+                <TimelineItem
+                  key={item.id}
+                  item={item}
+                  readOnly={!isEditing}
+                  onAddFood={handleAddFood}
+                  onEditTime={(it) => setTimeSheet({ open: true, item: it })}
+                  onDelete={handleDeleteItem}
+                />
+              ))}
+            </div>
+          </section>
+        </>
+      )}
 
       <AddFoodSheet
         open={foodSheet.open}

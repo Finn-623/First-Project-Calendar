@@ -6,6 +6,7 @@ import { foodService } from './services/foodService';
 import { authService } from './services/authService';
 import { targetService } from './services/targetService';
 import { addDaysToDateString, getSydneyDateString, getSydneyMidnightDelayMs, historyService } from './services/historyService';
+import { filterMeaningfulTimelineItems } from './lib/dayRecordUtils';
 
 const StoreContext = createContext(null);
 
@@ -79,6 +80,7 @@ export const StoreProvider = ({ children, user: initialUser, session: initialSes
   const midnightTimerRef = useRef(null);
   const initializationRequestRef = useRef(0);
   const timelineCacheRef = useRef(new Map());
+  const endDaySubmittingRef = useRef(false);
 
   const wait = useCallback((ms) => new Promise((resolve) => setTimeout(resolve, ms)), []);
 
@@ -421,6 +423,8 @@ export const StoreProvider = ({ children, user: initialUser, session: initialSes
           dateLabel: detail.dateLabel || formatDateLabel(new Date(`${dateStr}T00:00:00`)),
           timeline: detail.timeline || [],
           totals: detail.nutrition || sumTimelineMacros(detail.timeline || []),
+          isEmptyDay: detail.isEmptyDay === true,
+          isCompleted: detail.isCompleted === true,
         });
       }
 
@@ -777,20 +781,17 @@ export const StoreProvider = ({ children, user: initialUser, session: initialSes
       return Promise.resolve({ success: false, error: '请先登录' });
     }
 
-    const dateStr = toDateStr(currentDate);
-    const totals = sumTimelineMacros(timeline);
-    const hasMeaningfulContent = (timeline || []).some((item) => {
-      if (item?.type === 'meal') {
-        return Array.isArray(item.foods) && item.foods.length > 0;
-      }
-      return item?.type === 'anaerobic' || item?.type === 'aerobic' || item?.type === 'event';
-    });
-
-    if (!hasMeaningfulContent) {
-      return Promise.resolve({ success: true, skipped: true });
+    if (endDaySubmittingRef.current) {
+      return Promise.resolve({ success: false, duplicate: true });
     }
 
-    return historyService.saveDayArchive(userId, dateStr, timeline, totals)
+    endDaySubmittingRef.current = true;
+
+    const dateStr = toDateStr(currentDate);
+    const timelineToArchive = filterMeaningfulTimelineItems(timeline);
+    const totals = sumTimelineMacros(timelineToArchive);
+
+    return historyService.saveDayArchive(userId, dateStr, timelineToArchive, totals)
       .then(async ({ error }) => {
         if (error) {
           throw error;
@@ -805,7 +806,10 @@ export const StoreProvider = ({ children, user: initialUser, session: initialSes
 
         return { success: true };
       })
-      .catch((err) => ({ success: false, error: err }));
+      .catch((err) => ({ success: false, error: err }))
+      .finally(() => {
+        endDaySubmittingRef.current = false;
+      });
   }, [currentDate, loadHistory, timeline, user?.id]);
 
   useEffect(() => {

@@ -4,6 +4,7 @@
  */
 
 import { supabase } from '../lib/supabaseClient';
+import { hasMeaningfulTimelineItems } from '../lib/dayRecordUtils';
 
 export const SYDNEY_TIME_ZONE = 'Australia/Sydney';
 
@@ -194,6 +195,8 @@ export const historyService = {
       if (archiveRow) {
         const timeline = (archiveRow.timeline || []).map(normalizeArchivedTimelineItem);
         const nutrition = archiveRow.totals || sumTotals(timeline);
+        const isCompleted = archiveRow.is_completed === true || Boolean(archiveRow.completed_at);
+        const isEmptyDay = isCompleted && !hasMeaningfulTimelineItems(timeline);
 
         const { data: target } = await supabase
           .from('daily_targets')
@@ -208,6 +211,8 @@ export const historyService = {
           target,
           error: null,
           dateLabel: archiveRow.archive_label || formatHistoryLabel(dateStr),
+          isCompleted,
+          isEmptyDay,
         };
       }
 
@@ -256,9 +261,23 @@ export const historyService = {
         .eq('target_date', dateStr)
         .single();
 
-      return { timeline, nutrition, target, error: null };
+      return {
+        timeline,
+        nutrition,
+        target,
+        error: null,
+        isCompleted: false,
+        isEmptyDay: false,
+      };
     } catch (err) {
-      return { timeline: [], nutrition: null, target: null, error: err };
+      return {
+        timeline: [],
+        nutrition: null,
+        target: null,
+        error: err,
+        isCompleted: false,
+        isEmptyDay: false,
+      };
     }
   },
 

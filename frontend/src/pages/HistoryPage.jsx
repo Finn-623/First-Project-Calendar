@@ -20,6 +20,7 @@ export const HistoryPage = () => {
         {history.map((d, idx) => {
           const t = d.totals || sumTimelineMacros(d.timeline || []);
           const pct = plan?.calories ? Math.round((t.cal / plan.calories) * 100) : 0;
+          const isEmptyDay = d.isEmptyDay === true;
           return (
             <button
               key={d.dateStr}
@@ -29,22 +30,28 @@ export const HistoryPage = () => {
             >
               <div className="min-w-0">
                 <p className="text-[13.5px] text-[#2C332F]">{d.dateLabel}</p>
-                <p className="font-num text-[11px] text-[#858C88] mt-1">
-                  P{t.p}g · F{t.f}g · C{t.c}g
-                </p>
+                {isEmptyDay ? (
+                  <p className="text-[12px] text-[#858C88] mt-1">本日无记录</p>
+                ) : (
+                  <p className="font-num text-[11px] text-[#858C88] mt-1">
+                    P{t.p}g · F{t.f}g · C{t.c}g
+                  </p>
+                )}
               </div>
               <div className="flex items-center gap-3 shrink-0">
-                <div className="text-right">
-                  <p className="font-num text-[15px] font-medium text-[#2C332F]">
-                    {t.cal} <span className="text-[10px] text-[#858C88] font-normal">kcal</span>
-                  </p>
-                  <p className="text-[10px] text-[#858C88] mt-0.5">
-                    <span className="font-num" style={{ color: pct > 100 ? '#D27D67' : '#6B8067' }}>
-                      {pct}%
-                    </span>{' '}
-                    计划完成
-                  </p>
-                </div>
+                {isEmptyDay ? null : (
+                  <div className="text-right">
+                    <p className="font-num text-[15px] font-medium text-[#2C332F]">
+                      {t.cal} <span className="text-[10px] text-[#858C88] font-normal">kcal</span>
+                    </p>
+                    <p className="text-[10px] text-[#858C88] mt-0.5">
+                      <span className="font-num" style={{ color: pct > 100 ? '#D27D67' : '#6B8067' }}>
+                        {pct}%
+                      </span>{' '}
+                      计划完成
+                    </p>
+                  </div>
+                )}
                 <ChevronRight size={16} strokeWidth={1.5} className="text-[#858C88]" />
               </div>
             </button>

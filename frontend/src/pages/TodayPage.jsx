@@ -179,6 +179,10 @@ export const TodayPage = () => {
 
   const handleEndDay = () => {
     Promise.resolve(endDay()).then((result) => {
+      if (result?.duplicate) {
+        return;
+      }
+
       if (result?.success || result?.skipped) {
         if (result?.success) {
           toast.success('本日已归档，开启新的一天');
