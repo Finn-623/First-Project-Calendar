@@ -228,6 +228,13 @@
   - 证据：frontend/src/pages/HistoryDetailPage.jsx
   - 说明：历史详情删除不再触发回到今天的初始化链路；删除后保持在当前历史日期与历史模块内，避免强制跳转首页。
   - 相关 Commit：063ec9c1ba97f6c97bba2cb0aa11104ac8a0940b
+- `已完成` 历史记录稳定删除与整日删除
+  - 证据：frontend/src/pages/HistoryDetailPage.jsx
+  - 证据：frontend/src/pages/HistoryPage.jsx
+  - 证据：frontend/src/services/historyService.js
+  - 证据：supabase/migrations/012_delete_day_records_rpc.sql
+  - 说明：历史详情单条删除后保持当前历史日期；历史事件支持删除与开始/结束时间编辑；历史列表卡片右上角可直接执行整日删除并移除该日期。
+  - 相关 Commit：8026e90619b26a005530f4508439b1f77602f45d
 
 ## 4. 部分完成
 

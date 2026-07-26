@@ -1509,3 +1509,100 @@
 - Git Commit ID：063ec9c1ba97f6c97bba2cb0aa11104ac8a0940b
 - 版本状态：本次为本地交互修复，未正式上传，正式版本号保持 `v0.1.1`。
 
+## DEV-20260726-035
+
+- 日期：2026-07-26
+- 状态：已完成
+- 修改类型：历史记录交互与删除功能
+- 修改模块：历史列表、历史详情、事件编辑、整日删除
+- 任务目标：
+	- 历史详情单条删除后保持当前历史页。
+	- 历史事件支持删除与开始/结束时间编辑。
+	- 历史列表日期卡片支持右上角整日删除。
+- 修改前检查：
+	- 已执行：`git status --short`
+	- 已执行：`git branch --show-current`
+	- 已检查历史列表：`frontend/src/pages/HistoryPage.jsx`
+	- 已检查历史详情：`frontend/src/pages/HistoryDetailPage.jsx`
+	- 已检查时间轴删除按钮：`frontend/src/components/TimelineItem.jsx`
+	- 已检查事件编辑弹窗：`frontend/src/modals/EditActivitySheet.jsx`
+	- 已检查日期状态来源与重置链路：`frontend/src/store.jsx`
+	- 已检查历史路由参数：`/history/:dateStr`
+	- 已检查删除相关服务：`frontend/src/services/historyService.js`、`frontend/src/services/timelineService.js`
+	- 已检查 Supabase 迁移结构：`001/005/006/011`
+- 单条删除后原返回首页的实际原因：
+	- 历史详情删除链路中存在删除后首页跳转与用户数据初始化调用，导致历史上下文被打断并回到今天。
+- selectedDate 或路由原重置位置：
+	- 历史详情删除流程通过用户数据初始化链路间接触发日期重选逻辑，随后切回首页路由。
+- 修改后的单条删除流程：
+	- 保持历史详情路由不变。
+	- 删除确认期间使用 `deleting` 锁防重复点击。
+	- 删除整日分支不再触发首页初始化，删除后保持历史模块（详情删除整日返回 `/history`）。
+	- 单条删除继续在当前日期上下文更新记录。
+- 删除最后一条记录的空状态：
+	- 单条删除后继续停留当前历史日期；已结束日期仍按现有 `isEmptyDay` 规则显示“本日无记录”。
+- 日期完成状态保留规则：
+	- 单条删除不删除 `daily_archives` 完成状态。
+	- 整日删除删除指定日期 `daily_archives` 记录（包含完成状态）。
+- 事件时间编辑字段：
+	- 开始时间：`startTime` -> `started_at` / `event_time`
+	- 结束时间：`endTime` -> `ended_at`
+	- 事件名称、备注仍可编辑（按现有弹窗字段）
+- 时间修改后的秒级时长计算方式：
+	- 保存后依赖 `started_at` 与 `ended_at` 计算秒级差值（`diffSecondsBetween`），展示为 `HH:mm:ss`。
+	- 输入采用 `type="time" step="1"`，支持秒级输入与保留。
+- 跨日时间处理：
+	- 若结束时间早于开始时间，结束时间自动加一天，确保时长非负并支持跨日事件。
+- 历史日期卡片删除按钮位置：
+	- 历史列表卡片右上角（绝对定位）。
+- 删除按钮事件冒泡处理：
+	- 使用 `event.preventDefault()` + `event.stopPropagation()`，避免触发进入详情页。
+- 整日删除确认交互：
+	- 点击卡片右上角删除按钮后弹出确认框，展示目标日期。
+	- 确认按钮显示“删除中...”并禁用重复提交。
+- 整日删除的数据范围：
+	- 指定日期的 `timeline_items`（该用户）
+	- 指定日期的 `daily_archives`（该用户，含完成状态）
+	- 关联 `food_entries` 通过外键 `ON DELETE CASCADE` 随 `timeline_items` 删除
+- 日期完成状态删除方式：
+	- 通过删除 `daily_archives` 目标日期记录实现。
+- 是否使用 RPC 或事务：
+	- 是，新增 RPC：`public.delete_day_records(target_date date)`。
+	- 使用单个 PL/pgSQL 函数执行删除，作为一次数据库事务调用保证原子性。
+- RPC 或事务的用户隔离方式：
+	- 函数内部使用 `auth.uid()` 获取当前用户，仅按当前用户删除目标日期数据。
+	- 向 `authenticated` 授权执行，未登录调用会报错。
+- 整日删除后的本地状态更新：
+	- 成功后使用 `setHistory((prev) => prev.filter(...))` 本地移除目标日期卡片，不跳转页面。
+- 是否修改数据库结构：否。
+- 是否新增 migration 或函数：是。
+	- 新增 migration：`supabase/migrations/012_delete_day_records_rpc.sql`
+	- 新增函数：`public.delete_day_records(target_date date)`
+- 实际修改文件：
+	- `frontend/src/pages/HistoryDetailPage.jsx`
+	- `frontend/src/pages/HistoryPage.jsx`
+	- `frontend/src/services/historyService.js`
+	- `supabase/migrations/012_delete_day_records_rpc.sql`
+	- `CHANGELOG.md`
+	- `docs/DEVELOPMENT_LOG.md`
+	- `docs/PROJECT_STATUS.md`
+	- `docs/VERSION_HISTORY.md`
+- 实际执行的测试：
+	- 修改前检查：`git status --short`、`git branch --show-current`
+	- 语法检查：`get_errors`（HistoryPage / HistoryDetailPage / historyService）
+	- 关键链路检索：`deleteFullDayRecords`、`history-delete-date`、`delete_day_records`
+	- 前端构建：`cd frontend && npm run build`
+	- 删除导航链路确认：历史删除不再走首页初始化链路
+- migration 或 RPC 执行结果：
+	- 已新增迁移文件并完成代码级检查。
+	- 当前会话未连接 Supabase SQL 执行环境，未在本地执行迁移；待部署环境执行验证。
+- 测试结果：
+	- 目标文件无语法错误。
+	- 前端构建通过（Compiled successfully）。
+	- 静态链路确认：历史列表支持整日删除按钮并阻止卡片导航冒泡。
+	- 受当前会话缺少可用登录态与在线数据库执行环境限制，未完成端到端手工点击与 RPC 实库执行回执采集。
+- 前端构建结果：通过。
+- 当前分支：supabase-v1
+- Git Commit ID：8026e90619b26a005530f4508439b1f77602f45d
+- 版本状态：本次为本地功能修改，未正式上传，正式版本号保持 `v0.1.1`。
+
