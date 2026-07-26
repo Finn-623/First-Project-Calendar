@@ -229,3 +229,42 @@
 - 优先完成V0.1线上验收闭环（登录、会话、隔离、管理员权限）。
 - 建立最小自动化测试集并纳入回归。
 - 完成每次任务后持续更新 `docs/DEVELOPMENT_LOG.md` 与 `docs/VERSION_HISTORY.md`。
+
+## DEV-20260726-008
+
+- 日期：2026-07-26
+- 状态：已完成
+- 任务目标：重构登录后底部导航为四入口（首页｜历史｜食物库｜设置），并新增设置页承载账号信息、个人信息、摄入记录历史、切换账户与退出账户。
+- 实际完成内容：
+	- 重构底部导航为固定四入口：`/`、`/history`、`/library`、`/settings`。
+	- 新增设置主页面，包含账号信息、个人信息、摄入记录历史入口与账户操作区。
+	- 新增账号信息页与个人信息页。
+	- 在路由中接入 `/settings`、`/settings/account`、`/settings/profile`。
+	- 保留 `/plan` 路由可访问，但不在底部导航展示。
+	- 登录页及未登录状态下继续不渲染底部导航。
+- 主要修改文件或模块：`frontend/src/components/BottomNav.jsx`、`frontend/src/pages/SettingsPage.jsx`、`frontend/src/pages/AccountInfoPage.jsx`、`frontend/src/pages/ProfileInfoPage.jsx`、`frontend/src/App.js`、`CHANGELOG.md`、`docs/DEVELOPMENT_LOG.md`、`docs/PROJECT_STATUS.md`、`docs/VERSION_HISTORY.md`
+- 遇到的问题：
+	- 自动化浏览器验证时，直接访问受保护路由会因未登录重定向到 `/login`，无法在当前会话下完整验证登录后交互。
+	- Playwright 代码片段初次错误使用 `document` 全局，需改为 `page.evaluate` 执行。
+- 解决方式：
+	- 先完成路由与构建验证，再补充源码级检查与未登录态验证。
+	- 更正 Playwright 调用方式，确认登录页不显示底部导航。
+- 执行的测试：
+	- `cd frontend && npm run build`
+	- `get_errors` 检查 `BottomNav.jsx`、`SettingsPage.jsx`、`AccountInfoPage.jsx`、`ProfileInfoPage.jsx`、`App.js`
+	- 浏览器访问 `http://localhost:3002/` 与 `http://localhost:3002/settings`（均重定向到 `/login`）
+	- `page.evaluate` 检查登录页 `data-testid="bottom-nav"` 不存在
+	- 文本检索确认导航与设置入口文案及路由定义存在
+- 测试结果：
+	- 构建通过。
+	- 变更文件无语法/类型错误。
+	- 未登录态访问受保护路由会跳转登录页，且登录页不显示底部导航，符合预期。
+	- 导航顺序与设置页入口文案在源码中已按要求配置。
+	- 受限于当前未提供可用登录会话，未完成“登录后点击流”全链路手工验证，存在发布前验证缺口。
+- 未完成事项：
+	- 待使用真实登录会话补充验证：底部导航激活态、设置页入口跳转、切换账户/退出账户确认弹窗的取消与确认分支。
+- 风险或注意事项：
+	- 本次不修改认证协议和数据库，仅做导航框架与页面组织调整；账户操作仍调用既有 `switchAccount` / `logout`。
+	- 新增页面底部使用 `pb-28` 预留导航安全空间，需在真实机型上再确认遮挡边界。
+- Git 分支：supabase-v1
+- Git Commit ID：58237724a596fe08aa5a03b8b050aee903c190f5

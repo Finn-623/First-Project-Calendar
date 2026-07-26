@@ -90,6 +90,14 @@
   - 证据：frontend/src/App.js
   - 说明：登录性能已完成诊断和优化，具体结果见 DEVELOPMENT_LOG。
   - 相关 Commit：ef9df7c9c77e0cb4c587faf699fec8fa0dd01533
+- `已完成` 登录后底部导航与设置页框架重构
+  - 证据：frontend/src/components/BottomNav.jsx
+  - 证据：frontend/src/pages/SettingsPage.jsx
+  - 证据：frontend/src/pages/AccountInfoPage.jsx
+  - 证据：frontend/src/pages/ProfileInfoPage.jsx
+  - 证据：frontend/src/App.js
+  - 说明：底部导航统一为“首页｜历史｜食物库｜设置”，设置页承载账号信息、个人信息、摄入记录历史以及切换账户/退出账户入口；`/plan` 路由保留但不再作为底部一级入口。
+  - 相关 Commit：58237724a596fe08aa5a03b8b050aee903c190f5
 
 ## 4. 部分完成
 
