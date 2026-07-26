@@ -1,3 +1,25 @@
+## DEV-20260727-055
+
+- 日期：2026-07-27
+- 状态：已完成
+- 修改类型：UI改进 / 设置-摄入计划输入框对齐和间距优化
+- 修改背景：用户反馈需要将数字往输入框中间移动，单位靠近对应输入框。
+- 任务目标：优化输入框内的文本对齐和单位标签与输入框的距离。
+- 实际完成内容：
+	- 输入框文本居中：添加 `text-center` 使数字在输入框中间显示。
+	- 输入框 padding 优化：改为 `px-2 py-1.5` 使数字垂直居中。
+	- 减少输入框和单位间距：从 `gap-1` 改为 `gap-0.5`，使单位靠近输入框。
+- 主要修改文件或模块：
+	- `frontend/src/pages/SettingsIntakePlanPage.jsx`
+- 执行的测试与检查：
+	- `cd frontend && npm run build` - 构建成功，增量 +2 字节。
+	- `cd frontend && CI=true npm test -- --watch=false --runInBand src/pages/SettingsIntakePlanPage.test.jsx` - 7 个测试通过。
+- 测试结果：
+	- 前端构建通过。
+	- 1 个测试套件通过，7 个测试通过。
+- 当前分支：supabase-v1
+- Git Commit ID：5717174
+
 ## DEV-20260727-054
 
 - 日期：2026-07-27
