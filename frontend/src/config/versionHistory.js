@@ -1,11 +1,11 @@
-import { APP_VERSION_META } from './appVersion';
+import { VERSION_RECORDS } from '../data/versionHistory';
 
 export const VERSION_HISTORY_ENTRIES = [
   {
-    version: APP_VERSION_META.version,
-    status: APP_VERSION_META.status,
-    releasedAt: APP_VERSION_META.releasedAt,
-    summary: APP_VERSION_META.summary,
-    docPath: `docs/version-updates/v${APP_VERSION_META.version}.md`,
+    version: VERSION_RECORDS[0]?.version,
+    status: VERSION_RECORDS[0]?.status,
+    releasedAt: VERSION_RECORDS[0]?.releaseDate,
+    summary: VERSION_RECORDS[0]?.summary,
+    docPath: `docs/version-updates/v${VERSION_RECORDS[0]?.version}.md`,
   },
 ];

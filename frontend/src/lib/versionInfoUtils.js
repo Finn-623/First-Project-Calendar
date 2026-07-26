@@ -1,5 +1,5 @@
 export function formatReleaseTime(releasedAt, locale = 'zh-CN') {
-  if (!releasedAt) return '开发中，尚未上线';
+  if (!releasedAt) return '尚未正式上线';
 
   try {
     const date = new Date(releasedAt);

@@ -1,3 +1,44 @@
+## DEV-20260726-048
+
+- 日期：2026-07-26
+- 状态：已完成
+- 修改类型：功能完善 / 设置-版本信息与版本更新记录
+- 修改背景：当前版本页仅有单条摘要，无法直观看到第一版本的详细改动、分类信息和提交证据。
+- 任务目标：把第一版本更新记录扩展为结构化数据并直接在网页展示（概览、重点、分类明细、相关提交）。
+- 实际完成内容：
+	- 新增统一结构化版本数据源 `frontend/src/data/versionHistory.js`，沉淀版本基础信息、重点、分类更新项、日期和提交短 ID。
+	- 重构 `SettingsVersionPage`：展示“当前版本概览 + 本版本重点 + 按分类展开的更新明细 + 当前版本分类统计”。
+	- `versionHistory` 入口改为复用统一数据源，避免页面和配置间重复维护。
+	- 统一开发中版本的上线时间文案为“尚未正式上线”。
+	- 扩展第一版本文档 `docs/version-updates/v0.1.1.md`，按“新功能/记录体验/数据与权限/问题修复/性能与稳定性/工程治理”整理证据化更新。
+	- 同步更新 `CHANGELOG.md`、`docs/VERSION_HISTORY.md`、`docs/PROJECT_STATUS.md`。
+- 主要修改文件：
+	- `frontend/src/data/versionHistory.js`
+	- `frontend/src/pages/SettingsVersionPage.jsx`
+	- `frontend/src/config/versionHistory.js`
+	- `frontend/src/lib/versionInfoUtils.js`
+	- `docs/version-updates/v0.1.1.md`
+	- `docs/VERSION_HISTORY.md`
+	- `docs/PROJECT_STATUS.md`
+	- `CHANGELOG.md`
+- 执行的测试与检查：
+	- `get_errors`：`frontend/src/pages/SettingsVersionPage.jsx`、`frontend/src/data/versionHistory.js`、`frontend/src/config/versionHistory.js`、`frontend/src/lib/versionInfoUtils.js`
+	- `cd frontend && npm run build`
+	- `git diff --check`
+	- `git status --short`
+- 测试结果：
+	- 以上改动文件无诊断错误。
+	- 前端构建通过（Compiled successfully）。
+	- `git diff --check` 无输出（未发现空白符问题）。
+	- 工作区包含本任务无关已修改文件（`frontend/src/components/BottomNav.jsx`、`frontend/src/components/settings/SettingsNavigationItem.jsx`、`frontend/src/index.css`、`frontend/src/pages/HistoryDetailPage.jsx`），本次未触碰。
+- 未完成事项：
+	- 未执行可用登录态下的页面人工交互回归（版本页展开折叠、移动端查看）。
+	- 当前版本真实上线时间仍无法从部署记录确认，继续保持 `releasedAt=null`。
+- 风险或注意事项：
+	- 版本记录已按提交证据扩展，但仍属于开发中文档，不代表正式发布版本说明。
+- 当前分支：supabase-v1
+- Git Commit ID：未提交
+
 ## DEV-20260726-047
 
 - 日期：2026-07-26

@@ -2,7 +2,23 @@
 
 | 版本号 | 状态 | 上线时间 | 版本概述 | 详细文档 |
 |---|---|---|---|---|
-| v0.1.1 | 开发中 | 未记录 | 设置模块与版本信息能力持续迭代 | docs/version-updates/v0.1.1.md |
+| v0.1.1 | 开发中 | 尚未正式上线 | 已形成真实数据闭环并完成结构化版本记录展示 | docs/version-updates/v0.1.1.md |
+
+## 第一版本更新记录结构化完善
+
+- 日期：2026-07-26
+- 类型：Feature / Version History
+- 状态：已完成（本地）
+- 内容：
+  - 版本信息页面升级为结构化展示：当前版本概览、版本重点、分类展开明细。
+  - 第一版本更新记录从单条摘要扩展为多类别明细（功能、体验、数据权限、修复、性能、工程治理）。
+  - 页面支持展示每条变更的日期、摘要、关键细节和相关提交短 ID。
+  - 版本未正式上线时，统一显示“尚未正式上线”。
+- 代码功能变更：`frontend/src/pages/SettingsVersionPage.jsx`、`frontend/src/data/versionHistory.js`、`frontend/src/config/versionHistory.js`、`frontend/src/lib/versionInfoUtils.js`
+- 数据库变更：无
+- 部署变更：无
+- Git 分支：supabase-v1
+- Commit ID：未提交
 
 ## 版本信息与修改意见任务模块
 
