@@ -394,6 +394,23 @@ export const historyService = {
   },
 
   /**
+   * Delete all records for a specific date (timeline + archive) atomically.
+   * Uses RPC guarded by auth.uid() on the database side.
+   * @param {string} dateStr - Format: YYYY-MM-DD
+   * @returns {Promise<{data, error}>}
+   */
+  async deleteFullDayRecords(dateStr) {
+    try {
+      const { data, error } = await supabase
+        .rpc('delete_day_records', { target_date: dateStr });
+
+      return { data, error };
+    } catch (err) {
+      return { data: null, error: err };
+    }
+  },
+
+  /**
    * Get food entries for a timeline item
    * @param {string} timelineItemId
    * @returns {Promise<{data, error}>}

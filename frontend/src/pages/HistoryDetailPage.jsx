@@ -205,7 +205,7 @@ export const HistoryDetailPage = () => {
 
     try {
       if (confirmKind === 'day') {
-        const { error } = await historyService.deleteDayArchive(user.id, targetDateStr);
+        const { error } = await historyService.deleteFullDayRecords(targetDateStr);
         if (error) {
           toast.error('删除失败，请稍后重试');
           return;
