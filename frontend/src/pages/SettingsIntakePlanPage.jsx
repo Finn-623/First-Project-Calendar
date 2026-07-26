@@ -249,7 +249,7 @@ export const SettingsIntakePlanPage = () => {
                       className={`flex-1 min-w-0 min-h-10 rounded-lg border px-2 py-1.5 text-[13px] text-center ${isAutoField ? 'border-[#E5E5E0] bg-[#F7F7F5] text-[#6A6F6C]' : 'border-[#D5DCD2] bg-white text-[#2C332F]'}`}
                       placeholder="0"
                     />
-                    <span className="text-[11px] text-[#858C88] w-6 flex-shrink-0 text-right">{field.unit}</span>
+                    <span className="text-[11px] text-[#858C88] w-6 flex-shrink-0 text-left">{field.unit}</span>
                   </div>
                 </div>
               );
