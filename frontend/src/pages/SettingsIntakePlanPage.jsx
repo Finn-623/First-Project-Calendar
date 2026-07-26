@@ -225,7 +225,7 @@ export const SettingsIntakePlanPage = () => {
           })}
 
           {/* 其他3个字段排成一行（响应式） */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
             {FIELD_DEFINITIONS.slice(1).map((field) => {
               const emptyFields = Object.entries(draft).filter(([, v]) => !v || Number(v) === 0).map(([k]) => k);
               const isAutoField = autoValue !== null && emptyFields.length === 1 && emptyFields[0] === field.key;
@@ -246,10 +246,10 @@ export const SettingsIntakePlanPage = () => {
                         setDraft((prev) => ({ ...prev, [field.key]: event.target.value }));
                         setErrorMessage('');
                       }}
-                      className={`flex-1 min-h-10 rounded-lg border px-2 text-[13px] ${isAutoField ? 'border-[#E5E5E0] bg-[#F7F7F5] text-[#6A6F6C]' : 'border-[#D5DCD2] bg-white text-[#2C332F]'}`}
+                      className={`flex-1 min-h-10 rounded-lg border px-1.5 text-[13px] ${isAutoField ? 'border-[#E5E5E0] bg-[#F7F7F5] text-[#6A6F6C]' : 'border-[#D5DCD2] bg-white text-[#2C332F]'}`}
                       placeholder="0"
                     />
-                    <span className="text-[11px] text-[#858C88] w-8 text-right">{field.unit}</span>
+                    <span className="text-[11px] text-[#858C88] w-7 text-right">{field.unit}</span>
                   </div>
                 </div>
               );
