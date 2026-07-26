@@ -70,3 +70,5 @@
   - 相关 Commit ID：0b92e3c4f63f0ac7740fd4be78cb063568e7dabb
   - 调整首页今日摄入目标行文案格式为“-- kcal、P -- g、F -- g、C -- g”，不调整正式版本号。
   - 相关 Commit ID：262c00329b1fb95f1cf24b6caa338e3dd74c73fa
+  - 调整首页今日摄入目标行布局，与上方四个营养卡片列严格对齐，不调整正式版本号。
+  - 相关 Commit ID：6fc0bf145278f6a45329e801588c28f912aa3fa4

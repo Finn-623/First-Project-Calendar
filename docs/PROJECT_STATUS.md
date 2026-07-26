@@ -119,6 +119,10 @@
   - 证据：frontend/src/components/NutritionSummary.jsx
   - 说明：目标行文案更新为“-- kcal、P -- g、F -- g、C -- g”格式，当前摄入行样式保持不变。
   - 相关 Commit：262c00329b1fb95f1cf24b6caa338e3dd74c73fa
+- `已完成` 首页“今日摄入”目标行列对齐修正
+  - 证据：frontend/src/components/NutritionSummary.jsx
+  - 说明：目标行与今日摄入行共用相同五列网格参数，四个目标字段与对应营养卡片列严格对齐。
+  - 相关 Commit：6fc0bf145278f6a45329e801588c28f912aa3fa4
 
 ## 4. 部分完成
 

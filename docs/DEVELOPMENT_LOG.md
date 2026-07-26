@@ -525,3 +525,42 @@
 	- 本次仅调整目标行文案，不涉及数据逻辑与业务流程。
 - 当前分支：supabase-v1
 - Git Commit ID：262c00329b1fb95f1cf24b6caa338e3dd74c73fa
+
+## DEV-20260726-015
+
+- 日期：2026-07-26
+- 状态：已完成
+- 修改类型：UI 布局修正
+- 修改模块：首页 / 今日摄入
+- 任务目标：仅调整目标行布局，使其与上方“今日摄入”四个营养卡片列严格对齐。
+- 修改前：目标行与上方同为五列结构，但列间距与文本对齐参数不一致，存在视觉偏差风险。
+- 修改后：
+	- 目标行使用与当前行相同的五列网格模板。
+	- 目标行列间距与当前行一致。
+	- 热量、P、F、C 文本在各自列中居中显示，对齐对应卡片列。
+	- 目标行仍为普通文字，不使用独立小卡片。
+- 今日摄入行是否修改：否（保持完全不变）。
+- 目标行字段顺序：`-- kcal`、`P -- g`、`F -- g`、`C -- g`。
+- 数据来源与逻辑：未改，继续使用 `nutrientFields[*].targetValue`。
+- 是否使用横向滚动：否（未使用 `overflow-x-auto`、`overflow-x-scroll`）。
+- 是否调整公共组件：是，调整 `NutritionSummary` 的 `layout="splitRows"` 目标行布局参数。
+- 实际修改文件：`frontend/src/components/NutritionSummary.jsx`、`CHANGELOG.md`、`docs/DEVELOPMENT_LOG.md`、`docs/PROJECT_STATUS.md`、`docs/VERSION_HISTORY.md`
+- 实际执行的测试：
+	- 修改前检查：`git status --short`、`git branch --show-current`
+	- 对齐检查：确认 `sum-current-row` 与 `sum-target-row` 使用相同列模板与间距
+	- 文案检查：确认目标行为 `-- kcal / P / F / C` 形式
+	- 样式检查：确认目标行无独立卡片样式，当前行卡片样式保持
+	- 语法检查：`get_errors` 检查 `NutritionSummary.jsx`
+	- 构建检查：`cd frontend && npm run build`
+- 测试结果：
+	- 今日摄入行保持不变。
+	- 目标行与上方四列卡片严格对齐。
+	- 目标行仍为单行普通文字，无独立目标卡片。
+	- 构建通过。
+- 构建结果：通过。
+- 未完成事项：
+	- 待登录态补充页面视觉验收截图。
+- 风险或注意事项：
+	- 本次为纯布局参数修正，不涉及业务数据与计算逻辑。
+- 当前分支：supabase-v1
+- Git Commit ID：6fc0bf145278f6a45329e801588c28f912aa3fa4
