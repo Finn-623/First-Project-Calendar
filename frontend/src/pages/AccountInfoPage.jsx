@@ -1,6 +1,6 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
 import { useStore } from '../store';
+import { SettingsSubpageHeader } from '../components/settings/SettingsSubpageHeader';
 
 export const AccountInfoPage = () => {
   const { profile, user } = useStore();
@@ -8,17 +8,20 @@ export const AccountInfoPage = () => {
   const role = profile?.role === 'admin' || profile?.is_admin === true ? '管理员' : '普通用户';
 
   const rows = [
+    { label: '展示名称', value: profile?.display_name || '暂未填写' },
     { label: '用户名', value: profile?.username || '暂未填写' },
+    { label: '邮箱', value: profile?.email || user?.email || '暂未填写' },
+    { label: '密码', value: '如需修改，请通过账号安全流程重置' },
     { label: '角色', value: role },
     { label: '账号状态', value: user ? '已登录' : '未登录' },
   ];
 
   return (
     <div className="w-full max-w-md mx-auto px-4 pt-6 pb-28">
-      <div className="mb-4">
-        <Link to="/settings" className="text-[12px] text-[#6B8067]">返回设置</Link>
-        <h1 className="text-[20px] font-medium text-[#2C332F] mt-2">账号信息</h1>
-      </div>
+      <SettingsSubpageHeader
+        title="账户"
+        description="查看账户核心信息。"
+      />
 
       <div className="rounded-2xl border border-[#E5E5E0] bg-white overflow-hidden">
         {rows.map((row) => (

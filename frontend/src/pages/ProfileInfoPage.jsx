@@ -1,22 +1,22 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
 import { useStore } from '../store';
+import { SettingsSubpageHeader } from '../components/settings/SettingsSubpageHeader';
 
 export const ProfileInfoPage = () => {
   const { profile } = useStore();
 
   const rows = [
-    { label: '显示名称', value: profile?.display_name || '暂未填写' },
-    { label: '头像地址', value: profile?.avatar_url || '暂未填写' },
-    { label: '个人简介', value: profile?.bio || '暂未填写' },
+    { label: '性别', value: profile?.gender || '暂未填写' },
+    { label: '身高', value: profile?.height ? `${profile.height} cm` : '暂未填写' },
+    { label: '体重', value: profile?.weight ? `${profile.weight} kg` : '暂未填写' },
   ];
 
   return (
     <div className="w-full max-w-md mx-auto px-4 pt-6 pb-28">
-      <div className="mb-4">
-        <Link to="/settings" className="text-[12px] text-[#6B8067]">返回设置</Link>
-        <h1 className="text-[20px] font-medium text-[#2C332F] mt-2">个人信息</h1>
-      </div>
+      <SettingsSubpageHeader
+        title="个人信息"
+        description="身体信息展示与后续编辑入口。"
+      />
 
       <div className="rounded-2xl border border-[#E5E5E0] bg-white overflow-hidden">
         {rows.map((row) => (
