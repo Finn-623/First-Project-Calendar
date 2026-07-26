@@ -209,6 +209,10 @@
   - 证据：frontend/src/services/historyService.js
   - 说明：训练编辑已按字段职责分离 `title / details.name / notes / bodyParts`；running 训练支持无氧与有氧双向切换，切换时备注保持不变，且不重置 `started_at` 与计时状态。
   - 相关 Commit：934c542d5946ab93ce1bb722a3f2ac4c63603522
+- `已完成` 事件编辑保存性能优化
+  - 证据：frontend/src/pages/TodayPage.jsx
+  - 说明：事件编辑保存不再等待全量历史刷新；数据库更新成功后立即替换本地时间轴记录并返回，弹窗可更快关闭且减少重复提交风险。
+  - 相关 Commit：8ac5e18ea58f0ea5b3125f617e8d630fd6ecfe8e
 
 ## 4. 部分完成
 

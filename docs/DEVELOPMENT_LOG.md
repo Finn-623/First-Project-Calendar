@@ -1218,3 +1218,74 @@
 - 风险或注意事项：
 	- 当前环境未提供稳定登录态与真实设备联调，本次“运行中切换并结束”的验证以代码路径、静态检查与构建为主；待发布前补充登录态手工回归。
 
+## DEV-20260726-031
+
+- 日期：2026-07-26
+- 状态：已完成
+- 修改类型：性能优化 / 事件编辑
+- 修改模块：事件编辑保存逻辑、时间轴本地状态更新
+- 任务目标：缩短“编辑事件 -> 保存修改”的等待感，避免保存成功后被无关全量刷新阻塞，同时保证真实保存与失败可见。
+- 修改前保存流程：
+	- 编辑弹窗点击保存 -> `timelineService.updateTimelineItem` -> 成功后 `updateTimelineItemInState` -> `await refreshDayState()` -> toast -> 弹窗关闭。
+	- 其中 `refreshDayState` 会触发 `loadHistory`，`loadHistory` 先请求历史日期，再逐日请求历史详情，属于与单条事件编辑无强相关的重刷新链路。
+- 修改前实际耗时：
+	- 当前会话无可用登录态与真实 Network 面板联调条件，无法在本次任务中记录可复现实测毫秒值。
+	- 基于代码链路确认，用户等待主要来自 `await refreshDayState()` 阻塞而非按钮状态切换。
+- 性能瓶颈实际原因：
+	- 保存成功后同步等待全量历史刷新完成，导致弹窗关闭和成功反馈延后。
+- 是否存在重复 update 请求：
+	- 未发现保存逻辑中的显式重复 update。
+	- 但缺少页面级保存锁时，极端连续触发存在重复调用风险。
+- 是否存在全量时间轴刷新：
+	- 存在。编辑保存成功后会触发 `refreshDayState -> loadHistory`。
+- 是否存在无关数据请求：
+	- 本保存路径未触发食品库、计划、用户资料的全量加载；主要额外请求为历史链路刷新。
+- 是否存在认证重新初始化：
+	- 未发现事件保存路径重新初始化 Auth。
+- 修改后的保存流程：
+	- 编辑弹窗点击保存 -> 页面级保存锁校验 -> `timelineService.updateTimelineItem` -> 使用返回记录直接替换本地时间轴 -> 立即返回成功 -> 弹窗关闭。
+	- 对非事件记录保留后台 `refreshDayState` 校准，但不再 `await` 阻塞保存返回。
+- 保存按钮反馈方式：
+	- 弹窗已有 `submitting` 状态，点击后立即显示“保存中...”并禁用按钮，直到请求结束。
+- 防重复提交方式：
+	- 新增页面级 `savingEditItemId` 锁，同一条记录保存中重复触发将直接返回，避免并发重复更新请求。
+- 数据库更新请求数量：
+	- 正常路径一次保存只执行一次 `updateTimelineItem` 更新请求（兼容回退分支不作为常规路径）。
+- 是否使用 update select 返回记录：
+	- 是。继续使用 `update...select().single()` 返回更新记录。
+- 本地状态替换方式：
+	- `updateTimelineItemInState(item.id, () => data)` 仅替换同 ID 条目。
+- 弹窗关闭时机：
+	- 更新请求成功并完成本地状态替换后立即关闭；不再等待全量历史刷新。
+- 是否使用乐观更新：
+	- 否。采用“数据库成功后立即本地替换”的快速确认模式。
+- 失败回滚或错误处理方式：
+	- 请求失败显示错误 toast，抛出错误给弹窗层；弹窗保持打开，输入内容保留，按钮状态恢复。
+- 修改后实际耗时：
+	- 当前会话未获取到可登录实测环境，无法给出可复现实测毫秒值。
+	- 代码路径确认：已去除事件保存后的阻塞全量刷新等待，主等待链路缩短为“单次 update 返回 + 本地替换”。
+- 是否修改数据库结构：否。
+- 是否新增 migration 或索引：否。
+- 实际修改文件：
+	- `frontend/src/pages/TodayPage.jsx`
+	- `CHANGELOG.md`
+	- `docs/DEVELOPMENT_LOG.md`
+	- `docs/PROJECT_STATUS.md`
+	- `docs/VERSION_HISTORY.md`
+- 实际执行的测试：
+	- 修改前检查：`git status --short`、`git branch --show-current`
+	- 链路检查：检索 `handleEditActivityConfirm`、`refreshDayState`、`loadHistory` 调用关系
+	- 语法检查：`get_errors` 检查 `frontend/src/pages/TodayPage.jsx`
+	- 前端构建：`cd frontend && npm run build`
+	- 结果核对：确认事件编辑保存路径不再 `await refreshDayState()`；确认仍保持本地状态替换
+- 测试结果：
+	- 目标文件无语法错误。
+	- 前端构建通过（Compiled successfully）。
+	- 通过静态链路确认事件编辑保存不再阻塞等待全量历史刷新。
+- 前端构建结果：通过。
+- 当前分支：supabase-v1
+- Git Commit ID：8ac5e18ea58f0ea5b3125f617e8d630fd6ecfe8e
+- 版本状态：本次为本地修复，未正式上传，正式版本号保持 `v0.1.1`。
+- 风险或注意事项：
+	- 受当前会话无登录态限制，未在真实网络面板中采集前后毫秒级耗时对比；建议在登录态补充一次 Network 面板实测记录。
+
