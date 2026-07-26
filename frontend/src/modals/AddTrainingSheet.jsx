@@ -3,6 +3,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle } from '../components/ui/s
 import { Input } from '../components/ui/input';
 import { Button } from '../components/ui/button';
 import { Dumbbell, Footprints } from 'lucide-react';
+import { STRENGTH_BODY_PART_OPTIONS, normalizeStrengthBodyParts } from '../constants/trainingBodyParts';
 
 export const AddTrainingSheet = ({ open, onOpenChange, onConfirm, initialKind = 'anaerobic' }) => {
   const [tab, setTab] = useState(initialKind);
@@ -11,6 +12,8 @@ export const AddTrainingSheet = ({ open, onOpenChange, onConfirm, initialKind = 
   const [time, setTime] = useState('18:00');
   const [submitting, setSubmitting] = useState(false);
   const [durationError, setDurationError] = useState('');
+  const [selectedBodyParts, setSelectedBodyParts] = useState([]);
+  const [bodyPartError, setBodyPartError] = useState('');
 
   useEffect(() => {
     if (!open) {
@@ -20,10 +23,33 @@ export const AddTrainingSheet = ({ open, onOpenChange, onConfirm, initialKind = 
       setTime('18:00');
       setSubmitting(false);
       setDurationError('');
+      setSelectedBodyParts([]);
+      setBodyPartError('');
     } else {
       setTab(initialKind);
     }
   }, [open, initialKind]);
+
+  const toggleBodyPart = (bodyPart) => {
+    setSelectedBodyParts((current) => {
+      if (current.includes(bodyPart)) {
+        return current.filter((item) => item !== bodyPart);
+      }
+
+      return [...current, bodyPart];
+    });
+
+    if (bodyPartError) {
+      setBodyPartError('');
+    }
+  };
+
+  const handleTabChange = (nextTab) => {
+    setTab(nextTab);
+    if (bodyPartError) {
+      setBodyPartError('');
+    }
+  };
 
   const normalizeDurationOnBlur = () => {
     const normalizedInput = durationInput.trim();
@@ -62,6 +88,12 @@ export const AddTrainingSheet = ({ open, onOpenChange, onConfirm, initialKind = 
     }
 
     const normalizedDuration = String(duration);
+    const normalizedBodyParts = normalizeStrengthBodyParts(selectedBodyParts);
+
+    if (tab === 'anaerobic' && normalizedBodyParts.length === 0) {
+      setBodyPartError('请选择至少一个训练部位');
+      return;
+    }
 
     const payload = {
       id: `t${Date.now()}`,
@@ -69,11 +101,13 @@ export const AddTrainingSheet = ({ open, onOpenChange, onConfirm, initialKind = 
       title: tab === 'anaerobic' ? '无氧训练' : '有氧训练',
       time,
       detail: `${name || (tab === 'anaerobic' ? '力量训练' : '有氧运动')} · ${normalizedDuration} 分钟`,
+      bodyParts: tab === 'anaerobic' ? normalizedBodyParts : undefined,
     };
 
     try {
       setSubmitting(true);
       setDurationError('');
+      setBodyPartError('');
       setDurationInput(normalizedDuration);
       await Promise.resolve(onConfirm(payload));
       onOpenChange(false);
@@ -103,7 +137,7 @@ export const AddTrainingSheet = ({ open, onOpenChange, onConfirm, initialKind = 
               <button
                 key={id}
                 type="button"
-                onClick={() => setTab(id)}
+                onClick={() => handleTabChange(id)}
                 data-testid={`training-tab-${id}`}
                 disabled={submitting}
                 className={`flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-[13px] ${
@@ -166,6 +200,36 @@ export const AddTrainingSheet = ({ open, onOpenChange, onConfirm, initialKind = 
                 ) : null}
               </div>
             </div>
+
+            {tab === 'anaerobic' ? (
+              <div>
+                <label className="text-[12px] text-[#858C88]">训练部位</label>
+                <div className="mt-1.5 grid grid-cols-4 gap-2" data-testid="training-body-part-group">
+                  {STRENGTH_BODY_PART_OPTIONS.map((option) => {
+                    const selected = selectedBodyParts.includes(option.value);
+                    return (
+                      <button
+                        key={option.value}
+                        type="button"
+                        onClick={() => toggleBodyPart(option.value)}
+                        disabled={submitting}
+                        data-testid={`training-body-part-${option.value}`}
+                        className={`h-10 rounded-xl border text-[13px] ${
+                          selected
+                            ? 'bg-[#6B8067] border-[#6B8067] text-white'
+                            : 'bg-white border-[#E5E5E0] text-[#5E6660]'
+                        }`}
+                      >
+                        {option.label}
+                      </button>
+                    );
+                  })}
+                </div>
+                {bodyPartError ? (
+                  <p className="mt-1 text-[12px] text-[#D27D67]">{bodyPartError}</p>
+                ) : null}
+              </div>
+            ) : null}
 
             <Button
               onClick={handleConfirm}

@@ -6,6 +6,7 @@
 import { supabase } from '../lib/supabaseClient';
 import { hasMeaningfulTimelineItems } from '../lib/dayRecordUtils';
 import { normalizeSnackType } from '../constants/snackTypes';
+import { normalizeStrengthBodyParts } from '../constants/trainingBodyParts';
 
 export const SYDNEY_TIME_ZONE = 'Australia/Sydney';
 
@@ -69,6 +70,7 @@ const normalizeArchivedTimelineItem = (item) => ({
   type: item.type,
   subtype: item.subtype,
   snackType: item?.subtype === 'snack' ? normalizeSnackType(item?.snackType) : undefined,
+  bodyParts: item?.type === 'anaerobic' ? normalizeStrengthBodyParts(item?.bodyParts) : undefined,
   title: item.title,
   time: item.time,
   fixed: Boolean(item.fixed),

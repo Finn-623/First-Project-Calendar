@@ -2,6 +2,7 @@ import React from 'react';
 import { UtensilsCrossed, Dumbbell, Footprints, MapPin, Plus, Clock, Trash2, Loader2 } from 'lucide-react';
 import { sumMealMacros } from '../mockData';
 import { SNACK_TYPE_LABELS, normalizeSnackType } from '../constants/snackTypes';
+import { formatStrengthBodyPartsLabels } from '../constants/trainingBodyParts';
 
 const iconFor = (item) => {
   if (item.type === 'meal') return UtensilsCrossed;
@@ -34,6 +35,9 @@ export const TimelineItem = ({
   const timeLabel = item.time || '未设置';
   const snackType = item?.subtype === 'snack' ? normalizeSnackType(item?.snackType) : null;
   const mealTitle = snackType ? `${SNACK_TYPE_LABELS[snackType]}加餐` : item.title;
+  const strengthBodyPartsText = item?.type === 'anaerobic'
+    ? formatStrengthBodyPartsLabels(item?.bodyParts)
+    : '';
 
   const canDelete = !readOnly && (
     item.subtype === 'snack'
@@ -139,6 +143,9 @@ export const TimelineItem = ({
       {!isMeal && (
         <div className="mt-2.5">
           <p className="text-[12px] text-[#2C332F] break-words">{item.detail || '—'}</p>
+          {strengthBodyPartsText ? (
+            <p className="text-[12px] text-[#5E6660] mt-1">{strengthBodyPartsText}</p>
+          ) : null}
           {typeof item.caloriesBurned === 'number' && (
             <p className="font-num text-[11px] text-[#858C88] mt-1">消耗 {item.caloriesBurned} kcal</p>
           )}
