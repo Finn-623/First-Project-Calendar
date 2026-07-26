@@ -33,6 +33,42 @@ const timeToMinutes = (t) => {
   return h * 60 + m;
 };
 
+const getNowMinuteValue = (date) => {
+  if (!(date instanceof Date) || Number.isNaN(date.getTime())) return null;
+  return (date.getHours() * 60) + date.getMinutes();
+};
+
+const buildTimelineDisplayItems = (sortedItems, nowMinuteValue, shouldShowNowMarker) => {
+  if (!shouldShowNowMarker || nowMinuteValue == null) {
+    return sortedItems.map((item) => ({ kind: 'item', item }));
+  }
+
+  // Put "now" before the first item later than current minute.
+  // Same-minute items stay above the marker to keep order stable.
+  let insertIndex = sortedItems.length;
+  for (let index = 0; index < sortedItems.length; index += 1) {
+    const item = sortedItems[index];
+    if (timeToMinutes(item?.time) > nowMinuteValue) {
+      insertIndex = index;
+      break;
+    }
+  }
+
+  const displayItems = [];
+  sortedItems.forEach((item, index) => {
+    if (index === insertIndex) {
+      displayItems.push({ kind: 'now-marker' });
+    }
+    displayItems.push({ kind: 'item', item });
+  });
+
+  if (insertIndex === sortedItems.length) {
+    displayItems.push({ kind: 'now-marker' });
+  }
+
+  return displayItems;
+};
+
 const WEEKDAY_LABELS = ['一', '二', '三', '四', '五', '六', '日'];
 
 const getWeekDateStrings = (dateStr) => {
@@ -119,6 +155,13 @@ export const TodayPage = () => {
 
   const totals = useMemo(() => sumTimelineMacros(timeline), [timeline]);
   const hasRunningTimelineItem = timeline.some((item) => item.status === 'running');
+  const nowMinuteValue = useMemo(() => getNowMinuteValue(now), [now]);
+  const nowTimeLabel = useMemo(() => getLocalTimeInputValue(now), [now]);
+
+  const displayTimelineItems = useMemo(
+    () => buildTimelineDisplayItems(sorted, nowMinuteValue, isViewingToday),
+    [isViewingToday, nowMinuteValue, sorted]
+  );
 
   const refreshDayState = async () => {
     if (user?.id) {
@@ -630,21 +673,52 @@ export const TodayPage = () => {
             }}
             aria-hidden="true"
           />
-          {sorted.map((item) => (
-            <TimelineItem
-              key={item.id}
-              item={item}
-              layout="home-time-left"
-              onAddFood={handleAddFood}
-              onEditTime={(it) => setTimeSheet({ open: true, item: it })}
-              onEditRecord={(it) => setEditActivitySheet({ open: true, item: it })}
-              onDelete={handleDeleteClick}
-              onEnd={handleEndTimelineItem}
-              ending={endingItemId === item.id}
-              deleting={deletingItemId === item.id}
-              now={now}
-            />
-          ))}
+          {displayTimelineItems.map((entry, index) => {
+            if (entry.kind === 'now-marker') {
+              return (
+                <div
+                  key={`now-marker-${currentDateStr}-${index}`}
+                  className="grid grid-cols-[56px_18px_minmax(0,1fr)] gap-2 py-2.5"
+                  data-testid="timeline-now-marker"
+                >
+                  <div className="font-num tabular-nums text-[12px] text-[#6B8067] text-right leading-6 pt-1 whitespace-nowrap">
+                    {nowTimeLabel}
+                  </div>
+
+                  <div className="pt-3.5 flex justify-center">
+                    <div className="w-4 h-4 rounded-full flex items-center justify-center bg-[#EEF7F2] border-[1.5px] border-[#6B8067]">
+                      <div className="w-1.5 h-1.5 rounded-full bg-[#6B8067]" />
+                    </div>
+                  </div>
+
+                  <div className="min-w-0 pr-1 pt-3">
+                    <div className="flex items-center gap-2 text-[#6B8067]" aria-hidden="true">
+                      <span className="text-[12px] font-medium">现在</span>
+                      <div className="h-[1.5px] flex-1 bg-[#6B8067]/55" />
+                    </div>
+                  </div>
+                </div>
+              );
+            }
+
+            const item = entry.item;
+
+            return (
+              <TimelineItem
+                key={item.id}
+                item={item}
+                layout="home-time-left"
+                onAddFood={handleAddFood}
+                onEditTime={(it) => setTimeSheet({ open: true, item: it })}
+                onEditRecord={(it) => setEditActivitySheet({ open: true, item: it })}
+                onDelete={handleDeleteClick}
+                onEnd={handleEndTimelineItem}
+                ending={endingItemId === item.id}
+                deleting={deletingItemId === item.id}
+                now={now}
+              />
+            );
+          })}
         </div>
 
         <div className="px-2 mt-4">
