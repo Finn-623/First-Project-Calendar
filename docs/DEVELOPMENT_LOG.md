@@ -1942,7 +1942,7 @@
 	- 设置首页顶部展示名称通过共享 Store 的 `profile.display_name` 自动同步。
 - 密码修改流程：
 	- 使用独立弹窗收集“现有密码 / 新密码 / 再次输入新密码”。
-	- 前端校验：必填、新密码长度至少 8、新旧密码不同、两次新密码一致。
+	- 前端校验：必填、密码至少需要 3 个字符、新旧密码不同、两次新密码一致。
 	- 认证邮箱来源：优先 `auth user.email`，回退 `profile.email`；缺失时阻止提交并提示“无法获取当前账号认证信息，请重新登录”。
 	- 先用 `supabase.auth.signInWithPassword` 验证现有密码，验证成功后再用 `supabase.auth.updateUser` 更新新密码。
 	- 修改成功：清空密码输入、关闭弹窗、提示“密码修改成功”。
@@ -1975,4 +1975,30 @@
 	- 若线上 RLS 与本地推断不一致，展示名称更新可能在部分账号上被策略拒绝，需在真实环境补充验证。
 - 当前分支：supabase-v1
 - Git Commit ID：693f3f861bea25629528fbee4d793092e427f2bf
+
+## DEV-20260726-043
+
+- 日期：2026-07-26
+- 状态：已完成
+- 任务目标：将账户体系相关密码长度规则统一为“至少 3 个字符”，并统一常量与报错文案。
+- 实际完成内容：
+	- 将账户密码规则常量统一为 `MIN_PASSWORD_LENGTH = 3`。
+	- 修改前端校验文案为：`密码至少需要 3 个字符`。
+	- 保持密码原值校验，不对密码输入执行首尾空格裁剪。
+	- 复核当前前端代码，不存在 `minLength={6}` / `minLength={8}` / `password.length < 6` / `password.length < 8` / “密码至少需要 6 个字符” / “密码至少需要 8 个字符”的账户体系规则残留。
+	- 新增测试覆盖：2 字符拦截、3 字符通过、3 字符以上通过、两次不一致拦截、新旧相同拦截。
+- 主要修改文件或模块：`frontend/src/lib/accountUtils.js`、`frontend/src/lib/accountUtils.test.js`、`docs/DEVELOPMENT_LOG.md`、`CHANGELOG.md`、`docs/VERSION_HISTORY.md`
+- 是否涉及数据库迁移：否。
+- 执行的测试：
+	- `cd frontend && CI=true npm test -- --watch=false --runInBand accountUtils.test.js`
+	- `cd frontend && npm run build`
+	- 静态检索：账户体系旧密码长度规则残留扫描
+- 测试结果：
+	- 自动化测试通过：1 个测试套件，9 个测试全部通过。
+	- 前端构建通过（Compiled successfully）。
+	- 旧规则扫描未发现残留。
+- 风险或注意事项：
+	- 若 Supabase 后台最小密码策略高于 3，前端会以后台错误为准并提示失败，不会误提示成功。
+- 当前分支：supabase-v1
+- Git Commit ID：1409c82a1c4b0b9435d2750be7a755ba26d307b1
 
