@@ -115,6 +115,10 @@
   - 证据：frontend/src/components/NutritionSummary.jsx
   - 说明：保留“今日摄入”行四个独立小卡片，目标行改为单行普通文字，不再使用独立目标卡片。
   - 相关 Commit：0b92e3c4f63f0ac7740fd4be78cb063568e7dabb
+- `已完成` 首页“今日摄入”目标行标签简化
+  - 证据：frontend/src/components/NutritionSummary.jsx
+  - 说明：目标行文案更新为“-- kcal、P -- g、F -- g、C -- g”格式，当前摄入行样式保持不变。
+  - 相关 Commit：262c00329b1fb95f1cf24b6caa338e3dd74c73fa
 
 ## 4. 部分完成
 

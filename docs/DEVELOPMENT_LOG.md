@@ -482,3 +482,46 @@
 	- 本次仅修正展示结构，不改业务功能、状态管理、数据库与认证。
 - 当前分支：supabase-v1
 - Git Commit ID：0b92e3c4f63f0ac7740fd4be78cb063568e7dabb
+
+## DEV-20260726-014
+
+- 日期：2026-07-26
+- 状态：已完成
+- 修改类型：UI 布局修正
+- 修改模块：首页 / 今日摄入
+- 任务目标：仅修改目标行文案格式为“-- kcal、P -- g、F -- g、C -- g”，不改上方今日摄入行。
+- 今日摄入行是否保持不变：是。
+	- 保留中文字段：热量、蛋白质、脂肪、碳水。
+	- 保留四个独立小卡片、样式、数值、单位和布局。
+	- 未改当前行 JSX 与样式结构。
+- 目标行修改内容：
+	- 热量：由“热量 -- kcal”调整为“-- kcal”。
+	- 蛋白质：调整为“P -- g”。
+	- 脂肪：调整为“F -- g”。
+	- 碳水：调整为“C -- g”。
+	- 已设置目标时格式同样为：`2600 kcal / P 180 g / F 75 g / C 300 g`（示例）。
+- 目标行最终显示形式：`目标  -- kcal   P -- g   F -- g   C -- g`。
+- 目标行是否为一行普通文字：是。
+- 确认目标行未使用独立小卡片：是。
+- 确认未使用横向滚动：是（未使用 `overflow-x-auto`、`overflow-x-scroll`）。
+- 数据来源与计算逻辑：未改，继续使用 `safePlan` 与 `targetValue`。
+- 是否调整公共营养组件：是，仅调整 `NutritionSummary` 的 `layout="splitRows"` 目标行文案。
+- 实际修改文件：`frontend/src/components/NutritionSummary.jsx`、`CHANGELOG.md`、`docs/DEVELOPMENT_LOG.md`、`docs/PROJECT_STATUS.md`、`docs/VERSION_HISTORY.md`
+- 实际执行的测试：
+	- 修改前检查：`git status --short`、`git branch --show-current`
+	- 代码检查：确认今日摄入行仍为四卡片；目标行文案为 `-- kcal / P / F / C` 格式
+	- 滚动检查：确认未出现 `overflow-x-auto`、`overflow-x-scroll`
+	- 语法检查：`get_errors` 检查 `NutritionSummary.jsx`
+	- 构建检查：`cd frontend && npm run build`
+- 测试结果：
+	- 今日摄入行保持不变。
+	- 目标行文案格式已按要求更新。
+	- 目标行保持单行普通文字结构，无独立目标卡片。
+	- 构建通过。
+- 构建结果：通过。
+- 未完成事项：
+	- 待登录态视觉验收确认页面实际渲染细节。
+- 风险或注意事项：
+	- 本次仅调整目标行文案，不涉及数据逻辑与业务流程。
+- 当前分支：supabase-v1
+- Git Commit ID：262c00329b1fb95f1cf24b6caa338e3dd74c73fa

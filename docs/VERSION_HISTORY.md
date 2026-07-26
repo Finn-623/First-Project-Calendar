@@ -68,3 +68,5 @@
   - 相关 Commit ID：514d9d5d2a6fc7b16ee462a83368190e28024ac2
   - 调整首页今日摄入模块：保留当前摄入独立卡片，将目标数据改为单行文字展示，不调整正式版本号。
   - 相关 Commit ID：0b92e3c4f63f0ac7740fd4be78cb063568e7dabb
+  - 调整首页今日摄入目标行文案格式为“-- kcal、P -- g、F -- g、C -- g”，不调整正式版本号。
+  - 相关 Commit ID：262c00329b1fb95f1cf24b6caa338e3dd74c73fa
