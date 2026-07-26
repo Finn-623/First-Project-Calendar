@@ -81,10 +81,10 @@ export const NutritionSummary = ({ totals, plan, layout = 'default' }) => {
 
         <div className="mt-2 grid grid-cols-[3.8rem_repeat(4,minmax(0,1fr))] items-center gap-1 text-[10.5px] text-[#5E6660]" data-testid="sum-target-row">
           <span className="font-medium pl-0.5 whitespace-nowrap">目标</span>
-          <span className="whitespace-nowrap">热量 <span className="font-num" data-testid="sum-target-calories">{nutrientFields[0].targetValue}</span> kcal</span>
-          <span className="whitespace-nowrap">蛋白 <span className="font-num" data-testid="sum-target-protein">{nutrientFields[1].targetValue}</span> g</span>
-          <span className="whitespace-nowrap">脂肪 <span className="font-num" data-testid="sum-target-fat">{nutrientFields[2].targetValue}</span> g</span>
-          <span className="whitespace-nowrap">碳水 <span className="font-num" data-testid="sum-target-carbs">{nutrientFields[3].targetValue}</span> g</span>
+          <span className="whitespace-nowrap"><span className="font-num" data-testid="sum-target-calories">{nutrientFields[0].targetValue}</span> kcal</span>
+          <span className="whitespace-nowrap">P <span className="font-num" data-testid="sum-target-protein">{nutrientFields[1].targetValue}</span> g</span>
+          <span className="whitespace-nowrap">F <span className="font-num" data-testid="sum-target-fat">{nutrientFields[2].targetValue}</span> g</span>
+          <span className="whitespace-nowrap">C <span className="font-num" data-testid="sum-target-carbs">{nutrientFields[3].targetValue}</span> g</span>
         </div>
       </section>
     );
