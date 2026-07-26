@@ -1,3 +1,25 @@
+## DEV-20260727-056
+
+- 日期：2026-07-27
+- 状态：已完成
+- 修改类型：UI改进 / 设置-摄入计划单位标签防覆盖
+- 修改背景：上一步调整时，单位标签的负边距 `-ml-1` 导致单位标签覆盖到输入框上。
+- 任务目标：调整间距使单位标签靠近输入框但不覆盖。
+- 实际完成内容：
+	- 移除 `-ml-1` 负边距。
+	- 调整间距从 `gap-0` 改为 `gap-0.5`（2px）。
+	- 保持单位标签文本对齐为 `text-left`。
+- 主要修改文件或模块：
+	- `frontend/src/pages/SettingsIntakePlanPage.jsx`
+- 执行的测试与检查：
+	- `cd frontend && npm run build` - 构建成功。
+	- `cd frontend && CI=true npm test -- --watch=false --runInBand src/pages/SettingsIntakePlanPage.test.jsx` - 7 个测试通过。
+- 测试结果：
+	- 前端构建通过。
+	- 1 个测试套件通过，7 个测试通过。
+- 当前分支：supabase-v1
+- Git Commit ID：c5d1f4d
+
 ## DEV-20260727-055
 
 - 日期：2026-07-27
