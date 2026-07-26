@@ -687,3 +687,50 @@
 	- 工作区存在未纳入本次提交的无关改动（`frontend/src/components/BottomNav.jsx`、`frontend/src/index.css`），已保持隔离。
 - 当前分支：supabase-v1
 - Git Commit ID：e0b37db11251ac659ccbf927e62d47d8dde9d5d4
+
+## DEV-20260726-019
+
+- 日期：2026-07-26
+- 状态：已完成
+- 修改类型：业务逻辑修复 / 历史记录
+- 修改模块：结束本日、历史列表、历史详情
+- 任务目标：支持无记录日期也可结束本日，并在历史中保留该日期并显示“本日无记录”。
+- 修改前问题：`endDay` 在无有效记录时直接返回 `skipped`，导致空白日期不会归档、不会进入历史。
+- 修改前历史来源：历史日期来自 `daily_archives` 与 `timeline_items` 日期集合；但空白日因未写入 `daily_archives` 无法出现。
+- 日期完成状态的保存方式：复用 `daily_archives` 的 `is_completed`、`completed_at` 与 `archive_date`，通过 `saveDayArchive` upsert 保存。
+- 是否复用现有表或字段：是，复用 `daily_archives`（含唯一约束 `user_id, archive_date`）与既有 RLS。
+- 是否新增数据库 migration：否。
+- 新增或复用的数据表和字段：复用 `daily_archives.user_id/archive_date/is_completed/completed_at/timeline/totals`。
+- 唯一约束和幂等处理：
+	- 数据库层：`saveDayArchive` 使用 `upsert(..., { onConflict: 'user_id,archive_date' })`。
+	- 前端层：`endDaySubmittingRef` 防止并发重复提交导致重复推进下一日。
+- RLS 处理：沿用 `daily_archives` 现有策略（仅允许用户读写自己的归档）。
+- 无记录日期如何进入历史列表：空白日结束时写入 `daily_archives`（`timeline` 为空数组），`getHistoryDates` 可直接取到该 `archive_date`。
+- “本日无记录”的展示判断：
+	- 服务层基于 `is_completed` + `hasMeaningfulTimelineItems(timeline)` 计算 `isEmptyDay`。
+	- 列表页 `isEmptyDay` 显示“本日无记录”。
+	- 详情页 `isEmptyDay && timeline.length===0` 显示空状态。
+- 是否创建虚假事件：否（不会创建 0 kcal 食物、空训练或伪造事件；归档空白日时仅保存空 timeline）。
+- 有记录日期是否受影响：否。原有有记录归档、历史展示和排序逻辑保持。
+- 实际修改文件：`frontend/src/lib/dayRecordUtils.js`、`frontend/src/store.jsx`、`frontend/src/services/historyService.js`、`frontend/src/pages/TodayPage.jsx`、`frontend/src/pages/HistoryPage.jsx`、`frontend/src/pages/HistoryDetailPage.jsx`、`CHANGELOG.md`、`docs/DEVELOPMENT_LOG.md`、`docs/PROJECT_STATUS.md`、`docs/VERSION_HISTORY.md`
+- 实际执行的测试：
+	- 修改前检查：`git status --short`、`git branch --show-current`
+	- 逻辑链路检查：定位 `endDay`、`saveDayArchive`、`getHistoryDates`、`getHistoryDetail`
+	- 语法检查：`get_errors` 检查本次变更文件
+	- 构建检查：`cd frontend && npm run build`
+	- 幂等与写入路径检查：确认 `upsert onConflict` 与 `endDaySubmittingRef` 生效；无新增业务写入路径
+- 测试结果：
+	- 构建通过。
+	- 无记录日期不再被 `skipped`，可执行归档流程。
+	- 历史列表可显示“本日无记录”。
+	- 历史详情可显示“本日无记录”空状态。
+	- 未引入虚假事件创建逻辑。
+	- 受当前会话限制，未在真实在线数据库环境执行迁移（本次无 migration）与跨账号实操验证。
+- 数据库迁移结果：本次无数据库迁移（复用现有表结构、唯一约束与 RLS）。
+- 前端构建结果：通过。
+- 未完成事项：
+	- 待在登录态补充端到端人工验证（空白日结束、刷新后历史保留、重新登录后历史保留、跨账号隔离）。
+- 风险或注意事项：
+	- 工作区存在未纳入本次提交的无关改动（`frontend/src/components/BottomNav.jsx`、`frontend/src/index.css`），已保持隔离。
+- 当前分支：supabase-v1
+- Git Commit ID：dc320ed1c51ac09144b667bf4553c3f51b0dd382

@@ -138,6 +138,13 @@
   - 证据：frontend/src/pages/TodayPage.jsx
   - 说明：首页时间轴已调整为左侧时间、右侧事件内容的两列结构；事件信息与操作入口保持不变。
   - 相关 Commit：e0b37db11251ac659ccbf927e62d47d8dde9d5d4
+- `已完成` 结束本日支持空白日期并保留历史
+  - 证据：frontend/src/store.jsx
+  - 证据：frontend/src/services/historyService.js
+  - 证据：frontend/src/pages/HistoryPage.jsx
+  - 证据：frontend/src/pages/HistoryDetailPage.jsx
+  - 说明：结束本日已支持空白日期；已结束但无记录的日期会在历史中显示“本日无记录”。
+  - 相关 Commit：dc320ed1c51ac09144b667bf4553c3f51b0dd382
 
 ## 4. 部分完成
 
