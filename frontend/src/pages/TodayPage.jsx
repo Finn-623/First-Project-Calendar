@@ -75,6 +75,7 @@ export const TodayPage = () => {
   const [pendingDeleteItem, setPendingDeleteItem] = useState(null);
   const [deletingItemId, setDeletingItemId] = useState(null);
   const [endingItemId, setEndingItemId] = useState(null);
+  const [savingEditItemId, setSavingEditItemId] = useState(null);
   const [editActivitySheet, setEditActivitySheet] = useState({ open: false, item: null });
   const fabButtonRef = useRef(null);
   const addMenuRef = useRef(null);
@@ -429,6 +430,12 @@ export const TodayPage = () => {
       return;
     }
 
+    if (savingEditItemId === item.id) {
+      return;
+    }
+
+    setSavingEditItemId(item.id);
+
     const payload = prepareActivityUpdates(item, updates);
 
     try {
@@ -439,13 +446,20 @@ export const TodayPage = () => {
 
       if (data) {
         updateTimelineItemInState(item.id, () => data);
-        await refreshDayState();
+
+        // Event edits should not block on full-history refresh.
+        // Keep non-event edits consistent via background sync only.
+        if (item.type !== 'event') {
+          Promise.resolve(refreshDayState()).catch(() => null);
+        }
       }
 
       toast.success('记录已更新');
     } catch (error) {
       toast.error(error?.message || '更新失败，请稍后重试');
       throw error;
+    } finally {
+      setSavingEditItemId(null);
     }
   };
 
