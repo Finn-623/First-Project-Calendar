@@ -289,11 +289,19 @@ export const TodayPage = () => {
           <span className="text-[11px] text-[#858C88]">{sorted.length} 项</span>
         </div>
 
-        <div className="relative timeline-guide" data-testid="timeline">
+        <div className="relative timeline-guide before:hidden" data-testid="timeline">
+          <div
+            className="pointer-events-none absolute left-[73px] top-3 bottom-3 w-[1.5px]"
+            style={{
+              background: 'repeating-linear-gradient(to bottom, #D9D9D2 0, #D9D9D2 4px, transparent 4px, transparent 8px)',
+            }}
+            aria-hidden="true"
+          />
           {sorted.map((item) => (
             <TimelineItem
               key={item.id}
               item={item}
+              layout="home-time-left"
               onAddFood={handleAddFood}
               onEditTime={(it) => setTimeSheet({ open: true, item: it })}
               onDelete={handleDeleteClick}
