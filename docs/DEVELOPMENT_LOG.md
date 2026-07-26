@@ -1,3 +1,29 @@
+## DEV-20260727-054
+
+- 日期：2026-07-27
+- 状态：已完成
+- 修改类型：UI改进 / 设置-摄入计划输入框防覆盖
+- 修改背景：用户反馈输入框和单位会被覆盖，导致显示不完整。需要确保输入框和单位标签都能完整显示在目标显示框中。
+- 任务目标：修复 Flexbox 布局导致的输入框溢出问题，确保 3 列布局下每个字段的输入框和单位都不被隐藏或覆盖。
+- 实际完成内容：
+	- 为字段容器添加 `min-w-0` 约束：允许 Flex 子元素缩小到内容最小宽度。
+	- 为 Flex 容器添加 `min-w-0` 约束：进一步防止输入框和单位溢出。
+	- 为输入框添加 `min-w-0`：确保 flex-1 的输入框不会溢出父容器。
+	- 进一步减少网格间距：从 `gap-2`（8px）改为 `gap-1`（4px）。
+	- 减少输入框 padding：从 `px-1.5` 改为 `px-1`。
+	- 缩短单位标签宽度：从 `w-7` 改为 `w-6`。
+	- 为单位标签添加 `flex-shrink-0`：防止单位标签被压缩。
+- 主要修改文件或模块：
+	- `frontend/src/pages/SettingsIntakePlanPage.jsx`
+- 执行的测试与检查：
+	- `cd frontend && npm run build` - 构建成功，增量 +36 字节（+24 JS +12 CSS）。
+	- `cd frontend && CI=true npm test -- --watch=false --runInBand src/pages/SettingsIntakePlanPage.test.jsx` - 7 个测试通过。
+- 测试结果：
+	- 前端构建通过。
+	- 1 个测试套件通过，7 个测试通过。
+- 当前分支：supabase-v1
+- Git Commit ID：be7f3eb
+
 ## DEV-20260726-053
 
 - 日期：2026-07-26
