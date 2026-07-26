@@ -18,6 +18,7 @@ export const AddTrainingSheet = ({ open, onOpenChange, onConfirm, initialKind = 
   const [durationError, setDurationError] = useState('');
   const [selectedBodyParts, setSelectedBodyParts] = useState([]);
   const [bodyPartError, setBodyPartError] = useState('');
+  const [nameError, setNameError] = useState('');
 
   useEffect(() => {
     if (!open) {
@@ -30,6 +31,7 @@ export const AddTrainingSheet = ({ open, onOpenChange, onConfirm, initialKind = 
       setDurationError('');
       setSelectedBodyParts([]);
       setBodyPartError('');
+      setNameError('');
     } else {
       setTab(initialKind);
       setTime(getLocalTimeInputValue(new Date()));
@@ -56,6 +58,12 @@ export const AddTrainingSheet = ({ open, onOpenChange, onConfirm, initialKind = 
     setTab(nextTab);
     if (bodyPartError) {
       setBodyPartError('');
+    }
+    if (nameError) {
+      setNameError('');
+    }
+    if (nextTab === 'anaerobic') {
+      setName('');
     }
   };
 
@@ -100,6 +108,12 @@ export const AddTrainingSheet = ({ open, onOpenChange, onConfirm, initialKind = 
 
     const normalizedDuration = shouldValidateDuration ? String(Number(normalizedInput)) : '';
     const normalizedBodyParts = normalizeStrengthBodyParts(selectedBodyParts);
+    const normalizedName = name.trim();
+
+    if (tab === 'aerobic' && !normalizedName) {
+      setNameError('请输入有氧项目名称');
+      return;
+    }
 
     if (tab === 'anaerobic' && normalizedBodyParts.length === 0) {
       setBodyPartError('请选择至少一个训练部位');
@@ -109,7 +123,7 @@ export const AddTrainingSheet = ({ open, onOpenChange, onConfirm, initialKind = 
     const payload = {
       mode,
       tab,
-      name: name.trim(),
+      name: normalizedName,
       time,
       duration: normalizedDuration || null,
       bodyParts: tab === 'anaerobic' ? normalizedBodyParts : undefined,
@@ -119,6 +133,7 @@ export const AddTrainingSheet = ({ open, onOpenChange, onConfirm, initialKind = 
       setSubmitting(true);
       setDurationError('');
       setBodyPartError('');
+      setNameError('');
       setDurationInput(normalizedDuration);
       await Promise.resolve(onConfirm(payload));
       onOpenChange(false);
@@ -173,17 +188,27 @@ export const AddTrainingSheet = ({ open, onOpenChange, onConfirm, initialKind = 
           </div>
 
           <div className="mt-4 space-y-3">
-            <div>
-              <label className="text-[12px] text-[#858C88]">项目名称</label>
-              <Input
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                placeholder={tab === 'anaerobic' ? '例如：胸 + 三头' : '例如：跑步'}
-                className="mt-1.5 h-11 bg-white border-[#E5E5E0] rounded-xl text-base"
-                data-testid="training-name-input"
-                disabled={submitting}
-              />
-            </div>
+            {tab === 'aerobic' ? (
+              <div>
+                <label className="text-[12px] text-[#858C88]">项目名称</label>
+                <Input
+                  value={name}
+                  onChange={(e) => {
+                    setName(e.target.value);
+                    if (nameError) {
+                      setNameError('');
+                    }
+                  }}
+                  placeholder="例如：跑步"
+                  className="mt-1.5 h-11 bg-white border-[#E5E5E0] rounded-xl text-base"
+                  data-testid="training-name-input"
+                  disabled={submitting}
+                />
+                {nameError ? (
+                  <p className="mt-1 text-[12px] text-[#D27D67]">{nameError}</p>
+                ) : null}
+              </div>
+            ) : null}
 
             {!isLive ? (
               <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
@@ -225,7 +250,7 @@ export const AddTrainingSheet = ({ open, onOpenChange, onConfirm, initialKind = 
               </div>
             ) : (
               <div className="rounded-2xl border border-dashed border-[#D9DDD8] bg-white p-3 text-[12px] text-[#6E756F]">
-                开始训练时会自动记录当前本地时间，不需要填写时长。
+                开始时间将在点击开始时自动记录，不支持手动修改。
               </div>
             )}
 
@@ -265,7 +290,7 @@ export const AddTrainingSheet = ({ open, onOpenChange, onConfirm, initialKind = 
               disabled={submitting}
               className="w-full h-12 rounded-2xl bg-[#6B8067] hover:bg-[#5a6d57] text-white text-[14px] mt-2"
             >
-              {submitting ? '添加中...' : (isLive ? `开始${tab === 'anaerobic' ? '训练' : '训练'}` : '确认添加')}
+              {submitting ? '添加中...' : (isLive ? '开始训练' : '确认添加')}
             </Button>
           </div>
         </div>

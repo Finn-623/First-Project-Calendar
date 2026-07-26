@@ -7,13 +7,15 @@ import { AddSnackSheet } from '../modals/AddSnackSheet';
 import { AddTrainingSheet } from '../modals/AddTrainingSheet';
 import { AddEventSheet } from '../modals/AddEventSheet';
 import { EditTimeSheet } from '../modals/EditTimeSheet';
+import { EditActivitySheet } from '../modals/EditActivitySheet';
 import { sumTimelineMacros } from '../mockData';
 import { Plus, Check, ChevronLeft, ChevronRight } from 'lucide-react';
 import { toast } from 'sonner';
 import { useStore } from '../store';
 import { timelineService } from '../services/timelineService';
 import { addDaysToDateString, getSydneyDateString } from '../services/historyService';
-import { combineLocalDateAndTime, diffMinutesBetween, getLocalTimeInputValue } from '../lib/localDateTime';
+import { combineLocalDateAndTime, diffSecondsBetween, getLocalTimeInputValue, secondsToDurationMinutes } from '../lib/localDateTime';
+import { useCurrentTime } from '../hooks/useCurrentTime';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -73,8 +75,10 @@ export const TodayPage = () => {
   const [pendingDeleteItem, setPendingDeleteItem] = useState(null);
   const [deletingItemId, setDeletingItemId] = useState(null);
   const [endingItemId, setEndingItemId] = useState(null);
+  const [editActivitySheet, setEditActivitySheet] = useState({ open: false, item: null });
   const fabButtonRef = useRef(null);
   const addMenuRef = useRef(null);
+  const now = useCurrentTime();
 
   useEffect(() => {
     if (!fabOpen) {
@@ -371,7 +375,8 @@ export const TodayPage = () => {
 
     setEndingItemId(item.id);
     const endedAt = new Date();
-    const durationMinutes = item.started_at ? diffMinutesBetween(new Date(item.started_at), endedAt) : null;
+    const durationSeconds = item.started_at ? diffSecondsBetween(new Date(item.started_at), endedAt) : null;
+    const durationMinutes = secondsToDurationMinutes(durationSeconds);
 
     try {
       const { data, error } = await timelineService.completeRunningTimelineItem(item.id, user.id, {
@@ -396,6 +401,55 @@ export const TodayPage = () => {
       setEndingItemId(null);
     }
   };
+
+  const prepareActivityUpdates = (item, updates) => {
+    const next = {
+      ...updates,
+    };
+
+    const startedAt = Object.prototype.hasOwnProperty.call(next, 'started_at') ? next.started_at : item?.started_at;
+    const endedAt = Object.prototype.hasOwnProperty.call(next, 'ended_at') ? next.ended_at : item?.ended_at;
+
+    const touchedTime = Object.prototype.hasOwnProperty.call(next, 'started_at') || Object.prototype.hasOwnProperty.call(next, 'ended_at');
+
+    if (touchedTime) {
+      if (!endedAt) {
+        next.duration_minutes = null;
+      } else {
+        const seconds = diffSecondsBetween(new Date(startedAt), new Date(endedAt));
+        next.duration_minutes = secondsToDurationMinutes(seconds);
+      }
+    }
+
+    return next;
+  };
+
+  const handleEditActivityConfirm = async (item, updates) => {
+    if (!user?.id || !item?.id) {
+      toast.error('请先登录');
+      return;
+    }
+
+    const payload = prepareActivityUpdates(item, updates);
+
+    try {
+      const { data, error } = await timelineService.updateTimelineItem(item.id, payload);
+      if (error) {
+        throw error;
+      }
+
+      if (data) {
+        updateTimelineItemInState(item.id, () => data);
+        await refreshDayState();
+      }
+
+      toast.success('记录已更新');
+    } catch (error) {
+      toast.error(error?.message || '更新失败，请稍后重试');
+      throw error;
+    }
+  };
+
   const handleTimeConfirm = (newTime) => {
     setTimeline(timeline.map((it) => (it.id === timeSheet.item.id ? { ...it, time: newTime } : it)));
     toast.success('时间已更新');
@@ -570,10 +624,12 @@ export const TodayPage = () => {
               layout="home-time-left"
               onAddFood={handleAddFood}
               onEditTime={(it) => setTimeSheet({ open: true, item: it })}
+              onEditRecord={(it) => setEditActivitySheet({ open: true, item: it })}
               onDelete={handleDeleteClick}
               onEnd={handleEndTimelineItem}
               ending={endingItemId === item.id}
               deleting={deletingItemId === item.id}
+              now={now}
             />
           ))}
         </div>
@@ -642,6 +698,13 @@ export const TodayPage = () => {
         onOpenChange={(v) => setTimeSheet((s) => ({ ...s, open: v }))}
         item={timeSheet.item}
         onConfirm={handleTimeConfirm}
+      />
+
+      <EditActivitySheet
+        open={editActivitySheet.open}
+        onOpenChange={(open) => setEditActivitySheet((prev) => ({ ...prev, open }))}
+        item={editActivitySheet.item}
+        onConfirm={handleEditActivityConfirm}
       />
 
       <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>

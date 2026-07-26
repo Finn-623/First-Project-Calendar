@@ -2,8 +2,8 @@ import React from 'react';
 import { UtensilsCrossed, Dumbbell, Footprints, MapPin, Plus, Clock, Trash2, Loader2 } from 'lucide-react';
 import { sumMealMacros } from '../mockData';
 import { SNACK_TYPE_LABELS, normalizeSnackType } from '../constants/snackTypes';
-import { formatStrengthBodyPartsLabels } from '../constants/trainingBodyParts';
-import { getLocalTimeInputValue } from '../lib/localDateTime';
+import { getStrengthBodyPartLabels } from '../constants/trainingBodyParts';
+import { formatClockTime, formatDuration, resolveDurationSeconds, diffSecondsBetween } from '../lib/localDateTime';
 
 const iconFor = (item) => {
   if (item.type === 'meal') return UtensilsCrossed;
@@ -23,11 +23,13 @@ export const TimelineItem = ({
   item,
   onAddFood,
   onEditTime,
+  onEditRecord,
   onDelete,
   onEnd,
   deleting = false,
   ending = false,
   readOnly = false,
+  now,
   layout = 'default',
 }) => {
   const Icon = iconFor(item);
@@ -35,16 +37,22 @@ export const TimelineItem = ({
   const isMeal = item.type === 'meal';
   const totals = isMeal ? sumMealMacros(item.foods || []) : null;
   const empty = isMeal && (!item.foods || item.foods.length === 0);
-  const timeLabel = item.time || '未设置';
+  const timeLabel = formatClockTime(item.time || item.started_at) || '未设置';
   const snackType = item?.subtype === 'snack' ? normalizeSnackType(item?.snackType) : null;
   const mealTitle = snackType ? `${SNACK_TYPE_LABELS[snackType]}加餐` : item.title;
-  const strengthBodyPartsText = item?.type === 'anaerobic'
-    ? formatStrengthBodyPartsLabels(item?.bodyParts)
-    : '';
+  const strengthBodyPartLabels = item?.type === 'anaerobic' ? getStrengthBodyPartLabels(item?.bodyParts) : [];
   const isRunning = item?.status === 'running';
-  const completedEndTime = item?.ended_at ? getLocalTimeInputValue(new Date(item.ended_at)) : '';
-  const completedDuration = Number(item?.duration_minutes);
-  const hasCompletedDuration = Number.isFinite(completedDuration) && completedDuration > 0;
+  const completedEndTime = formatClockTime(item?.ended_at);
+
+  const fixedDurationSeconds = resolveDurationSeconds({
+    startedAt: item?.started_at,
+    endedAt: item?.ended_at,
+    durationMinutes: item?.duration_minutes,
+  });
+
+  const elapsedDurationSeconds = isRunning && item?.started_at && now
+    ? diffSecondsBetween(new Date(item.started_at), now)
+    : null;
 
   const canDelete = !readOnly && !isRunning && (
     item.subtype === 'snack'
@@ -71,15 +79,19 @@ export const TimelineItem = ({
           </div>
           <div className="min-w-0">
             <p className={titleClass}>{mealTitle}</p>
-            <button
-              onClick={() => !readOnly && onEditTime && onEditTime(item)}
-              data-testid={`edit-time-${item.id}`}
-              disabled={readOnly || isRunning}
-              className="mt-0.5 flex items-center gap-1 text-[11px] text-[#858C88]"
-            >
-              <Clock size={11} strokeWidth={1.5} />
-              <span className="font-num">{timeEditLabel}</span>
-            </button>
+            {isMeal ? (
+              <button
+                onClick={() => !readOnly && onEditTime && onEditTime(item)}
+                data-testid={`edit-time-${item.id}`}
+                disabled={readOnly}
+                className="mt-0.5 flex items-center gap-1 text-[11px] text-[#858C88]"
+              >
+                <Clock size={11} strokeWidth={1.5} />
+                <span className="font-num">{timeEditLabel}</span>
+              </button>
+            ) : (
+              <p className="mt-0.5 text-[11px] text-[#858C88]">{item?.type === 'aerobic' ? '有氧训练' : '记录'}</p>
+            )}
           </div>
         </div>
 
@@ -150,32 +162,57 @@ export const TimelineItem = ({
       {!isMeal && (
         <div className="mt-2.5">
           <p className="text-[12px] text-[#2C332F] break-words">{item.detail || '—'}</p>
-          {strengthBodyPartsText ? (
-            <p className="text-[12px] text-[#5E6660] mt-1">{strengthBodyPartsText}</p>
+          {strengthBodyPartLabels.length ? (
+            <div className="mt-1.5 flex flex-wrap gap-1.5" data-testid={`training-body-part-badges-${item.id}`}>
+              {strengthBodyPartLabels.map((label) => (
+                <span
+                  key={label}
+                  className="px-2 py-0.5 rounded-full bg-[#F0F4EF] border border-[#D7E8E0] text-[11px] text-[#4B5E55]"
+                >
+                  {label}
+                </span>
+              ))}
+            </div>
           ) : null}
           {isRunning ? (
             <p className="text-[12px] text-[#6B8067] mt-1">进行中</p>
           ) : null}
-          {!isRunning && completedEndTime ? (
-            <p className="font-num text-[11px] text-[#858C88] mt-1">结束时间 {completedEndTime}</p>
+          {isRunning && elapsedDurationSeconds != null ? (
+            <p className="font-num tabular-nums text-[12px] text-[#2C332F] mt-1">已进行 {formatDuration(elapsedDurationSeconds)}</p>
           ) : null}
-          {!isRunning && hasCompletedDuration ? (
-            <p className="font-num text-[11px] text-[#858C88] mt-1">时长 {completedDuration}分钟</p>
+          {!isRunning && completedEndTime ? (
+            <p className="font-num text-[11px] text-[#858C88] mt-1">结束 {completedEndTime}</p>
+          ) : null}
+          {!isRunning && fixedDurationSeconds != null ? (
+            <p className="font-num tabular-nums text-[11px] text-[#858C88] mt-1">时长 {formatDuration(fixedDurationSeconds)}</p>
           ) : null}
           {typeof item.caloriesBurned === 'number' && (
             <p className="font-num text-[11px] text-[#858C88] mt-1">消耗 {item.caloriesBurned} kcal</p>
           )}
-          {isRunning && onEnd ? (
-            <button
-              type="button"
-              onClick={() => onEnd(item)}
-              disabled={ending}
-              data-testid={`end-timeline-${item.id}`}
-              className="mt-2 h-9 px-3 rounded-xl border border-[#6B8067] text-[#6B8067] text-[12px] disabled:opacity-60 disabled:cursor-not-allowed"
-            >
-              {ending ? '结束中...' : '结束'}
-            </button>
-          ) : null}
+          <div className="mt-2 flex flex-wrap items-center gap-2">
+            {isRunning && onEnd ? (
+              <button
+                type="button"
+                onClick={() => onEnd(item)}
+                disabled={ending}
+                data-testid={`end-timeline-${item.id}`}
+                className="h-9 px-3 rounded-xl border border-[#6B8067] text-[#6B8067] text-[12px] disabled:opacity-60 disabled:cursor-not-allowed"
+              >
+                {ending ? '结束中...' : '结束'}
+              </button>
+            ) : null}
+
+            {!readOnly && onEditRecord ? (
+              <button
+                type="button"
+                onClick={() => onEditRecord(item)}
+                data-testid={`edit-record-${item.id}`}
+                className="h-9 px-3 rounded-xl border border-[#E5E5E0] text-[#5E6660] text-[12px]"
+              >
+                编辑
+              </button>
+            ) : null}
+          </div>
         </div>
       )}
     </div>

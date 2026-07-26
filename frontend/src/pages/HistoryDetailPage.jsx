@@ -7,10 +7,12 @@ import { TimelineItem } from '../components/TimelineItem';
 import { NutritionSummary } from '../components/NutritionSummary';
 import { AddFoodSheet } from '../modals/AddFoodSheet';
 import { EditTimeSheet } from '../modals/EditTimeSheet';
+import { EditActivitySheet } from '../modals/EditActivitySheet';
 import { historyService } from '../services/historyService';
 import { timelineService } from '../services/timelineService';
 import { sumTimelineMacros } from '../mockData';
-import { diffMinutesBetween } from '../lib/localDateTime';
+import { diffSecondsBetween, formatClockTime, secondsToDurationMinutes } from '../lib/localDateTime';
+import { useCurrentTime } from '../hooks/useCurrentTime';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -40,9 +42,11 @@ export const HistoryDetailPage = () => {
   const [foodSheet, setFoodSheet] = useState({ open: false, target: null });
   const [timeSheet, setTimeSheet] = useState({ open: false, item: null });
   const [endingItemId, setEndingItemId] = useState(null);
+  const [editActivitySheet, setEditActivitySheet] = useState({ open: false, item: null });
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [confirmKind, setConfirmKind] = useState('item');
   const [pendingDeleteItem, setPendingDeleteItem] = useState(null);
+  const now = useCurrentTime();
 
   useEffect(() => {
     if (!entry) return;
@@ -51,6 +55,7 @@ export const HistoryDetailPage = () => {
     setIsEditing(false);
     setFoodSheet({ open: false, target: null });
     setTimeSheet({ open: false, item: null });
+    setEditActivitySheet({ open: false, item: null });
     setConfirmOpen(false);
     setConfirmKind('item');
     setPendingDeleteItem(null);
@@ -107,7 +112,8 @@ export const HistoryDetailPage = () => {
 
     setEndingItemId(item.id);
     const endedAt = new Date();
-    const durationMinutes = item.started_at ? diffMinutesBetween(new Date(item.started_at), endedAt) : null;
+    const durationSeconds = item.started_at ? diffSecondsBetween(new Date(item.started_at), endedAt) : null;
+    const durationMinutes = secondsToDurationMinutes(durationSeconds);
 
     try {
       const { data, error } = await timelineService.completeRunningTimelineItem(item.id, user.id, {
@@ -129,6 +135,59 @@ export const HistoryDetailPage = () => {
     } finally {
       setEndingItemId(null);
     }
+  };
+
+  const mapItemTypeToUiType = (itemType) => {
+    if (itemType === 'anaerobic_training') return 'anaerobic';
+    if (itemType === 'aerobic_training') return 'aerobic';
+    if (itemType === 'snack' || itemType === 'breakfast' || itemType === 'lunch' || itemType === 'dinner') return 'meal';
+    return 'event';
+  };
+
+  const prepareDraftActivityUpdate = (item, updates) => {
+    const next = {
+      ...item,
+      ...updates,
+      details: updates?.details ? updates.details : item.details,
+    };
+
+    if (Object.prototype.hasOwnProperty.call(updates || {}, 'event_time')) {
+      next.time = updates.event_time;
+    }
+
+    if (updates?.item_type) {
+      next.type = mapItemTypeToUiType(updates.item_type);
+    }
+
+    if (next.details?.bodyParts) {
+      next.bodyParts = next.details.bodyParts;
+    }
+
+    const touchedTime = Object.prototype.hasOwnProperty.call(updates || {}, 'started_at') || Object.prototype.hasOwnProperty.call(updates || {}, 'ended_at');
+    if (touchedTime) {
+      const startedAt = Object.prototype.hasOwnProperty.call(updates || {}, 'started_at') ? updates.started_at : item.started_at;
+      const endedAt = Object.prototype.hasOwnProperty.call(updates || {}, 'ended_at') ? updates.ended_at : item.ended_at;
+
+      if (!endedAt) {
+        next.duration_minutes = null;
+      } else {
+        const seconds = diffSecondsBetween(new Date(startedAt), new Date(endedAt));
+        next.duration_minutes = secondsToDurationMinutes(seconds);
+      }
+    }
+
+    next.time = formatClockTime(next.event_time || next.started_at || next.time);
+
+    if (Object.prototype.hasOwnProperty.call(updates || {}, 'notes')) {
+      next.detail = updates.notes || '';
+    }
+
+    return next;
+  };
+
+  const handleEditActivityConfirm = async (item, updates) => {
+    updateItem(item.id, (row) => prepareDraftActivityUpdate(row, updates));
+    toast.success('记录已更新，保存后生效');
   };
 
   const handleDeleteDay = () => {
@@ -293,9 +352,11 @@ export const HistoryDetailPage = () => {
                   readOnly={!isEditing}
                   onAddFood={handleAddFood}
                   onEditTime={(it) => setTimeSheet({ open: true, item: it })}
+                  onEditRecord={(it) => setEditActivitySheet({ open: true, item: it })}
                   onDelete={handleDeleteItem}
                   onEnd={handleEndItem}
                   ending={endingItemId === item.id}
+                  now={now}
                 />
               ))}
             </div>
@@ -315,6 +376,13 @@ export const HistoryDetailPage = () => {
         onOpenChange={(open) => setTimeSheet((prev) => ({ ...prev, open }))}
         item={timeSheet.item}
         onConfirm={handleTimeConfirm}
+      />
+
+      <EditActivitySheet
+        open={editActivitySheet.open}
+        onOpenChange={(open) => setEditActivitySheet((prev) => ({ ...prev, open }))}
+        item={editActivitySheet.item}
+        onConfirm={handleEditActivityConfirm}
       />
 
       <AlertDialog open={confirmOpen} onOpenChange={setConfirmOpen}>

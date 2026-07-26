@@ -37,3 +37,10 @@ export const formatStrengthBodyPartsLabels = (input, separator = '、') => {
     .filter(Boolean)
     .join(separator);
 };
+
+export const getStrengthBodyPartLabels = (input) => {
+  const normalized = normalizeStrengthBodyParts(input);
+  return normalized
+    .map((value) => STRENGTH_BODY_PART_LABEL_MAP[value])
+    .filter(Boolean);
+};

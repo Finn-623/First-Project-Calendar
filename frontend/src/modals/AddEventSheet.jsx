@@ -92,7 +92,7 @@ export const AddEventSheet = ({ open, onOpenChange, onConfirm, allowLiveStart = 
             </div>
           ) : (
             <div className="rounded-2xl border border-dashed border-[#D9DDD8] bg-white p-3 text-[12px] text-[#6E756F]">
-              开始事件时会自动记录当前本地时间。
+              开始时间将在点击开始时自动记录，不支持手动修改。
             </div>
           )}
 
