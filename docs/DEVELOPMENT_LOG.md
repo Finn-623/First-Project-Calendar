@@ -952,3 +952,33 @@
 - 风险或注意事项：工作区存在未纳入本次提交的无关改动（`frontend/src/components/BottomNav.jsx`、`frontend/src/index.css`），已保持隔离。
 - 当前分支：supabase-v1
 - Git Commit ID：abef063f250053bec4238b1c24ac3b73684fb246
+
+## DEV-20260726-026
+
+- 日期：2026-07-26
+- 状态：已完成
+- 修改类型：移动端 UI 修复 / 交互稳定性
+- 修改模块：统一训练弹窗
+- 任务目标：修复移动端打开统一训练弹窗时窗口异常缩小问题，确保无氧/有氧切换、输入聚焦与软键盘场景下尺寸稳定。
+- 实际完成内容：
+	- 为训练弹窗容器增加明确移动端宽度边界（`w-[calc(100vw-32px)]`）与桌面宽度上限（`max-w-md`）。
+	- 增加动态视口高度上限（`max-h-[calc(100dvh-24px)]`）并将弹窗改为 `flex` 纵向布局。
+	- 将内容区改为内部纵向滚动（`min-h-0 flex-1 overflow-y-auto overscroll-contain`），避免整体被内容挤压导致视觉缩小。
+	- 将“开始时间/时长”布局改为小屏单列、大屏双列（`grid-cols-1 sm:grid-cols-2`），降低移动端压缩风险。
+- 主要修改文件或模块：`frontend/src/modals/AddTrainingSheet.jsx`
+- 遇到的问题：移动端下统一训练弹窗在部分场景（类型切换、输入聚焦、软键盘弹出）出现可视区域被压缩，表现为弹窗看起来“缩小”。
+- 解决方式：固定弹窗外层宽高边界并启用内容区内滚动，把布局收缩压力从外层容器转移到内部滚动层。
+- 执行的测试：
+	- 修改前检查：`git status --short`
+	- 语法检查：`get_errors` 检查 `frontend/src/modals/AddTrainingSheet.jsx`
+	- 规则检索：确认目标类名已生效（宽度、`dvh` 高度、内部滚动、响应式网格）
+	- 前端构建：`cd frontend && npm run build`
+- 测试结果：
+	- 改动文件无语法错误。
+	- 前端构建通过。
+	- 代码层已覆盖移动端尺寸稳定和内部滚动策略。
+	- 受当前会话无登录态限制，未完成登录后实机端到端点击验证；本次以静态检查与构建验证为主。
+- 未完成事项：待提供可用登录态后补充移动端真机交互回归（打开弹窗、切换类型、输入聚焦、软键盘收起/弹出）。
+- 风险或注意事项：工作区存在未纳入本次提交的无关改动（`frontend/src/components/BottomNav.jsx`、`frontend/src/index.css`），已保持隔离。
+- 当前分支：supabase-v1
+- Git Commit ID：1b22f1b5656e2111d57b269f232be1626f3a8c3f

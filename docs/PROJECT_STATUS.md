@@ -175,6 +175,10 @@
   - 证据：frontend/src/components/TimelineItem.jsx
   - 说明：无氧训练可选择胸、背、腿、肩、二头、三头、核心并支持多选；有氧不显示该字段；保存后可在时间轴/历史查看部位列表。
   - 相关 Commit：abef063f250053bec4238b1c24ac3b73684fb246
+- `已完成` 统一训练弹窗移动端缩小问题修复
+  - 证据：frontend/src/modals/AddTrainingSheet.jsx
+  - 说明：为训练弹窗增加移动端宽高边界与内部滚动容器，覆盖无氧/有氧切换、输入聚焦与软键盘场景，避免弹窗外层异常缩小。
+  - 相关 Commit：1b22f1b5656e2111d57b269f232be1626f3a8c3f
 
 ## 4. 部分完成
 
