@@ -1,3 +1,48 @@
+## DEV-20260727-057
+
+- 日期：2026-07-27
+- 状态：已完成
+- 修改类型：功能新增 / 设置-摄入计划历史记录管理
+- 修改背景：用户需要能够修改和删除摄入计划的历史数据。
+- 任务目标：为历史记录添加编辑和删除功能，允许用户修改历史数据或删除不需要的记录。
+- 实际完成内容：
+	- 数据库迁移 018：添加 `intake_plan_history_update_own` 和 `intake_plan_history_delete_own` RLS 策略，允许用户修改和删除自己的历史记录。
+	- 服务层扩展：在 `intakePlanService` 中添加 `updateHistory` 方法（修改历史记录）和 `deleteHistory` 方法（删除历史记录）。
+	- 前端状态管理：添加 `editingHistoryId`、`editingDraft`、`editingLoading`、`editingError` 状态用于追踪编辑操作。
+	- 前端处理函数：
+	  - `openEditHistory(item)` - 打开编辑对话框
+	  - `closeEditHistory()` - 关闭编辑对话框
+	  - `handleSaveEdit()` - 保存编辑的历史记录
+	  - `handleDeleteHistory(id)` - 删除历史记录（包含确认对话框）
+	- 历史记录 UI 优化：
+	  - 每条历史记录后添加"编辑"和"删除"按钮
+	  - 删除按钮采用红色样式（`text-[#A8483E]`）以示警告
+	  - 编辑按钮采用默认样式（`text-[#2C332F]`）
+	- 编辑对话框：
+	  - 底部弹出模态框设计
+	  - 显示所有 4 个字段的编辑输入框
+	  - 包含"取消"和"更新"按钮
+	  - 支持实时错误显示
+- 主要修改文件或模块：
+	- `supabase/migrations/018_intake_plan_history_edit_delete.sql`
+	- `frontend/src/services/intakePlanService.js`
+	- `frontend/src/pages/SettingsIntakePlanPage.jsx`
+- 执行的测试与检查：
+	- `cd frontend && npm run build` - 构建成功，增量 +810 字节（+751 JS +59 CSS）。
+	- `cd frontend && CI=true npm test -- --watch=false --runInBand src/pages/SettingsIntakePlanPage.test.jsx` - 7 个测试通过。
+- 测试结果：
+	- 前端构建通过。
+	- 1 个测试套件通过，7 个测试通过（无新增失败）。
+- 当前分支：supabase-v1
+- Git Commit ID：
+	- 数据库迁移：aef06a2
+	- 前端功能：502006b
+- 未完成事项：
+	- 需要在 Supabase 在线环境中应用迁移 017 和 018 以启用完整功能
+- 风险或注意事项：
+	- 用户删除历史记录时会弹出确认对话框，防止误删
+	- 编辑对话框采用底部弹出模态框，确保在各种屏幕尺寸上都有较好的可用性
+
 ## DEV-20260727-056
 
 - 日期：2026-07-27
