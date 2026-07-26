@@ -342,6 +342,56 @@ export const StoreProvider = ({ children, user: initialUser, session: initialSes
     }
   }, [isActiveRequest]);
 
+  const updatePersonalInfo = useCallback(async (userId, nextFields = {}) => {
+    if (!supabase) {
+      return { success: false, error: 'Supabase 尚未配置' };
+    }
+
+    if (!userId) {
+      return { success: false, error: '缺少用户 ID' };
+    }
+
+    const allowedKeys = ['gender', 'birth_date', 'height_cm', 'weight_kg'];
+    const payload = {};
+    allowedKeys.forEach((key) => {
+      if (Object.prototype.hasOwnProperty.call(nextFields, key)) {
+        payload[key] = nextFields[key];
+      }
+    });
+
+    if (Object.keys(payload).length === 0) {
+      return { success: true, data: profile };
+    }
+
+    try {
+      const { data, error } = await supabase
+        .from('profiles')
+        .update(payload)
+        .eq('id', userId)
+        .select('*')
+        .maybeSingle();
+
+      if (error) {
+        return { success: false, error: convertErrorToMessage(error) };
+      }
+
+      if (!data) {
+        return { success: false, error: '个人信息保存失败，请稍后重试' };
+      }
+
+      const normalizedProfile = {
+        ...data,
+        role: String(data.role || 'user').toLowerCase(),
+        is_admin: isAdminProfile(data),
+      };
+
+      setProfile(normalizedProfile);
+      return { success: true, data: normalizedProfile };
+    } catch (err) {
+      return { success: false, error: convertErrorToMessage(err) };
+    }
+  }, [profile]);
+
   const loadPlan = useCallback(async (userId) => {
     if (!userId) {
       setPlan(null);
@@ -835,6 +885,7 @@ export const StoreProvider = ({ children, user: initialUser, session: initialSes
     clearPrivateUserData,
     clearAuthError,
     loadProfile,
+    updatePersonalInfo,
     loadCurrentUserData,
     loadPlan,
     loadPlanHistory,

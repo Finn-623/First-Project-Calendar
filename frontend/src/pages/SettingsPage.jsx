@@ -39,7 +39,7 @@ const sections = [
         to: '/settings/personal-info',
         icon: Activity,
         label: '个人信息',
-        description: '性别、身高与体重',
+        description: '管理用于计划与数据计算的个人身体信息',
       },
       {
         to: '/settings/version',
