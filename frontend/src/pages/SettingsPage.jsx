@@ -1,5 +1,5 @@
-import React, { useMemo } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useMemo, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import {
   Activity,
   Archive,
@@ -9,9 +9,21 @@ import {
   Target,
   UserRound,
 } from 'lucide-react';
+import { useQueryClient } from '@tanstack/react-query';
+import { toast } from 'sonner';
 import { useStore } from '../store';
 import { APP_VERSION } from '../config/appVersion';
 import { SettingsNavigationItem } from '../components/settings/SettingsNavigationItem';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '../components/ui/alert-dialog';
 
 const sections = [
   {
@@ -21,7 +33,7 @@ const sections = [
         to: '/settings/account',
         icon: UserRound,
         label: '账户',
-        description: '用户名、展示名称、角色、状态、邮箱与密码',
+        description: '管理个人账号资料与登录安全',
       },
       {
         to: '/settings/personal-info',
@@ -64,22 +76,51 @@ const sections = [
     title: '账号操作',
     items: [
       {
-        to: '/settings/account-actions',
         icon: LogOut,
-        label: '账号操作',
-        description: '退出当前账号',
+        label: '退出账号',
+        description: '退出当前账户',
+        action: 'logout',
       },
     ],
   },
 ];
 
 export const SettingsPage = () => {
-  const { profile } = useStore();
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
+  const { profile, authLoading, logout } = useStore();
+  const [logoutConfirmOpen, setLogoutConfirmOpen] = useState(false);
 
   const displayName = useMemo(() => {
     const value = String(profile?.display_name || '').trim();
     return value || '未设置展示名称';
   }, [profile?.display_name]);
+
+  const clearPrivateQueries = () => {
+    queryClient.removeQueries({
+      predicate: (query) => {
+        const key = Array.isArray(query.queryKey) ? query.queryKey.join(':') : String(query.queryKey || '');
+        return /(private|profile|user|timeline|history|plan|target|favorite|food_entries)/i.test(key);
+      },
+    });
+  };
+
+  const handleLogout = async () => {
+    if (authLoading) return;
+
+    const result = await logout();
+    if (!result?.success) {
+      toast.error(result?.error || '退出登录失败，请检查网络后重试。');
+      return;
+    }
+
+    clearPrivateQueries();
+    setLogoutConfirmOpen(false);
+    navigate('/login', {
+      replace: true,
+      state: { loggedOut: true },
+    });
+  };
 
   return (
     <div className="w-full max-w-md mx-auto px-4 pt-6 pb-28">
@@ -97,10 +138,13 @@ export const SettingsPage = () => {
               <SettingsNavigationItem
                 key={item.label}
                 to={item.to}
+                onClick={item.action === 'logout' ? () => setLogoutConfirmOpen(true) : undefined}
                 icon={item.icon}
                 label={item.label}
                 description={item.description}
-                testId={`settings-entry-${item.to.replace('/settings/', '').replace('/', '-') || 'root'}`}
+                testId={item.action === 'logout'
+                  ? 'settings-entry-account-actions'
+                  : `settings-entry-${item.to.replace('/settings/', '').replace('/', '-') || 'root'}`}
               />
             ))}
           </div>
@@ -115,6 +159,30 @@ export const SettingsPage = () => {
           版本 {APP_VERSION}
         </Link>
       </div>
+
+      <AlertDialog open={logoutConfirmOpen} onOpenChange={setLogoutConfirmOpen}>
+        <AlertDialogContent className="max-w-[92vw] sm:max-w-md rounded-2xl">
+          <AlertDialogHeader>
+            <AlertDialogTitle>退出账户</AlertDialogTitle>
+            <AlertDialogDescription>
+              确定要退出当前账户吗？
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={authLoading}>取消</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={(e) => {
+                e.preventDefault();
+                handleLogout();
+              }}
+              disabled={authLoading}
+              className="bg-[#8F3A32] hover:bg-[#7B2F28]"
+            >
+              {authLoading ? '正在退出...' : '退出'}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };
