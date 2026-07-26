@@ -1031,3 +1031,46 @@
 - 风险或注意事项：工作区存在未纳入本次提交的无关改动（`frontend/src/components/BottomNav.jsx`、`frontend/src/index.css`），已保持隔离。
 - 当前分支：supabase-v1
 - Git Commit ID：0d56866400f7e9f365b8674b14cc4984545c4fce
+
+## DEV-20260726-028
+
+- 日期：2026-07-26
+- 状态：已完成
+- 修改类型：功能新增 / 实时记录
+- 修改模块：事件弹窗、训练弹窗、首页时间轴、时间轴详情、记录数据层
+- 修改目标：为事件和训练增加“手动记录 / 现在开始”模式，支持创建 running 记录、返回首页继续完成、以及结束时自动写回结束时间和实际时长。
+- 记录方式区分：
+	- `manual`：保留现有手动记录流程，直接创建已完成记录。
+	- `live`：点击开始时以当前本地时间创建 running 记录，结束后更新为 completed。
+- 事件开始流程：填写标题/备注后，点击“开始事件”，使用点击时本地时间写入 `started_at`，`status=running`，`ended_at`/`duration_minutes` 为空。
+- 训练开始流程：填写训练类型、名称、部位等必要字段后，点击“开始训练”，以点击时本地时间创建 running 训练记录；无氧/有氧均支持。
+- running / completed 内部值：`running`、`completed`。
+- 开始时间和结束时间保存格式：`started_at`、`ended_at` 使用 `timestamptz`；界面显示仍复用 `event_date` + `event_time` 与本地时钟格式化。
+- 时长计算方式：结束时用 `ended_at - started_at` 计算分钟数，按完整时间戳差处理跨日情况。
+- 跨日处理：23:50 开始、00:20 结束时，实际时长按 30 分钟计算，不依赖 `HH:mm` 字符串大小比较。
+- 进行中记录持久化方式：running 记录写入 `timeline_items`，页面刷新或重新进入时通过数据库重新读取，不依赖单纯前端 state。
+- 首页如何查询 running 记录：在日数据加载链路中附带查询当前用户 `status='running'` 的 `timeline_items`，并在时间轴中继续展示。
+- 同时进行记录限制：同一用户同一时间只允许一条 running 事件/训练；数据库层通过部分唯一索引约束，前端同时做提示拦截。
+- 开始和结束操作幂等处理：开始时依赖数据库唯一约束和前端已有运行中检查；结束时仅更新 `status='running'` 的记录，重复点击不会重复结束。
+- 历史日期和今天的限制：仅在今天允许“现在开始”，历史日期只显示手动记录。
+- 与结束本日的兼容方式：若仍存在 running 记录，阻止结束本日并提示先结束正在进行的事件或训练。
+- 是否复用现有字段：是，继续复用 `timeline_items`，保留 `event_date` / `event_time` 作为展示字段。
+- 是否新增数据库字段：是，最小扩展 `status`、`started_at`、`ended_at`、`duration_minutes`。
+- 是否新增 migration：是，新增 `supabase/migrations/011_live_timeline_sessions.sql`。
+- 旧记录兼容方式：旧记录默认视为 `completed`；历史归档和时间轴读取路径对旧数据保持兼容。
+- RLS 和用户隔离验证：继续依赖 `timeline_items` 既有 RLS，仅允许用户访问自己的记录；新增唯一索引不改变权限边界。
+- 实际修改文件：`frontend/src/components/RecordModeToggle.jsx`、`frontend/src/constants/recordModes.js`、`frontend/src/components/TimelineItem.jsx`、`frontend/src/lib/localDateTime.js`、`frontend/src/modals/AddEventSheet.jsx`、`frontend/src/modals/AddTrainingSheet.jsx`、`frontend/src/pages/HistoryDetailPage.jsx`、`frontend/src/pages/TodayPage.jsx`、`frontend/src/services/historyService.js`、`frontend/src/services/timelineService.js`、`frontend/src/store.jsx`、`supabase/migrations/011_live_timeline_sessions.sql`、`CHANGELOG.md`、`docs/DEVELOPMENT_LOG.md`、`docs/PROJECT_STATUS.md`、`docs/VERSION_HISTORY.md`
+- 数据库 migration 文件：`supabase/migrations/011_live_timeline_sessions.sql`
+- 实际执行的测试：
+	- 修改前检查：`git status --short`、`git branch --show-current`
+	- 代码定位：确认事件/训练弹窗、时间轴卡片、历史详情、store 加载链路与时间工具
+	- 语法检查：`get_errors` 检查新增/修改的前端文件与 migration
+	- 逻辑检索：确认 `running`、`completed`、`started_at`、`ended_at`、`duration_minutes`、`RecordModeToggle`、`开始事件`、`开始训练`、`进行中`、`结束` 等关键路径存在
+	- 前端构建：`cd frontend && npm run build`
+- migration 执行结果：未在当前环境执行实际数据库迁移；仅完成 migration 文件新增与语法检查。
+- 前端构建结果：通过。
+- 当前分支：supabase-v1
+- Git Commit ID：821caf71e26214a3379713dfb2be3027771dc823
+- 未完成事项：待有可执行数据库环境时补做 migration 实执行验证；待真实登录态做页面手工回归（开始/结束、刷新恢复、结束本日拦截）。
+- 风险或注意事项：工作区存在未纳入本次提交的无关改动（`frontend/src/components/BottomNav.jsx`、`frontend/src/index.css`），已保持隔离。
+

@@ -189,6 +189,17 @@
   - 证据：frontend/src/modals/AddEventSheet.jsx
   - 说明：首页日期区域新增本地实时时钟（`HH:mm:ss`）并在后台返回时立即校准；新增加餐/训练/其他事件弹窗默认时间改为打开瞬间本地时间快照（`HH:mm`），不会在填写过程中自动跳变，编辑时间回显逻辑保持不变。
   - 相关 Commit：0d56866400f7e9f365b8674b14cc4984545c4fce
+- `已完成` 事件和训练实时开始与结束
+  - 证据：frontend/src/modals/AddEventSheet.jsx
+  - 证据：frontend/src/modals/AddTrainingSheet.jsx
+  - 证据：frontend/src/components/TimelineItem.jsx
+  - 证据：frontend/src/pages/TodayPage.jsx
+  - 证据：frontend/src/pages/HistoryDetailPage.jsx
+  - 证据：frontend/src/services/timelineService.js
+  - 证据：frontend/src/services/historyService.js
+  - 证据：frontend/src/store.jsx
+  - 说明：事件和训练都支持“手动记录 / 现在开始”；实时记录会以本地时间创建 running 记录，返回首页后可继续显示并点击结束，结束后自动保存结束时间与实际时长；历史日期仅保留手动记录入口。
+  - 相关 Commit：821caf71e26214a3379713dfb2be3027771dc823
 
 ## 4. 部分完成
 
