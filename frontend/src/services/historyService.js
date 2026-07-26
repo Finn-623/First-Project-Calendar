@@ -416,6 +416,35 @@ export const historyService = {
   },
 
   /**
+   * Delete multiple history days atomically.
+   * Uses RPC guarded by auth.uid() on the database side.
+   * @param {string[]} dateStrs - Format: YYYY-MM-DD[]
+   * @returns {Promise<{data, error}>}
+   */
+  async deleteHistoryDays(dateStrs = []) {
+    try {
+      const targetDates = Array.from(new Set((dateStrs || []).filter(Boolean)));
+      if (targetDates.length === 0) {
+        return {
+          data: {
+            deleted_timeline_items: 0,
+            deleted_daily_archives: 0,
+            deleted_days: 0,
+          },
+          error: null,
+        };
+      }
+
+      const { data, error } = await supabase
+        .rpc('delete_history_days', { target_dates: targetDates });
+
+      return { data, error };
+    } catch (err) {
+      return { data: null, error: err };
+    }
+  },
+
+  /**
    * Get food entries for a timeline item
    * @param {string} timelineItemId
    * @returns {Promise<{data, error}>}

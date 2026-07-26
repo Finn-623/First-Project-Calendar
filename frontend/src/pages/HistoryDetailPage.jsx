@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ChevronLeft, Trash2, Pencil, Check, X } from 'lucide-react';
+import { ChevronLeft } from 'lucide-react';
 import { toast } from 'sonner';
 import { useStore } from '../store';
 import { TimelineItem } from '../components/TimelineItem';
@@ -37,6 +37,11 @@ const buildFoodEntryKey = (food, index) => {
   return `legacy-${index}-${food?.foodId || food?.name || 'food'}`;
 };
 
+const removeEmptyMeals = (timeline = []) => (timeline || []).filter((item) => {
+  if (item?.type !== 'meal') return true;
+  return Array.isArray(item?.foods) && item.foods.length > 0;
+});
+
 export const HistoryDetailPage = () => {
   const { dateStr } = useParams();
   const navigate = useNavigate();
@@ -44,8 +49,7 @@ export const HistoryDetailPage = () => {
 
   const entry = history.find((h) => h.dateStr === dateStr);
   const [draftTimeline, setDraftTimeline] = useState([]);
-  const [isEditing, setIsEditing] = useState(false);
-  const [saving, setSaving] = useState(false);
+  const [savingAction, setSavingAction] = useState(false);
   const [foodSheet, setFoodSheet] = useState({ open: false, target: null });
   const [timeSheet, setTimeSheet] = useState({ open: false, item: null });
   const [endingItemId, setEndingItemId] = useState(null);
@@ -60,8 +64,7 @@ export const HistoryDetailPage = () => {
   useEffect(() => {
     if (!entry) return;
 
-    setDraftTimeline(entry.timeline || []);
-    setIsEditing(false);
+    setDraftTimeline(removeEmptyMeals(entry.timeline || []));
     setFoodSheet({ open: false, target: null });
     setTimeSheet({ open: false, item: null });
     setEditActivitySheet({ open: false, item: null });
@@ -71,12 +74,9 @@ export const HistoryDetailPage = () => {
     setPendingDeleteFood(null);
   }, [entry]);
 
-  const entryTimeline = useMemo(() => entry?.timeline || [], [entry]);
+  const entryTimeline = useMemo(() => removeEmptyMeals(entry?.timeline || []), [entry]);
   const isEmptyDay = Boolean(entry?.isEmptyDay) && entryTimeline.length === 0;
-  const activeTimeline = useMemo(
-    () => (isEditing ? draftTimeline : entryTimeline),
-    [draftTimeline, entryTimeline, isEditing]
-  );
+  const activeTimeline = useMemo(() => removeEmptyMeals(draftTimeline), [draftTimeline]);
   const sorted = useMemo(
     () => [...activeTimeline].sort((a, b) => timeToMinutes(a.time) - timeToMinutes(b.time)),
     [activeTimeline]
@@ -86,35 +86,67 @@ export const HistoryDetailPage = () => {
     [activeTimeline, entry]
   );
 
+  const interactionDisabled = savingAction || deleting;
+
+  const persistTimeline = async (nextTimeline, successMessage) => {
+    if (!user?.id) return false;
+
+    const cleaned = removeEmptyMeals(nextTimeline);
+    const previousTimeline = draftTimeline;
+
+    setSavingAction(true);
+    setDraftTimeline(cleaned);
+
+    try {
+      const totalsToSave = sumTimelineMacros(cleaned);
+      const { error } = await historyService.updateDayArchive(user.id, dateStr, cleaned, totalsToSave);
+      if (error) {
+        setDraftTimeline(previousTimeline);
+        toast.error(error?.message || '保存失败，请稍后重试');
+        return false;
+      }
+
+      await loadHistory(user.id);
+      toast.success(successMessage);
+      return true;
+    } finally {
+      setSavingAction(false);
+    }
+  };
+
   const updateItem = (itemId, updater) => {
-    setDraftTimeline((prev) => prev.map((item) => (item.id === itemId ? updater(item) : item)));
+    const next = draftTimeline.map((item) => (item.id === itemId ? updater(item) : item));
+    return removeEmptyMeals(next);
   };
 
   const handleAddFood = (mealItem) => {
+    if (interactionDisabled) return;
     setFoodSheet({ open: true, target: mealItem });
   };
 
-  const handleFoodConfirm = (food) => {
+  const handleFoodConfirm = async (food) => {
     if (!foodSheet.target) return;
 
-    updateItem(foodSheet.target.id, (item) => ({
+    const nextTimeline = updateItem(foodSheet.target.id, (item) => ({
       ...item,
       foods: [...(item.foods || []), {
         ...food,
         entryId: food?.entryId || `food-entry-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
       }],
     }));
-    toast.success(`已添加 ${food.name} 到 ${foodSheet.target.title}`);
+
+    await persistTimeline(nextTimeline, `已添加 ${food.name} 到 ${foodSheet.target.title}`);
   };
 
-  const handleTimeConfirm = (newTime) => {
+  const handleTimeConfirm = async (newTime) => {
     if (!timeSheet.item) return;
 
-    updateItem(timeSheet.item.id, (item) => ({ ...item, time: newTime }));
-    toast.success('时间已更新');
+    const nextTimeline = updateItem(timeSheet.item.id, (item) => ({ ...item, time: newTime }));
+    await persistTimeline(nextTimeline, '时间已更新');
   };
 
   const handleDeleteItem = (item) => {
+    if (interactionDisabled) return;
     setPendingDeleteItem(item);
     setPendingDeleteFood(null);
     setConfirmKind('timeline-item');
@@ -122,6 +154,7 @@ export const HistoryDetailPage = () => {
   };
 
   const handleDeleteFood = (mealItem, food, foodIndex) => {
+    if (interactionDisabled) return;
     setPendingDeleteItem(mealItem);
     setPendingDeleteFood({
       mealItemId: mealItem.id,
@@ -151,11 +184,12 @@ export const HistoryDetailPage = () => {
       if (error) throw error;
 
       if (data) {
-        setDraftTimeline((prev) => prev.map((row) => (row.id === item.id ? data : row)));
-        await loadHistory(user.id);
+        const nextTimeline = draftTimeline.map((row) => (row.id === item.id ? data : row));
+        const saved = await persistTimeline(nextTimeline, '记录已结束');
+        if (!saved) {
+          toast.error('结束后保存失败，请稍后重试');
+        }
       }
-
-      toast.success('记录已结束');
     } catch (error) {
       toast.error(error?.message || '结束失败，请稍后重试');
     } finally {
@@ -212,11 +246,12 @@ export const HistoryDetailPage = () => {
   };
 
   const handleEditActivityConfirm = async (item, updates) => {
-    updateItem(item.id, (row) => prepareDraftActivityUpdate(row, updates));
-    toast.success('记录已更新，保存后生效');
+    const nextTimeline = updateItem(item.id, (row) => prepareDraftActivityUpdate(row, updates));
+    await persistTimeline(nextTimeline, '记录已更新');
   };
 
   const handleDeleteDay = () => {
+    if (interactionDisabled) return;
     setPendingDeleteItem(null);
     setPendingDeleteFood(null);
     setConfirmKind('day');
@@ -227,20 +262,17 @@ export const HistoryDetailPage = () => {
     if (!user?.id || deleting) return;
 
     setDeleting(true);
-    const targetDateStr = dateStr;
-
     try {
       if (confirmKind === 'day') {
-        const { error } = await historyService.deleteFullDayRecords(targetDateStr);
+        const { error } = await historyService.deleteFullDayRecords(dateStr);
         if (error) {
-          toast.error('删除失败，请稍后重试');
+          toast.error(error?.message || '删除失败，请稍后重试');
           return;
         }
 
         await loadHistory(user.id);
         setConfirmOpen(false);
         toast.success('历史记录已删除');
-        // Keep user in history section instead of jumping back to today.
         navigate('/history');
         return;
       }
@@ -248,54 +280,44 @@ export const HistoryDetailPage = () => {
       if (confirmKind === 'food-entry') {
         if (!pendingDeleteFood?.mealItemId || !pendingDeleteFood?.foodEntryId) return;
 
-        setDraftTimeline((prev) => prev.map((item) => {
-          if (item.id !== pendingDeleteFood.mealItemId) return item;
+        const nextTimeline = draftTimeline
+          .map((item) => {
+            if (item.id !== pendingDeleteFood.mealItemId) return item;
 
-          const nextFoods = (item.foods || []).filter((food, index) => {
-            const currentEntryKey = buildFoodEntryKey(food, index);
-            return currentEntryKey !== pendingDeleteFood.foodEntryId;
-          });
+            const nextFoods = (item.foods || []).filter((food, index) => {
+              const currentEntryKey = buildFoodEntryKey(food, index);
+              return currentEntryKey !== pendingDeleteFood.foodEntryId;
+            });
 
-          return {
-            ...item,
-            foods: nextFoods,
-          };
-        }));
+            if (nextFoods.length === 0) {
+              return null;
+            }
 
-        setConfirmOpen(false);
-        setPendingDeleteFood(null);
-        toast.success('食物记录已删除，保存后生效');
+            return {
+              ...item,
+              foods: nextFoods,
+            };
+          })
+          .filter(Boolean);
+
+        const saved = await persistTimeline(nextTimeline, '食物记录已删除');
+        if (saved) {
+          setConfirmOpen(false);
+          setPendingDeleteFood(null);
+        }
         return;
       }
 
       if (!pendingDeleteItem) return;
 
-      setDraftTimeline((prev) => prev.filter((item) => item.id !== pendingDeleteItem.id));
-      setConfirmOpen(false);
-      setPendingDeleteItem(null);
-      toast.success('条目已删除');
+      const nextTimeline = draftTimeline.filter((item) => item.id !== pendingDeleteItem.id);
+      const saved = await persistTimeline(nextTimeline, '条目已删除');
+      if (saved) {
+        setConfirmOpen(false);
+        setPendingDeleteItem(null);
+      }
     } finally {
       setDeleting(false);
-    }
-  };
-
-  const handleSave = async () => {
-    if (!user?.id) return;
-
-    setSaving(true);
-    try {
-      const totalsToSave = sumTimelineMacros(draftTimeline);
-      const { error } = await historyService.updateDayArchive(user.id, dateStr, draftTimeline, totalsToSave);
-      if (error) {
-        toast.error('保存失败，请稍后重试');
-        return;
-      }
-
-      await loadHistory(user.id);
-      setIsEditing(false);
-      toast.success('历史记录已保存');
-    } finally {
-      setSaving(false);
     }
   };
 
@@ -303,6 +325,7 @@ export const HistoryDetailPage = () => {
     return (
       <div className="px-5 pt-6 pb-32">
         <button
+          type="button"
           onClick={() => navigate(-1)}
           data-testid="history-detail-back"
           className="flex items-center gap-1 text-[13px] text-[#858C88]"
@@ -317,8 +340,9 @@ export const HistoryDetailPage = () => {
   return (
     <div className="pb-32" data-testid="history-detail-page">
       <header className="px-5 pt-6 pb-4">
-        <div className="flex items-center justify-between mb-2">
+        <div className="flex items-center justify-between gap-2 mb-2">
           <button
+            type="button"
             onClick={() => navigate('/history')}
             data-testid="history-detail-back"
             className="flex items-center gap-1 text-[12px] text-[#858C88]"
@@ -327,66 +351,23 @@ export const HistoryDetailPage = () => {
           </button>
 
           <button
+            type="button"
             onClick={handleDeleteDay}
-            className="h-8 px-3 rounded-full border border-[#E5E5E0] text-[12px] text-[#D27D67]"
+            className="h-8 px-3 rounded-full border border-[#E5E5E0] text-[12px] text-[#D27D67] disabled:opacity-60"
             data-testid="history-delete-day"
             aria-label={`删除${dateStr}整天记录`}
-            disabled={deleting}
+            disabled={interactionDisabled}
           >
             {deleting && confirmKind === 'day' ? '删除中...' : '删除整天记录'}
           </button>
         </div>
 
-        <div className="flex items-center justify-between gap-2">
-          <div className="min-w-0">
-            <p className="text-[11px] uppercase tracking-[0.22em] text-[#858C88]">DAY</p>
-            <h1 className="text-[22px] font-medium text-[#2C332F] mt-1" data-testid="history-detail-date">
-              {entry.dateLabel}
-            </h1>
-          </div>
-
-          <div className="flex items-center gap-2 shrink-0">
-            {isEditing ? (
-              <>
-                <button
-                  onClick={() => {
-                    setDraftTimeline(entry.timeline || []);
-                    setIsEditing(false);
-                  }}
-                  className="h-8 px-3 rounded-full border border-[#E5E5E0] text-[12px] text-[#858C88]"
-                  data-testid="history-cancel-edit"
-                >
-                  <X size={13} className="inline-block mr-1" />
-                  取消
-                </button>
-                <button
-                  onClick={handleSave}
-                  disabled={saving}
-                  className="h-8 px-3 rounded-full bg-[#2C332F] text-white text-[12px] disabled:opacity-60"
-                  data-testid="history-save-edit"
-                >
-                  <Check size={13} className="inline-block mr-1" />
-                  保存
-                </button>
-              </>
-            ) : (
-              <>
-                <button
-                  onClick={() => setIsEditing(true)}
-                  className="h-8 px-3 rounded-full border border-[#E5E5E0] text-[12px] text-[#2C332F]"
-                  data-testid="history-start-edit"
-                >
-                  <Pencil size={13} className="inline-block mr-1" />
-                  编辑
-                </button>
-              </>
-            )}
-          </div>
+        <div className="min-w-0">
+          <p className="text-[11px] uppercase tracking-[0.22em] text-[#858C88]">DAY</p>
+          <h1 className="text-[22px] font-medium text-[#2C332F] mt-1" data-testid="history-detail-date">
+            {entry.dateLabel}
+          </h1>
         </div>
-
-        {isEditing ? (
-          <p className="mt-2 text-[12px] text-[#6B8067]">编辑中：可改时间、添加食物、删除食物或删除条目，保存后会更新历史记录。</p>
-        ) : null}
       </header>
 
       {isEmptyDay ? (
@@ -399,7 +380,7 @@ export const HistoryDetailPage = () => {
       ) : (
         <>
           <div className="px-5">
-            <NutritionSummary totals={totals} plan={plan} />
+            <NutritionSummary totals={totals} plan={plan} layout="splitRows" />
           </div>
 
           <section className="mt-6 px-3">
@@ -407,12 +388,21 @@ export const HistoryDetailPage = () => {
               <h2 className="text-[13px] font-medium text-[#2C332F] tracking-wide">时间轴回顾</h2>
               <span className="text-[11px] text-[#858C88]">{sorted.length} 项</span>
             </div>
-            <div className="relative timeline-guide" data-testid="history-detail-timeline">
+            <div className="relative timeline-guide before:hidden" data-testid="history-detail-timeline">
+              <div
+                className="pointer-events-none absolute left-[73px] top-3 bottom-3 w-[1.5px]"
+                style={{
+                  background: 'repeating-linear-gradient(to bottom, #D9D9D2 0, #D9D9D2 4px, transparent 4px, transparent 8px)',
+                }}
+                aria-hidden="true"
+              />
               {sorted.map((item) => (
                 <TimelineItem
                   key={item.id}
                   item={item}
-                  readOnly={!isEditing}
+                  layout="home-time-left"
+                  readOnly={interactionDisabled}
+                  allowMealDelete
                   onAddFood={handleAddFood}
                   onDeleteFood={handleDeleteFood}
                   onEditTime={(it) => setTimeSheet({ open: true, item: it })}
@@ -420,6 +410,7 @@ export const HistoryDetailPage = () => {
                   onDelete={handleDeleteItem}
                   onEnd={handleEndItem}
                   ending={endingItemId === item.id}
+                  deleting={deleting && confirmKind !== 'day' && pendingDeleteItem?.id === item.id}
                   now={now}
                 />
               ))}
@@ -459,15 +450,18 @@ export const HistoryDetailPage = () => {
               {confirmKind === 'day'
                 ? `确定删除${dateStr}的全部记录吗？当天的摄入、事件、训练和其他记录都会被删除，且无法撤销。`
                 : confirmKind === 'food-entry'
-                  ? `将从${pendingDeleteFood?.mealTitle || '该餐次'}中删除“${pendingDeleteFood?.foodName || '该食物'}”，不会删除食物库定义，保存后生效。`
-                  : '这个条目会从该日期的归档中移除，保存后生效。'}
+                  ? `将从${pendingDeleteFood?.mealTitle || '该餐次'}中删除“${pendingDeleteFood?.foodName || '该食物'}”。如果这是该餐次最后一个食物，会同时删除该餐次记录。`
+                  : '这个条目会从该日期的归档中移除。'}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>取消</AlertDialogCancel>
+            <AlertDialogCancel disabled={interactionDisabled}>取消</AlertDialogCancel>
             <AlertDialogAction
-              onClick={handleConfirmDelete}
-              disabled={deleting}
+              onClick={(event) => {
+                event.preventDefault();
+                if (!interactionDisabled) handleConfirmDelete();
+              }}
+              disabled={interactionDisabled}
               className="bg-[#D27D67] text-white hover:bg-[#c86d56]"
             >
               {deleting ? '删除中...' : confirmKind === 'day' ? '删除整天记录' : confirmKind === 'food-entry' ? '删除食物' : '确认删除'}

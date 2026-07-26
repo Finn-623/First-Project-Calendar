@@ -32,6 +32,7 @@ export const TimelineItem = ({
   readOnly = false,
   now,
   layout = 'default',
+  allowMealDelete = false,
 }) => {
   const Icon = iconFor(item);
   const accent = accentFor(item);
@@ -59,11 +60,13 @@ export const TimelineItem = ({
     ? diffSecondsBetween(new Date(item.started_at), now)
     : null;
 
-  const canDelete = !readOnly && !isRunning && (
-    item.subtype === 'snack'
-    || item.type === 'anaerobic'
-    || item.type === 'aerobic'
-    || item.type === 'event'
+  const canEdit = !readOnly && (
+    (isMeal && Boolean(onEditTime))
+    || (!isMeal && Boolean(onEditRecord))
+  );
+
+  const canDelete = !readOnly && !isRunning && Boolean(onDelete) && (
+    !isMeal || allowMealDelete
   );
 
   const titleClass = layout === 'home-time-left'
@@ -85,15 +88,10 @@ export const TimelineItem = ({
           <div className="min-w-0">
             <p className={titleClass}>{isMeal ? mealTitle : activityTitle}</p>
             {isMeal ? (
-              <button
-                onClick={() => !readOnly && onEditTime && onEditTime(item)}
-                data-testid={`edit-time-${item.id}`}
-                disabled={readOnly}
-                className="mt-0.5 flex items-center gap-1 text-[11px] text-[#858C88]"
-              >
+              <p className="mt-0.5 flex items-center gap-1 text-[11px] text-[#858C88]">
                 <Clock size={11} strokeWidth={1.5} />
                 <span className="font-num">{timeEditLabel}</span>
-              </button>
+              </p>
             ) : (
               <p className="mt-0.5 text-[11px] text-[#858C88]">{item?.type === 'aerobic' ? '有氧训练' : '记录'}</p>
             )}
@@ -112,24 +110,45 @@ export const TimelineItem = ({
             </div>
           )}
 
-          {canDelete && (
+          {canEdit ? (
             <button
+              type="button"
+              onClick={() => {
+                if (isMeal) {
+                  onEditTime && onEditTime(item);
+                } else {
+                  onEditRecord && onEditRecord(item);
+                }
+              }}
+              aria-label={`编辑${item.title}`}
+              data-testid={isMeal ? `edit-time-${item.id}` : `edit-record-${item.id}`}
+              className="h-8 px-2.5 rounded-lg border border-[#E5E5E0] text-[#5E6660] text-[12px]"
+            >
+              编辑
+            </button>
+          ) : null}
+
+          {canDelete ? (
+            <button
+              type="button"
               onClick={() => onDelete && onDelete(item)}
               disabled={deleting}
               aria-label={`删除${item.title}`}
               data-testid={`delete-timeline-${item.id}`}
-              className="w-9 h-9 rounded-xl border border-[#E5E5E0] text-[#858C88] hover:text-[#D27D67] hover:border-[#D27D67]/40 disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center"
+              className="h-8 px-2.5 rounded-lg border border-[#E5E5E0] text-[#858C88] hover:text-[#D27D67] hover:border-[#D27D67]/40 disabled:opacity-60 disabled:cursor-not-allowed text-[12px] flex items-center gap-1"
             >
-              {deleting ? <Loader2 size={15} className="animate-spin" /> : <Trash2 size={15} />}
+              {deleting ? <Loader2 size={14} className="animate-spin" /> : <Trash2 size={13} />}
+              删除
             </button>
-          )}
+          ) : null}
         </div>
       </div>
 
-      {isMeal && (
+      {isMeal ? (
         <div className="mt-3">
           {empty ? (
             <button
+              type="button"
               onClick={() => !readOnly && onAddFood && onAddFood(item)}
               data-testid={`add-food-${item.id}`}
               disabled={readOnly}
@@ -165,21 +184,20 @@ export const TimelineItem = ({
                   </div>
                 </div>
               ))}
-              {!readOnly && (
+              {!readOnly ? (
                 <button
+                  type="button"
                   onClick={() => onAddFood && onAddFood(item)}
                   className="mt-1 text-[12px] text-[#6B8067]"
                   data-testid={`add-more-food-${item.id}`}
                 >
                   + 继续添加
                 </button>
-              )}
+              ) : null}
             </div>
           )}
         </div>
-      )}
-
-      {!isMeal && (
+      ) : (
         <div className="mt-2.5">
           {activityNote ? <p className="text-[12px] text-[#2C332F] break-words">{activityNote}</p> : null}
           {strengthBodyPartLabels.length ? (
@@ -194,23 +212,20 @@ export const TimelineItem = ({
               ))}
             </div>
           ) : null}
-          {isRunning ? (
-            <p className="text-[12px] text-[#6B8067] mt-1">进行中</p>
-          ) : null}
+          {isRunning ? <p className="text-[12px] text-[#6B8067] mt-1">进行中</p> : null}
           {isRunning && elapsedDurationSeconds != null ? (
             <p className="font-num tabular-nums text-[12px] text-[#2C332F] mt-1">已进行 {formatDuration(elapsedDurationSeconds)}</p>
           ) : null}
-          {!isRunning && completedEndTime ? (
-            <p className="font-num text-[11px] text-[#858C88] mt-1">结束 {completedEndTime}</p>
-          ) : null}
+          {!isRunning && completedEndTime ? <p className="font-num text-[11px] text-[#858C88] mt-1">结束 {completedEndTime}</p> : null}
           {!isRunning && fixedDurationSeconds != null ? (
             <p className="font-num tabular-nums text-[11px] text-[#858C88] mt-1">时长 {formatDuration(fixedDurationSeconds)}</p>
           ) : null}
-          {typeof item.caloriesBurned === 'number' && (
+          {typeof item.caloriesBurned === 'number' ? (
             <p className="font-num text-[11px] text-[#858C88] mt-1">消耗 {item.caloriesBurned} kcal</p>
-          )}
-          <div className="mt-2 flex flex-wrap items-center gap-2">
-            {isRunning && onEnd ? (
+          ) : null}
+
+          {isRunning && onEnd ? (
+            <div className="mt-2 flex flex-wrap items-center gap-2">
               <button
                 type="button"
                 onClick={() => onEnd(item)}
@@ -220,19 +235,8 @@ export const TimelineItem = ({
               >
                 {ending ? '结束中...' : '结束'}
               </button>
-            ) : null}
-
-            {!readOnly && onEditRecord ? (
-              <button
-                type="button"
-                onClick={() => onEditRecord(item)}
-                data-testid={`edit-record-${item.id}`}
-                className="h-9 px-3 rounded-xl border border-[#E5E5E0] text-[#5E6660] text-[12px]"
-              >
-                编辑
-              </button>
-            ) : null}
-          </div>
+            </div>
+          ) : null}
         </div>
       )}
     </div>
