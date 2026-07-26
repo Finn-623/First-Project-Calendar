@@ -80,6 +80,10 @@
   - 证据：frontend/package.json
   - 说明：登录页底部显示 `当前版本：v0.1.1`，版本来源统一为 `frontend/package.json`。
   - 相关 Commit：737188e4b8619edd172bedce8ff518d1519b3b5c
+- `已完成` 移动端登录输入框自动缩放修复
+  - 证据：frontend/src/pages/LoginPage.jsx
+  - 说明：将登录页账号与密码输入框在移动端字体提升到 16px，避免焦点触发页面自动放大。
+  - 相关 Commit：待回填
 
 ## 4. 部分完成
 

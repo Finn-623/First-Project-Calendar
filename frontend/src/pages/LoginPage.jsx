@@ -102,7 +102,7 @@ export const LoginPage = ({ onLoginSuccess }) => {
               }}
               placeholder="请输入用户名"
               disabled={isLoading}
-              className="w-full h-12 px-4 rounded-2xl border border-[#E5E5E0] bg-white text-[14px] text-[#2C332F] placeholder-[#858C88] focus:outline-none focus:border-[#6B8067] focus:ring-2 focus:ring-[#6B8067]/20 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full h-12 px-4 rounded-2xl border border-[#E5E5E0] bg-white text-base md:text-[14px] text-[#2C332F] placeholder-[#858C88] focus:outline-none focus:border-[#6B8067] focus:ring-2 focus:ring-[#6B8067]/20 disabled:opacity-50 disabled:cursor-not-allowed"
               data-testid="login-username-input"
             />
           </div>
@@ -119,7 +119,7 @@ export const LoginPage = ({ onLoginSuccess }) => {
               }}
               placeholder="••••••••"
               disabled={isLoading}
-              className="w-full h-12 px-4 rounded-2xl border border-[#E5E5E0] bg-white text-[14px] text-[#2C332F] placeholder-[#858C88] focus:outline-none focus:border-[#6B8067] focus:ring-2 focus:ring-[#6B8067]/20 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full h-12 px-4 rounded-2xl border border-[#E5E5E0] bg-white text-base md:text-[14px] text-[#2C332F] placeholder-[#858C88] focus:outline-none focus:border-[#6B8067] focus:ring-2 focus:ring-[#6B8067]/20 disabled:opacity-50 disabled:cursor-not-allowed"
               data-testid="login-password-input"
             />
           </div>
