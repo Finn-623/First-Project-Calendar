@@ -83,7 +83,7 @@
 - `已完成` 移动端登录输入框自动缩放修复
   - 证据：frontend/src/pages/LoginPage.jsx
   - 说明：将登录页账号与密码输入框在移动端字体提升到 16px，避免焦点触发页面自动放大。
-  - 相关 Commit：待回填
+  - 相关 Commit：ed54314cfcf407addf000c101cdc28155c6b9cbd
 
 ## 4. 部分完成
 
