@@ -22,6 +22,7 @@ const accentFor = (item) => {
 export const TimelineItem = ({
   item,
   onAddFood,
+  onDeleteFood,
   onEditTime,
   onEditRecord,
   onDelete,
@@ -144,9 +145,24 @@ export const TimelineItem = ({
                     <p className="text-[#2C332F] break-words">{f.name}</p>
                     <p className="font-num text-[#858C88]">{f.grams}g</p>
                   </div>
-                  <p className="font-num text-[#2C332F] shrink-0">
-                    {f.cal} <span className="text-[10px] text-[#858C88]">kcal</span>
-                  </p>
+
+                  <div className="flex items-center gap-2 shrink-0">
+                    <p className="font-num text-[#2C332F]">
+                      {f.cal} <span className="text-[10px] text-[#858C88]">kcal</span>
+                    </p>
+
+                    {!readOnly && onDeleteFood ? (
+                      <button
+                        type="button"
+                        onClick={() => onDeleteFood(item, f, i)}
+                        aria-label={`删除${item.title}中的${f.name}`}
+                        data-testid={`delete-food-entry-${item.id}-${i}`}
+                        className="h-7 w-7 rounded-lg border border-[#E5E5E0] text-[#858C88] hover:text-[#D27D67] hover:border-[#D27D67]/40 flex items-center justify-center"
+                      >
+                        <Trash2 size={13} />
+                      </button>
+                    ) : null}
+                  </div>
                 </div>
               ))}
               {!readOnly && (

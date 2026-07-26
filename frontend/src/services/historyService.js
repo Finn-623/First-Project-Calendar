@@ -74,7 +74,12 @@ const normalizeArchivedTimelineItem = (item) => ({
   title: item.title,
   time: item.time,
   fixed: Boolean(item.fixed),
-  foods: Array.isArray(item.foods) ? item.foods : [],
+  foods: Array.isArray(item.foods)
+    ? item.foods.map((food, index) => ({
+        ...food,
+        entryId: food?.entryId || food?.id || food?.foodEntryId || `archived-food-${item.id || 'item'}-${index}`,
+      }))
+    : [],
   detail: item.detail,
   notes: item.notes || null,
   caloriesBurned: item.caloriesBurned,

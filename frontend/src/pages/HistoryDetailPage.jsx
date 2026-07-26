@@ -30,6 +30,13 @@ const timeToMinutes = (t) => {
   return h * 60 + m;
 };
 
+const buildFoodEntryKey = (food, index) => {
+  if (food?.entryId) return String(food.entryId);
+  if (food?.id) return String(food.id);
+  if (food?.foodEntryId) return String(food.foodEntryId);
+  return `legacy-${index}-${food?.foodId || food?.name || 'food'}`;
+};
+
 export const HistoryDetailPage = () => {
   const { dateStr } = useParams();
   const navigate = useNavigate();
@@ -44,8 +51,9 @@ export const HistoryDetailPage = () => {
   const [endingItemId, setEndingItemId] = useState(null);
   const [editActivitySheet, setEditActivitySheet] = useState({ open: false, item: null });
   const [confirmOpen, setConfirmOpen] = useState(false);
-  const [confirmKind, setConfirmKind] = useState('item');
+  const [confirmKind, setConfirmKind] = useState('timeline-item');
   const [pendingDeleteItem, setPendingDeleteItem] = useState(null);
+  const [pendingDeleteFood, setPendingDeleteFood] = useState(null);
   const [deleting, setDeleting] = useState(false);
   const now = useCurrentTime();
 
@@ -58,8 +66,9 @@ export const HistoryDetailPage = () => {
     setTimeSheet({ open: false, item: null });
     setEditActivitySheet({ open: false, item: null });
     setConfirmOpen(false);
-    setConfirmKind('item');
+    setConfirmKind('timeline-item');
     setPendingDeleteItem(null);
+    setPendingDeleteFood(null);
   }, [entry]);
 
   const entryTimeline = useMemo(() => entry?.timeline || [], [entry]);
@@ -90,7 +99,10 @@ export const HistoryDetailPage = () => {
 
     updateItem(foodSheet.target.id, (item) => ({
       ...item,
-      foods: [...(item.foods || []), food],
+      foods: [...(item.foods || []), {
+        ...food,
+        entryId: food?.entryId || `food-entry-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+      }],
     }));
     toast.success(`已添加 ${food.name} 到 ${foodSheet.target.title}`);
   };
@@ -104,7 +116,20 @@ export const HistoryDetailPage = () => {
 
   const handleDeleteItem = (item) => {
     setPendingDeleteItem(item);
-    setConfirmKind('item');
+    setPendingDeleteFood(null);
+    setConfirmKind('timeline-item');
+    setConfirmOpen(true);
+  };
+
+  const handleDeleteFood = (mealItem, food, foodIndex) => {
+    setPendingDeleteItem(mealItem);
+    setPendingDeleteFood({
+      mealItemId: mealItem.id,
+      foodEntryId: buildFoodEntryKey(food, foodIndex),
+      foodName: food?.name || '该食物',
+      mealTitle: mealItem?.title || '该餐次',
+    });
+    setConfirmKind('food-entry');
     setConfirmOpen(true);
   };
 
@@ -193,6 +218,7 @@ export const HistoryDetailPage = () => {
 
   const handleDeleteDay = () => {
     setPendingDeleteItem(null);
+    setPendingDeleteFood(null);
     setConfirmKind('day');
     setConfirmOpen(true);
   };
@@ -216,6 +242,29 @@ export const HistoryDetailPage = () => {
         toast.success('历史记录已删除');
         // Keep user in history section instead of jumping back to today.
         navigate('/history');
+        return;
+      }
+
+      if (confirmKind === 'food-entry') {
+        if (!pendingDeleteFood?.mealItemId || !pendingDeleteFood?.foodEntryId) return;
+
+        setDraftTimeline((prev) => prev.map((item) => {
+          if (item.id !== pendingDeleteFood.mealItemId) return item;
+
+          const nextFoods = (item.foods || []).filter((food, index) => {
+            const currentEntryKey = buildFoodEntryKey(food, index);
+            return currentEntryKey !== pendingDeleteFood.foodEntryId;
+          });
+
+          return {
+            ...item,
+            foods: nextFoods,
+          };
+        }));
+
+        setConfirmOpen(false);
+        setPendingDeleteFood(null);
+        toast.success('食物记录已删除，保存后生效');
         return;
       }
 
@@ -277,7 +326,26 @@ export const HistoryDetailPage = () => {
             <ChevronLeft size={14} strokeWidth={1.5} /> 历史
           </button>
 
-          <div className="flex items-center gap-2">
+          <button
+            onClick={handleDeleteDay}
+            className="h-8 px-3 rounded-full border border-[#E5E5E0] text-[12px] text-[#D27D67]"
+            data-testid="history-delete-day"
+            aria-label={`删除${dateStr}整天记录`}
+            disabled={deleting}
+          >
+            {deleting && confirmKind === 'day' ? '删除中...' : '删除整天记录'}
+          </button>
+        </div>
+
+        <div className="flex items-center justify-between gap-2">
+          <div className="min-w-0">
+            <p className="text-[11px] uppercase tracking-[0.22em] text-[#858C88]">DAY</p>
+            <h1 className="text-[22px] font-medium text-[#2C332F] mt-1" data-testid="history-detail-date">
+              {entry.dateLabel}
+            </h1>
+          </div>
+
+          <div className="flex items-center gap-2 shrink-0">
             {isEditing ? (
               <>
                 <button
@@ -311,26 +379,13 @@ export const HistoryDetailPage = () => {
                   <Pencil size={13} className="inline-block mr-1" />
                   编辑
                 </button>
-                <button
-                  onClick={handleDeleteDay}
-                  className="h-8 px-3 rounded-full border border-[#E5E5E0] text-[12px] text-[#D27D67]"
-                  data-testid="history-delete-day"
-                >
-                  <Trash2 size={13} className="inline-block mr-1" />
-                  删除
-                </button>
               </>
             )}
           </div>
         </div>
 
-        <p className="text-[11px] uppercase tracking-[0.22em] text-[#858C88]">DAY</p>
-        <h1 className="text-[22px] font-medium text-[#2C332F] mt-1" data-testid="history-detail-date">
-          {entry.dateLabel}
-        </h1>
-
         {isEditing ? (
-          <p className="mt-2 text-[12px] text-[#6B8067]">编辑中：可改时间、添加食物或删除条目，保存后会更新历史记录。</p>
+          <p className="mt-2 text-[12px] text-[#6B8067]">编辑中：可改时间、添加食物、删除食物或删除条目，保存后会更新历史记录。</p>
         ) : null}
       </header>
 
@@ -359,6 +414,7 @@ export const HistoryDetailPage = () => {
                   item={item}
                   readOnly={!isEditing}
                   onAddFood={handleAddFood}
+                  onDeleteFood={handleDeleteFood}
                   onEditTime={(it) => setTimeSheet({ open: true, item: it })}
                   onEditRecord={(it) => setEditActivitySheet({ open: true, item: it })}
                   onDelete={handleDeleteItem}
@@ -397,12 +453,14 @@ export const HistoryDetailPage = () => {
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>
-              {confirmKind === 'day' ? '删除整条历史记录？' : '删除这个条目？'}
+              {confirmKind === 'day' ? '删除整天记录？' : confirmKind === 'food-entry' ? '删除这个食物记录？' : '删除这个条目？'}
             </AlertDialogTitle>
             <AlertDialogDescription>
               {confirmKind === 'day'
-                ? '这会永久删除该日期的归档记录，无法恢复。'
-                : '这个条目会从该日期的归档中移除，保存后生效。'}
+                ? `确定删除${dateStr}的全部记录吗？当天的摄入、事件、训练和其他记录都会被删除，且无法撤销。`
+                : confirmKind === 'food-entry'
+                  ? `将从${pendingDeleteFood?.mealTitle || '该餐次'}中删除“${pendingDeleteFood?.foodName || '该食物'}”，不会删除食物库定义，保存后生效。`
+                  : '这个条目会从该日期的归档中移除，保存后生效。'}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -412,7 +470,7 @@ export const HistoryDetailPage = () => {
               disabled={deleting}
               className="bg-[#D27D67] text-white hover:bg-[#c86d56]"
             >
-              {deleting ? '删除中...' : '确认删除'}
+              {deleting ? '删除中...' : confirmKind === 'day' ? '删除整天记录' : confirmKind === 'food-entry' ? '删除食物' : '确认删除'}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

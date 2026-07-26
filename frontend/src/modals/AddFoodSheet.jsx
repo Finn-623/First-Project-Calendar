@@ -85,6 +85,7 @@ export const AddFoodSheet = ({ open, onOpenChange, targetTitle, onConfirm }) => 
     if (!selected) return;
     const macros = scale(selected, Number(grams) || 0);
     onConfirm({
+      entryId: `food-entry-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
       foodId: selected.id,
       name: selected.name,
       grams: Number(grams) || 0,
