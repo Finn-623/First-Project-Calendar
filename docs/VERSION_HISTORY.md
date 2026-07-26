@@ -72,3 +72,5 @@
   - 相关 Commit ID：262c00329b1fb95f1cf24b6caa338e3dd74c73fa
   - 调整首页今日摄入目标行布局，与上方四个营养卡片列严格对齐，不调整正式版本号。
   - 相关 Commit ID：6fc0bf145278f6a45329e801588c28f912aa3fa4
+  - 首页新增周日历导航（周一到周日），支持上一周/下一周切换、日期点选切换与回到今天，不调整正式版本号。
+  - 相关 Commit ID：74efe2ed1cdcaae623bfdda8fe8db0c0e7ba88d0

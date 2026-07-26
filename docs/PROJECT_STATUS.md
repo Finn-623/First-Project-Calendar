@@ -123,6 +123,11 @@
   - 证据：frontend/src/components/NutritionSummary.jsx
   - 说明：目标行与今日摄入行共用相同五列网格参数，四个目标字段与对应营养卡片列严格对齐。
   - 相关 Commit：6fc0bf145278f6a45329e801588c28f912aa3fa4
+- `已完成` 首页周日历导航接入
+  - 证据：frontend/src/pages/TodayPage.jsx
+  - 证据：frontend/src/store.jsx
+  - 说明：首页新增周一到周日周视图，支持上一周/下一周、日期点击切换和回到今天，且与 `currentDate` 单一日期状态联动。
+  - 相关 Commit：74efe2ed1cdcaae623bfdda8fe8db0c0e7ba88d0
 
 ## 4. 部分完成
 

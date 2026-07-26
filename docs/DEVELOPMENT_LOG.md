@@ -564,3 +564,42 @@
 	- 本次为纯布局参数修正，不涉及业务数据与计算逻辑。
 - 当前分支：supabase-v1
 - Git Commit ID：6fc0bf145278f6a45329e801588c28f912aa3fa4
+
+## DEV-20260726-016
+
+- 日期：2026-07-26
+- 状态：已完成
+- 修改类型：功能开发 + 状态管理联动
+- 修改模块：首页 / 周日历导航、日期状态管理
+- 任务目标：在首页引入周日历（周一起始），支持上一周/下一周切换、日期点击切换和回到今天，并确保首页数据严格跟随所选日期。
+- 实际完成内容：
+	- 首页新增周日历区块，展示 7 天网格（周一到周日）、月份标题、上周/下周切换按钮。
+	- 新增“今天”快捷入口（仅在选中日期不是今天时显示），用于一键跳回今天。
+	- 点击任意日期后，首页 `dateLabel`、时间轴与营养汇总同步到该日期。
+	- 在 `store` 暴露 `setSelectedDate`，统一复用已有 `currentDate`，避免新增并行日期状态。
+	- 在 `store` 增加按日期缓存时间轴内容，支持当日未归档数据在周内切换时保持一致，并优先复用历史归档内容。
+- 主要修改文件或模块：`frontend/src/pages/TodayPage.jsx`、`frontend/src/store.jsx`、`CHANGELOG.md`、`docs/DEVELOPMENT_LOG.md`、`docs/PROJECT_STATUS.md`、`docs/VERSION_HISTORY.md`
+- 遇到的问题：
+	- 周切换与日期切换需要与现有 `currentDate` 机制兼容，且不能引入第二套日期状态。
+	- 快速切换日期时需要避免视图被旧数据覆盖。
+- 解决方式：
+	- 复用 `currentDate` 作为唯一选中日期源，仅新增 `setSelectedDate` 入口。
+	- 使用 `timelineCacheRef` 按日期缓存并在切换时克隆写入，减少快速切换造成的状态回退风险。
+- 执行的测试：
+	- 修改前检查：`git status --short`、`git branch --show-current`
+	- 语法与诊断检查：`get_errors` 检查 `frontend/src/pages/TodayPage.jsx`、`frontend/src/store.jsx`
+	- 构建检查：`cd frontend && npm run build`
+	- 代码结构检查：确认周一到周日顺序、7 列网格、上周/下周与回到今天入口均已接入。
+- 测试结果：
+	- 构建通过。
+	- 变更文件无语法错误。
+	- 周日历入口、周切换、日期切换和回到今天逻辑均已接入代码路径。
+	- 受当前会话限制，未在已登录真实业务流中完成端到端人工点击验证。
+- 构建结果：通过。
+- 未完成事项：
+	- 待在已登录会话补充端到端视觉和交互验收（跨月、跨年、快速连点场景）。
+- 风险或注意事项：
+	- 本次未改动数据库结构与接口，属于前端状态与交互层变更。
+	- 工作区存在未纳入本次提交的无关改动（`frontend/src/components/BottomNav.jsx`、`frontend/src/index.css`），已保持隔离。
+- 当前分支：supabase-v1
+- Git Commit ID：74efe2ed1cdcaae623bfdda8fe8db0c0e7ba88d0
