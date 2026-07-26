@@ -224,6 +224,10 @@
   - 证据：frontend/src/lib/timelineCreatePerf.js
   - 说明：创建成功后直接更新本地时间轴并关闭弹窗，不再同步等待全量历史刷新；创建失败时保持弹窗与输入；创建流程增加即时提交态反馈与同 ID 去重追加。
   - 相关 Commit：5912b0e1a0afb29ceb4bb0a6787cb4ad41b0f930
+- `已完成` 历史删除后保持当前日期
+  - 证据：frontend/src/pages/HistoryDetailPage.jsx
+  - 说明：历史详情删除不再触发回到今天的初始化链路；删除后保持在当前历史日期与历史模块内，避免强制跳转首页。
+  - 相关 Commit：063ec9c1ba97f6c97bba2cb0aa11104ac8a0940b
 
 ## 4. 部分完成
 

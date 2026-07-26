@@ -1443,3 +1443,69 @@
 - Git Commit ID：5912b0e1a0afb29ceb4bb0a6787cb4ad41b0f930
 - 版本状态：本次为本地性能优化，未正式上传，正式版本号保持 `v0.1.1`。
 
+## DEV-20260726-034
+
+- 日期：2026-07-26
+- 状态：已完成
+- 修改类型：交互修复 / 历史记录
+- 修改模块：历史详情、时间轴删除确认流程
+- 任务目标：修复历史日期删除后页面被强制跳回今天的问题，删除后保持当前历史日期上下文。
+- 修改前检查：
+	- 已执行：`git status --short`
+	- 已执行：`git branch --show-current`
+	- 已检查历史列表页：`frontend/src/pages/HistoryPage.jsx`
+	- 已检查历史详情页：`frontend/src/pages/HistoryDetailPage.jsx`
+	- 已检查时间轴删除入口：`frontend/src/components/TimelineItem.jsx`
+	- 已检查删除服务：`frontend/src/services/historyService.js`、`frontend/src/services/timelineService.js`
+- 删除后原跳转行为：
+	- 历史详情删除流程中存在 `navigate('/')`。
+	- 同一删除分支中还调用 `loadCurrentUserData(user.id)`，会触发日期初始化逻辑并回到当前真实日期。
+- 强制返回今天的实际原因：
+	- 删除流程将“历史删除”与“用户首页初始化”耦合，调用 `loadCurrentUserData` 触发 `initializeSelectedDate`，并随后导航到首页路由。
+- selectedDate 原重置位置：
+	- 由 `HistoryDetailPage` 删除分支中的 `loadCurrentUserData(user.id)` 间接触发 Store 内日期初始化链路（`initializeSelectedDate` + `setCurrentDate`）。
+- 修改后的删除流程：
+	- 历史详情确认删除 -> 删除中锁定 -> 执行删除请求 -> 仅刷新历史数据 -> 保持历史模块上下文。
+	- 删除整日归档后导航至 `/history`，不再跳转 `/`。
+	- 删除单条草稿项仍在当前日期本地列表移除并保留当前页面。
+- 当前日期保持方式：
+	- 删除处理开始时固定 `targetDateStr = dateStr`，后续仅对该历史日期上下文执行操作。
+	- 不调用会重置今日状态的 `loadCurrentUserData`。
+- 本地状态删除方式：
+	- 使用 `setDraftTimeline((prev) => prev.filter((item) => item.id !== pendingDeleteItem.id))` 仅移除目标条目。
+- 是否重新查询当前日期：
+	- 删除后仅调用 `loadHistory(user.id)` 刷新历史模块，不查询首页今天数据。
+- 删除最后一条记录的处理：
+	- 保持当前历史日期和历史详情上下文；不触发回到今天。
+	- 已结束日期在历史列表/详情依赖现有 `isEmptyDay` 规则显示“本日无记录”。
+- 日期完成状态保持方式：
+	- 本次未改动 `daily_archives.is_completed` 维护逻辑；删除条目修复不触碰完成状态字段。
+- 历史列表摘要更新方式：
+	- 通过 `loadHistory(user.id)` 刷新历史模块数据，维持同日期条目同步更新与空状态展示。
+- 是否修改路由：
+	- 仅将删除后的强制首页跳转移除，改为保留历史模块（整日删除后回到 `/history`）。
+- 是否重新初始化 Auth：否。
+- 是否修改数据库结构：否。
+- 是否新增 migration：否。
+- 实际修改文件：
+	- `frontend/src/pages/HistoryDetailPage.jsx`
+	- `CHANGELOG.md`
+	- `docs/DEVELOPMENT_LOG.md`
+	- `docs/PROJECT_STATUS.md`
+	- `docs/VERSION_HISTORY.md`
+- 实际执行的测试：
+	- 修改前检查：`git status --short`、`git branch --show-current`
+	- 删除链路检索：`HistoryDetailPage` 中 `handleConfirmDelete` / `navigate('/')` / `loadCurrentUserData`
+	- 语法检查：`get_errors` 检查 `frontend/src/pages/HistoryDetailPage.jsx`
+	- 前端构建：`cd frontend && npm run build`
+	- 链路核对：确认删除分支不再调用 `loadCurrentUserData` 且不再 `navigate('/')`
+- 测试结果：
+	- 目标文件无语法错误。
+	- 前端构建通过（Compiled successfully）。
+	- 静态链路确认：历史删除不再触发回到今天的初始化与首页跳转。
+	- 受当前会话缺少可用登录态限制，未执行真实交互点击与 Network 面板人工验收。
+- 前端构建结果：通过。
+- 当前分支：supabase-v1
+- Git Commit ID：063ec9c1ba97f6c97bba2cb0aa11104ac8a0940b
+- 版本状态：本次为本地交互修复，未正式上传，正式版本号保持 `v0.1.1`。
+
