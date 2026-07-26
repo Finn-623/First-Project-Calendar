@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { NutritionSummary } from '../components/NutritionSummary';
 import { TimelineItem } from '../components/TimelineItem';
 import { AddFoodSheet } from '../modals/AddFoodSheet';
@@ -70,6 +70,29 @@ export const TodayPage = () => {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [pendingDeleteItem, setPendingDeleteItem] = useState(null);
   const [deletingItemId, setDeletingItemId] = useState(null);
+  const fabButtonRef = useRef(null);
+  const addMenuRef = useRef(null);
+
+  useEffect(() => {
+    if (!fabOpen) {
+      return undefined;
+    }
+
+    const handlePointerDownOutside = (event) => {
+      const target = event.target;
+
+      if (addMenuRef.current?.contains(target)) return;
+      if (fabButtonRef.current?.contains(target)) return;
+
+      setFabOpen(false);
+    };
+
+    document.addEventListener('pointerdown', handlePointerDownOutside);
+
+    return () => {
+      document.removeEventListener('pointerdown', handlePointerDownOutside);
+    };
+  }, [fabOpen]);
 
   const sorted = useMemo(
     () => [...timeline].sort((a, b) => timeToMinutes(a.time) - timeToMinutes(b.time)),
@@ -341,6 +364,7 @@ export const TodayPage = () => {
       <div className="fixed bottom-24 left-1/2 -translate-x-1/2 w-full max-w-md px-5 pointer-events-none z-30">
         <div className="flex justify-end">
           <button
+            ref={fabButtonRef}
             onClick={() => setFabOpen((v) => !v)}
             data-testid="fab-add"
             className="pointer-events-auto w-14 h-14 rounded-2xl bg-[#2C332F] text-white flex items-center justify-center shadow-[0_10px_24px_-8px_rgba(44,51,47,0.5)]"
@@ -350,7 +374,7 @@ export const TodayPage = () => {
         </div>
 
         {fabOpen && (
-          <div className="pointer-events-auto absolute bottom-16 right-5">
+          <div ref={addMenuRef} className="pointer-events-auto absolute bottom-16 right-5">
             <AddPickerMenu
               onSnack={handleOpenSnackSheet}
               onTraining={openTraining}
