@@ -48,6 +48,7 @@ export const HistoryDetailPage = () => {
   const { history, plan, user, loadHistory } = useStore();
 
   const entry = history.find((h) => h.dateStr === dateStr);
+  const [isEditMode, setIsEditMode] = useState(false);
   const [draftTimeline, setDraftTimeline] = useState([]);
   const [savingAction, setSavingAction] = useState(false);
   const [foodSheet, setFoodSheet] = useState({ open: false, target: null });
@@ -74,6 +75,10 @@ export const HistoryDetailPage = () => {
     setPendingDeleteFood(null);
   }, [entry]);
 
+  useEffect(() => {
+    setIsEditMode(false);
+  }, [dateStr]);
+
   const entryTimeline = useMemo(() => removeEmptyMeals(entry?.timeline || []), [entry]);
   const isEmptyDay = Boolean(entry?.isEmptyDay) && entryTimeline.length === 0;
   const activeTimeline = useMemo(() => removeEmptyMeals(draftTimeline), [draftTimeline]);
@@ -86,7 +91,9 @@ export const HistoryDetailPage = () => {
     [activeTimeline, entry]
   );
 
+  const hasOpenEditor = foodSheet.open || timeSheet.open || editActivitySheet.open;
   const interactionDisabled = savingAction || deleting;
+  const timelineReadOnly = !isEditMode || interactionDisabled;
 
   const persistTimeline = async (nextTimeline, successMessage) => {
     if (!user?.id) return false;
@@ -120,7 +127,7 @@ export const HistoryDetailPage = () => {
   };
 
   const handleAddFood = (mealItem) => {
-    if (interactionDisabled) return;
+    if (!isEditMode || interactionDisabled) return;
     setFoodSheet({ open: true, target: mealItem });
   };
 
@@ -146,7 +153,7 @@ export const HistoryDetailPage = () => {
   };
 
   const handleDeleteItem = (item) => {
-    if (interactionDisabled) return;
+    if (!isEditMode || interactionDisabled) return;
     setPendingDeleteItem(item);
     setPendingDeleteFood(null);
     setConfirmKind('timeline-item');
@@ -154,7 +161,7 @@ export const HistoryDetailPage = () => {
   };
 
   const handleDeleteFood = (mealItem, food, foodIndex) => {
-    if (interactionDisabled) return;
+    if (!isEditMode || interactionDisabled) return;
     setPendingDeleteItem(mealItem);
     setPendingDeleteFood({
       mealItemId: mealItem.id,
@@ -251,7 +258,7 @@ export const HistoryDetailPage = () => {
   };
 
   const handleDeleteDay = () => {
-    if (interactionDisabled) return;
+    if (!isEditMode || interactionDisabled) return;
     setPendingDeleteItem(null);
     setPendingDeleteFood(null);
     setConfirmKind('day');
@@ -350,16 +357,37 @@ export const HistoryDetailPage = () => {
             <ChevronLeft size={14} strokeWidth={1.5} /> 历史
           </button>
 
-          <button
-            type="button"
-            onClick={handleDeleteDay}
-            className="h-8 px-3 rounded-full border border-[#E5E5E0] text-[12px] text-[#D27D67] disabled:opacity-60"
-            data-testid="history-delete-day"
-            aria-label={`删除${dateStr}整天记录`}
-            disabled={interactionDisabled}
-          >
-            {deleting && confirmKind === 'day' ? '删除中...' : '删除整天记录'}
-          </button>
+          <div className="flex items-center gap-2">
+            {isEditMode ? (
+              <button
+                type="button"
+                onClick={handleDeleteDay}
+                className="h-8 px-3 rounded-full border border-[#E5E5E0] text-[12px] text-[#D27D67] disabled:opacity-60"
+                data-testid="history-delete-day"
+                aria-label={`删除${dateStr}整天记录`}
+                disabled={interactionDisabled || hasOpenEditor || confirmOpen}
+              >
+                {deleting && confirmKind === 'day' ? '删除中...' : '删除整天记录'}
+              </button>
+            ) : null}
+
+            <button
+              type="button"
+              data-testid="history-detail-edit-mode-toggle"
+              aria-label="编辑当前日期的历史记录"
+              onClick={() => {
+                if (isEditMode) {
+                  setIsEditMode(false);
+                } else {
+                  setIsEditMode(true);
+                }
+              }}
+              disabled={interactionDisabled || hasOpenEditor || confirmOpen}
+              className="h-8 px-3 rounded-full border border-[#E5E5E0] text-[12px] text-[#2C332F] disabled:opacity-60"
+            >
+              {isEditMode ? '完成' : '编辑'}
+            </button>
+          </div>
         </div>
 
         <div className="min-w-0">
@@ -368,6 +396,12 @@ export const HistoryDetailPage = () => {
             {entry.dateLabel}
           </h1>
         </div>
+
+        {isEditMode ? (
+          <p className="mt-2 text-[12px] text-[#6B8067]">编辑模式已开启，可使用每条记录右上角按钮编辑或删除。</p>
+        ) : (
+          <p className="mt-2 text-[12px] text-[#858C88]">当前为查看模式，点击右上角“编辑”可操作记录。</p>
+        )}
       </header>
 
       {isEmptyDay ? (
@@ -401,7 +435,7 @@ export const HistoryDetailPage = () => {
                   key={item.id}
                   item={item}
                   layout="home-time-left"
-                  readOnly={interactionDisabled}
+                  readOnly={timelineReadOnly}
                   allowMealDelete
                   onAddFood={handleAddFood}
                   onDeleteFood={handleDeleteFood}
