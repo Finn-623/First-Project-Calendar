@@ -200,6 +200,15 @@
   - 证据：frontend/src/store.jsx
   - 说明：事件和训练都支持“手动记录 / 现在开始”；实时记录会以本地时间创建 running 记录，返回首页后可继续显示并点击结束，结束后自动保存结束时间与实际时长；历史日期仅保留手动记录入口。
   - 相关 Commit：821caf71e26214a3379713dfb2be3027771dc823
+- `已完成` 训练编辑字段映射与类型切换修复
+  - 证据：frontend/src/modals/EditActivitySheet.jsx
+  - 证据：frontend/src/pages/TodayPage.jsx
+  - 证据：frontend/src/pages/HistoryDetailPage.jsx
+  - 证据：frontend/src/components/TimelineItem.jsx
+  - 证据：frontend/src/services/timelineService.js
+  - 证据：frontend/src/services/historyService.js
+  - 说明：训练编辑已按字段职责分离 `title / details.name / notes / bodyParts`；running 训练支持无氧与有氧双向切换，切换时备注保持不变，且不重置 `started_at` 与计时状态。
+  - 相关 Commit：934c542d5946ab93ce1bb722a3f2ac4c63603522
 
 ## 4. 部分完成
 

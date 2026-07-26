@@ -74,7 +74,7 @@
 - 未完成事项：等待创建第一次提交后回填 Commit ID。
 - 风险或注意事项：仅调整登录页文案与布局，不改认证逻辑、Supabase 认证、用户名登录函数或其他页面。
 - Git 分支：supabase-v1
-- Git Commit ID：未提交
+- Git Commit ID：934c542d5946ab93ce1bb722a3f2ac4c63603522
 
 ## DEV-20260726-004
 
@@ -1138,4 +1138,83 @@
 - Git Commit ID：821caf71e26214a3379713dfb2be3027771dc823
 - 未完成事项：待有可执行数据库环境时补做 migration 实执行验证；待真实登录态做页面手工回归（开始/结束、刷新恢复、结束本日拦截）。
 - 风险或注意事项：工作区存在未纳入本次提交的无关改动（`frontend/src/components/BottomNav.jsx`、`frontend/src/index.css`），已保持隔离。
+
+## DEV-20260726-030
+
+- 日期：2026-07-26
+- 状态：已完成
+- 修改类型：训练编辑修复
+- 修改模块：训练编辑弹窗、训练记录字段映射、时间轴训练展示、历史归档训练映射
+- 任务目标：修复训练编辑中的备注串值、无氧窗口异常首行字符和进行中训练无法切换类型问题，并保证切换后不重置计时。
+- 备注自动变成“无氧训练”的实际原因：
+	- 训练字段映射混用了 `title` 与备注展示链路：编辑弹窗初始化曾使用 `item.notes || item.detail`，而 `detail` 在训练场景下可能来自业务回退字段，导致备注被非备注字段污染。
+	- 训练创建链路曾把非备注业务描述写入 `notes`（例如训练摘要字符串），导致后续编辑误把系统信息当作备注回显。
+- `title / project_name / notes` 字段区分：
+	- `title`：系统展示标题。无氧固定为“无氧训练”；有氧为项目名称展示值。
+	- `details.name`：有氧项目名称（等价 project_name 业务语义）。
+	- `notes`：仅用户输入备注，不再承载系统标题或训练摘要。
+- 首行异常“1/一”的实际原因：
+	- 备注初始化和展示链路使用了 `detail` 回退值，历史错误数据中的非备注字符可能进入备注框首行显示。
+	- 本次移除训练备注对 `detail`/`name` 的回退后，该异常字符链路被切断。
+- 修复的 JSX 渲染位置：
+	- `frontend/src/components/TimelineItem.jsx`：训练卡片备注改为仅在 `notes` 有值时渲染，移除 `item.detail || '—'` 的训练通用渲染。
+	- `frontend/src/modals/EditActivitySheet.jsx`：备注输入框初始化改为只读取 `item.notes`，并与项目名称/系统标题状态彻底分离。
+- running 训练类型原锁定原因：
+	- 旧实现存在训练类型与名称复用初始化，切换后校验与字段回写不稳定，造成“看似不可切换”与保存后串值。
+- 修改后的类型切换规则：
+	- running 与 completed 训练均允许无氧/有氧双向切换。
+	- 切换仅影响 `item_type`、训练类型相关业务字段与展示标题，不影响备注与开始时间。
+- 无氧转有氧数据处理：
+	- 更新 `item_type = aerobic_training`。
+	- 校验并保存 `details.name`（有氧项目名称，必填）。
+	- 清空 `details.bodyParts`。
+	- `notes` 保持用户输入值。
+- 有氧转无氧数据处理：
+	- 更新 `item_type = anaerobic_training`。
+	- 校验并保存 `details.bodyParts`（至少一个）。
+	- 清空 `details.name`。
+	- `notes` 保持用户输入值。
+- 类型切换时备注保持方式：
+	- `notes` 单独 state 管理，不在类型切换逻辑中调用 `setNote`。
+	- 保存时仅在备注实际变化时 patch `notes` 字段。
+- `started_at` 保持方式：
+	- running 编辑不提交 `started_at/event_time/ended_at`。
+	- 编辑保存使用局部 patch，仅提交变化字段。
+- 编辑保存字段策略：
+	- 使用差异化字段 patch：`item_type`、`title`、`details`、`notes`、及完成态下真实变更的时间字段。
+	- 不创建新记录，只更新原记录。
+- 结束操作如何保留最新训练信息：
+	- 结束接口只更新 `status/ended_at/duration_minutes/updated_at`，不覆盖训练类型、部位、项目名称、备注和 `started_at`。
+- 是否修改数据库结构：否。
+- 是否新增 migration：否。
+- 实际修改文件：
+	- `frontend/src/modals/EditActivitySheet.jsx`
+	- `frontend/src/pages/TodayPage.jsx`
+	- `frontend/src/components/TimelineItem.jsx`
+	- `frontend/src/services/timelineService.js`
+	- `frontend/src/services/historyService.js`
+	- `CHANGELOG.md`
+	- `docs/DEVELOPMENT_LOG.md`
+	- `docs/PROJECT_STATUS.md`
+	- `docs/VERSION_HISTORY.md`
+- 实际执行的测试：
+	- 修改前检查：`git status --short`、`git branch --show-current`
+	- 字段映射与串值路径检索：`grep_search` 检查 `notes/title/detail/name/bodyParts` 相关逻辑
+	- 关键文件语法检查：`get_errors` 检查
+		- `frontend/src/modals/EditActivitySheet.jsx`
+		- `frontend/src/pages/TodayPage.jsx`
+		- `frontend/src/components/TimelineItem.jsx`
+		- `frontend/src/services/timelineService.js`
+		- `frontend/src/services/historyService.js`
+	- 前端构建：`cd frontend && npm run build`
+- 测试结果：
+	- 以上目标文件无语法错误。
+	- 前端构建通过（Compiled successfully）。
+	- 通过静态路径确认：未再发现 `notes <- title/detail` 的训练备注回填逻辑，未再发现训练类型切换触发 `setNote` 的逻辑。
+- 前端构建结果：通过。
+- 当前分支：supabase-v1
+- Git Commit ID：934c542d5946ab93ce1bb722a3f2ac4c63603522
+- 版本状态：本次为本地修复，未正式上传，正式版本号保持 `v0.1.1`。
+- 风险或注意事项：
+	- 当前环境未提供稳定登录态与真实设备联调，本次“运行中切换并结束”的验证以代码路径、静态检查与构建为主；待发布前补充登录态手工回归。
 
