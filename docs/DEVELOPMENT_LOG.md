@@ -1836,3 +1836,36 @@
 - 功能 Commit ID：0c6aae0d432eecde1af06d4e6972a808dac77886
 - 版本状态：本次为本地功能提交，未正式上传，正式版本号保持 `v0.1.1`。
 
+## DEV-20260726-039
+
+- 日期：2026-07-26
+- 状态：已完成
+- 任务目标：先完成设置首页框架、可点击入口、设置子页面壳层与统一返回设置按钮，不在本次引入复杂业务逻辑。
+- 实际完成内容：
+	- 重构设置首页信息架构，按“账号 / 记录 / 账号操作”分组展示入口。
+	- 首页入口统一为整行可点击项，包含图标、标题、副标题与右侧箭头。
+	- 设置首页顶部改为仅显示展示名称；底部版本号统一读取 `APP_VERSION`，并可跳转到版本信息页。
+	- 新增并接入设置子页面壳层：`/settings/version`、`/settings/intake-plan`、`/settings/record-history`、`/settings/record-settings`、`/settings/account-actions`。
+	- 统一设置子页面返回方式：新增复用组件 `SettingsSubpageHeader`，按钮文案“返回设置”，并使用显式 `navigate('/settings')`。
+	- 账户与个人信息页接入统一壳层；旧路由 `/settings/profile` 保持兼容并重定向到 `/settings/personal-info`。
+	- 账号退出操作收敛到“账号操作”子页面，复用既有 `logout` 链路与确认弹窗。
+- 主要修改文件或模块：`frontend/src/pages/SettingsPage.jsx`、`frontend/src/components/settings/SettingsNavigationItem.jsx`、`frontend/src/components/settings/SettingsSubpageHeader.jsx`、`frontend/src/pages/SettingsVersionPage.jsx`、`frontend/src/pages/SettingsIntakePlanPage.jsx`、`frontend/src/pages/SettingsRecordHistoryPage.jsx`、`frontend/src/pages/SettingsRecordSettingsPage.jsx`、`frontend/src/pages/SettingsAccountActionsPage.jsx`、`frontend/src/pages/AccountInfoPage.jsx`、`frontend/src/pages/ProfileInfoPage.jsx`、`frontend/src/App.js`
+- 遇到的问题：当前终端环境缺少 `rg` 命令，无法按预期使用 ripgrep 执行静态检索。
+- 解决方式：改用 `grep` 完成路由、返回按钮、版本来源与退出入口的静态核对。
+- 执行的测试：
+	- `get_errors` 检查设置相关改动文件（路由、页面、组件）。
+	- `cd frontend && npm run build`。
+	- `grep` 静态校验：新路由声明、`aria-label="返回设置"`、`APP_VERSION` 引用、退出账户按钮文本。
+- 测试结果：
+	- 目标文件无语法错误。
+	- 前端构建通过（Compiled successfully）。
+	- 静态校验通过：路由齐全，统一返回按钮与可访问性属性存在，版本号来源统一，账号操作入口与退出按钮存在。
+- 未完成事项：
+	- 本次仅完成框架和壳层，版本页、记录设置页的复杂功能（例如完整日志列表、可编辑设置项）待后续任务补齐。
+	- 受当前会话限制，未执行登录后全链路手工点击回归。
+- 风险或注意事项：
+	- 工作区中存在与本任务无关的已修改文件：`frontend/src/components/BottomNav.jsx`、`frontend/src/index.css`、`frontend/src/pages/HistoryDetailPage.jsx`；本次提交未纳入这些文件。
+	- 本次不修改数据库结构、迁移与后端权限逻辑。
+- 当前分支：supabase-v1
+- Git Commit ID：34ddd64aeaa51c9e0d88fe8123e1ef0c522fca5e
+

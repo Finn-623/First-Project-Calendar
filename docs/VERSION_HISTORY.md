@@ -131,3 +131,8 @@
   - 历史详情切换到其他日期或刷新页面后默认回到查看模式，编辑/删除后继续停留当前日期并保持编辑模式。
   - 本次为本地功能提交，正式版本号保持 `v0.1.1`，待正式上传时再更新发布版本。
   - 相关 Commit ID：0c6aae0d432eecde1af06d4e6972a808dac77886
+  - 设置模块完成导航框架重构：首页按“账号/记录/账号操作”分组展示可点击入口，并统一入口样式（图标/标题/副标题/右侧箭头）。
+  - 新增设置子页面壳层并统一“返回设置”头部组件；补齐 `/settings/personal-info`、`/settings/version`、`/settings/intake-plan`、`/settings/record-history`、`/settings/record-settings`、`/settings/account-actions` 路由，保留旧 `/settings/profile` 兼容跳转。
+  - 设置首页顶部仅显示展示名称；底部版本号统一读取 `APP_VERSION` 并可跳转版本页；账号退出操作收敛到“账号操作”子页并复用既有 `logout` 逻辑。
+  - 本次为本地功能提交，正式版本号保持 `v0.1.1`，待正式上传时再更新发布版本。
+  - 相关 Commit ID：34ddd64aeaa51c9e0d88fe8123e1ef0c522fca5e

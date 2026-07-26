@@ -91,6 +91,10 @@
 - 具体历史日期详情新增页面级“查看/编辑”双模式：默认仅查看，右上角点击“编辑”后进入可操作状态。
 - 历史详情仅在编辑模式显示每条记录右上角编辑/删除入口；点击“完成”后恢复纯查看状态。
 - 编辑或删除记录后继续停留当前历史日期并保持编辑模式；切换到其他历史日期或刷新页面后默认回到查看模式。
+- 重构设置首页框架：按“账号/记录/账号操作”分组提供完整可点击入口，入口统一为整行可点击并显示图标、标题、副标题与右侧箭头。
+- 设置模块新增统一子页面壳层与返回组件，补齐 `/settings/personal-info`、`/settings/version`、`/settings/intake-plan`、`/settings/record-history`、`/settings/record-settings`、`/settings/account-actions` 路由，并保持旧 `/settings/profile` 兼容跳转。
+- 设置首页顶部仅显示展示名称，底部版本号统一读取 `APP_VERSION` 并可点击进入版本信息页；账号退出操作收敛到“账号操作”子页并复用既有 `logout` 链路。
+	- 相关 Commit：34ddd64aeaa51c9e0d88fe8123e1ef0c522fca5e
 
 ## v0.1.1 - 2026-07-26
 

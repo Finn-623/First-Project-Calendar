@@ -256,6 +256,20 @@
   - 证据：frontend/src/components/TimelineItem.jsx
   - 说明：历史详情默认进入查看模式，页面右上角点击“编辑”后进入统一编辑模式并显示记录级操作；点击“完成”恢复查看模式；切换到其他历史日期或刷新页面后默认回到查看模式。
   - 相关 Commit：0c6aae0d432eecde1af06d4e6972a808dac77886
+- `已完成` 设置模块导航框架重构与子页面壳层补齐
+  - 证据：frontend/src/pages/SettingsPage.jsx
+  - 证据：frontend/src/components/settings/SettingsSubpageHeader.jsx
+  - 证据：frontend/src/components/settings/SettingsNavigationItem.jsx
+  - 证据：frontend/src/pages/SettingsVersionPage.jsx
+  - 证据：frontend/src/pages/SettingsIntakePlanPage.jsx
+  - 证据：frontend/src/pages/SettingsRecordHistoryPage.jsx
+  - 证据：frontend/src/pages/SettingsRecordSettingsPage.jsx
+  - 证据：frontend/src/pages/SettingsAccountActionsPage.jsx
+  - 证据：frontend/src/pages/AccountInfoPage.jsx
+  - 证据：frontend/src/pages/ProfileInfoPage.jsx
+  - 证据：frontend/src/App.js
+  - 说明：设置首页按“账号/记录/账号操作”分组展示入口，新增统一“返回设置”头部组件并在全部设置子页面复用；新增版本信息、摄入计划、记录历史、记录设置、账号操作子页面壳层；旧 `/settings/profile` 路由兼容跳转到 `/settings/personal-info`。
+  - 相关 Commit：34ddd64aeaa51c9e0d88fe8123e1ef0c522fca5e
 
 ## 4. 部分完成
 
