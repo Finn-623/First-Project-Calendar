@@ -111,6 +111,10 @@
   - 证据：frontend/src/components/NutritionSummary.jsx
   - 说明：首页两行营养信息保留，移除上方标题、目标提示与火焰图标区域，第一行标签更新为“今日摄入”。
   - 相关 Commit：514d9d5d2a6fc7b16ee462a83368190e28024ac2
+- `已完成` 首页“今日摄入”目标行改为单行文字
+  - 证据：frontend/src/components/NutritionSummary.jsx
+  - 说明：保留“今日摄入”行四个独立小卡片，目标行改为单行普通文字，不再使用独立目标卡片。
+  - 相关 Commit：0b92e3c4f63f0ac7740fd4be78cb063568e7dabb
 
 ## 4. 部分完成
 
