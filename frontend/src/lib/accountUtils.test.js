@@ -74,8 +74,8 @@ describe('accountUtils', () => {
     expect(mapAccountStatusLabel({ account_status: 'pending' }, { id: '1' })).toBe('待确认');
   });
 
-  test('mapPasswordErrorMessage should keep product minimum message even when backend returns another value', () => {
+  test('mapPasswordErrorMessage should reflect backend minimum when provided', () => {
     const msg = mapPasswordErrorMessage({ message: 'Password should be at least 6 characters.' });
-    expect(msg).toBe(`密码至少需要 ${MIN_PASSWORD_LENGTH} 个字符`);
+    expect(msg).toBe('密码至少需要 6 个字符');
   });
 });

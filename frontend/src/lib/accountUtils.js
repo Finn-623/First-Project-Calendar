@@ -87,7 +87,12 @@ export function mapPasswordErrorMessage(error) {
   }
 
   if (normalized.includes('password') && normalized.includes('least')) {
-    return `密码至少需要 ${MIN_PASSWORD_LENGTH} 个字符`;
+    const matched = message.match(/(\d+)/);
+    const backendRequired = matched ? Number(matched[1]) : NaN;
+    const requiredLength = Number.isFinite(backendRequired) && backendRequired > 0
+      ? backendRequired
+      : MIN_PASSWORD_LENGTH;
+    return `密码至少需要 ${requiredLength} 个字符`;
   }
 
   if (normalized.includes('network') || normalized.includes('fetch')) {
