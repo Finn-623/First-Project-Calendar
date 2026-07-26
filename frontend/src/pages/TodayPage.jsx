@@ -6,11 +6,11 @@ import { AddTrainingSheet } from '../modals/AddTrainingSheet';
 import { AddEventSheet } from '../modals/AddEventSheet';
 import { EditTimeSheet } from '../modals/EditTimeSheet';
 import { sumTimelineMacros } from '../mockData';
-import { Plus, Check } from 'lucide-react';
+import { Plus, Check, ChevronLeft, ChevronRight } from 'lucide-react';
 import { toast } from 'sonner';
 import { useStore } from '../store';
 import { timelineService } from '../services/timelineService';
-import { getSydneyDateString } from '../services/historyService';
+import { addDaysToDateString, getSydneyDateString } from '../services/historyService';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -26,6 +26,17 @@ const timeToMinutes = (t) => {
   if (!t) return 24 * 60;
   const [h, m] = t.split(':').map(Number);
   return h * 60 + m;
+};
+
+const WEEKDAY_LABELS = ['一', '二', '三', '四', '五', '六', '日'];
+
+const getWeekDateStrings = (dateStr) => {
+  const [year, month, day] = dateStr.split('-').map(Number);
+  const utcDate = new Date(Date.UTC(year, month - 1, day));
+  const weekday = utcDate.getUTCDay();
+  const mondayOffset = (weekday + 6) % 7;
+  const mondayDateStr = addDaysToDateString(dateStr, -mondayOffset);
+  return Array.from({ length: 7 }, (_, idx) => addDaysToDateString(mondayDateStr, idx));
 };
 
 const AddPickerMenu = ({ onSnack, onAnaerobic, onAerobic, onEvent, testIdPrefix = 'picker' }) => (
@@ -49,7 +60,7 @@ const AddPickerMenu = ({ onSnack, onAnaerobic, onAerobic, onEvent, testIdPrefix 
 );
 
 export const TodayPage = () => {
-  const { timeline, setTimeline, plan, dateLabel, endDay, dayInitialized, currentDate } = useStore();
+  const { timeline, setTimeline, plan, dateLabel, endDay, dayInitialized, currentDate, setSelectedDate } = useStore();
   const [foodSheet, setFoodSheet] = useState({ open: false, target: null });
   const [trainingOpen, setTrainingOpen] = useState(false);
   const [trainingKind, setTrainingKind] = useState('anaerobic');
@@ -68,8 +79,25 @@ export const TodayPage = () => {
   const currentDateStr = useMemo(() => getSydneyDateString(currentDate), [currentDate]);
   const todaySydneyStr = useMemo(() => getSydneyDateString(), []);
   const isAutoAdvancedDay = currentDateStr !== todaySydneyStr;
+  const weekDateStrings = useMemo(() => getWeekDateStrings(currentDateStr), [currentDateStr]);
+  const [currentYear, currentMonth] = currentDateStr.split('-').map(Number);
+  const showBackToToday = currentDateStr !== todaySydneyStr;
 
   const totals = useMemo(() => sumTimelineMacros(timeline), [timeline]);
+
+  const handlePickDate = (dateStr) => {
+    if (dateStr === currentDateStr) return;
+    setSelectedDate(dateStr);
+  };
+
+  const handleShiftWeek = (deltaDays) => {
+    setSelectedDate(addDaysToDateString(currentDateStr, deltaDays));
+  };
+
+  const handleBackToToday = () => {
+    if (!showBackToToday) return;
+    setSelectedDate(todaySydneyStr);
+  };
 
   const handleAddFood = (mealItem) => setFoodSheet({ open: true, target: mealItem });
 
@@ -180,6 +208,73 @@ export const TodayPage = () => {
           </h1>
         </div>
       </header>
+
+      <section className="px-5 mb-4" data-testid="weekly-calendar">
+        <div className="flex items-center justify-between mb-2">
+          <p className="text-[14px] font-medium text-[#2C332F]" data-testid="weekly-calendar-month">
+            {currentYear}年{currentMonth}月
+          </p>
+          <div className="flex items-center gap-1">
+            <button
+              type="button"
+              onClick={() => handleShiftWeek(-7)}
+              className="h-8 w-8 rounded-full border border-[#E5E5E0] bg-white flex items-center justify-center text-[#5E6660]"
+              data-testid="weekly-prev-week"
+              aria-label="上一周"
+            >
+              <ChevronLeft size={15} />
+            </button>
+            <button
+              type="button"
+              onClick={() => handleShiftWeek(7)}
+              className="h-8 w-8 rounded-full border border-[#E5E5E0] bg-white flex items-center justify-center text-[#5E6660]"
+              data-testid="weekly-next-week"
+              aria-label="下一周"
+            >
+              <ChevronRight size={15} />
+            </button>
+            {showBackToToday ? (
+              <button
+                type="button"
+                onClick={handleBackToToday}
+                className="h-8 px-3 rounded-full border border-[#D7E8E0] bg-[#EEF7F2] text-[12px] text-[#2C332F]"
+                data-testid="weekly-back-today"
+              >
+                今天
+              </button>
+            ) : null}
+          </div>
+        </div>
+
+        <div className="grid grid-cols-7 gap-1" data-testid="weekly-days-grid">
+          {weekDateStrings.map((dateStr, idx) => {
+            const dayNum = Number(dateStr.split('-')[2]);
+            const isSelected = dateStr === currentDateStr;
+            const isToday = dateStr === todaySydneyStr;
+
+            return (
+              <button
+                key={dateStr}
+                type="button"
+                onClick={() => handlePickDate(dateStr)}
+                className={`h-14 rounded-xl border text-center flex flex-col items-center justify-center transition-colors ${
+                  isSelected
+                    ? 'bg-[#2C332F] border-[#2C332F] text-white'
+                    : isToday
+                      ? 'bg-white border-[#6B8067] text-[#2C332F]'
+                      : 'bg-white border-[#E5E5E0] text-[#5E6660]'
+                }`}
+                data-testid={`weekly-day-${idx + 1}`}
+                aria-current={isSelected ? 'date' : undefined}
+              >
+                <span className={`text-[10px] ${isSelected ? 'text-white/85' : 'text-[#858C88]'}`}>{WEEKDAY_LABELS[idx]}</span>
+                <span className="font-num text-[14px] leading-tight mt-0.5">{dayNum}</span>
+                {!isSelected && isToday ? <span className="mt-0.5 h-1 w-1 rounded-full bg-[#6B8067]" /> : <span className="mt-0.5 h-1 w-1" />}
+              </button>
+            );
+          })}
+        </div>
+      </section>
 
       <div className="px-5">
         <NutritionSummary totals={totals} plan={plan} layout="splitRows" />

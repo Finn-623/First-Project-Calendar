@@ -19,6 +19,11 @@ const freshTimeline = () => ([
   { id: `m3-${Date.now() + 2}`, type: 'meal', subtype: 'dinner', title: '晚餐', time: '19:00', fixed: true, foods: [] },
 ]);
 
+const cloneTimeline = (items = []) => (items || []).map((item) => ({
+  ...item,
+  foods: Array.isArray(item?.foods) ? item.foods.map((food) => ({ ...food })) : [],
+}));
+
 const normalizePlan = (target) => {
   if (!target) return null;
 
@@ -72,6 +77,7 @@ export const StoreProvider = ({ children, user: initialUser, session: initialSes
   const selectedTodayDateRef = useRef(getSydneyDateString());
   const midnightTimerRef = useRef(null);
   const initializationRequestRef = useRef(0);
+  const timelineCacheRef = useRef(new Map());
 
   const wait = useCallback((ms) => new Promise((resolve) => setTimeout(resolve, ms)), []);
 
@@ -507,6 +513,32 @@ export const StoreProvider = ({ children, user: initialUser, session: initialSes
     scheduleMidnightSync(userId);
   }, [initializeSelectedDate, loadDayData, loadPublicFoods, scheduleMidnightSync]);
 
+  const resolveTimelineForDate = useCallback((dateStr) => {
+    const cached = timelineCacheRef.current.get(dateStr);
+    if (cached) {
+      return cloneTimeline(cached);
+    }
+
+    const entry = history.find((item) => item.dateStr === dateStr);
+    if (entry?.timeline?.length) {
+      timelineCacheRef.current.set(dateStr, cloneTimeline(entry.timeline));
+      return cloneTimeline(entry.timeline);
+    }
+
+    return freshTimeline();
+  }, [history]);
+
+  const setSelectedDate = useCallback((nextDate) => {
+    const nextDateStr = typeof nextDate === 'string' ? nextDate : getSydneyDateString(nextDate);
+    if (!nextDateStr) return;
+
+    const activeDateStr = getSydneyDateString(currentDate);
+    timelineCacheRef.current.set(activeDateStr, cloneTimeline(timeline));
+
+    setCurrentDate(createDateFromString(nextDateStr));
+    setTimeline(resolveTimelineForDate(nextDateStr));
+  }, [currentDate, resolveTimelineForDate, timeline]);
+
   const requireAdmin = useCallback(() => {
     if (!user?.id) {
       return { success: false, error: '请先登录' };
@@ -772,6 +804,11 @@ export const StoreProvider = ({ children, user: initialUser, session: initialSes
       .catch((err) => ({ success: false, error: err }));
   }, [currentDate, loadHistory, timeline, user?.id]);
 
+  useEffect(() => {
+    const dateKey = getSydneyDateString(currentDate);
+    timelineCacheRef.current.set(dateKey, cloneTimeline(timeline));
+  }, [currentDate, timeline]);
+
   const value = {
     user,
     session,
@@ -795,6 +832,7 @@ export const StoreProvider = ({ children, user: initialUser, session: initialSes
     deletePlan,
 
     currentDate,
+    setSelectedDate,
     dateLabel: formatDateLabel(currentDate),
     timeline,
     setTimeline,
