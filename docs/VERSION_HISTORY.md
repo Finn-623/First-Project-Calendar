@@ -57,4 +57,4 @@
   - 保持当前正式版本号为 `v0.1.1`，未新增 `v0.1.2`。
   - 相关 Commit ID：ed54314cfcf407addf000c101cdc28155c6b9cbd
   - 登录性能诊断与优化（减少重复请求与重复 profile 加载，增加开发环境阶段计时）。
-  - 相关 Commit ID：待回填
+  - 相关 Commit ID：ef9df7c9c77e0cb4c587faf699fec8fa0dd01533

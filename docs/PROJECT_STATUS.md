@@ -89,6 +89,7 @@
   - 证据：frontend/src/services/authService.js
   - 证据：frontend/src/App.js
   - 说明：登录性能已完成诊断和优化，具体结果见 DEVELOPMENT_LOG。
+  - 相关 Commit：ef9df7c9c77e0cb4c587faf699fec8fa0dd01533
 
 ## 4. 部分完成
 

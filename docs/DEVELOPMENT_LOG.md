@@ -158,7 +158,7 @@
 - 测试方式：浏览器本地开发环境 + 自动化页面脚本；未使用真实手机。
 - 构建结果：通过（`cd frontend && npm run build`）。
 - 当前分支：supabase-v1
-- Git Commit ID：未提交
+- Git Commit ID：ef9df7c9c77e0cb4c587faf699fec8fa0dd01533
 
 ## DEV-20260726-002
 
