@@ -7,40 +7,82 @@ import { Dumbbell, Footprints } from 'lucide-react';
 export const AddTrainingSheet = ({ open, onOpenChange, onConfirm, initialKind = 'anaerobic' }) => {
   const [tab, setTab] = useState(initialKind);
   const [name, setName] = useState('');
-  const [duration, setDuration] = useState(45);
+  const [durationInput, setDurationInput] = useState('');
   const [time, setTime] = useState('18:00');
   const [submitting, setSubmitting] = useState(false);
+  const [durationError, setDurationError] = useState('');
 
   useEffect(() => {
     if (!open) {
       setTab(initialKind);
       setName('');
-      setDuration(45);
+      setDurationInput('');
       setTime('18:00');
       setSubmitting(false);
+      setDurationError('');
     } else {
       setTab(initialKind);
     }
   }, [open, initialKind]);
 
+  const parsedDuration = Number(durationInput.trim());
+  const durationForEstimate = Number.isFinite(parsedDuration) && parsedDuration > 0 ? parsedDuration : 0;
+
   const estimate = tab === 'anaerobic'
-    ? Math.round(duration * 6.2)
-    : Math.round(duration * 9.5);
+    ? Math.round(durationForEstimate * 6.2)
+    : Math.round(durationForEstimate * 9.5);
+
+  const normalizeDurationOnBlur = () => {
+    const normalizedInput = durationInput.trim();
+    if (!normalizedInput) return;
+
+    if (/^\d+$/.test(normalizedInput)) {
+      setDurationInput(String(Number(normalizedInput)));
+    }
+  };
 
   const handleConfirm = async () => {
     if (submitting) return;
+
+    const normalizedInput = durationInput.trim();
+
+    if (!normalizedInput) {
+      setDurationError('请输入训练时长');
+      return;
+    }
+
+    if (!/^\d+$/.test(normalizedInput)) {
+      setDurationError('请输入有效的训练时长');
+      return;
+    }
+
+    const duration = Number(normalizedInput);
+
+    if (!Number.isFinite(duration)) {
+      setDurationError('请输入有效的训练时长');
+      return;
+    }
+
+    if (duration <= 0) {
+      setDurationError('训练时长必须大于 0 分钟');
+      return;
+    }
+
+    const normalizedDuration = String(duration);
 
     const payload = {
       id: `t${Date.now()}`,
       type: tab,
       title: tab === 'anaerobic' ? '无氧训练' : '有氧训练',
       time,
-      detail: `${name || (tab === 'anaerobic' ? '力量训练' : '有氧运动')} · ${duration} 分钟`,
+      detail: `${name || (tab === 'anaerobic' ? '力量训练' : '有氧运动')} · ${normalizedDuration} 分钟`,
       caloriesBurned: estimate,
     };
 
     try {
       setSubmitting(true);
+      setDurationError('');
+      setDurationInput(normalizedDuration);
       await Promise.resolve(onConfirm(payload));
       onOpenChange(false);
     } finally {
@@ -112,12 +154,24 @@ export const AddTrainingSheet = ({ open, onOpenChange, onConfirm, initialKind = 
                 <Input
                   type="number"
                   inputMode="numeric"
-                  value={duration}
-                  onChange={(e) => setDuration(Number(e.target.value) || 0)}
+                  min="1"
+                  step="1"
+                  value={durationInput}
+                  onBlur={normalizeDurationOnBlur}
+                  onChange={(e) => {
+                    setDurationInput(e.target.value);
+                    if (durationError) {
+                      setDurationError('');
+                    }
+                  }}
+                  placeholder="分钟"
                   className="mt-1.5 h-11 bg-white border-[#E5E5E0] rounded-xl font-num text-base"
                   data-testid="training-duration-input"
                   disabled={submitting}
                 />
+                {durationError ? (
+                  <p className="mt-1 text-[12px] text-[#D27D67]">{durationError}</p>
+                ) : null}
               </div>
             </div>
 
