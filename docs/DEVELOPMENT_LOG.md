@@ -127,6 +127,39 @@
 - 当前分支：supabase-v1
 - Git Commit ID：ed54314cfcf407addf000c101cdc28155c6b9cbd
 
+## DEV-20260726-007
+
+- 日期：2026-07-26
+- 状态：已完成
+- 模块：认证 / 登录性能
+- 修改前问题：登录等待时间长，用户无法判断耗时发生在哪个阶段；重复触发提交会增加不必要请求风险。
+- 登录流程结构：登录页提交 -> `authService.signInWithUsername` -> `username-login` 函数 -> `supabase.auth.setSession` -> App 认证状态更新 -> 路由进入登录后页面。
+- 各阶段修改前耗时（实测）：
+	- `username-login` 首次请求（错误密码）：3197.9ms
+	- `username-login` 再次请求（错误密码）：1341.9ms
+- 确认的主要瓶颈：`username-login` 首次调用明显慢于再次调用，存在冷启动/首调开销特征；前端存在登录成功路径重复触发 profile 查询的结构性开销风险。
+- 实际解决方案：
+	- 增加开发环境登录阶段计时（T0/T1/T2/T5/T6/T7/T8），输出无敏感信息摘要。
+	- 增加代码级重复提交保护（`submitGuardRef`），避免并发重复认证请求。
+	- 增加登录请求超时保护与可重试提示，避免长时间无反馈。
+	- 去除登录成功后与 Auth 监听器重复触发的 profile 加载（保留单次加载并加并发去重）。
+- 各阶段修改后耗时（实测）：
+	- `username-login` 首次请求（错误密码）：4192.1ms
+	- `username-login` 再次请求（错误密码）：1766.0ms
+	- 前端阶段（错误密码，第1次）：用户名识别耗时 1179.8ms，总耗时 1180.2ms
+	- 前端阶段（错误密码，第2次）：用户名识别耗时 893.1ms，总耗时 893.3ms
+- 总耗时变化：在错误密码样本中，前端可观测阶段总耗时主要受远端 `username-login` 请求影响；本次前端优化侧重去重复请求、避免重复 profile 加载和改善等待体验。
+- 首次登录与再次登录差异：首次请求明显慢于再次请求（远端首调成本更高）。
+- 是否修改 Edge Function：否。
+- 是否修改 Profile 查询：是（前端去重与并发保护，避免登录成功路径重复加载）。
+- 是否调整登录后数据加载：是（移除登录成功回调中的重复 profile 加载，保留监听器单路径加载）。
+- 实际修改文件：`frontend/src/lib/loginPerf.js`、`frontend/src/pages/LoginPage.jsx`、`frontend/src/services/authService.js`、`frontend/src/App.js`、`CHANGELOG.md`、`docs/DEVELOPMENT_LOG.md`、`docs/PROJECT_STATUS.md`、`docs/VERSION_HISTORY.md`
+- 实际测试范围：登录失败链路耗时采样、连续提交防重、错误后按钮恢复、构建验证、控制台与网络重复请求观察。
+- 测试方式：浏览器本地开发环境 + 自动化页面脚本；未使用真实手机。
+- 构建结果：通过（`cd frontend && npm run build`）。
+- 当前分支：supabase-v1
+- Git Commit ID：未提交
+
 ## DEV-20260726-002
 
 - 日期：2026-07-26

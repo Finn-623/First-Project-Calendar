@@ -4,12 +4,15 @@
  */
 
 import { supabase } from '../lib/supabaseClient';
+import { updateLoginPerfMeta } from '../lib/loginPerf';
 
 const USERNAME_REGEX = /^[a-z0-9_]{3,30}$/;
 const INVALID_CREDENTIALS_MESSAGE = '用户名或密码错误';
 const SERVICE_UNAVAILABLE_MESSAGE = '登录服务暂时不可用，请稍后重试';
 const USERNAME_FORMAT_MESSAGE = '用户名只能包含3至30位小写字母、数字或下划线。';
+const SLOW_REQUEST_MESSAGE = '登录请求时间较长，请检查网络后重试。';
 const USERNAME_LOGIN_PATH = '/functions/v1/username-login';
+const LOGIN_REQUEST_TIMEOUT_MS = 12_000;
 
 function isTransientErrorMessage(message) {
   if (!message) return false;
@@ -18,6 +21,20 @@ function isTransientErrorMessage(message) {
 
 function wait(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+async function fetchWithTimeout(endpoint, options, timeoutMs) {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+  try {
+    const response = await fetch(endpoint, {
+      ...options,
+      signal: controller.signal,
+    });
+    return response;
+  } finally {
+    clearTimeout(timeoutId);
+  }
 }
 
 function normalizeUsername(username) {
@@ -79,15 +96,18 @@ export const authService = {
 
       let response;
       try {
-        response = await fetch(endpoint, requestOptions);
-      } catch {
+        response = await fetchWithTimeout(endpoint, requestOptions, LOGIN_REQUEST_TIMEOUT_MS);
+      } catch (err) {
+        if (err?.name === 'AbortError') {
+          return { user: null, session: null, error: new Error(SLOW_REQUEST_MESSAGE) };
+        }
         await wait(150);
-        response = await fetch(endpoint, requestOptions);
+        response = await fetchWithTimeout(endpoint, requestOptions, LOGIN_REQUEST_TIMEOUT_MS);
       }
 
       if (response.status >= 500) {
         await wait(150);
-        response = await fetch(endpoint, requestOptions);
+        response = await fetchWithTimeout(endpoint, requestOptions, LOGIN_REQUEST_TIMEOUT_MS);
       }
 
       if (!response.ok) {
@@ -107,12 +127,21 @@ export const authService = {
         return { user: null, session: null, error: new Error(SERVICE_UNAVAILABLE_MESSAGE) };
       }
 
+      if (data?._perf && typeof data._perf === 'object') {
+        updateLoginPerfMeta({
+          usernameFunctionMs: Number(data._perf.username_function_ms) || null,
+          passwordAuthMs: Number(data._perf.password_auth_ms) || null,
+          profileResolveMs: Number(data._perf.profile_resolve_ms) || null,
+        });
+      }
+
       const accessToken = data?.access_token;
       const refreshToken = data?.refresh_token;
       if (!accessToken || !refreshToken) {
         return { user: null, session: null, error: new Error(SERVICE_UNAVAILABLE_MESSAGE) };
       }
 
+      const setSessionStartedAt = performance.now();
       let { data: sessionData, error: setSessionError } = await supabase.auth.setSession({
         access_token: accessToken,
         refresh_token: refreshToken,
@@ -131,6 +160,7 @@ export const authService = {
       if (setSessionError) {
         return { user: null, session: null, error: setSessionError };
       }
+      updateLoginPerfMeta({ setSessionMs: performance.now() - setSessionStartedAt });
 
       const session = sessionData?.session;
       const user = sessionData?.user || session?.user;
@@ -141,6 +171,9 @@ export const authService = {
 
       return { user, session, error: null };
     } catch (err) {
+      if (err?.name === 'AbortError') {
+        return { user: null, session: null, error: new Error(SLOW_REQUEST_MESSAGE) };
+      }
       return { user: null, session: null, error: new Error(SERVICE_UNAVAILABLE_MESSAGE) };
     }
   },

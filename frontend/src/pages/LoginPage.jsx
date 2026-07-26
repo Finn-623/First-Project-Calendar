@@ -1,11 +1,13 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { LogIn } from 'lucide-react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { authService } from '../services/authService';
 import { APP_VERSION } from '../config/appVersion';
+import { finalizeLoginPerfAttempt, markLoginPerf, startLoginPerfAttempt, updateLoginPerfMeta } from '../lib/loginPerf';
 const INVALID_CREDENTIALS_MESSAGE = '用户名或密码错误';
 const SERVICE_UNAVAILABLE_MESSAGE = '登录服务暂时不可用，请稍后重试';
+const SLOW_REQUEST_MESSAGE = '登录请求时间较长，请检查网络后重试。';
 const USERNAME_FORMAT_MESSAGE = '用户名只能包含3至30位小写字母、数字或下划线。';
 
 export const LoginPage = ({ onLoginSuccess }) => {
@@ -15,55 +17,78 @@ export const LoginPage = ({ onLoginSuccess }) => {
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [submitError, setSubmitError] = useState('');
+  const submitGuardRef = useRef(false);
   const isSwitchingAccount = location.state?.switchingAccount === true;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (isLoading || submitGuardRef.current) {
+      return;
+    }
+
+    submitGuardRef.current = true;
+    startLoginPerfAttempt();
     setSubmitError('');
 
     const trimmedUsername = username.trim();
     const normalizedUsername = trimmedUsername.toLowerCase();
+    updateLoginPerfMeta({ usernameLength: normalizedUsername.length });
 
     if (!trimmedUsername || !password) {
       toast.error('请输入用户名和密码');
       setSubmitError('请输入用户名和密码');
+      finalizeLoginPerfAttempt('validation_failed');
+      submitGuardRef.current = false;
       return;
     }
 
     if (!/^[a-zA-Z0-9_]{3,30}$/.test(trimmedUsername)) {
       toast.error(USERNAME_FORMAT_MESSAGE);
       setSubmitError(USERNAME_FORMAT_MESSAGE);
+      finalizeLoginPerfAttempt('validation_failed');
+      submitGuardRef.current = false;
       return;
     }
 
-    setIsLoading(true);
-    const { user, session, error } = await authService.signInWithUsername(normalizedUsername, password);
+    try {
+      setIsLoading(true);
+      markLoginPerf('T1');
+      const { user, session, error } = await authService.signInWithUsername(normalizedUsername, password);
+      markLoginPerf('T2');
 
-    if (error) {
-      if (error.message === USERNAME_FORMAT_MESSAGE || error.message === '用户名格式不正确') {
-        toast.error(USERNAME_FORMAT_MESSAGE);
-        setSubmitError(USERNAME_FORMAT_MESSAGE);
-      } else if (error.message === INVALID_CREDENTIALS_MESSAGE) {
+      if (error) {
+        if (error.message === USERNAME_FORMAT_MESSAGE || error.message === '用户名格式不正确') {
+          toast.error(USERNAME_FORMAT_MESSAGE);
+          setSubmitError(USERNAME_FORMAT_MESSAGE);
+        } else if (error.message === INVALID_CREDENTIALS_MESSAGE) {
+          toast.error(INVALID_CREDENTIALS_MESSAGE);
+          setSubmitError(INVALID_CREDENTIALS_MESSAGE);
+        } else if (error.message === SLOW_REQUEST_MESSAGE) {
+          toast.error(SLOW_REQUEST_MESSAGE);
+          setSubmitError(SLOW_REQUEST_MESSAGE);
+        } else {
+          toast.error(SERVICE_UNAVAILABLE_MESSAGE);
+          setSubmitError(SERVICE_UNAVAILABLE_MESSAGE);
+        }
+        finalizeLoginPerfAttempt('auth_failed');
+        return;
+      }
+
+      if (user && session) {
+        markLoginPerf('T7');
+        toast.success('欢迎回来');
+        setSubmitError('');
+        onLoginSuccess(user, session);
+        navigate('/', { replace: true });
+      } else {
         toast.error(INVALID_CREDENTIALS_MESSAGE);
         setSubmitError(INVALID_CREDENTIALS_MESSAGE);
-      } else {
-        toast.error(SERVICE_UNAVAILABLE_MESSAGE);
-        setSubmitError(SERVICE_UNAVAILABLE_MESSAGE);
+        finalizeLoginPerfAttempt('auth_failed');
       }
+    } finally {
       setIsLoading(false);
-      return;
-    }
-
-    if (user && session) {
-      toast.success('欢迎回来');
-      setIsLoading(false);
-      setSubmitError('');
-      onLoginSuccess(user, session);
-      navigate('/', { replace: true });
-    } else {
-      toast.error(INVALID_CREDENTIALS_MESSAGE);
-      setSubmitError(INVALID_CREDENTIALS_MESSAGE);
-      setIsLoading(false);
+      submitGuardRef.current = false;
     }
   };
 

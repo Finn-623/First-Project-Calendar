@@ -84,6 +84,11 @@
   - 证据：frontend/src/pages/LoginPage.jsx
   - 说明：将登录页账号与密码输入框在移动端字体提升到 16px，避免焦点触发页面自动放大。
   - 相关 Commit：ed54314cfcf407addf000c101cdc28155c6b9cbd
+- `已完成` 登录性能诊断与定向优化
+  - 证据：frontend/src/lib/loginPerf.js
+  - 证据：frontend/src/services/authService.js
+  - 证据：frontend/src/App.js
+  - 说明：登录性能已完成诊断和优化，具体结果见 DEVELOPMENT_LOG。
 
 ## 4. 部分完成
 

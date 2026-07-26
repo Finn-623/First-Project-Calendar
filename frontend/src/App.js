@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef, useCallback } from 'react';
 import '@/App.css';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { Toaster } from 'sonner';
 import { BottomNav } from './components/BottomNav';
 import { TodayPage } from './pages/TodayPage';
@@ -12,6 +12,21 @@ import { LoginPage } from './pages/LoginPage';
 import { StoreProvider } from './store';
 import { supabase, isSupabaseConfigured } from './lib/supabaseClient';
 import { registerAuthListener, unregisterAuthListener } from './lib/authState';
+import { finalizeLoginPerfAttempt, getActiveLoginPerfTrace, markLoginPerf } from './lib/loginPerf';
+
+function LoginPerfRouteProbe({ isAuthenticated }) {
+  const location = useLocation();
+
+  useEffect(() => {
+    if (!isAuthenticated || location.pathname === '/login') return;
+    const activeTrace = getActiveLoginPerfTrace();
+    if (!activeTrace || activeTrace.finalized) return;
+    markLoginPerf('T8', { authenticatedPath: location.pathname });
+    finalizeLoginPerfAttempt('success');
+  }, [isAuthenticated, location.pathname]);
+
+  return null;
+}
 
 /**
  * Configuration Error Page
@@ -52,6 +67,7 @@ function App() {
   const [isLoading, setIsLoading] = useState(true);
   const [authInitError, setAuthInitError] = useState(null);
   const mountedRef = useRef(true);
+  const profileLoadRef = useRef({ userId: null, promise: null });
 
   const fetchLegacyAdminFlag = useCallback(async (userId) => {
     if (!userId || !supabase) return false;
@@ -80,37 +96,55 @@ function App() {
   const loadUserProfile = useCallback(async (userId) => {
     if (!userId || !mountedRef.current || !supabase) return;
 
-    try {
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', userId)
-        .maybeSingle();
+    if (profileLoadRef.current.userId === userId && profileLoadRef.current.promise) {
+      return profileLoadRef.current.promise;
+    }
 
-      if (!mountedRef.current) return;
+    const profilePromise = (async () => {
+      markLoginPerf('T5', { profileUserId: userId });
 
-      if (error) {
-        console.error('Failed to load profile:', error);
-        setProfile(null);
-        return;
+      try {
+        const { data, error } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', userId)
+          .maybeSingle();
+
+        if (!mountedRef.current) return;
+
+        if (error) {
+          console.error('Failed to load profile:', error);
+          setProfile(null);
+          return;
+        }
+
+        const role = String(data?.role || '').toLowerCase();
+        const accountType = String(data?.account_type || '').toLowerCase();
+        const roleBasedAdmin = role === 'admin' || accountType === 'admin' || data?.is_admin === true;
+        const legacyAdmin = roleBasedAdmin ? false : await fetchLegacyAdminFlag(userId);
+        const computedRole = roleBasedAdmin || legacyAdmin ? 'admin' : 'user';
+
+        setProfile({
+          ...(data || {}),
+          role: computedRole,
+          is_admin: computedRole === 'admin',
+        });
+      } catch (err) {
+        console.error('Error loading profile:', err);
+        if (mountedRef.current) {
+          setProfile(null);
+        }
+      } finally {
+        markLoginPerf('T6');
       }
+    })();
 
-      const role = String(data?.role || '').toLowerCase();
-      const accountType = String(data?.account_type || '').toLowerCase();
-      const legacyAdmin = await fetchLegacyAdminFlag(userId);
-      const computedRole = role === 'admin' || accountType === 'admin' || data?.is_admin === true || legacyAdmin
-        ? 'admin'
-        : 'user';
-
-      setProfile({
-        ...(data || {}),
-        role: computedRole,
-        is_admin: computedRole === 'admin',
-      });
-    } catch (err) {
-      console.error('Error loading profile:', err);
-      if (mountedRef.current) {
-        setProfile(null);
+    profileLoadRef.current = { userId, promise: profilePromise };
+    try {
+      return await profilePromise;
+    } finally {
+      if (profileLoadRef.current.userId === userId) {
+        profileLoadRef.current = { userId: null, promise: null };
       }
     }
   }, [fetchLegacyAdminFlag]);
@@ -160,6 +194,7 @@ function App() {
           if (newSession?.user) {
             setSession(newSession);
             setUser(newSession.user);
+            markLoginPerf('T7', { authEvent: event });
             // Load profile asynchronously
             loadUserProfile(newSession.user.id).catch(console.error);
           } else {
@@ -199,8 +234,7 @@ function App() {
     if (!mountedRef.current) return;
     setUser(loggedInUser);
     setSession(loggedInSession);
-    // Load profile after login
-    loadUserProfile(loggedInUser.id).catch(console.error);
+    markLoginPerf('T7', { authEvent: 'LOGIN_SUBMIT_SUCCESS' });
   };
 
   const isAuthenticated = Boolean(user && session);
@@ -239,6 +273,7 @@ function App() {
   return (
     <div className="App">
       <BrowserRouter>
+        <LoginPerfRouteProbe isAuthenticated={isAuthenticated} />
         {isAuthenticated ? (
           <StoreProvider user={user} session={session} profile={profile}>
             <div className="app-shell">
