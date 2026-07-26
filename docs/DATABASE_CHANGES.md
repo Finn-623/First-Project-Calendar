@@ -1,0 +1,29 @@
+## DB-20260726-001
+
+- 日期：2026-07-26
+- 修改原因：支持设置-个人信息模块保存性别、生日、身高、体重。
+- 实际修改内容：新增 migration `014_personal_info_profile_fields.sql`，为 `public.profiles` 增加字段与约束。
+- 涉及的表和字段：
+	- `public.profiles.gender` (TEXT, nullable)
+	- `public.profiles.birth_date` (DATE, nullable)
+	- `public.profiles.height_cm` (NUMERIC, nullable)
+	- `public.profiles.weight_kg` (NUMERIC, nullable)
+- 新增约束：
+	- `profiles_gender_allowed_check`
+	- `profiles_birth_date_not_future_check`
+	- `profiles_height_cm_range_check`
+	- `profiles_weight_kg_range_check`
+- Migration 文件路径：`supabase/migrations/014_personal_info_profile_fields.sql`
+- 对现有数据的影响：
+	- 仅新增可空字段和约束，不回填旧数据；历史数据不受破坏。
+- 风险：
+	- 未在当前会话连接的在线数据库实际执行 migration，约束生效与兼容性需上线前联调确认。
+- 回滚方式：
+	- 创建反向 migration，删除上述约束与新增字段。
+- 测试内容：
+	- 前端单元测试：`cd frontend && CI=true npm test -- --watch=false --runInBand src/lib/personalInfoUtils.test.js src/lib/accountUtils.test.js`
+	- 前端构建：`cd frontend && npm run build`
+- 测试结果：
+	- 2 个测试套件通过，21 个测试通过；前端构建通过。
+- 相关 DEV 编号：`DEV-20260726-046`
+- 相关 Commit ID：`0862f8442aa5dacc3b04a4f7b6d0c10648963fd8`

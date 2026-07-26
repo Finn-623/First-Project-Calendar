@@ -1,3 +1,39 @@
+## DEV-20260726-046
+
+- 日期：2026-07-26
+- 状态：已完成
+- 修改类型：功能新增 / 设置-个人信息（身体信息）
+- 修改模块：设置首页入口文案、个人信息页、全局状态管理、个人信息校验工具、Supabase migration
+- 任务目标：独立完成“个人信息（身体信息）模块”改造，支持性别/生日/身高/体重编辑与保存，并保证仅更新允许字段。
+- 实际完成内容：
+	- 设置首页“个人信息”入口副标题更新为“管理用于计划与数据计算的个人身体信息”。
+	- `ProfileInfoPage` 从只读改为“查看/编辑”双模式，支持字段：性别、生日、身高、体重。
+	- 新增前端校验：生日不可晚于今天；身高 50-250；体重 20-500；数值最多 1 位小数；空值保存为 `null`。
+	- 新增 `personalInfoUtils` 工具与单元测试，统一处理字段映射、校验、payload 生成、错误文案映射与年龄计算。
+	- `store` 新增 `updatePersonalInfo` 专用方法，强制白名单字段仅允许：`gender`、`birth_date`、`height_cm`、`weight_kg`。
+	- 新增 migration：为 `profiles` 增加 `gender`、`birth_date`、`height_cm`、`weight_kg` 字段与基础约束。
+- 主要修改文件或模块：
+	- `frontend/src/pages/SettingsPage.jsx`
+	- `frontend/src/pages/ProfileInfoPage.jsx`
+	- `frontend/src/store.jsx`
+	- `frontend/src/lib/personalInfoUtils.js`
+	- `frontend/src/lib/personalInfoUtils.test.js`
+	- `supabase/migrations/014_personal_info_profile_fields.sql`
+- 遇到的问题：当前迁移历史中 `profiles` 尚无身体信息字段，直接保存会失败。
+- 解决方式：新增独立 migration 并补齐数据库约束，前端同步使用新字段（保留对旧字段兼容读取）。
+- 执行的测试：
+	- `cd frontend && CI=true npm test -- --watch=false --runInBand src/lib/personalInfoUtils.test.js src/lib/accountUtils.test.js`
+	- `cd frontend && npm run build`
+- 测试结果：
+	- 2 个测试套件通过，21 个测试全部通过。
+	- 前端构建通过（Compiled successfully）。
+- 未完成事项：
+	- 本次未执行在线数据库迁移与真实登录态端到端回归，需在可用 Supabase 环境中执行 migration 并做联调验证。
+- 风险或注意事项：
+	- 工作区存在未纳入本次任务提交的无关改动（`frontend/src/components/BottomNav.jsx`、`frontend/src/components/settings/SettingsNavigationItem.jsx`、`frontend/src/index.css`、`frontend/src/pages/HistoryDetailPage.jsx`），本次已保持隔离。
+- 当前分支：supabase-v1
+- Git Commit ID：0862f8460f4d2122fc40789f00fd86349c27e867
+
 ## DEV-20260726-001
 
 - 日期：2026-07-26

@@ -1,3 +1,19 @@
+## 设置个人信息（身体信息）模块改造
+
+- 日期：2026-07-26
+- 类型：Feature / Settings
+- 状态：已完成（本地，待数据库环境执行 migration）
+- 内容：
+  - 设置首页“个人信息”入口副标题更新为“管理用于计划与数据计算的个人身体信息”。
+  - 个人信息页改为查看/编辑双模式，支持性别、生日、身高、体重编辑。
+  - 新增前端输入校验与错误映射，保存时仅提交白名单字段。
+  - 新增 `profiles` 身体信息字段 migration 与基础约束。
+- 代码功能变更：个人信息模块（设置页入口、个人信息页、store、校验工具）
+- 数据库变更：新增 `profiles.gender`、`profiles.birth_date`、`profiles.height_cm`、`profiles.weight_kg`
+- 部署变更：无
+- Git 分支：supabase-v1
+- Commit ID：0862f8442aa5dacc3b04a4f7b6d0c10648963fd8
+
 ## 文档与Roadmap初始化
 
 - 日期：2026-07-26

@@ -290,13 +290,15 @@
 - `部分完成` V0.6 饮食计划
   - 原因：计划CRUD与历史存在，但“四项填三算一、训练日/休息日计划、每餐目标分配”未见完整实现。
   - 证据：frontend/src/pages/PlanPage.jsx, frontend/src/services/targetService.js
+- `部分完成` V0.5 身体记录（个人信息基础层）
+  - 原因：已支持性别、生日、身高、体重的查看与编辑保存，但体重趋势、围度记录、阶段性对比与统计仍未实现。
+  - 证据：frontend/src/pages/ProfileInfoPage.jsx, frontend/src/lib/personalInfoUtils.js, frontend/src/store.jsx
+  - 证据：supabase/migrations/014_personal_info_profile_fields.sql
 
 ## 5. 尚未开始
 
 以下在仓库中未找到可确认实现（非仅文件名判断）：
 
-- `尚未开始` V0.5 身体记录（体重/围度长期记录与对比）
-  - 证据：frontend/src/pages 仅含 Login/Today/History/HistoryDetail/FoodLibrary/Plan
 - `尚未开始` V0.7 模板与快速复用
 - `尚未开始` V0.8 周饮食计划
 - `尚未开始` V0.9 规则驱动自动生成
@@ -437,3 +439,4 @@ V0.1当前计分（本次审查）：
 - 邮箱修改：暂不支持
 - 用户角色修改：仅管理员权限体系控制
 - 账号状态修改：仅管理员权限体系控制
+- 个人信息（身体信息）基础编辑：已完成（性别 / 生日 / 身高 / 体重）
