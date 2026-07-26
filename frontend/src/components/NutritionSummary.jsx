@@ -66,19 +66,25 @@ export const NutritionSummary = ({ totals, plan, layout = 'default' }) => {
   if (layout === 'splitRows') {
     return (
       <section className="rounded-3xl bg-[#EFF2ED] border border-[#E1E6DE] p-4" data-testid="nutrition-summary">
-        <div className="grid grid-cols-[3.8rem_repeat(4,minmax(0,1fr))] gap-1.5 items-stretch" data-testid="sum-single-row">
+        <div className="grid grid-cols-[3.8rem_repeat(4,minmax(0,1fr))] gap-1.5 items-stretch" data-testid="sum-current-row">
           <div className="text-[11px] text-[#5E6660] font-medium flex items-center justify-start pl-0.5">今日摄入</div>
           {nutrientFields.map((field) => (
             <div key={field.key} className="rounded-xl bg-white border border-[#E5E5E0] px-1.5 py-2 text-center">
               <div className="text-[10px] leading-tight text-[#858C88]">{field.label}</div>
               <div className="mt-1 text-[12px] leading-none text-[#2C332F] font-num whitespace-nowrap">
                 <span data-testid={field.key === 'calories' ? 'sum-cal' : `sum-current-${field.key}`}>{field.currentValue}</span>
-                <span className="text-[#858C88]"> / </span>
-                <span data-testid={`sum-target-${field.key}`}>{field.targetValue}</span>
                 <span className="text-[10px] text-[#858C88] font-normal"> {field.unit}</span>
               </div>
             </div>
           ))}
+        </div>
+
+        <div className="mt-2 grid grid-cols-[3.8rem_repeat(4,minmax(0,1fr))] items-center gap-1 text-[10.5px] text-[#5E6660]" data-testid="sum-target-row">
+          <span className="font-medium pl-0.5 whitespace-nowrap">目标</span>
+          <span className="whitespace-nowrap">热量 <span className="font-num" data-testid="sum-target-calories">{nutrientFields[0].targetValue}</span> kcal</span>
+          <span className="whitespace-nowrap">蛋白 <span className="font-num" data-testid="sum-target-protein">{nutrientFields[1].targetValue}</span> g</span>
+          <span className="whitespace-nowrap">脂肪 <span className="font-num" data-testid="sum-target-fat">{nutrientFields[2].targetValue}</span> g</span>
+          <span className="whitespace-nowrap">碳水 <span className="font-num" data-testid="sum-target-carbs">{nutrientFields[3].targetValue}</span> g</span>
         </div>
       </section>
     );
