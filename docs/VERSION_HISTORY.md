@@ -18,7 +18,26 @@
 - 数据库变更：无
 - 部署变更：无
 - Git 分支：supabase-v1
-- Commit ID：未提交
+- Commit ID：f0342a1
+
+## 修改意见历史可编辑与完成版本能力
+
+- 日期：2026-07-26
+- 类型：Feature / Version Feedback
+- 状态：已完成（本地，待数据库环境执行 migration）
+- 内容：
+  - 修改意见历史支持查看、编辑、删除、处理状态与时间信息（提交时间、最后修改、完成时间）。
+  - 历史列表默认按 `created_at` 倒序并默认加载 10 条，支持“查看更多”。
+  - 空数据状态显示“目前没有记录”；查询失败显示“记录加载失败，请重试”。
+  - 管理员标记完成时必须填写“完成版本”，并通过数据库 RPC 统一写入 `status`、`completed_at`、`completed_version`、`updated_at`。
+  - 管理员恢复为未完成时清空 `completed_at` 与 `completed_version`。
+- 代码功能变更：`frontend/src/pages/VersionFeedbackPage.jsx`、`frontend/src/services/versionFeedbackService.js`、`frontend/src/lib/versionFeedbackValidation.js`
+- 数据库变更：`supabase/migrations/016_version_feedback_history_enhancements.sql`
+- 安全策略变更：新增普通用户编辑/删除自身建议策略；管理员状态更新改为 RPC（`complete_version_feedback` / `reopen_version_feedback`）
+- 测试变更：`frontend/src/pages/VersionFeedbackPage.test.jsx`、`frontend/src/lib/versionFeedbackValidation.test.js`、`frontend/src/lib/versionInfoUtils.test.js`
+- 部署变更：无
+- Git 分支：supabase-v1
+- Commit ID：fb77425b07e634907d5cff8aceca9fe98e8176a2
 
 ## 版本信息与修改意见任务模块
 

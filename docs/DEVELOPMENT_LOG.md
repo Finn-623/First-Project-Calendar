@@ -37,7 +37,53 @@
 - 风险或注意事项：
 	- 版本记录已按提交证据扩展，但仍属于开发中文档，不代表正式发布版本说明。
 - 当前分支：supabase-v1
-- Git Commit ID：未提交
+- Git Commit ID：f0342a1b594595af5a45bbff9fae289c4c3aa670
+
+## DEV-20260726-049
+
+- 日期：2026-07-26
+- 状态：已完成
+- 修改类型：功能完善 / 设置-修改意见历史
+- 修改背景：现有修改意见历史仅支持查看与管理员状态切换，缺少用户编辑、删除、完成版本管理和分页历史能力。
+- 任务目标：实现修改意见历史“查看/编辑/删除/状态/时间/完成版本”完整闭环，并补齐数据库字段、RLS 和 RPC 保护。
+- 实际完成内容：
+	- 页面能力：历史记录支持查看、编辑、删除、状态查看、相关时间查看；已完成项显示完成时间与完成版本。
+	- 空状态与错误状态分离：查询成功无记录显示“目前没有记录”；查询失败显示“记录加载失败，请重试”。
+	- 历史排序与分页：按 `created_at` 倒序展示，默认 10 条并支持“查看更多”。
+	- 普通用户编辑：仅可编辑本人建议标题和详细说明，支持“取消/保存修改”、无变化不提交、失败保留输入。
+	- 普通用户删除：删除前二次确认，删除中防重复，成功后立即从列表移除并更新数量。
+	- 管理员状态管理：标记“已完成”必须填写完成版本，恢复“未完成”自动清空完成时间与完成版本。
+	- 服务层改造：新增编辑、删除、分页列表、完成/恢复 RPC 调用。
+	- 数据库增强：新增 migration `016_version_feedback_history_enhancements.sql`，补充 `completed_version` 约束、完善更新触发器、补充删除策略、引入 `complete_version_feedback` 和 `reopen_version_feedback` RPC。
+- 主要修改文件：
+	- `frontend/src/pages/VersionFeedbackPage.jsx`
+	- `frontend/src/services/versionFeedbackService.js`
+	- `frontend/src/lib/versionFeedbackValidation.js`
+	- `frontend/src/pages/VersionFeedbackPage.test.jsx`
+	- `frontend/src/lib/versionFeedbackValidation.test.js`
+	- `frontend/src/lib/versionInfoUtils.test.js`
+	- `supabase/migrations/016_version_feedback_history_enhancements.sql`
+	- `frontend/package.json`
+	- `frontend/yarn.lock`
+- 执行的测试与检查：
+	- `get_errors`：核心改动文件（页面、服务、校验、测试、migration）
+	- `cd frontend && CI=true npm test -- --watch=false --runInBand src/pages/VersionFeedbackPage.test.jsx src/lib/versionFeedbackValidation.test.js src/lib/versionInfoUtils.test.js`
+	- `cd frontend && npm run build`
+	- `git diff --check`
+- 测试结果：
+	- 3 个测试套件通过，24 个测试通过。
+	- 前端构建通过（Compiled successfully）。
+	- `git diff --check` 无输出。
+- 权限与安全说明：
+	- 普通用户可更新/删除自己的建议，但触发器限制普通用户不得修改 `status/completed_at/completed_version/user_id/created_at`。
+	- 管理员默认不修改用户原始建议正文，不删除其他用户建议；仅通过 RPC 管理完成状态与完成版本。
+- 未完成事项：
+	- 尚未在在线 Supabase 环境执行 migration 016 与真实 RLS/RPC 联调。
+- 风险或注意事项：
+	- 迁移中会将“已完成但缺少完成版本”的历史脏数据回退为“未完成”，避免伪造完成版本。
+	- 工作区存在本任务无关改动（`frontend/src/components/BottomNav.jsx`、`frontend/src/components/settings/SettingsNavigationItem.jsx`、`frontend/src/index.css`、`frontend/src/pages/HistoryDetailPage.jsx`），本次未触碰。
+- 当前分支：supabase-v1
+- Git Commit ID：fb77425b07e634907d5cff8aceca9fe98e8176a2
 
 ## DEV-20260726-047
 
