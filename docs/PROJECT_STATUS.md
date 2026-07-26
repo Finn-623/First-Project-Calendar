@@ -128,6 +128,11 @@
   - 证据：frontend/src/store.jsx
   - 说明：首页新增周一到周日周视图，支持上一周/下一周、日期点击切换和回到今天，且与 `currentDate` 单一日期状态联动。
   - 相关 Commit：74efe2ed1cdcaae623bfdda8fe8db0c0e7ba88d0
+- `已完成` 周日历日期切换改为纯浏览行为
+  - 证据：frontend/src/pages/TodayPage.jsx
+  - 证据：frontend/src/store.jsx
+  - 说明：查看其他日期时不再触发 NEXT DAY 流程；日期区域标题按所选日期在 TODAY 与“历史记录”之间动态切换。
+  - 相关 Commit：20b0e56dee272958b1c247b6cd716245fa2c5005
 
 ## 4. 部分完成
 

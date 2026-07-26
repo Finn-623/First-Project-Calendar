@@ -603,3 +603,46 @@
 	- 工作区存在未纳入本次提交的无关改动（`frontend/src/components/BottomNav.jsx`、`frontend/src/index.css`），已保持隔离。
 - 当前分支：supabase-v1
 - Git Commit ID：74efe2ed1cdcaae623bfdda8fe8db0c0e7ba88d0
+
+## DEV-20260726-017
+
+- 日期：2026-07-26
+- 状态：已完成
+- 修改类型：交互修复 / 日期浏览
+- 修改模块：首页 / 周日历
+- 任务目标：修复周日历切换日期时错误触发 NEXT DAY 提示；日期区域标题按所选日期在 TODAY 与“历史记录”之间动态切换。
+- 修改前问题：点击周日历中的其他日期时，页面错误显示 NEXT DAY 提示“前一天已结束，当前正在记录下一日”。
+- NEXT DAY 原触发位置：`frontend/src/pages/TodayPage.jsx` 中 `isAutoAdvancedDay = currentDateStr !== todaySydneyStr`，导致“非今天”被等同于“已进入下一日”。
+- 错误调用原因：浏览日期与业务推进日期复用同一判断条件；周日历仅用于查看历史日期，但被错误复用了“下一日”提示逻辑。
+- 浏览日期与业务推进日期的区分方式：
+	- 浏览日期：继续使用 `currentDate`，由周日历点击和周切换驱动。
+	- 业务推进日期：新增 `recordingDateStr`，仅在初始化判定“今天已完成”或执行“结束本日”成功后推进。
+- 周日历点击后的新行为：仅更新浏览日期、更新选中状态和页面数据展示，不再触发 NEXT DAY 提示。
+- 是否保留真正的 NEXT DAY 功能：是；仅当“当前浏览日期 == 业务推进日期”且“业务推进日期 != 今天”时显示 NEXT DAY。
+- TODAY 与“历史记录”的切换规则：
+	- 选中今天：显示 `TODAY`
+	- 选中非今天：显示 `历史记录`
+- 本地日期比较方式：使用 Sydney 本地日期键 `YYYY-MM-DD`（`getSydneyDateString`）按日比较，不比较时分秒。
+- 是否涉及数据库写入：否（周日历浏览路径不写库；写库仍仅在 `endDay -> historyService.saveDayArchive` 业务入口触发）。
+- 实际修改文件：`frontend/src/pages/TodayPage.jsx`、`frontend/src/store.jsx`、`CHANGELOG.md`、`docs/DEVELOPMENT_LOG.md`、`docs/PROJECT_STATUS.md`、`docs/VERSION_HISTORY.md`
+- 实际执行的测试：
+	- 修改前检查：`git status --short`、`git branch --show-current`
+	- 触发链路检查：检索 NEXT DAY 文案与 `isAutoAdvancedDay` 逻辑、周日历点击处理函数、`setSelectedDate` 与 `endDay` 路径
+	- 语法检查：`get_errors` 检查 `frontend/src/pages/TodayPage.jsx`、`frontend/src/store.jsx`
+	- 构建检查：`cd frontend && npm run build`
+	- 写入路径核对：确认 `saveDayArchive` 仅在 `endDay` 中调用，周日历点击路径无写入调用
+- 测试结果：
+	- 变更文件无语法错误。
+	- 构建通过。
+	- NEXT DAY 提示不再由“浏览非今天日期”触发。
+	- 日期标题可按所选日期在 TODAY 与“历史记录”之间切换。
+	- 周日历点击路径未引入数据库写入调用。
+	- 受当前会话限制，未在登录态真实数据场景执行完整人工端到端点击截图验证。
+- 构建结果：通过。
+- 未完成事项：
+	- 待在已登录业务会话补充“跨周/未来日期/返回今天”的人工交互验收记录。
+- 风险或注意事项：
+	- 工作区存在未纳入本次提交的无关改动（`frontend/src/components/BottomNav.jsx`、`frontend/src/index.css`），已保持隔离。
+	- 本次不涉及数据库结构、认证和权限逻辑。
+- 当前分支：supabase-v1
+- Git Commit ID：20b0e56dee272958b1c247b6cd716245fa2c5005
