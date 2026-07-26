@@ -1,3 +1,67 @@
+## DEV-20260726-047
+
+- 日期：2026-07-26
+- 状态：已完成
+- 修改类型：功能新增 / 设置-版本信息与修改意见任务模块
+- 修改背景：现有版本页面信息粒度不足，缺少统一的上线时间规则与可追踪的用户改进建议任务链路。
+- 版本配置方案：
+	- 版本号继续以 `frontend/package.json` 的 `version` 为唯一来源。
+	- 新增 `frontend/src/config/version.config.json` 管理 `status`、`releasedAt`、`summary`。
+	- `frontend/src/config/appVersion.js` 统一导出 `APP_VERSION` 与 `APP_VERSION_META`，并提供轻量校验。
+- 上线时间规则：
+	- 页面字段统一使用“上线时间”。
+	- `status=development` 且 `releasedAt=null` 时显示“开发中，尚未上线”。
+	- 不使用当前时间、Git 时间或文档修改时间冒充上线时间。
+- 新增版本文档目录：
+	- 新建 `docs/version-updates/README.md`。
+	- 新建当前版本文档 `docs/version-updates/v0.1.1.md`（development 状态，未虚构上线时间）。
+- 数据库表和迁移：
+	- 新增 `supabase/migrations/015_version_feedback_tasks.sql`。
+	- 新建 `public.version_feedback` 表及状态、长度、完成时间一致性约束。
+- RLS 权限：
+	- 普通用户：只能插入 `user_id=auth.uid()` 的建议，且只能查询自己的建议。
+	- 管理员：可查询全部建议并更新状态（`pending` / `completed`）。
+	- 匿名用户：无读取与写入权限。
+	- 额外策略：管理员可读取 `profiles` 以展示提交人名称（`profiles_select_admin_all`）。
+- 页面和路由：
+	- 设置首页版本入口说明更新为“查看版本更新记录并提交改进建议”。
+	- 版本页面重构为三段结构：当前版本、版本更新记录、修改意见任务。
+	- 新增独立反馈页面路由：`/settings/version/feedback`。
+- 主要修改文件：
+	- `frontend/src/pages/SettingsPage.jsx`
+	- `frontend/src/pages/SettingsVersionPage.jsx`
+	- `frontend/src/pages/VersionFeedbackPage.jsx`
+	- `frontend/src/App.js`
+	- `frontend/src/config/appVersion.js`
+	- `frontend/src/config/version.config.json`
+	- `frontend/src/config/versionHistory.js`
+	- `frontend/src/services/versionFeedbackService.js`
+	- `frontend/src/lib/versionInfoUtils.js`
+	- `frontend/src/lib/versionFeedbackValidation.js`
+	- `frontend/src/config/appVersion.test.js`
+	- `frontend/src/lib/versionInfoUtils.test.js`
+	- `frontend/src/lib/versionFeedbackValidation.test.js`
+	- `frontend/scripts/validate-version.js`
+	- `frontend/package.json`
+	- `supabase/migrations/015_version_feedback_tasks.sql`
+- 执行的测试：
+	- `cd frontend && CI=true npm test -- --watch=false --runInBand src/config/appVersion.test.js src/lib/versionInfoUtils.test.js src/lib/versionFeedbackValidation.test.js src/lib/accountUtils.test.js src/lib/personalInfoUtils.test.js`
+	- `cd frontend && npm run validate:version`
+	- `cd frontend && npm run build`
+- 测试结果：
+	- 5 个测试套件通过，34 个测试通过。
+	- 版本校验通过（v0.1.1）。
+	- 前端构建通过（Compiled successfully）。
+- 人工验收结果：
+	- 本次未在可用登录态下执行完整人工联调；普通用户/管理员真实权限链路、会话过期与网络异常回归需在连接数据库环境后补测。
+- 未完成事项：
+	- 未执行在线 Supabase migration 与策略实库验证。
+	- 当前版本真实上线时间无法从部署记录可靠确认，保持 `development` + `releasedAt=null`。
+- 风险或注意事项：
+	- 工作区存在本任务无关未提交变更（`frontend/src/components/BottomNav.jsx`、`frontend/src/components/settings/SettingsNavigationItem.jsx`、`frontend/src/index.css`、`frontend/src/pages/HistoryDetailPage.jsx`），本次未触碰。
+- 当前分支：supabase-v1
+- Git Commit ID：af41edba4079504f5235c43a3cd2fc7c47834980
+
 ## DEV-20260726-046
 
 - 日期：2026-07-26

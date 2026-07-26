@@ -27,3 +27,46 @@
 	- 2 个测试套件通过，21 个测试通过；前端构建通过。
 - 相关 DEV 编号：`DEV-20260726-046`
 - 相关 Commit ID：`0862f8442aa5dacc3b04a4f7b6d0c10648963fd8`
+
+## DB-20260726-002
+
+- 日期：2026-07-26
+- 修改原因：支持版本修改意见任务提交、历史查看与管理员状态管理。
+- 实际修改内容：新增 migration `015_version_feedback_tasks.sql`，创建 `public.version_feedback` 表与约束、触发器、RLS 策略，并补充管理员读取提交人信息所需策略。
+- 涉及的表和字段：
+	- `public.version_feedback.id` (UUID, PK)
+	- `public.version_feedback.user_id` (UUID, FK -> auth.users)
+	- `public.version_feedback.title` (TEXT)
+	- `public.version_feedback.description` (TEXT)
+	- `public.version_feedback.status` (TEXT, `pending` / `completed`)
+	- `public.version_feedback.created_at` (TIMESTAMPTZ)
+	- `public.version_feedback.completed_at` (TIMESTAMPTZ, nullable)
+	- `public.version_feedback.updated_at` (TIMESTAMPTZ)
+- 新增约束：
+	- `version_feedback_title_length_check`
+	- `version_feedback_description_length_check`
+	- `version_feedback_status_check`
+	- `version_feedback_completed_at_check`
+- 关键权限与触发器：
+	- `version_feedback_select_own_or_admin`
+	- `version_feedback_insert_own`
+	- `version_feedback_update_admin_only`
+	- `trg_version_feedback_enforce_update`（仅管理员可更新状态字段，自动维护 `updated_at` 与 `completed_at`）
+	- `profiles_select_admin_all`（管理员可读取提交人展示名称/用户名）
+- Migration 文件路径：`supabase/migrations/015_version_feedback_tasks.sql`
+- 对现有数据的影响：
+	- 新增表，不影响既有业务表数据。
+- 风险：
+	- 当前会话未执行在线数据库 migration；需在目标环境实际执行并验证 RLS 生效。
+- 回滚方式：
+	- 创建反向 migration，删除 `version_feedback` 相关策略、触发器、函数与表。
+- 测试内容：
+	- 前端测试：`cd frontend && CI=true npm test -- --watch=false --runInBand src/config/appVersion.test.js src/lib/versionInfoUtils.test.js src/lib/versionFeedbackValidation.test.js src/lib/accountUtils.test.js src/lib/personalInfoUtils.test.js`
+	- 版本校验：`cd frontend && npm run validate:version`
+	- 前端构建：`cd frontend && npm run build`
+- 测试结果：
+	- 5 个测试套件通过，34 个测试通过。
+	- 版本校验通过。
+	- 前端构建通过。
+- 相关 DEV 编号：`DEV-20260726-047`
+- 相关 Commit ID：af41edba4079504f5235c43a3cd2fc7c47834980
