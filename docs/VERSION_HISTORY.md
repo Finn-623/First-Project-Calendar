@@ -4,6 +4,23 @@
 |---|---|---|---|---|
 | v0.1.1 | 开发中 | 尚未正式上线 | 已形成真实数据闭环并完成结构化版本记录展示 | docs/version-updates/v0.1.1.md |
 
+## 设置摄入计划与计划历史模块升级
+
+- 日期：2026-07-26
+- 类型：Feature / Settings
+- 状态：已完成（本地，待数据库环境执行 migration）
+- 内容：
+  - 设置页摄入计划入口文案调整为“设置每日摄入目标并查看调整记录”。
+  - `/settings/intake-plan` 重构为“当前摄入计划 + 摄入计划历史记录”双区块。
+  - 当前计划支持查看/编辑双模式，编辑时可选择一个自动计算字段，填写其余三个字段。
+  - 保存链路使用 RPC 原子写入：更新 `daily_targets` 当前值并新增 `intake_plan_history` 快照。
+  - 历史记录改为只读快照，按时间倒序，默认 5 条并支持“查看更多”。
+- 代码功能变更：`frontend/src/pages/SettingsIntakePlanPage.jsx`、`frontend/src/pages/PlanPage.jsx`、`frontend/src/store.jsx`、`frontend/src/services/targetService.js`、`frontend/src/services/intakePlanService.js`、`frontend/src/lib/intakePlanCalculations.js`、`frontend/src/lib/intakePlanValidation.js`
+- 数据库变更：`supabase/migrations/017_intake_plan_history.sql`
+- 部署变更：无
+- Git 分支：supabase-v1
+- Commit ID：3232bca31de062f51124a1f33d78fdeece47971f
+
 ## 第一版本更新记录结构化完善
 
 - 日期：2026-07-26

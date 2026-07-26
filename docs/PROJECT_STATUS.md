@@ -57,6 +57,17 @@
   - 证据：frontend/src/pages/PlanPage.jsx
   - 证据：frontend/src/services/targetService.js
   - 证据：supabase/migrations/001_initial_schema.sql
+- `已完成` 设置摄入计划模块重构（当前计划 + 历史快照）
+  - 证据：frontend/src/pages/SettingsIntakePlanPage.jsx
+  - 证据：frontend/src/pages/PlanPage.jsx
+  - 证据：frontend/src/lib/intakePlanCalculations.js
+  - 证据：frontend/src/lib/intakePlanValidation.js
+  - 证据：frontend/src/services/intakePlanService.js
+  - 证据：frontend/src/services/targetService.js
+  - 证据：frontend/src/store.jsx
+  - 证据：supabase/migrations/017_intake_plan_history.sql
+  - 说明：当前计划支持三填一算自动计算；保存时通过 RPC 原子更新 `daily_targets` 并写入 `intake_plan_history`；历史记录按只读快照分页展示（默认5条，“查看更多”继续加载）。
+  - 相关 Commit：3232bca31de062f51124a1f33d78fdeece47971f
 - `已完成` 数据库迁移体系与RLS基础
   - 证据：supabase/migrations/001_initial_schema.sql
   - 证据：supabase/migrations/003_food_library_visibility.sql

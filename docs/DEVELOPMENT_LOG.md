@@ -1,3 +1,45 @@
+## DEV-20260726-050
+
+- 日期：2026-07-26
+- 状态：已完成
+- 修改类型：功能新增 / 设置-摄入计划与计划历史
+- 任务目标：将设置页“摄入计划”升级为“当前计划+历史记录”一体化模块，支持三填一算、当前计划持久化与历史快照留痕。
+- 实际完成内容：
+	- 设置首页摄入计划入口说明调整为“设置每日摄入目标并查看调整记录”。
+	- `/settings/intake-plan` 页面重构为双区块结构：`当前摄入计划` 和 `摄入计划历史记录`。
+	- 当前计划支持查看/编辑双模式；编辑时要求“4个目标中选择1项自动计算，填写其余3项”。
+	- 新增公式引擎与校验工具：统一处理热量/蛋白质/脂肪/碳水四种互算、输入合法性校验、四舍五入规则。
+	- 保存链路改造为原子写入：通过 RPC `save_intake_plan_with_history` 同步更新 `daily_targets` 当前值并插入 `intake_plan_history` 快照。
+	- 历史记录列表改为只读快照，按时间倒序展示，默认 5 条并支持“查看更多”分页。
+	- 复用同一套计划系统：`/plan` 页面改为渲染同一个 `SettingsIntakePlanPage`，避免平行实现。
+	- 新增 migration `017_intake_plan_history.sql`：补充 `daily_targets.calculated_field`、新增 `intake_plan_history`、RLS 策略和 RPC。
+	- 新增并通过 intake 模块定向测试（计算、校验、页面行为）。
+- 主要修改文件或模块：
+	- `frontend/src/pages/SettingsPage.jsx`
+	- `frontend/src/pages/SettingsIntakePlanPage.jsx`
+	- `frontend/src/pages/PlanPage.jsx`
+	- `frontend/src/store.jsx`
+	- `frontend/src/services/targetService.js`
+	- `frontend/src/services/intakePlanService.js`
+	- `frontend/src/lib/intakePlanCalculations.js`
+	- `frontend/src/lib/intakePlanValidation.js`
+	- `frontend/src/lib/intakePlanCalculations.test.js`
+	- `frontend/src/lib/intakePlanValidation.test.js`
+	- `frontend/src/pages/SettingsIntakePlanPage.test.jsx`
+	- `supabase/migrations/017_intake_plan_history.sql`
+- 执行的测试与检查：
+	- `cd frontend && npm run build`
+	- `cd frontend && CI=true npm test -- --watch=false --runInBand src/lib/intakePlanCalculations.test.js src/lib/intakePlanValidation.test.js src/pages/SettingsIntakePlanPage.test.jsx`
+- 测试结果：
+	- 前端构建通过（Compiled successfully）。
+	- 3 个测试套件通过，17 个测试通过。
+- 未完成事项：
+	- 本次未在线上 Supabase 环境执行 migration 017 与真实 RLS/RPC 联调。
+- 风险或注意事项：
+	- 工作区存在本任务无关未提交文件（如 `frontend/src/App.js`、`frontend/craco.config.js` 等），本次提交已隔离未纳入。
+- 当前分支：supabase-v1
+- Git Commit ID：3232bca31de062f51124a1f33d78fdeece47971f
+
 ## DEV-20260726-048
 
 - 日期：2026-07-26

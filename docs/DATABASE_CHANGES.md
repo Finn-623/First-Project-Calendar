@@ -1,3 +1,42 @@
+## DB-20260726-003
+
+- 日期：2026-07-26
+- 修改原因：支持“设置-摄入计划”模块的当前目标保存与历史快照留痕，避免历史记录被后续修改覆盖。
+- 实际修改内容：新增 migration `017_intake_plan_history.sql`，扩展 `daily_targets` 并新增 `intake_plan_history` 表、RLS 策略与原子保存 RPC。
+- 涉及的表和字段：
+	- `public.daily_targets.calculated_field` (TEXT, NOT NULL, default `calories`)
+	- `public.intake_plan_history.id` (UUID, PK)
+	- `public.intake_plan_history.user_id` (UUID, FK -> auth.users)
+	- `public.intake_plan_history.calories_kcal` (NUMERIC)
+	- `public.intake_plan_history.protein_g` (NUMERIC)
+	- `public.intake_plan_history.fat_g` (NUMERIC)
+	- `public.intake_plan_history.carbs_g` (NUMERIC)
+	- `public.intake_plan_history.calculated_field` (TEXT)
+	- `public.intake_plan_history.target_date` (DATE)
+	- `public.intake_plan_history.created_at` (TIMESTAMPTZ)
+- 新增约束与策略：
+	- `daily_targets_calculated_field_check`
+	- `intake_plan_history_calculated_field_check`
+	- `intake_plan_history_select_own`
+	- `intake_plan_history_insert_own`
+- 新增数据库函数：
+	- `public.save_intake_plan_with_history(...)`：同一事务内 upsert 当前计划并插入历史快照。
+- Migration 文件路径：`supabase/migrations/017_intake_plan_history.sql`
+- 对现有数据的影响：
+	- `daily_targets` 存量记录会回填默认 `calculated_field='calories'`。
+	- 新增历史快照表，不会覆盖既有数据。
+- 风险：
+	- 当前会话未在在线 Supabase 环境实际执行 migration，RLS 与 RPC 真实权限链路仍需联调验证。
+- 回滚方式：
+	- 创建反向 migration：移除 RPC 与 `intake_plan_history` 相关对象，并移除 `daily_targets.calculated_field`。
+- 测试内容：
+	- 前端构建：`cd frontend && npm run build`
+	- 前端测试：`cd frontend && CI=true npm test -- --watch=false --runInBand src/lib/intakePlanCalculations.test.js src/lib/intakePlanValidation.test.js src/pages/SettingsIntakePlanPage.test.jsx`
+- 测试结果：
+	- 前端构建通过；3 个测试套件通过，17 个测试通过。
+- 相关 DEV 编号：`DEV-20260726-050`
+- 相关 Commit ID：3232bca31de062f51124a1f33d78fdeece47971f
+
 ## DB-20260726-001
 
 - 日期：2026-07-26
