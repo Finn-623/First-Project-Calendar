@@ -251,6 +251,11 @@
   - 证据：supabase/migrations/013_delete_history_days_rpc.sql
   - 说明：历史主页顶部新增批量删除入口并支持多日期选择/全选/确认删除；历史详情删除最后一个食物会自动删除整餐并过滤旧空餐次；历史详情时间轴改为与首页一致的左侧时间布局，并在记录右上角统一编辑/删除操作区。
   - 相关 Commit：51fe1233ac68817c97b8d28f12eeb67c2a4e1398
+- `已完成` 具体历史日期详情查看/编辑模式
+  - 证据：frontend/src/pages/HistoryDetailPage.jsx
+  - 证据：frontend/src/components/TimelineItem.jsx
+  - 说明：历史详情默认进入查看模式，页面右上角点击“编辑”后进入统一编辑模式并显示记录级操作；点击“完成”恢复查看模式；切换到其他历史日期或刷新页面后默认回到查看模式。
+  - 相关 Commit：0c6aae0d432eecde1af06d4e6972a808dac77886
 
 ## 4. 部分完成
 
