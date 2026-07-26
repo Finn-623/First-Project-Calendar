@@ -133,6 +133,11 @@
   - 证据：frontend/src/store.jsx
   - 说明：查看其他日期时不再触发 NEXT DAY 流程；日期区域标题按所选日期在 TODAY 与“历史记录”之间动态切换。
   - 相关 Commit：20b0e56dee272958b1c247b6cd716245fa2c5005
+- `已完成` 首页时间轴左右两列布局
+  - 证据：frontend/src/components/TimelineItem.jsx
+  - 证据：frontend/src/pages/TodayPage.jsx
+  - 说明：首页时间轴已调整为左侧时间、右侧事件内容的两列结构；事件信息与操作入口保持不变。
+  - 相关 Commit：e0b37db11251ac659ccbf927e62d47d8dde9d5d4
 
 ## 4. 部分完成
 

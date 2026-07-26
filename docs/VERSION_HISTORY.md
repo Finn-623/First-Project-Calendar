@@ -76,3 +76,5 @@
   - 相关 Commit ID：74efe2ed1cdcaae623bfdda8fe8db0c0e7ba88d0
   - 修复周日历浏览其他日期时错误触发 NEXT DAY 提示的问题；非今天日期标题显示“历史记录”，不调整正式版本号。
   - 相关 Commit ID：20b0e56dee272958b1c247b6cd716245fa2c5005
+  - 调整首页时间轴布局为左侧时间、右侧事件内容两列结构，不调整正式版本号。
+  - 相关 Commit ID：e0b37db11251ac659ccbf927e62d47d8dde9d5d4

@@ -646,3 +646,44 @@
 	- 本次不涉及数据库结构、认证和权限逻辑。
 - 当前分支：supabase-v1
 - Git Commit ID：20b0e56dee272958b1c247b6cd716245fa2c5005
+
+## DEV-20260726-018
+
+- 日期：2026-07-26
+- 状态：已完成
+- 修改类型：UI 布局调整
+- 修改模块：首页 / 时间轴
+- 任务目标：将首页时间轴调整为“时间在左侧、事件内容在右侧”的两列布局，不改变业务逻辑与数据。
+- 修改前布局：时间显示在事件卡片内部（标题下方），节点在卡片左侧，时间与事件内容未做固定列分离。
+- 修改后布局：每条记录使用固定两列+节点结构：左侧时间列（56px）+中间节点列（18px）+右侧事件卡片列（自适应）。
+- 时间列宽：56px（首页时间轴所有记录统一）。
+- 时间对齐方式：左侧时间文字右对齐，顶部与右侧事件卡片头部区域对齐。
+- 事件内容布局方式：事件名称、类型信息、食物明细/训练详情、热量信息、编辑入口、删除入口全部保留在右侧同一事件卡片中。
+- 是否保留时间轴节点和竖线：保留；节点位于时间与内容之间，竖线在节点轨道位置显示。
+- 同一时间多个事件的处理方式：保持现有数据结构与渲染方式，不合并记录，不调整顺序。
+- 无时间事件的显示方式：保持现有占位规则，左侧显示 `未设置`。
+- 是否修改公共组件：是。`TimelineItem` 新增首页专用布局模式 `home-time-left`，默认布局保持原样。
+- 实际影响页面：首页（TodayPage）启用新布局；历史详情页未启用该模式，保持原布局。
+- 是否涉及数据库写入：否。本次仅前端布局变更，无新增写入路径。
+- 实际修改文件：`frontend/src/components/TimelineItem.jsx`、`frontend/src/pages/TodayPage.jsx`、`CHANGELOG.md`、`docs/DEVELOPMENT_LOG.md`、`docs/PROJECT_STATUS.md`、`docs/VERSION_HISTORY.md`
+- 实际执行的测试：
+	- 修改前检查：`git status --short`、`git branch --show-current`
+	- 组件与页面定位：检查首页/历史页时间轴调用路径与复用关系
+	- 语法检查：`get_errors` 检查 `TimelineItem.jsx`、`TodayPage.jsx`
+	- 构建检查：`cd frontend && npm run build`
+	- 改动范围检查：`git diff -- frontend/src/components/TimelineItem.jsx frontend/src/pages/TodayPage.jsx`
+	- 提交前范围检查：`git status --short`
+- 测试结果：
+	- 变更文件无语法错误。
+	- 前端构建通过。
+	- 首页时间轴实现统一左侧时间列与右侧事件内容列。
+	- 事件卡片原有信息与操作入口保留。
+	- 历史详情页未受本次首页布局模式影响。
+	- 受当前会话限制，未在登录态完成完整视觉截图验收。
+- 构建结果：通过。
+- 未完成事项：
+	- 待在已登录会话补充移动端与桌面端人工视觉验收（含长文案与同时段多条记录场景）。
+- 风险或注意事项：
+	- 工作区存在未纳入本次提交的无关改动（`frontend/src/components/BottomNav.jsx`、`frontend/src/index.css`），已保持隔离。
+- 当前分支：supabase-v1
+- Git Commit ID：e0b37db11251ac659ccbf927e62d47d8dde9d5d4

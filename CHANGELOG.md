@@ -34,6 +34,8 @@
 	- 相关 Commit：74efe2ed1cdcaae623bfdda8fe8db0c0e7ba88d0
 - 修复首页周日历切换日期时错误触发 NEXT DAY 提示的问题；查看非今天日期时，日期区域标题由 TODAY 动态切换为“历史记录”。
 	- 相关 Commit：20b0e56dee272958b1c247b6cd716245fa2c5005
+- 调整首页时间轴布局：时间统一显示在左侧，事件内容统一显示在右侧。
+	- 相关 Commit：e0b37db11251ac659ccbf927e62d47d8dde9d5d4
 
 ## v0.1.1 - 2026-07-26
 
