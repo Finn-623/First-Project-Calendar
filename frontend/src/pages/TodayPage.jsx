@@ -2,6 +2,7 @@ import React, { useMemo, useState } from 'react';
 import { NutritionSummary } from '../components/NutritionSummary';
 import { TimelineItem } from '../components/TimelineItem';
 import { AddFoodSheet } from '../modals/AddFoodSheet';
+import { AddSnackSheet } from '../modals/AddSnackSheet';
 import { AddTrainingSheet } from '../modals/AddTrainingSheet';
 import { AddEventSheet } from '../modals/AddEventSheet';
 import { EditTimeSheet } from '../modals/EditTimeSheet';
@@ -62,6 +63,7 @@ const AddPickerMenu = ({ onSnack, onAnaerobic, onAerobic, onEvent, testIdPrefix 
 export const TodayPage = () => {
   const { timeline, setTimeline, plan, dateLabel, endDay, dayInitialized, currentDate, recordingDateStr, setSelectedDate } = useStore();
   const [foodSheet, setFoodSheet] = useState({ open: false, target: null });
+  const [snackSheetOpen, setSnackSheetOpen] = useState(false);
   const [trainingOpen, setTrainingOpen] = useState(false);
   const [trainingKind, setTrainingKind] = useState('anaerobic');
   const [eventOpen, setEventOpen] = useState(false);
@@ -113,13 +115,26 @@ export const TodayPage = () => {
     toast.success(`已添加 ${food.name} 到 ${foodSheet.target.title}`);
   };
 
-  const handleAddSnack = () => {
+  const handleOpenSnackSheet = () => {
+    setSnackSheetOpen(true);
+    setFabOpen(false);
+  };
+
+  const handleAddSnack = ({ time, snackType }) => {
     const id = `s${Date.now()}`;
     setTimeline([
       ...timeline,
-      { id, type: 'meal', subtype: 'snack', title: '加餐', time: '15:30', fixed: false, foods: [] },
+      {
+        id,
+        type: 'meal',
+        subtype: 'snack',
+        snackType,
+        title: '加餐',
+        time,
+        fixed: false,
+        foods: [],
+      },
     ]);
-    setFabOpen(false);
     toast.success('已添加加餐');
   };
 
@@ -340,7 +355,7 @@ export const TodayPage = () => {
         {fabOpen && (
           <div className="pointer-events-auto absolute bottom-16 right-5">
             <AddPickerMenu
-              onSnack={handleAddSnack}
+                onSnack={handleOpenSnackSheet}
               onAnaerobic={() => openTraining('anaerobic')}
               onAerobic={() => openTraining('aerobic')}
               onEvent={openEvent}
@@ -355,6 +370,11 @@ export const TodayPage = () => {
         onOpenChange={(v) => setFoodSheet((s) => ({ ...s, open: v }))}
         targetTitle={foodSheet.target?.title || ''}
         onConfirm={handleFoodConfirm}
+      />
+      <AddSnackSheet
+        open={snackSheetOpen}
+        onOpenChange={setSnackSheetOpen}
+        onConfirm={handleAddSnack}
       />
       <AddTrainingSheet
         open={trainingOpen}

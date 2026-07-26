@@ -1,6 +1,7 @@
 import React from 'react';
 import { UtensilsCrossed, Dumbbell, Footprints, MapPin, Plus, Clock, Trash2, Loader2 } from 'lucide-react';
 import { sumMealMacros } from '../mockData';
+import { SNACK_TYPE_LABELS, normalizeSnackType } from '../constants/snackTypes';
 
 const iconFor = (item) => {
   if (item.type === 'meal') return UtensilsCrossed;
@@ -31,6 +32,8 @@ export const TimelineItem = ({
   const totals = isMeal ? sumMealMacros(item.foods || []) : null;
   const empty = isMeal && (!item.foods || item.foods.length === 0);
   const timeLabel = item.time || '未设置';
+  const snackType = item?.subtype === 'snack' ? normalizeSnackType(item?.snackType) : null;
+  const mealTitle = snackType ? `${SNACK_TYPE_LABELS[snackType]}加餐` : item.title;
 
   const canDelete = !readOnly && (
     item.subtype === 'snack'
@@ -56,7 +59,7 @@ export const TimelineItem = ({
             <Icon size={16} strokeWidth={1.6} />
           </div>
           <div className="min-w-0">
-            <p className={titleClass}>{item.title}</p>
+            <p className={titleClass}>{mealTitle}</p>
             <button
               onClick={() => !readOnly && onEditTime && onEditTime(item)}
               data-testid={`edit-time-${item.id}`}

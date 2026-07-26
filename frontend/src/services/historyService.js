@@ -5,6 +5,7 @@
 
 import { supabase } from '../lib/supabaseClient';
 import { hasMeaningfulTimelineItems } from '../lib/dayRecordUtils';
+import { normalizeSnackType } from '../constants/snackTypes';
 
 export const SYDNEY_TIME_ZONE = 'Australia/Sydney';
 
@@ -67,6 +68,7 @@ const normalizeArchivedTimelineItem = (item) => ({
   id: item.id,
   type: item.type,
   subtype: item.subtype,
+  snackType: item?.subtype === 'snack' ? normalizeSnackType(item?.snackType) : undefined,
   title: item.title,
   time: item.time,
   fixed: Boolean(item.fixed),
