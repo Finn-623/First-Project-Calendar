@@ -77,7 +77,40 @@ const normalizeArchivedTimelineItem = (item) => ({
   foods: Array.isArray(item.foods) ? item.foods : [],
   detail: item.detail,
   caloriesBurned: item.caloriesBurned,
+  status: item.status || 'completed',
+  started_at: item.started_at || null,
+  ended_at: item.ended_at || null,
+  duration_minutes: item.duration_minutes == null ? null : Number(item.duration_minutes),
 });
+
+const normalizeDbTimelineItem = (item) => {
+  const itemType = item?.item_type;
+  const mapped = itemType === 'breakfast' || itemType === 'lunch' || itemType === 'dinner' || itemType === 'snack'
+    ? { type: 'meal', subtype: itemType }
+    : itemType === 'anaerobic_training'
+      ? { type: 'anaerobic' }
+      : itemType === 'aerobic_training'
+        ? { type: 'aerobic' }
+        : { type: 'event' };
+
+  return {
+    id: item.id,
+    ...mapped,
+    title: item.title,
+    time: item.event_time || item.time,
+    fixed: Boolean(item.fixed),
+    foods: Array.isArray(item.foods) ? item.foods : [],
+    detail: item.notes || item.detail || item.details?.summary || item.details?.name || '',
+    notes: item.notes || null,
+    snackType: itemType === 'snack' ? normalizeSnackType(item?.details?.snackType || item?.snackType) : undefined,
+    bodyParts: itemType === 'anaerobic_training' ? normalizeStrengthBodyParts(item?.details?.bodyParts || item?.bodyParts) : undefined,
+    status: item.status || 'completed',
+    started_at: item.started_at || null,
+    ended_at: item.ended_at || null,
+    duration_minutes: item.duration_minutes == null ? null : Number(item.duration_minutes),
+    caloriesBurned: item.caloriesBurned,
+  };
+};
 
 const sumTotals = (timeline = []) => timeline.reduce((acc, item) => {
   if (item?.type !== 'meal') {
@@ -247,6 +280,7 @@ export const historyService = {
       }
 
       // Calculate nutrition
+      const normalizedTimeline = (timeline || []).map(normalizeDbTimelineItem);
       const nutrition = foodEntries?.reduce(
         (acc, entry) => ({
           calories: acc.calories + (entry.calories_snapshot || 0),
@@ -266,7 +300,7 @@ export const historyService = {
         .single();
 
       return {
-        timeline,
+        timeline: normalizedTimeline,
         nutrition,
         target,
         error: null,

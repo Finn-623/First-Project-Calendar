@@ -8,7 +8,9 @@ import { NutritionSummary } from '../components/NutritionSummary';
 import { AddFoodSheet } from '../modals/AddFoodSheet';
 import { EditTimeSheet } from '../modals/EditTimeSheet';
 import { historyService } from '../services/historyService';
+import { timelineService } from '../services/timelineService';
 import { sumTimelineMacros } from '../mockData';
+import { diffMinutesBetween } from '../lib/localDateTime';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -37,6 +39,7 @@ export const HistoryDetailPage = () => {
   const [saving, setSaving] = useState(false);
   const [foodSheet, setFoodSheet] = useState({ open: false, target: null });
   const [timeSheet, setTimeSheet] = useState({ open: false, item: null });
+  const [endingItemId, setEndingItemId] = useState(null);
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [confirmKind, setConfirmKind] = useState('item');
   const [pendingDeleteItem, setPendingDeleteItem] = useState(null);
@@ -97,6 +100,35 @@ export const HistoryDetailPage = () => {
     setPendingDeleteItem(item);
     setConfirmKind('item');
     setConfirmOpen(true);
+  };
+
+  const handleEndItem = async (item) => {
+    if (!user?.id || !item?.id || item.status !== 'running' || endingItemId) return;
+
+    setEndingItemId(item.id);
+    const endedAt = new Date();
+    const durationMinutes = item.started_at ? diffMinutesBetween(new Date(item.started_at), endedAt) : null;
+
+    try {
+      const { data, error } = await timelineService.completeRunningTimelineItem(item.id, user.id, {
+        status: 'completed',
+        ended_at: endedAt.toISOString(),
+        duration_minutes: durationMinutes,
+      });
+
+      if (error) throw error;
+
+      if (data) {
+        setDraftTimeline((prev) => prev.map((row) => (row.id === item.id ? data : row)));
+        await loadHistory(user.id);
+      }
+
+      toast.success('记录已结束');
+    } catch (error) {
+      toast.error(error?.message || '结束失败，请稍后重试');
+    } finally {
+      setEndingItemId(null);
+    }
   };
 
   const handleDeleteDay = () => {
@@ -262,6 +294,8 @@ export const HistoryDetailPage = () => {
                   onAddFood={handleAddFood}
                   onEditTime={(it) => setTimeSheet({ open: true, item: it })}
                   onDelete={handleDeleteItem}
+                  onEnd={handleEndItem}
+                  ending={endingItemId === item.id}
                 />
               ))}
             </div>

@@ -3,11 +3,14 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle } from '../components/ui/s
 import { Input } from '../components/ui/input';
 import { Button } from '../components/ui/button';
 import { Dumbbell, Footprints } from 'lucide-react';
+import { RecordModeToggle } from '../components/RecordModeToggle';
+import { RECORD_MODES } from '../constants/recordModes';
 import { STRENGTH_BODY_PART_OPTIONS, normalizeStrengthBodyParts } from '../constants/trainingBodyParts';
 import { getLocalTimeInputValue } from '../lib/localDateTime';
 
-export const AddTrainingSheet = ({ open, onOpenChange, onConfirm, initialKind = 'anaerobic' }) => {
+export const AddTrainingSheet = ({ open, onOpenChange, onConfirm, initialKind = 'anaerobic', allowLiveStart = true }) => {
   const [tab, setTab] = useState(initialKind);
+  const [mode, setMode] = useState(RECORD_MODES.manual);
   const [name, setName] = useState('');
   const [durationInput, setDurationInput] = useState('');
   const [time, setTime] = useState('');
@@ -19,6 +22,7 @@ export const AddTrainingSheet = ({ open, onOpenChange, onConfirm, initialKind = 
   useEffect(() => {
     if (!open) {
       setTab(initialKind);
+      setMode(RECORD_MODES.manual);
       setName('');
       setDurationInput('');
       setTime('');
@@ -31,6 +35,8 @@ export const AddTrainingSheet = ({ open, onOpenChange, onConfirm, initialKind = 
       setTime(getLocalTimeInputValue(new Date()));
     }
   }, [open, initialKind]);
+
+  const isLive = mode === RECORD_MODES.live;
 
   const toggleBodyPart = (bodyPart) => {
     setSelectedBodyParts((current) => {
@@ -66,30 +72,33 @@ export const AddTrainingSheet = ({ open, onOpenChange, onConfirm, initialKind = 
     if (submitting) return;
 
     const normalizedInput = durationInput.trim();
+    const shouldValidateDuration = !isLive;
 
-    if (!normalizedInput) {
-      setDurationError('请输入训练时长');
-      return;
+    if (shouldValidateDuration) {
+      if (!normalizedInput) {
+        setDurationError('请输入训练时长');
+        return;
+      }
+
+      if (!/^\d+$/.test(normalizedInput)) {
+        setDurationError('请输入有效的训练时长');
+        return;
+      }
+
+      const duration = Number(normalizedInput);
+
+      if (!Number.isFinite(duration)) {
+        setDurationError('请输入有效的训练时长');
+        return;
+      }
+
+      if (duration <= 0) {
+        setDurationError('训练时长必须大于 0 分钟');
+        return;
+      }
     }
 
-    if (!/^\d+$/.test(normalizedInput)) {
-      setDurationError('请输入有效的训练时长');
-      return;
-    }
-
-    const duration = Number(normalizedInput);
-
-    if (!Number.isFinite(duration)) {
-      setDurationError('请输入有效的训练时长');
-      return;
-    }
-
-    if (duration <= 0) {
-      setDurationError('训练时长必须大于 0 分钟');
-      return;
-    }
-
-    const normalizedDuration = String(duration);
+    const normalizedDuration = shouldValidateDuration ? String(Number(normalizedInput)) : '';
     const normalizedBodyParts = normalizeStrengthBodyParts(selectedBodyParts);
 
     if (tab === 'anaerobic' && normalizedBodyParts.length === 0) {
@@ -98,11 +107,11 @@ export const AddTrainingSheet = ({ open, onOpenChange, onConfirm, initialKind = 
     }
 
     const payload = {
-      id: `t${Date.now()}`,
-      type: tab,
-      title: tab === 'anaerobic' ? '无氧训练' : '有氧训练',
+      mode,
+      tab,
+      name: name.trim(),
       time,
-      detail: `${name || (tab === 'anaerobic' ? '力量训练' : '有氧运动')} · ${normalizedDuration} 分钟`,
+      duration: normalizedDuration || null,
       bodyParts: tab === 'anaerobic' ? normalizedBodyParts : undefined,
     };
 
@@ -130,6 +139,17 @@ export const AddTrainingSheet = ({ open, onOpenChange, onConfirm, initialKind = 
         </SheetHeader>
 
         <div className="px-5 pb-6 min-h-0 flex-1 overflow-y-auto overscroll-contain">
+          <div className="mb-4">
+            <label className="text-[12px] text-[#858C88]">记录方式</label>
+            <div className="mt-1.5">
+              <RecordModeToggle
+                value={mode}
+                onChange={setMode}
+                liveDisabled={!allowLiveStart}
+              />
+            </div>
+          </div>
+
           {/* Tabs */}
           <div className="grid grid-cols-2 gap-2 p-1 bg-white rounded-2xl border border-[#E5E5E0]">
             {[
@@ -165,43 +185,49 @@ export const AddTrainingSheet = ({ open, onOpenChange, onConfirm, initialKind = 
               />
             </div>
 
-            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-              <div>
-                <label className="text-[12px] text-[#858C88]">开始时间</label>
-                <Input
-                  type="time"
-                  value={time}
-                  onChange={(e) => setTime(e.target.value)}
-                  className="mt-1.5 h-11 bg-white border-[#E5E5E0] rounded-xl font-num text-base"
-                  data-testid="training-time-input"
-                  disabled={submitting}
-                />
+            {!isLive ? (
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                <div>
+                  <label className="text-[12px] text-[#858C88]">开始时间</label>
+                  <Input
+                    type="time"
+                    value={time}
+                    onChange={(e) => setTime(e.target.value)}
+                    className="mt-1.5 h-11 bg-white border-[#E5E5E0] rounded-xl font-num text-base"
+                    data-testid="training-time-input"
+                    disabled={submitting}
+                  />
+                </div>
+                <div>
+                  <label className="text-[12px] text-[#858C88]">时长 (分钟)</label>
+                  <Input
+                    type="number"
+                    inputMode="numeric"
+                    min="1"
+                    step="1"
+                    value={durationInput}
+                    onBlur={normalizeDurationOnBlur}
+                    onChange={(e) => {
+                      setDurationInput(e.target.value);
+                      if (durationError) {
+                        setDurationError('');
+                      }
+                    }}
+                    placeholder="分钟"
+                    className="mt-1.5 h-11 bg-white border-[#E5E5E0] rounded-xl font-num text-base"
+                    data-testid="training-duration-input"
+                    disabled={submitting}
+                  />
+                  {durationError ? (
+                    <p className="mt-1 text-[12px] text-[#D27D67]">{durationError}</p>
+                  ) : null}
+                </div>
               </div>
-              <div>
-                <label className="text-[12px] text-[#858C88]">时长 (分钟)</label>
-                <Input
-                  type="number"
-                  inputMode="numeric"
-                  min="1"
-                  step="1"
-                  value={durationInput}
-                  onBlur={normalizeDurationOnBlur}
-                  onChange={(e) => {
-                    setDurationInput(e.target.value);
-                    if (durationError) {
-                      setDurationError('');
-                    }
-                  }}
-                  placeholder="分钟"
-                  className="mt-1.5 h-11 bg-white border-[#E5E5E0] rounded-xl font-num text-base"
-                  data-testid="training-duration-input"
-                  disabled={submitting}
-                />
-                {durationError ? (
-                  <p className="mt-1 text-[12px] text-[#D27D67]">{durationError}</p>
-                ) : null}
+            ) : (
+              <div className="rounded-2xl border border-dashed border-[#D9DDD8] bg-white p-3 text-[12px] text-[#6E756F]">
+                开始训练时会自动记录当前本地时间，不需要填写时长。
               </div>
-            </div>
+            )}
 
             {tab === 'anaerobic' ? (
               <div>
@@ -239,7 +265,7 @@ export const AddTrainingSheet = ({ open, onOpenChange, onConfirm, initialKind = 
               disabled={submitting}
               className="w-full h-12 rounded-2xl bg-[#6B8067] hover:bg-[#5a6d57] text-white text-[14px] mt-2"
             >
-              {submitting ? '添加中...' : '确认添加'}
+              {submitting ? '添加中...' : (isLive ? `开始${tab === 'anaerobic' ? '训练' : '训练'}` : '确认添加')}
             </Button>
           </div>
         </div>

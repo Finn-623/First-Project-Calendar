@@ -6,6 +6,7 @@ import { foodService } from './services/foodService';
 import { authService } from './services/authService';
 import { targetService } from './services/targetService';
 import { addDaysToDateString, getSydneyDateString, getSydneyMidnightDelayMs, historyService } from './services/historyService';
+import { timelineService } from './services/timelineService';
 import { filterMeaningfulTimelineItems } from './lib/dayRecordUtils';
 
 const StoreContext = createContext(null);
@@ -442,12 +443,13 @@ export const StoreProvider = ({ children, user: initialUser, session: initialSes
 
     setCurrentDate(createDateFromString(dateStr));
 
-    const [profileResult, foodsResult, planResult, planHistoryResult, historyResult] = await Promise.allSettled([
+    const [profileResult, foodsResult, planResult, planHistoryResult, historyResult, runningResult] = await Promise.allSettled([
       loadProfile(userId),
       refreshFoods(userId),
       loadPlan(userId),
       loadPlanHistory(userId),
       loadHistory(userId),
+      timelineService.getRunningTimelineItems(userId),
     ]);
 
     return {
@@ -457,6 +459,7 @@ export const StoreProvider = ({ children, user: initialUser, session: initialSes
       planResult,
       planHistoryResult,
       historyResult,
+      runningResult,
     };
   }, [loadHistory, loadPlan, loadPlanHistory, loadProfile, refreshFoods, user?.id]);
 

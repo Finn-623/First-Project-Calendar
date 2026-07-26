@@ -3,6 +3,7 @@ import { UtensilsCrossed, Dumbbell, Footprints, MapPin, Plus, Clock, Trash2, Loa
 import { sumMealMacros } from '../mockData';
 import { SNACK_TYPE_LABELS, normalizeSnackType } from '../constants/snackTypes';
 import { formatStrengthBodyPartsLabels } from '../constants/trainingBodyParts';
+import { getLocalTimeInputValue } from '../lib/localDateTime';
 
 const iconFor = (item) => {
   if (item.type === 'meal') return UtensilsCrossed;
@@ -23,7 +24,9 @@ export const TimelineItem = ({
   onAddFood,
   onEditTime,
   onDelete,
+  onEnd,
   deleting = false,
+  ending = false,
   readOnly = false,
   layout = 'default',
 }) => {
@@ -38,8 +41,12 @@ export const TimelineItem = ({
   const strengthBodyPartsText = item?.type === 'anaerobic'
     ? formatStrengthBodyPartsLabels(item?.bodyParts)
     : '';
+  const isRunning = item?.status === 'running';
+  const completedEndTime = item?.ended_at ? getLocalTimeInputValue(new Date(item.ended_at)) : '';
+  const completedDuration = Number(item?.duration_minutes);
+  const hasCompletedDuration = Number.isFinite(completedDuration) && completedDuration > 0;
 
-  const canDelete = !readOnly && (
+  const canDelete = !readOnly && !isRunning && (
     item.subtype === 'snack'
     || item.type === 'anaerobic'
     || item.type === 'aerobic'
@@ -67,7 +74,7 @@ export const TimelineItem = ({
             <button
               onClick={() => !readOnly && onEditTime && onEditTime(item)}
               data-testid={`edit-time-${item.id}`}
-              disabled={readOnly}
+              disabled={readOnly || isRunning}
               className="mt-0.5 flex items-center gap-1 text-[11px] text-[#858C88]"
             >
               <Clock size={11} strokeWidth={1.5} />
@@ -146,9 +153,29 @@ export const TimelineItem = ({
           {strengthBodyPartsText ? (
             <p className="text-[12px] text-[#5E6660] mt-1">{strengthBodyPartsText}</p>
           ) : null}
+          {isRunning ? (
+            <p className="text-[12px] text-[#6B8067] mt-1">进行中</p>
+          ) : null}
+          {!isRunning && completedEndTime ? (
+            <p className="font-num text-[11px] text-[#858C88] mt-1">结束时间 {completedEndTime}</p>
+          ) : null}
+          {!isRunning && hasCompletedDuration ? (
+            <p className="font-num text-[11px] text-[#858C88] mt-1">时长 {completedDuration}分钟</p>
+          ) : null}
           {typeof item.caloriesBurned === 'number' && (
             <p className="font-num text-[11px] text-[#858C88] mt-1">消耗 {item.caloriesBurned} kcal</p>
           )}
+          {isRunning && onEnd ? (
+            <button
+              type="button"
+              onClick={() => onEnd(item)}
+              disabled={ending}
+              data-testid={`end-timeline-${item.id}`}
+              className="mt-2 h-9 px-3 rounded-xl border border-[#6B8067] text-[#6B8067] text-[12px] disabled:opacity-60 disabled:cursor-not-allowed"
+            >
+              {ending ? '结束中...' : '结束'}
+            </button>
+          ) : null}
         </div>
       )}
     </div>

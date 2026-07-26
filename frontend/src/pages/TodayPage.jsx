@@ -13,6 +13,7 @@ import { toast } from 'sonner';
 import { useStore } from '../store';
 import { timelineService } from '../services/timelineService';
 import { addDaysToDateString, getSydneyDateString } from '../services/historyService';
+import { combineLocalDateAndTime, diffMinutesBetween, getLocalTimeInputValue } from '../lib/localDateTime';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -61,7 +62,7 @@ const AddPickerMenu = ({ onSnack, onTraining, onEvent, testIdPrefix = 'picker' }
 );
 
 export const TodayPage = () => {
-  const { timeline, setTimeline, plan, dateLabel, endDay, dayInitialized, currentDate, recordingDateStr, setSelectedDate } = useStore();
+  const { timeline, setTimeline, plan, dateLabel, endDay, dayInitialized, currentDate, recordingDateStr, setSelectedDate, user, loadHistory } = useStore();
   const [foodSheet, setFoodSheet] = useState({ open: false, target: null });
   const [snackSheetOpen, setSnackSheetOpen] = useState(false);
   const [trainingOpen, setTrainingOpen] = useState(false);
@@ -71,6 +72,7 @@ export const TodayPage = () => {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [pendingDeleteItem, setPendingDeleteItem] = useState(null);
   const [deletingItemId, setDeletingItemId] = useState(null);
+  const [endingItemId, setEndingItemId] = useState(null);
   const fabButtonRef = useRef(null);
   const addMenuRef = useRef(null);
 
@@ -111,6 +113,44 @@ export const TodayPage = () => {
   const showBackToToday = currentDateStr !== todaySydneyStr;
 
   const totals = useMemo(() => sumTimelineMacros(timeline), [timeline]);
+  const hasRunningTimelineItem = timeline.some((item) => item.status === 'running');
+
+  const refreshDayState = async () => {
+    if (user?.id) {
+      await loadHistory(user.id);
+    }
+  };
+
+  const appendTimelineItem = async (item) => {
+    setTimeline((prev) => [...prev, item]);
+    await refreshDayState();
+  };
+
+  const updateTimelineItemInState = (itemId, updater) => {
+    setTimeline((prev) => prev.map((item) => (item.id === itemId ? updater(item) : item)));
+  };
+
+  const buildBaseSessionItem = ({ item_type, title, time, notes, details, status = 'completed', started_at, ended_at, duration_minutes, subtype, bodyParts }) => ({
+    id: `t${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+    item_type,
+    title,
+    event_date: currentDateStr,
+    event_time: time,
+    notes: notes || null,
+    details: {
+      ...(details || {}),
+      bodyParts,
+    },
+    status,
+    started_at,
+    ended_at,
+    duration_minutes,
+    subtype,
+  });
+
+  const createSessionTime = (dateStr, timeStr) => combineLocalDateAndTime(dateStr, timeStr);
+
+  const runningSessionConflictMessage = '请先结束当前正在进行的记录';
 
   const handlePickDate = (dateStr) => {
     if (dateStr === currentDateStr) return;
@@ -166,16 +206,196 @@ export const TodayPage = () => {
   };
   const openEvent = () => { setEventOpen(true); setFabOpen(false); };
 
-  const handleAddTraining = (item) => {
-    setTimeline([...timeline, item]);
-    toast.success(`已添加 ${item.title}`);
+  const startLiveSession = async ({ item_type, title, notes, details, bodyParts }) => {
+    if (!isViewingToday) {
+      toast.error('只能在今天开始实时记录');
+      return;
+    }
+
+    if (hasRunningTimelineItem) {
+      toast.error(runningSessionConflictMessage);
+      return;
+    }
+
+    if (!user?.id) {
+      toast.error('请先登录');
+      return;
+    }
+
+    const now = new Date();
+    const time = getLocalTimeInputValue(now);
+    const startedAt = now.toISOString();
+    const payload = {
+      event_date: currentDateStr,
+      event_time: time,
+      item_type,
+      title,
+      notes: notes || null,
+      details: {
+        ...(details || {}),
+        bodyParts: bodyParts || [],
+      },
+      status: 'running',
+      started_at: startedAt,
+      ended_at: null,
+      duration_minutes: null,
+      sort_order: timeline.length + 1,
+    };
+
+    try {
+      const { data, error } = await timelineService.createTimelineItem(user.id, payload);
+      if (error) {
+        if (String(error.message || '').includes('timeline_items_one_running_per_user')) {
+          toast.error(runningSessionConflictMessage);
+          return;
+        }
+        throw error;
+      }
+
+      if (data) {
+        await appendTimelineItem(data);
+      }
+
+      toast.success(`已开始${title}`);
+    } catch (error) {
+      toast.error(error?.message || '开始失败，请稍后重试');
+    }
   };
 
-  const handleAddEvent = (item) => {
-    setTimeline([...timeline, item]);
-    toast.success(`已添加 ${item.title}`);
+  const handleAddEvent = async (payload) => {
+    if (!user?.id) {
+      toast.error('请先登录');
+      return;
+    }
+
+    const eventDate = currentDateStr;
+
+    if (payload.mode === 'live') {
+      await startLiveSession({
+        item_type: 'other',
+        title: payload.title,
+        notes: payload.detail,
+        details: { mode: 'live' },
+      });
+      return;
+    }
+
+    const startedAt = createSessionTime(eventDate, payload.time);
+    const payloadToSave = {
+      event_date: eventDate,
+      event_time: payload.time,
+      item_type: 'other',
+      title: payload.title,
+      notes: payload.detail || null,
+      details: { mode: 'manual' },
+      status: 'completed',
+      started_at: startedAt ? startedAt.toISOString() : null,
+      ended_at: null,
+      duration_minutes: null,
+      sort_order: timeline.length + 1,
+    };
+
+    try {
+      const { data, error } = await timelineService.createTimelineItem(user.id, payloadToSave);
+      if (error) throw error;
+      if (data) {
+        await appendTimelineItem(data);
+      }
+      toast.success(`已添加 ${payload.title}`);
+    } catch (error) {
+      toast.error(error?.message || '添加失败，请稍后重试');
+    }
   };
 
+  const handleAddTraining = async (payload) => {
+    if (!user?.id) {
+      toast.error('请先登录');
+      return;
+    }
+
+    const itemType = payload.tab === 'anaerobic' ? 'anaerobic_training' : 'aerobic_training';
+    const title = payload.tab === 'anaerobic' ? '无氧训练' : '有氧训练';
+
+    if (payload.mode === 'live') {
+      await startLiveSession({
+        item_type: itemType,
+        title,
+        notes: payload.name || null,
+        details: { mode: 'live', name: payload.name || '', tab: payload.tab },
+        bodyParts: payload.bodyParts || [],
+      });
+      return;
+    }
+
+    const startedAt = createSessionTime(currentDateStr, payload.time);
+    const durationMinutes = Number(payload.duration) || 0;
+    const endedAt = startedAt && durationMinutes > 0
+      ? new Date(startedAt.getTime() + durationMinutes * 60000)
+      : null;
+    const detailText = `${payload.name || (payload.tab === 'anaerobic' ? '力量训练' : '有氧运动')} · ${durationMinutes} 分钟`;
+
+    const payloadToSave = {
+      event_date: currentDateStr,
+      event_time: payload.time,
+      item_type: itemType,
+      title,
+      notes: detailText,
+      details: {
+        mode: 'manual',
+        name: payload.name || '',
+        tab: payload.tab,
+        bodyParts: payload.bodyParts || [],
+      },
+      status: 'completed',
+      started_at: startedAt ? startedAt.toISOString() : null,
+      ended_at: endedAt ? endedAt.toISOString() : null,
+      duration_minutes: durationMinutes || null,
+      sort_order: timeline.length + 1,
+    };
+
+    try {
+      const { data, error } = await timelineService.createTimelineItem(user.id, payloadToSave);
+      if (error) throw error;
+      if (data) {
+        await appendTimelineItem(data);
+      }
+      toast.success(`已添加 ${title}`);
+    } catch (error) {
+      toast.error(error?.message || '添加失败，请稍后重试');
+    }
+  };
+
+  const handleEndTimelineItem = async (item) => {
+    if (!user?.id || !item?.id || endingItemId) return;
+    if (item.status !== 'running') return;
+
+    setEndingItemId(item.id);
+    const endedAt = new Date();
+    const durationMinutes = item.started_at ? diffMinutesBetween(new Date(item.started_at), endedAt) : null;
+
+    try {
+      const { data, error } = await timelineService.completeRunningTimelineItem(item.id, user.id, {
+        status: 'completed',
+        ended_at: endedAt.toISOString(),
+        duration_minutes: durationMinutes,
+      });
+
+      if (error) {
+        throw error;
+      }
+
+      if (data) {
+        updateTimelineItemInState(item.id, () => data);
+        await refreshDayState();
+      }
+
+      toast.success('记录已结束');
+    } catch (error) {
+      toast.error(error?.message || '结束失败，请稍后重试');
+    } finally {
+      setEndingItemId(null);
+    }
+  };
   const handleTimeConfirm = (newTime) => {
     setTimeline(timeline.map((it) => (it.id === timeSheet.item.id ? { ...it, time: newTime } : it)));
     toast.success('时间已更新');
@@ -214,6 +434,11 @@ export const TodayPage = () => {
   };
 
   const handleEndDay = () => {
+    if (hasRunningTimelineItem) {
+      toast.error('请先结束正在进行的事件或训练');
+      return;
+    }
+
     Promise.resolve(endDay()).then((result) => {
       if (result?.duplicate) {
         return;
@@ -346,6 +571,8 @@ export const TodayPage = () => {
               onAddFood={handleAddFood}
               onEditTime={(it) => setTimeSheet({ open: true, item: it })}
               onDelete={handleDeleteClick}
+              onEnd={handleEndTimelineItem}
+              ending={endingItemId === item.id}
               deleting={deletingItemId === item.id}
             />
           ))}
@@ -402,11 +629,13 @@ export const TodayPage = () => {
         open={trainingOpen}
         onOpenChange={setTrainingOpen}
         onConfirm={handleAddTraining}
+        allowLiveStart={isViewingToday}
       />
       <AddEventSheet
         open={eventOpen}
         onOpenChange={setEventOpen}
         onConfirm={handleAddEvent}
+        allowLiveStart={isViewingToday}
       />
       <EditTimeSheet
         open={timeSheet.open}

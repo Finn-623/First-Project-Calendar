@@ -3,33 +3,46 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle } from '../components/ui/s
 import { Input } from '../components/ui/input';
 import { Button } from '../components/ui/button';
 import { Textarea } from '../components/ui/textarea';
+import { RecordModeToggle } from '../components/RecordModeToggle';
+import { RECORD_MODES } from '../constants/recordModes';
 import { getLocalTimeInputValue } from '../lib/localDateTime';
 
-export const AddEventSheet = ({ open, onOpenChange, onConfirm }) => {
+export const AddEventSheet = ({ open, onOpenChange, onConfirm, allowLiveStart = true }) => {
   const [title, setTitle] = useState('');
+  const [mode, setMode] = useState(RECORD_MODES.manual);
   const [time, setTime] = useState('');
   const [detail, setDetail] = useState('');
+  const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
     if (open) {
+      setMode(RECORD_MODES.manual);
       setTime(getLocalTimeInputValue(new Date()));
     } else {
       setTitle('');
+      setMode(RECORD_MODES.manual);
       setTime('');
       setDetail('');
+      setSubmitting(false);
     }
-  }, [open]);
+  }, [allowLiveStart, open]);
 
-  const handleConfirm = () => {
+  const isLive = mode === RECORD_MODES.live;
+
+  const handleConfirm = async () => {
     if (!title.trim()) return;
-    onConfirm({
-      id: `e${Date.now()}`,
-      type: 'event',
-      title: title.trim(),
-      time,
-      detail: detail.trim() || undefined,
-    });
-    onOpenChange(false);
+    try {
+      setSubmitting(true);
+      await Promise.resolve(onConfirm({
+        mode,
+        title: title.trim(),
+        time,
+        detail: detail.trim() || undefined,
+      }));
+      onOpenChange(false);
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -45,6 +58,17 @@ export const AddEventSheet = ({ open, onOpenChange, onConfirm }) => {
 
         <div className="px-5 pb-6 space-y-3">
           <div>
+            <label className="text-[12px] text-[#858C88]">记录方式</label>
+            <div className="mt-1.5">
+              <RecordModeToggle
+                value={mode}
+                onChange={setMode}
+                liveDisabled={!allowLiveStart}
+              />
+            </div>
+          </div>
+
+          <div>
             <label className="text-[12px] text-[#858C88]">标题</label>
             <Input
               value={title}
@@ -55,16 +79,22 @@ export const AddEventSheet = ({ open, onOpenChange, onConfirm }) => {
             />
           </div>
 
-          <div>
-            <label className="text-[12px] text-[#858C88]">时间</label>
-            <Input
-              type="time"
-              value={time}
-              onChange={(e) => setTime(e.target.value)}
-              className="mt-1.5 h-11 bg-white border-[#E5E5E0] rounded-xl font-num"
-              data-testid="event-time-input"
-            />
-          </div>
+          {!isLive ? (
+            <div>
+              <label className="text-[12px] text-[#858C88]">时间</label>
+              <Input
+                type="time"
+                value={time}
+                onChange={(e) => setTime(e.target.value)}
+                className="mt-1.5 h-11 bg-white border-[#E5E5E0] rounded-xl font-num text-base"
+                data-testid="event-time-input"
+              />
+            </div>
+          ) : (
+            <div className="rounded-2xl border border-dashed border-[#D9DDD8] bg-white p-3 text-[12px] text-[#6E756F]">
+              开始事件时会自动记录当前本地时间。
+            </div>
+          )}
 
           <div>
             <label className="text-[12px] text-[#858C88]">备注（可选）</label>
@@ -81,9 +111,10 @@ export const AddEventSheet = ({ open, onOpenChange, onConfirm }) => {
           <Button
             onClick={handleConfirm}
             data-testid="event-confirm-btn"
+            disabled={submitting}
             className="w-full h-12 rounded-2xl bg-[#6B8067] hover:bg-[#5a6d57] text-white text-[14px] mt-2"
           >
-            确认添加
+            {submitting ? '提交中...' : (isLive ? '开始事件' : '确认添加')}
           </Button>
         </div>
       </SheetContent>
