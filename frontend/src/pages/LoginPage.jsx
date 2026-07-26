@@ -75,7 +75,7 @@ export const LoginPage = ({ onLoginSuccess }) => {
             <div className="w-12 h-12 rounded-2xl bg-[#2C332F] flex items-center justify-center">
               <LogIn size={24} className="text-white" strokeWidth={1.8} />
             </div>
-            <h1 className="text-[24px] font-medium text-[#2C332F]">饮食记录</h1>
+            <h1 className="text-[24px] font-medium text-[#2C332F]">生活</h1>
           </div>
         </div>
 
