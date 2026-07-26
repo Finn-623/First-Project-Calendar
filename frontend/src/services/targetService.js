@@ -51,6 +51,7 @@ export const targetService = {
             protein_target: targets.protein_target || 140,
             fat_target: targets.fat_target || 65,
             carbs_target: targets.carbs_target || 240,
+            calculated_field: targets.calculated_field || 'calories',
           },
           { onConflict: 'user_id,target_date' }
         )
@@ -126,6 +127,28 @@ export const targetService = {
       return { error };
     } catch (err) {
       return { error: err };
+    }
+  },
+
+  async saveIntakePlanWithHistory(userId, payload) {
+    if (!userId) {
+      return { data: null, error: new Error('缺少用户 ID') };
+    }
+
+    try {
+      const { data, error } = await supabase
+        .rpc('save_intake_plan_with_history', {
+          p_calories_kcal: payload.calories_target,
+          p_protein_g: payload.protein_target,
+          p_fat_g: payload.fat_target,
+          p_carbs_g: payload.carbs_target,
+          p_calculated_field: payload.calculated_field,
+          p_target_date: payload.target_date,
+        });
+
+      return { data, error };
+    } catch (err) {
+      return { data: null, error: err };
     }
   },
 };

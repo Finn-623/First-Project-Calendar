@@ -43,6 +43,7 @@ const normalizePlan = (target) => {
     protein: Number(protein) || 0,
     fat: Number(fat) || 0,
     carbs: Number(carbs) || 0,
+    calculatedField: String(target.calculated_field || target.calculatedField || 'calories'),
   };
 };
 
@@ -674,7 +675,12 @@ export const StoreProvider = ({ children, user: initialUser, session: initialSes
     }
   }, [reloadFoodLibrary, requireAdmin, user?.id]);
 
-  const savePlan = useCallback(async (userId, nextPlan, targetDate = toDateStr(new Date())) => {
+  const savePlan = useCallback(async (
+    userId,
+    nextPlan,
+    targetDate = toDateStr(new Date()),
+    calculatedField = 'calories'
+  ) => {
     if (!userId) {
       return { success: false, error: '请先登录后再保存计划' };
     }
@@ -685,9 +691,11 @@ export const StoreProvider = ({ children, user: initialUser, session: initialSes
         protein_target: Number(nextPlan?.protein) || 0,
         fat_target: Number(nextPlan?.fat) || 0,
         carbs_target: Number(nextPlan?.carbs) || 0,
+        calculated_field: String(calculatedField || 'calories'),
+        target_date: targetDate,
       };
 
-      const { data, error } = await targetService.upsertTarget(userId, targetDate, payload);
+      const { data, error } = await targetService.saveIntakePlanWithHistory(userId, payload);
 
       if (error) {
         return { success: false, error };

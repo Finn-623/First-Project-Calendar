@@ -56,7 +56,7 @@ const sections = [
         to: '/settings/intake-plan',
         icon: Target,
         label: '摄入计划',
-        description: '修改摄入计划并查看历史计划',
+        description: '设置每日摄入目标并查看调整记录',
       },
       {
         to: '/settings/record-history',
