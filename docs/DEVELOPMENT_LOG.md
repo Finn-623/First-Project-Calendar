@@ -807,3 +807,37 @@
 - 风险或注意事项：工作区存在未纳入本次提交的无关改动（`frontend/src/components/BottomNav.jsx`、`frontend/src/index.css`），已保持隔离。
 - 当前分支：supabase-v1
 - Git Commit ID：80db763d18d2884d15be505029c3ca1d97b6a923
+
+## DEV-20260726-022
+
+- 日期：2026-07-26
+- 状态：已完成
+- 修改类型：交互优化
+- 修改模块：首页 / 加号菜单
+- 任务目标：点击加号打开菜单后，点击菜单以外区域即可关闭菜单；菜单内部点击不误关闭；菜单项点击保持原有功能。
+- 修改前关闭方式：仅通过再次点击加号或点击菜单项后在业务处理函数中关闭；点击页面其他区域不会关闭菜单。
+- 修改后关闭方式：菜单打开时监听全局 `pointerdown`；若点击目标不在加号按钮和菜单容器内，则自动关闭菜单。
+- 使用现有弹出组件还是自定义实现：继续使用当前自定义菜单容器，不改为 Popover/DropdownMenu。
+- 是否使用透明遮罩：否。
+- 是否使用点击外部监听：是。
+- 使用的事件类型：`pointerdown`（同时覆盖鼠标与触摸）。
+- 事件监听清理方式：仅在 `fabOpen=true` 时注册 `document.addEventListener('pointerdown', ...)`；菜单关闭或组件卸载时在 `useEffect` cleanup 中 `removeEventListener`。
+- 菜单选项点击后的关闭顺序：菜单项 `onClick` 先走原有业务处理函数（如打开加餐/训练/事件弹窗），函数内继续执行 `setFabOpen(false)` 关闭菜单，不改变既有业务顺序。
+- 移动端触摸验证结果：通过代码路径验证 `pointerdown` 能覆盖触摸；受当前会话未登录限制，未完成登录态页面实机点击流验证。
+- 实际修改文件：`frontend/src/pages/TodayPage.jsx`、`CHANGELOG.md`、`docs/DEVELOPMENT_LOG.md`、`docs/PROJECT_STATUS.md`、`docs/VERSION_HISTORY.md`
+- 实际执行的测试：
+	- 修改前检查：`git status --short`、`git branch --show-current`
+	- 语法检查：`get_errors` 检查 `frontend/src/pages/TodayPage.jsx`
+	- 逻辑检索：确认新增 `fabButtonRef`、`addMenuRef`、`pointerdown` 监听与 cleanup
+	- 可访问性检查：访问 `http://localhost:3002/`（当前重定向登录页）
+	- 前端构建：`cd frontend && npm run build`
+- 测试结果：
+	- 本次改动文件无语法错误。
+	- 构建通过。
+	- 外部点击关闭逻辑已接入且包含监听器清理。
+	- 受当前会话无登录态限制，未能在首页完成“周日历/今日摄入/时间轴/底部导航区域点击关闭”的端到端手工验证；本次以代码路径、静态检查和构建结果为主。
+- 前端构建结果：通过。
+- 未完成事项：待提供可用登录态后补充首页真实点击流验证（桌面+移动触摸）。
+- 风险或注意事项：工作区存在未纳入本次提交的无关改动（`frontend/src/components/BottomNav.jsx`、`frontend/src/index.css`），已保持隔离。
+- 当前分支：supabase-v1
+- Git Commit ID：5557c8a584ff9ea36bf826046546b40256b5a40d
