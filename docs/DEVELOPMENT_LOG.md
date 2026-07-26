@@ -878,3 +878,37 @@
 - 风险或注意事项：工作区存在未纳入本次提交的无关改动（`frontend/src/components/BottomNav.jsx`、`frontend/src/index.css`），已保持隔离。
 - 当前分支：supabase-v1
 - Git Commit ID：afd6b50ab2e8d93a9b3486525736e01c026a598a
+
+## DEV-20260726-024
+
+- 日期：2026-07-26
+- 状态：已完成
+- 修改类型：UI / 表单精简
+- 修改模块：训练弹窗
+- 任务目标：移除统一训练弹窗中的“预估消耗”字段及其相关提交参数。
+- 修改前字段：训练弹窗包含“预估消耗”展示卡片（标题 + 数值 + kcal），并在提交对象中携带 `caloriesBurned`。
+- 删除的界面内容：`预估消耗` 标题、数值展示区域、`kcal` 单位提示、对应展示容器。
+- 是否同时修改新增和编辑弹窗：新增训练弹窗已移除；当前项目无训练条目独立编辑弹窗（仅支持改时间），因此无额外编辑弹窗可移除。
+- 是否移除提交参数：是，新增训练提交对象不再包含 `caloriesBurned`。
+- 旧训练数据的兼容方式：不删除历史数据；时间轴和历史读取仍支持旧记录中的 `caloriesBurned` 字段，旧数据保留。
+- 是否修改时间轴或历史展示：否（仅移除训练弹窗字段，未改时间轴/历史展示逻辑）。
+- 是否修改数据库结构：否。
+- 是否新增 migration：否。
+- 实际修改文件：`frontend/src/modals/AddTrainingSheet.jsx`、`CHANGELOG.md`、`docs/DEVELOPMENT_LOG.md`、`docs/PROJECT_STATUS.md`、`docs/VERSION_HISTORY.md`
+- 实际执行的测试：
+	- 修改前检查：`git status --short`、`git branch --show-current`
+	- 语法检查：`get_errors` 检查 `frontend/src/modals/AddTrainingSheet.jsx`
+	- 逻辑检索：确认训练弹窗文件内无 `预估消耗`、`training-preview-cal`、`caloriesBurned`、`kcal` 残留
+	- 兼容检索：确认 `caloriesBurned` 仅保留在 `TimelineItem` 与 `historyService` 的旧数据读取路径
+	- 前端构建：`cd frontend && npm run build`
+- 测试结果：
+	- 本次改动文件无语法错误。
+	- 构建通过。
+	- 训练弹窗不再显示预估消耗字段，新增训练保存不再依赖该字段。
+	- 当前项目无训练完整编辑弹窗，因此“编辑弹窗字段移除”无可执行对象；旧记录兼容路径保持。
+- 数据库迁移结果：本次无数据库迁移。
+- 前端构建结果：通过。
+- 未完成事项：待提供登录态后补充首页手工点击流验证（新增训练弹窗可视化检查）。
+- 风险或注意事项：工作区存在未纳入本次提交的无关改动（`frontend/src/components/BottomNav.jsx`、`frontend/src/index.css`），已保持隔离。
+- 当前分支：supabase-v1
+- Git Commit ID：1330c03b53a17bf6d040e4de8cc0259da915f852

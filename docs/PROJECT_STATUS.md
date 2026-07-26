@@ -165,6 +165,10 @@
   - 证据：frontend/src/modals/AddTrainingSheet.jsx
   - 说明：训练时长输入已改为字符串态，支持清空后重新输入，不再出现删除后自动补 0 或 05/030 等前导零问题。
   - 相关 Commit：afd6b50ab2e8d93a9b3486525736e01c026a598a
+- `已完成` 训练弹窗移除预估消耗字段
+  - 证据：frontend/src/modals/AddTrainingSheet.jsx
+  - 说明：统一训练弹窗已移除“预估消耗”展示和对应提交参数，训练记录不再要求填写预估消耗。
+  - 相关 Commit：1330c03b53a17bf6d040e4de8cc0259da915f852
 
 ## 4. 部分完成
 
