@@ -217,6 +217,13 @@
   - 证据：frontend/src/pages/TodayPage.jsx
   - 说明：首页时间轴在查看今天时新增随本地实时时间移动的“现在”标记；查看历史或未来日期时不显示，且不触发数据库请求。
   - 相关 Commit：ee3341fab9cb29d0f10ca5dd96a7f53f18be4450
+- `已完成` 事件与训练创建响应速度优化
+  - 证据：frontend/src/pages/TodayPage.jsx
+  - 证据：frontend/src/modals/AddEventSheet.jsx
+  - 证据：frontend/src/modals/AddTrainingSheet.jsx
+  - 证据：frontend/src/lib/timelineCreatePerf.js
+  - 说明：创建成功后直接更新本地时间轴并关闭弹窗，不再同步等待全量历史刷新；创建失败时保持弹窗与输入；创建流程增加即时提交态反馈与同 ID 去重追加。
+  - 相关 Commit：5912b0e1a0afb29ceb4bb0a6787cb4ad41b0f930
 
 ## 4. 部分完成
 

@@ -1348,3 +1348,98 @@
 - Git Commit ID：ee3341fab9cb29d0f10ca5dd96a7f53f18be4450
 - 版本状态：本次为本地功能新增，未正式上传，正式版本号保持 `v0.1.1`。
 
+## DEV-20260726-033
+
+- 日期：2026-07-26
+- 状态：已完成
+- 修改类型：性能优化 / 创建记录
+- 修改模块：事件弹窗、训练弹窗、创建链路、时间轴本地状态
+- 任务目标：优化“创建事件/创建训练（含现在开始）”响应速度，拆分弹窗打开阶段与提交创建阶段进行定位并最小化修改。
+- 修改前检查：
+	- 已执行：`git status --short`
+	- 已执行：`git branch --show-current`
+	- 已检查加号菜单与弹窗入口：`openTraining`、`openEvent`
+	- 已检查创建弹窗组件：`frontend/src/modals/AddEventSheet.jsx`、`frontend/src/modals/AddTrainingSheet.jsx`
+	- 已检查创建服务与请求路径：`frontend/src/services/timelineService.js`
+	- 已检查提交后刷新路径：`appendTimelineItem -> refreshDayState -> loadHistory`
+- 弹窗打开阶段测量方式：
+	- 新增性能标记点：`menu_item_click`、`menu_closed`、`sheet_open_state_set`、`sheet_open_state_visible`、`sheet_first_frame_rendered`。
+	- 记录容器：`window.__timelineCreatePerfStore`（仅本地调试信息，不包含用户敏感数据）。
+- 创建提交阶段测量方式：
+	- 新增性能标记点：`submit_click`、`submit_validation_passed/finished`、`insert_request_sent`、`insert_request_returned`、`timeline_state_updated`、`sheet_close_requested`、`sheet_closed`。
+	- 记录容器：`window.__timelineCreatePerfStore`。
+- 事件弹窗修改前打开耗时：
+	- 当前会话受登录态限制（浏览器仅可进入 `/login`），无法在真实 Today 页面完成可点击实测毫秒值采集。
+- 训练弹窗修改前打开耗时：
+	- 当前会话受登录态限制，无法在真实 Today 页面完成可点击实测毫秒值采集。
+- 事件创建修改前耗时：
+	- 当前会话受登录态限制，无法在真实创建链路完成可点击实测毫秒值采集。
+- 训练创建修改前耗时：
+	- 当前会话受登录态限制，无法在真实创建链路完成可点击实测毫秒值采集。
+- 弹窗打开慢的实际原因（代码链路定位）：
+	- 入口函数本身无 Supabase await；主要风险不在“打开前查库”，而在页面同帧重渲染负担。
+	- 本次保持“先关闭菜单+立刻设置弹窗 open”，并增加阶段打点用于后续登录态实测。
+- 创建提交慢的实际原因（代码链路定位）：
+	- 修改前 `appendTimelineItem` 内部同步 `await refreshDayState()`，而 `refreshDayState` 会触发 `loadHistory`（日期+逐日详情链路），导致弹窗关闭被全量历史刷新阻塞。
+- 是否存在重复 insert：
+	- 主创建路径只调用一次 `timelineService.createTimelineItem`。
+	- 兼容旧字段场景下服务层可能触发“新列失败后旧列回退”二次尝试（仅异常回退分支）。
+- 是否存在 insert 后重复 select：
+	- 否，创建使用 `insert(...).select().single()` 一次返回记录。
+- 是否存在创建后全量刷新：
+	- 修改前：存在同步等待全量历史刷新。
+	- 修改后：改为后台异步 `refreshDayState`，不阻塞弹窗关闭。
+- 是否存在等待 Realtime：否，创建成功后直接使用 insert 返回记录更新本地时间轴。
+- 是否存在认证重复初始化：未发现创建流程中重新初始化 Auth。
+- 修改后的弹窗打开流程：
+	- 点击菜单项 -> 关闭菜单 -> 设置弹窗 open -> 弹窗渲染（并记录阶段耗时）。
+	- 打开阶段不执行 Supabase 查询。
+- 修改后的创建流程：
+	- 点击创建/开始 -> 立即进入提交态 -> 表单校验 -> 一次 insert 请求 -> 返回记录直接更新本地时间轴 -> 关闭弹窗。
+	- 全量历史刷新移至后台 Promise，不阻塞主流程。
+- 数据库请求数量：
+	- 正常链路每次创建 1 次 insert（含 select 返回）。
+	- 旧字段兼容异常分支可能出现 2 次写入尝试（新列失败后旧列回退）。
+- 本地时间轴更新方式：
+	- 直接使用服务返回记录进行按 ID 追加/替换（同 ID 去重）。
+- Realtime 去重方式：
+	- 本地追加逻辑按 ID 去重，若同 ID 已存在则替换而非二次追加。
+- 弹窗关闭时机：
+	- 仅在 insert 成功且本地时间轴更新后关闭。
+	- 失败时不关闭弹窗。
+- 防重复提交方式：
+	- 事件/训练创建按钮提交时使用 `submitting` 锁；提交中禁用按钮并阻止重复触发。
+- 是否使用乐观创建：否。
+- 失败处理方式：
+	- 请求失败时保留弹窗和用户输入，恢复按钮状态，显示错误 toast，不写入失败记录到时间轴。
+- 修改后实际耗时：
+	- 已完成构建与链路验证，当前会话仍受登录态限制，无法在真实 Today 创建链路中输出端到端毫秒值。
+	- 已通过新增性能标记覆盖打开与提交关键阶段，待登录态下可直接读取每次交互实测数据。
+- 是否修改数据库结构：否。
+- 是否新增 migration、约束或 RPC：否。
+- 实际修改文件：
+	- `frontend/src/pages/TodayPage.jsx`
+	- `frontend/src/modals/AddEventSheet.jsx`
+	- `frontend/src/modals/AddTrainingSheet.jsx`
+	- `frontend/src/lib/timelineCreatePerf.js`
+	- `CHANGELOG.md`
+	- `docs/DEVELOPMENT_LOG.md`
+	- `docs/PROJECT_STATUS.md`
+	- `docs/VERSION_HISTORY.md`
+- 实际执行的测试：
+	- 修改前检查：`git status --short`、`git branch --show-current`
+	- 链路检索：`appendTimelineItem`、`refreshDayState`、`loadHistory`、`createTimelineItem`
+	- 语法检查：`get_errors`（目标文件）
+	- 前端构建：`cd frontend && npm run build`（两次）
+	- 开发服务验证：重启 `yarn start` 并确认编译成功
+	- 浏览器入口验证：`http://localhost:3000`（当前会话重定向到 `/login`）
+- 测试结果：
+	- 目标文件无语法错误。
+	- 前端构建通过（Compiled successfully）。
+	- 代码链路确认：创建成功后不再同步等待全量历史刷新；失败不再自动关弹窗；提交期间具备即时反馈与重复提交保护。
+	- 受当前会话缺少可用登录态限制，未完成创建流程的真实交互毫秒实测与 Network 面板请求计数截图。
+- 前端构建结果：通过。
+- 当前分支：supabase-v1
+- Git Commit ID：5912b0e1a0afb29ceb4bb0a6787cb4ad41b0f930
+- 版本状态：本次为本地性能优化，未正式上传，正式版本号保持 `v0.1.1`。
+
