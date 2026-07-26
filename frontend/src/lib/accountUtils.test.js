@@ -1,4 +1,6 @@
 import {
+  MIN_PASSWORD_LENGTH,
+  mapPasswordErrorMessage,
   mapAccountStatusLabel,
   mapRoleLabel,
   validateDisplayNameInput,
@@ -30,6 +32,37 @@ describe('accountUtils', () => {
     expect(result.errors.confirmPassword).toBe('两次输入的新密码不一致');
   });
 
+  test('validatePasswordForm should reject password shorter than minimum length', () => {
+    const result = validatePasswordForm({
+      currentPassword: 'old',
+      nextPassword: 'ab',
+      confirmPassword: 'ab',
+    });
+
+    expect(result.isValid).toBe(false);
+    expect(result.errors.nextPassword).toBe(`密码至少需要 ${MIN_PASSWORD_LENGTH} 个字符`);
+  });
+
+  test('validatePasswordForm should allow minimum length password', () => {
+    const result = validatePasswordForm({
+      currentPassword: 'old',
+      nextPassword: 'abc',
+      confirmPassword: 'abc',
+    });
+
+    expect(result.errors.nextPassword).toBeUndefined();
+  });
+
+  test('validatePasswordForm should allow password longer than minimum length', () => {
+    const result = validatePasswordForm({
+      currentPassword: 'old',
+      nextPassword: 'abcdef',
+      confirmPassword: 'abcdef',
+    });
+
+    expect(result.errors.nextPassword).toBeUndefined();
+  });
+
   test('mapRoleLabel should map admin and user', () => {
     expect(mapRoleLabel({ role: 'admin' })).toBe('管理员');
     expect(mapRoleLabel({ role: 'user' })).toBe('普通用户');
@@ -39,5 +72,10 @@ describe('accountUtils', () => {
     expect(mapAccountStatusLabel({ account_status: 'active' }, { id: '1' })).toBe('正常');
     expect(mapAccountStatusLabel({ account_status: 'disabled' }, { id: '1' })).toBe('已停用');
     expect(mapAccountStatusLabel({ account_status: 'pending' }, { id: '1' })).toBe('待确认');
+  });
+
+  test('mapPasswordErrorMessage should reflect Supabase higher minimum when provided', () => {
+    const msg = mapPasswordErrorMessage({ message: 'Password should be at least 6 characters.' });
+    expect(msg).toBe('密码至少需要 6 个字符');
   });
 });

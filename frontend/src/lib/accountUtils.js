@@ -1,6 +1,6 @@
 export const DISPLAY_NAME_MIN_LEN = 1;
 export const DISPLAY_NAME_MAX_LEN = 30;
-export const PASSWORD_MIN_LEN = 8;
+export const MIN_PASSWORD_LENGTH = 3;
 
 export function normalizeDisplayName(value) {
   return String(value || '').trim();
@@ -56,8 +56,8 @@ export function validatePasswordForm({ currentPassword, nextPassword, confirmPas
     errors.confirmPassword = '请再次输入新密码';
   }
 
-  if (nextPassword && nextPassword.length < PASSWORD_MIN_LEN) {
-    errors.nextPassword = `新密码至少需要${PASSWORD_MIN_LEN}个字符`;
+  if (nextPassword && nextPassword.length < MIN_PASSWORD_LENGTH) {
+    errors.nextPassword = `密码至少需要 ${MIN_PASSWORD_LENGTH} 个字符`;
   }
 
   if (nextPassword && currentPassword && nextPassword === currentPassword) {
@@ -87,7 +87,10 @@ export function mapPasswordErrorMessage(error) {
   }
 
   if (normalized.includes('password') && normalized.includes('least')) {
-    return `新密码至少需要${PASSWORD_MIN_LEN}个字符`;
+    const matched = message.match(/(\d+)/);
+    const requiredLen = matched ? Number(matched[1]) : MIN_PASSWORD_LENGTH;
+    const finalLen = Number.isFinite(requiredLen) && requiredLen > 0 ? requiredLen : MIN_PASSWORD_LENGTH;
+    return `密码至少需要 ${finalLen} 个字符`;
   }
 
   if (normalized.includes('network') || normalized.includes('fetch')) {
