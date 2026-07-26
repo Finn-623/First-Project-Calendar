@@ -33,7 +33,7 @@ const timeToMinutes = (t) => {
 export const HistoryDetailPage = () => {
   const { dateStr } = useParams();
   const navigate = useNavigate();
-  const { history, plan, user, loadHistory, loadCurrentUserData } = useStore();
+  const { history, plan, user, loadHistory } = useStore();
 
   const entry = history.find((h) => h.dateStr === dateStr);
   const [draftTimeline, setDraftTimeline] = useState([]);
@@ -46,6 +46,7 @@ export const HistoryDetailPage = () => {
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [confirmKind, setConfirmKind] = useState('item');
   const [pendingDeleteItem, setPendingDeleteItem] = useState(null);
+  const [deleting, setDeleting] = useState(false);
   const now = useCurrentTime();
 
   useEffect(() => {
@@ -197,29 +198,36 @@ export const HistoryDetailPage = () => {
   };
 
   const handleConfirmDelete = async () => {
-    if (!user?.id) return;
+    if (!user?.id || deleting) return;
 
-    if (confirmKind === 'day') {
-      setConfirmOpen(false);
-      const { error } = await historyService.deleteDayArchive(user.id, dateStr);
-      if (error) {
-        toast.error('删除失败，请稍后重试');
+    setDeleting(true);
+    const targetDateStr = dateStr;
+
+    try {
+      if (confirmKind === 'day') {
+        const { error } = await historyService.deleteDayArchive(user.id, targetDateStr);
+        if (error) {
+          toast.error('删除失败，请稍后重试');
+          return;
+        }
+
+        await loadHistory(user.id);
+        setConfirmOpen(false);
+        toast.success('历史记录已删除');
+        // Keep user in history section instead of jumping back to today.
+        navigate('/history');
         return;
       }
 
-      await loadHistory(user.id);
-      await loadCurrentUserData(user.id);
-      toast.success('历史记录已删除');
-      navigate('/');
-      return;
+      if (!pendingDeleteItem) return;
+
+      setDraftTimeline((prev) => prev.filter((item) => item.id !== pendingDeleteItem.id));
+      setConfirmOpen(false);
+      setPendingDeleteItem(null);
+      toast.success('条目已删除');
+    } finally {
+      setDeleting(false);
     }
-
-    if (!pendingDeleteItem) return;
-
-    setDraftTimeline((prev) => prev.filter((item) => item.id !== pendingDeleteItem.id));
-    setConfirmOpen(false);
-    setPendingDeleteItem(null);
-    toast.success('条目已删除');
   };
 
   const handleSave = async () => {
@@ -401,9 +409,10 @@ export const HistoryDetailPage = () => {
             <AlertDialogCancel>取消</AlertDialogCancel>
             <AlertDialogAction
               onClick={handleConfirmDelete}
+              disabled={deleting}
               className="bg-[#D27D67] text-white hover:bg-[#c86d56]"
             >
-              确认删除
+              {deleting ? '删除中...' : '确认删除'}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
