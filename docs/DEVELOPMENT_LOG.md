@@ -268,3 +268,83 @@
 	- 新增页面底部使用 `pb-28` 预留导航安全空间，需在真实机型上再确认遮挡边界。
 - Git 分支：supabase-v1
 - Git Commit ID：58237724a596fe08aa5a03b8b050aee903c190f5
+
+## DEV-20260726-009
+
+- 日期：2026-07-26
+- 状态：已完成
+- 任务目标：将底部菜单栏从悬浮式调整为贴底固定式，保持登录态显示、未登录态不显示，并保留移动端安全区域适配。
+- 实际完成内容：
+	- 底部菜单栏由悬浮式设计调整为贴底固定式设计。
+	- 菜单栏改为全宽布局（左右铺满页面）。
+	- 移除底部和左右悬浮间距（移除外层 `mx`、`mb`、圆角卡片容器与明显阴影样式）。
+	- 保留移动端安全区域适配（导航背景延伸到底部，内容区通过安全区内边距避让）。
+	- 保持四个导航入口与现有激活态逻辑。
+	- 保持登录页与未登录页面不显示底部菜单栏。
+	- 主内容底部预留空间沿用现有页面 `pb-32` / `pb-28`，避免内容被固定底部菜单遮挡。
+- 主要修改文件或模块：`frontend/src/components/BottomNav.jsx`、`frontend/src/index.css`、`docs/DEVELOPMENT_LOG.md`
+- 遇到的问题：
+	- 原 `safe-bottom` 使用 `max(env(safe-area-inset-bottom), 0.5rem)`，在无安全区设备上会产生额外底部内边距，不符合“无多余底部留白”目标。
+- 解决方式：
+	- 导航容器改为 `fixed inset-x-0 bottom-0` 的贴底结构。
+	- `safe-bottom` 调整为仅使用 `env(safe-area-inset-bottom)`，去除额外 0.5rem。
+- 执行的测试：
+	- `cd frontend && npm run build`
+	- `get_errors` 检查 `frontend/src/components/BottomNav.jsx`、`frontend/src/index.css`
+	- 文本检查 `frontend/src/components/BottomNav.jsx`：确认存在 `fixed inset-x-0 bottom-0`、`border-t`、无 `bottom-4/left-4/right-4/mx-4/mb-4/rounded-2xl/rounded-full/shadow` 等悬浮容器样式
+	- 文本检查 `frontend/src/App.js`：确认 `BottomNav` 仅在 `isAuthenticated` 分支渲染
+	- 文本检查 `frontend/src/pages/*.jsx`：确认主要页面保留 `pb-32` / `pb-28` 底部预留
+- 测试结果：
+	- 构建通过。
+	- 本次改动文件无语法/类型错误。
+	- 底部导航代码结构满足贴底固定、全宽、无悬浮外边距与无卡片阴影要求。
+	- 未登录态不显示底部导航逻辑保持成立。
+	- 页面内容底部预留仍存在，未发现本次改动引入的遮挡风险。
+	- 未执行与本任务无关功能测试。
+- 未完成事项：
+	- 需在真实 iPhone 设备上补充一次安全区视觉验收（当前为代码与构建级验证）。
+- 风险或注意事项：
+	- 本次仅调整底部菜单栏定位与样式，不改动认证、路由权限、数据库、业务逻辑。
+- Git 分支：supabase-v1
+- Git Commit ID：未提交
+
+## DEV-20260726-010
+
+- 日期：2026-07-26
+- 状态：已完成
+- 修改类型：UI 调整
+- 修改模块：首页顶部区域
+- 任务目标：删除首页右上角加号按钮，不影响首页其他顶部内容与原有新增业务能力。
+- 修改前：首页右上角显示加号按钮（`top-add-btn`），点击后展开顶部快捷新增菜单（加餐、无氧训练、有氧训练、其他事件）。
+- 修改后：首页右上角不再显示加号按钮，也不再渲染对应顶部弹出菜单与相关占位区域。
+- 原按钮对应的功能：展开顶部 `AddPickerMenu` 快捷入口，用于触发加餐、训练、事件新增。
+- 是否保留原业务功能：是。页面内 `fab-add` 浮动按钮入口与对应新增流程保留。
+- 是否修改公共 Header：否。该按钮为首页局部实现，不属于公共 Header 组件。
+- 实际修改文件：`frontend/src/pages/TodayPage.jsx`、`CHANGELOG.md`、`docs/DEVELOPMENT_LOG.md`、`docs/PROJECT_STATUS.md`、`docs/VERSION_HISTORY.md`
+- 遇到的问题：
+	- 当前自动化浏览器会话未登录，无法在同一次会话中直接完成“登录后首页右上角视觉”实机验证。
+- 解决方式：
+	- 通过源码与测试标识精确核对：移除 `top-add-btn` / `top-add-menu` / `topOpen` 相关逻辑；并确认 `fab-add` 与新增流程仍保留。
+- 实际测试内容：
+	- 修改前检查：`git status --short`、`git branch --show-current`
+	- 文本检索：确认右上角按钮来源仅在 `TodayPage`，非公共 Header 与路由级配置
+	- 文本检索：确认 `top-add-btn` / `top-add-menu` / `setTopOpen` / `topOpen` 已不存在
+	- 文本检索：确认 `fab-add` 与 `AddPickerMenu` 新增流程仍存在
+	- 页面检查：访问 `http://localhost:3002/login`，登录页正常展示且无底部导航（未登录预期）
+	- 构建检查：`cd frontend && npm run build`
+	- 语法检查：`get_errors` 检查 `frontend/src/pages/TodayPage.jsx`
+- 测试结果：
+	- 首页右上角加号相关代码已移除，未保留透明按钮或占位点击区域。
+	- 首页标题区结构保持正常（顶部仍渲染 TODAY 与日期标题）。
+	- 其他顶部元素未误删。
+	- 其他页面中的加号入口（如食物库新增）未受影响。
+	- 本次改动文件无语法错误。
+	- 前端构建通过。
+	- 控制台未发现由本次改动引入的新报错。
+- 构建结果：通过。
+- 未完成事项：
+	- 待在已登录会话下补充首页视觉验收（仅验证右上角按钮移除后的实际显示）。
+- 风险或注意事项：
+	- 本次仅移除首页右上角入口，不删除新增业务能力本身与相关弹窗/逻辑。
+- 当前分支：supabase-v1
+- Git Commit ID：e8810246d53e4039526c3184e0f5770750dece5c
