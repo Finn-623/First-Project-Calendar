@@ -145,6 +145,13 @@
   - 证据：frontend/src/pages/HistoryDetailPage.jsx
   - 说明：结束本日已支持空白日期；已结束但无记录的日期会在历史中显示“本日无记录”。
   - 相关 Commit：dc320ed1c51ac09144b667bf4553c3f51b0dd382
+- `已完成` 新增加餐支持时间与类型必填
+  - 证据：frontend/src/modals/AddSnackSheet.jsx
+  - 证据：frontend/src/pages/TodayPage.jsx
+  - 证据：frontend/src/constants/snackTypes.js
+  - 证据：frontend/src/services/historyService.js
+  - 说明：新增加餐先填写时间与类型（普通/练前/练后）后再创建记录；旧加餐类型默认按普通处理。
+  - 相关 Commit：5f229f865016715b7dbfcf1fb746e7a35df9e7c7
 
 ## 4. 部分完成
 

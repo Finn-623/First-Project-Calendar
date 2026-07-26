@@ -734,3 +734,36 @@
 	- 工作区存在未纳入本次提交的无关改动（`frontend/src/components/BottomNav.jsx`、`frontend/src/index.css`），已保持隔离。
 - 当前分支：supabase-v1
 - Git Commit ID：dc320ed1c51ac09144b667bf4553c3f51b0dd382
+
+## DEV-20260726-020
+
+- 日期：2026-07-26
+- 状态：已完成
+- 修改类型：功能开发 / 新增加餐表单
+- 修改模块：首页 / 加餐新增流程
+- 任务目标：新增加餐时增加“时间”和“类型”必填字段（普通/练前/练后），并保留现有“添加食物与克重”流程。
+- 修改前行为：点击新增加餐后直接插入固定时间 `15:30` 的空加餐记录，无类型字段。
+- 修改后行为：点击新增加餐先弹出表单，必须选择时间并选择类型（普通/练前/练后）后才创建加餐记录。
+- 类型固定选项：`normal`（普通）、`pre_workout`（练前）、`post_workout`（练后）。
+- 数据兼容策略：旧加餐记录无类型时默认归一化为 `normal`。
+- 是否新增数据库 migration：否（本次仅调整前端记录结构与归档 JSON 字段）。
+- 实际修改文件：`frontend/src/modals/AddSnackSheet.jsx`、`frontend/src/constants/snackTypes.js`、`frontend/src/pages/TodayPage.jsx`、`frontend/src/components/TimelineItem.jsx`、`frontend/src/services/historyService.js`、`CHANGELOG.md`、`docs/DEVELOPMENT_LOG.md`、`docs/PROJECT_STATUS.md`、`docs/VERSION_HISTORY.md`
+- 实际执行的测试：
+	- `get_errors` 检查 `AddSnackSheet.jsx`、`snackTypes.js`、`TodayPage.jsx`、`TimelineItem.jsx`、`historyService.js`
+	- `cd frontend && npm run build`
+	- `git show --name-only --pretty=format:%H%n%s 5f229f8`
+	- `git status --short`
+- 测试结果：
+	- 本次功能文件无语法错误。
+	- 前端构建通过。
+	- 功能提交范围准确，仅包含加餐时间/类型功能相关 5 个代码文件。
+	- 工作区仍存在本次未处理的无关改动：`frontend/src/components/BottomNav.jsx`、`frontend/src/index.css`。
+	- 未在已登录真实会话完成端到端手工点击验证（当前以代码路径与构建验证为主）。
+- 构建结果：通过。
+- 未完成事项：
+	- 待补充登录态手工验证：创建不同类型加餐、添加食物后时间排序、历史日期回看类型显示。
+- 风险或注意事项：
+	- 本次未修改早餐/午餐/晚餐创建逻辑；仅扩展加餐流程。
+	- `snackType` 当前存储于前端时间轴对象与归档 JSON，未新增数据库字段。
+- 当前分支：supabase-v1
+- Git Commit ID：5f229f865016715b7dbfcf1fb746e7a35df9e7c7
