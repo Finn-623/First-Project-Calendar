@@ -8,6 +8,9 @@ import { HistoryPage } from './pages/HistoryPage';
 import { HistoryDetailPage } from './pages/HistoryDetailPage';
 import { FoodLibraryPage } from './pages/FoodLibraryPage';
 import { PlanPage } from './pages/PlanPage';
+import { SettingsPage } from './pages/SettingsPage';
+import { AccountInfoPage } from './pages/AccountInfoPage';
+import { ProfileInfoPage } from './pages/ProfileInfoPage';
 import { LoginPage } from './pages/LoginPage';
 import { StoreProvider } from './store';
 import { supabase, isSupabaseConfigured } from './lib/supabaseClient';
@@ -282,6 +285,9 @@ function App() {
                 <Route path="/history" element={<HistoryPage />} />
                 <Route path="/history/:dateStr" element={<HistoryDetailPage />} />
                 <Route path="/library" element={<FoodLibraryPage />} />
+                <Route path="/settings" element={<SettingsPage />} />
+                <Route path="/settings/account" element={<AccountInfoPage />} />
+                <Route path="/settings/profile" element={<ProfileInfoPage />} />
                 <Route path="/plan" element={<PlanPage />} />
                 <Route path="/login" element={<Navigate to="/" replace />} />
                 <Route path="*" element={<Navigate to="/" replace />} />
