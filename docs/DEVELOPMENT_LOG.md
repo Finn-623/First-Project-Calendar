@@ -1,3 +1,46 @@
+## DEV-20260727-069
+
+- 日期：2026-07-27
+- 状态：已完成
+- 修改类型：文档 / AI 开发环境与工具规范建设
+- 修改背景：为固定项目中的 AI 开发流程、工具职责、写入边界、部署授权和协作方式，需要建立统一的项目级规则、Gemini CLI 专属规则及工具选择规范。
+- 任务目标：
+  1. 完成 Gemini CLI 安装及 API Key 认证验证。
+  2. 建立固定的 AI 开发工具选择规则。
+  3. 完善 Codex 项目开发规范。
+  4. 建立 Gemini CLI 默认只读及明确授权后才可修改的边界。
+  5. 明确 ChatGPT、Codex、GitHub Copilot、Gemini CLI 和人工终端操作的职责。
+- 实际完成内容：
+  - 完成 Gemini CLI 安装及 API Key 认证验证。
+  - 扩展 `AGENTS.md`，将其明确为项目最高级的开发与 AI 协作规则，并补充任务检查、修改范围、验证命令、Python 环境、数据库、部署、Git 和多工具协作规范。
+  - 新建 `GEMINI.md`，规定 Gemini CLI 默认用于只读审查和第二意见，并明确文件修改、依赖、数据库、部署及 Git 写操作的授权边界。
+  - 新建 `docs/AI_TOOL_SELECTION.md`，明确 ChatGPT、Codex、GitHub Copilot、Gemini CLI 与人工终端操作的适用范围、选择顺序、成本原则和交接限制。
+  - 完成 Codex 文档修改和 Gemini 只读复核，并根据审查结果统一 Agent 协作判断、后端 Python 环境及生产部署授权规则。
+- 主要修改文件或模块：
+  - `AGENTS.md`
+  - `GEMINI.md`
+  - `docs/AI_TOOL_SELECTION.md`
+- 执行的测试与检查：
+  - Gemini CLI 版本检查：`0.52.0`。
+  - Gemini CLI API Key 认证验证：认证可用。
+  - Gemini CLI 项目读取检查：能正常进入项目并读取目录结构。
+  - Gemini 只读检查：三份规则文件均经过只读审查，检查后 `git status` 无变化。
+  - Codex 文档检查：检查限定文件的 Git diff、Markdown 结构、规则职责及冲突情况。
+  - 本次为纯文档修改，未运行前端 build、test 或 lint。
+- 测试结果：
+  - ✅ Gemini CLI 版本确认为 `0.52.0`。
+  - ✅ Gemini CLI 能通过 API Key 认证并正常读取项目目录结构。
+  - ✅ 三份规则文件已完成 Gemini 只读审查。
+  - ✅ Gemini 只读检查前后 Git 工作区状态无变化。
+  - ✅ AI 工具职责、写入边界和部署授权规则已统一，未发现明显冲突。
+- 未完成事项：
+  - 暂无。
+- 风险或注意事项：
+  - 本次仅建设文档和环境规范，没有修改业务代码、数据库、依赖或生产环境。
+  - 前端 build、test 和 lint 未执行，不能将其记录为已通过；纯文档修改不要求执行这些验证。
+- 当前分支：supabase-v1
+- Git Commit ID：92ccff91b17b33c6b38ddd638aad4b1da264ae04
+
 ## DEV-20260727-068
 
 - 日期：2026-07-27
@@ -2986,4 +3029,3 @@
 	- 前端最小长度仍为 3 位，但如果 Supabase 后台策略更高，会以后台策略报错为准。
 - 当前分支：supabase-v1
 - Git Commit ID：176c4de2213dcd4d8e5d3b4322756d36571f0760
-
