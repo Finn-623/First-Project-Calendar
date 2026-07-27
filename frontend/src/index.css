@@ -64,7 +64,7 @@ body {
 
 /* Bottom nav safe area */
 .safe-bottom {
-    padding-bottom: max(env(safe-area-inset-bottom), 0.5rem);
+    padding-bottom: env(safe-area-inset-bottom);
 }
 
 /* Hide scrollbar on horizontal food-category chips */

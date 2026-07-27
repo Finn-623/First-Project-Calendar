@@ -248,6 +248,55 @@ function App() {
 
   const isAuthenticated = Boolean(user && session);
 
+  const componentEntries = [
+    ['BrowserRouter', BrowserRouter],
+    ['Routes', Routes],
+    ['Route', Route],
+    ['Navigate', Navigate],
+    ['Toaster', Toaster],
+    ['StoreProvider', StoreProvider],
+    ['BottomNav', BottomNav],
+    ['TodayPage', TodayPage],
+    ['HistoryPage', HistoryPage],
+    ['HistoryDetailPage', HistoryDetailPage],
+    ['FoodLibraryPage', FoodLibraryPage],
+    ['PlanPage', PlanPage],
+    ['SettingsPage', SettingsPage],
+    ['AccountInfoPage', AccountInfoPage],
+    ['ProfileInfoPage', ProfileInfoPage],
+    ['SettingsVersionPage', SettingsVersionPage],
+    ['VersionFeedbackPage', VersionFeedbackPage],
+    ['SettingsIntakePlanPage', SettingsIntakePlanPage],
+    ['SettingsRecordHistoryPage', SettingsRecordHistoryPage],
+    ['SettingsRecordSettingsPage', SettingsRecordSettingsPage],
+    ['SettingsAccountActionsPage', SettingsAccountActionsPage],
+    ['LoginPage', LoginPage],
+  ];
+
+  const invalidComponents = componentEntries.filter(([, component]) => {
+    if (!component) return true;
+    const type = typeof component;
+    return type !== 'function' && type !== 'object';
+  });
+
+  if (invalidComponents.length > 0) {
+    return (
+      <div className="min-h-screen w-full bg-gradient-to-br from-[#F7F7F5] to-[#EFF2ED] flex items-center justify-center p-4">
+        <div className="text-left w-full max-w-xl rounded-2xl border border-[#F2C2BE] bg-white p-4">
+          <p className="text-[16px] font-medium text-[#8A3B34]">页面加载失败</p>
+          <p className="text-[13px] text-[#6A6F6C] mt-2">
+            检测到组件导出异常，请检查以下组件是否正确导出：
+          </p>
+          <ul className="mt-3 space-y-1 text-[12px] text-[#2C332F]">
+            {invalidComponents.map(([name, component]) => (
+              <li key={name}>- {name}（当前类型：{typeof component}）</li>
+            ))}
+          </ul>
+        </div>
+      </div>
+    );
+  }
+
   // State 1: Loading
   if (isLoading) {
     return (

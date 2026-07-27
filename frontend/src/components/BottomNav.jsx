@@ -14,43 +14,42 @@ export const BottomNav = () => {
 
   return (
     <nav
-      className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-md z-40 safe-bottom"
+      className="fixed inset-x-0 bottom-0 z-50 border-t border-[#E5E5E0] bg-[#F7F7F5] safe-bottom"
+      style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
       data-testid="bottom-nav"
     >
-      <div className="mx-3 mb-3 rounded-2xl bg-white/90 backdrop-blur-md border border-[#E5E5E0] shadow-[0_8px_24px_-8px_rgba(44,51,47,0.15)]">
-        <div className="grid grid-cols-4">
-          {ITEMS.map(({ to, label, icon: Icon, testId }) => {
-            const isCurrent = to === '/'
-              ? location.pathname === '/'
-              : location.pathname === to || location.pathname.startsWith(`${to}/`);
+      <div className="grid grid-cols-4">
+        {ITEMS.map(({ to, label, icon: Icon, testId }) => {
+          const isCurrent = to === '/'
+            ? location.pathname === '/'
+            : location.pathname === to || location.pathname.startsWith(`${to}/`);
 
-            return (
-              <NavLink
-                key={to}
-                to={to}
-                end={to === '/'}
-                data-testid={testId}
-                onClick={(e) => {
-                  if (isCurrent) {
-                    e.preventDefault();
-                  }
-                }}
-                className={({ isActive }) =>
-                  `flex flex-col items-center justify-center py-3 gap-1 ${
-                    isActive ? 'text-[#6B8067]' : 'text-[#858C88]'
-                  }`
+          return (
+            <NavLink
+              key={to}
+              to={to}
+              end={to === '/'}
+              data-testid={testId}
+              onClick={(e) => {
+                if (isCurrent) {
+                  e.preventDefault();
                 }
-              >
-                {({ isActive }) => (
-                  <>
-                    <Icon size={20} strokeWidth={isActive ? 2 : 1.5} />
-                    <span className="text-[10.5px] tracking-wide">{label}</span>
-                  </>
-                )}
-              </NavLink>
-            );
-          })}
-        </div>
+              }}
+              className={({ isActive }) =>
+                `flex flex-col items-center justify-center py-3 gap-1 ${
+                  isActive ? 'text-[#6B8067]' : 'text-[#858C88]'
+                }`
+              }
+            >
+              {({ isActive }) => (
+                <>
+                  <Icon size={20} strokeWidth={isActive ? 2 : 1.5} />
+                  <span className="text-[10.5px] tracking-wide">{label}</span>
+                </>
+              )}
+            </NavLink>
+          );
+        })}
       </div>
     </nav>
   );
