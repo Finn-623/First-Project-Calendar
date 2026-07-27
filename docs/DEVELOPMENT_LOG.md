@@ -1,3 +1,57 @@
+## DEV-20260727-076
+
+- 日期：2026-07-27
+- 状态：已完成本地补充验收，待生产迁移与人工验证
+- 修改类型：Release Blocker Follow-up / 事务安全与 npm 部署一致性
+- 任务目标：
+  1. 将自动归档快照、删除和防重记录收敛为整体事务，明确重复执行与 Cron 重试行为。
+  2. 确保 lock、`packageManager`、Vercel、发布说明和应用提示全部使用 npm。
+  3. 从全新 npm cache 完成 `npm ci`，再重跑完整测试与构建。
+- 实际完成内容：
+  - 新增迁移 `020_auto_archive_transaction.sql` 和 service-role-only RPC `auto_archive_user_records(UUID, DATE)`。
+  - RPC 使用用户/日期 advisory lock 串行化重复或并发 Cron，并锁定 `timeline_items`、`food_entries`，防止快照生成与删除之间发生业务写入。
+  - RPC 在同一事务内复核自动归档启用状态、本地前一日与配置时间，生成 `daily_archives` 快照、删除精确用户日期的时间轴并写唯一防重日志；任一步异常由 PostgreSQL 整体回滚。
+  - Edge Function 不再分别读写和删除业务表，只在鉴权与时间预筛后调用事务 RPC；RPC 返回 `already_processed` 时计为跳过。
+  - 新增事务迁移静态检查，并调整 handler 测试覆盖正确用户/日期、重复执行和 RPC 回滚错误。
+  - 新增 `frontend/vercel.json`，明确 `npm ci`、`npm run build`、`build`；发布说明、配置错误提示与公共 HTML 注释移除 Yarn 执行指引。
+  - 更新 AGENTS 包管理规则：npm 与 `package-lock.json` 为唯一方案，依赖未变化时用 `npm ci`，不得在 Vercel/CI 混用 Yarn。
+- 主要修改文件或模块：
+  - `supabase/migrations/020_auto_archive_transaction.sql`
+  - `supabase/functions/auto-archive-records/handler.ts`
+  - `supabase/functions/auto-archive-records/handler.test.mjs`
+  - `supabase/functions/auto-archive-records/migration.test.mjs`
+  - `frontend/vercel.json`
+  - `frontend/src/App.js`
+  - `frontend/public/index.html`
+  - `AGENTS.md`
+  - `RELEASE_MOBILE_GITHUB.md`
+  - `CHANGELOG.md`
+  - `docs/PROJECT_STATUS.md`
+  - `docs/version-updates/v0.1.2.md`
+  - `docs/DATABASE_CHANGES.md`
+  - `docs/DEVELOPMENT_LOG.md`
+- 执行的测试与检查：
+  - 全新 cache、无 `node_modules`：`npm ci --cache <fresh-cache>`
+    - 结果：退出码 0，新增 1514 个包。
+    - warning：既有 ESLint peer warning、弃用依赖、75 项 audit 风险和 allow-scripts 提示；未使用 force、legacy 或 audit fix。
+  - `npm run validate:version`
+    - 结果：退出码 0，v0.1.2 校验通过。
+  - `node --test supabase/functions/auto-archive-records/handler.test.mjs supabase/functions/auto-archive-records/migration.test.mjs`
+    - 结果：12 项全部通过。
+  - `CI=true npm test -- --watchAll=false`
+    - 结果：18 个测试套件、114 项测试全部通过。
+  - `npm run build`
+    - 结果：退出码 0，生产构建成功；主 JavaScript gzip 242.38 kB，CSS gzip 12.33 kB。
+- 未完成事项：
+  - 本地没有 Deno、Supabase CLI 或测试数据库，未实际执行迁移 020，也未进行数据库级并发/回滚集成测试。
+  - 生产需按“审核并应用迁移 020 → 配置 Secret → 部署函数 → 配置 Cron → 隔离账号验证”的顺序人工完成。
+- 风险或注意事项：
+  - 表级 `SHARE ROW EXCLUSIVE` 锁以安全一致性优先，会短暂阻塞时间轴/食物写入；RPC 只处理单个用户前一日且应由低频 Cron 调用，仍需生产监控锁等待时间。
+  - 历史 DEVELOPMENT_LOG 中的 Yarn 命令作为真实历史记录保留，不代表当前构建入口。
+  - 本次未执行数据库迁移、远程 Supabase 操作、函数部署、Cron 修改、生产部署、push 或 tag。
+- 当前分支：supabase-v1
+- Git Commit ID：未提交
+
 ## DEV-20260727-075
 
 - 日期：2026-07-27

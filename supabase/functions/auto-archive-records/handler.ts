@@ -76,68 +76,6 @@ function addDays(dateStr: string, days: number) {
   return date.toISOString().slice(0, 10);
 }
 
-function formatArchiveLabel(dateStr: string) {
-  const [year, month, day] = dateStr.split('-').map(Number);
-  const date = new Date(Date.UTC(year, month - 1, day));
-  const weekdays = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
-  return `${month}月${day}日 · ${weekdays[date.getUTCDay()]}`;
-}
-
-function normalizeTimelineItem(item: Record<string, any>) {
-  const itemType = item.item_type;
-  const type = itemType === 'breakfast' || itemType === 'lunch' || itemType === 'dinner' || itemType === 'snack'
-    ? 'meal'
-    : itemType === 'anaerobic_training'
-      ? 'anaerobic'
-      : itemType === 'aerobic_training'
-        ? 'aerobic'
-        : 'event';
-  const foods = Array.isArray(item.food_entries)
-    ? item.food_entries.map((entry: Record<string, any>) => ({
-        entryId: entry.id,
-        id: entry.source_food_id || entry.id,
-        name: entry.food_name_snapshot || entry.name || '食物',
-        grams: Number(entry.quantity || 0),
-        cal: Number(entry.calories_snapshot || 0),
-        p: Number(entry.protein_snapshot || 0),
-        f: Number(entry.fat_snapshot || 0),
-        c: Number(entry.carbs_snapshot || 0),
-      }))
-    : [];
-
-  return {
-    id: item.id,
-    type,
-    subtype: type === 'meal' ? itemType : undefined,
-    title: item.title,
-    time: item.event_time || item.time,
-    fixed: Boolean(item.fixed),
-    foods,
-    detail: item.notes || '',
-    notes: item.notes || null,
-    snackType: item.details?.snackType,
-    bodyParts: item.details?.bodyParts,
-    status: item.status || 'completed',
-    started_at: item.started_at || null,
-    ended_at: item.ended_at || null,
-    duration_minutes: item.duration_minutes == null ? null : Number(item.duration_minutes),
-    caloriesBurned: Number(item.details?.caloriesBurned || item.calories_burned || 0),
-  };
-}
-
-function sumTotals(timeline: Array<Record<string, any>>) {
-  return timeline.reduce((totals, item) => {
-    if (item.type !== 'meal') return totals;
-    for (const food of item.foods || []) {
-      totals.calories += Number(food.cal || 0);
-      totals.protein += Number(food.p || 0);
-      totals.fat += Number(food.f || 0);
-      totals.carbs += Number(food.c || 0);
-    }
-    return totals;
-  }, { calories: 0, protein: 0, fat: 0, carbs: 0 });
-}
-
 export function createSupabaseArchiveRepository(client: any) {
   const throwIfError = (error: any) => {
     if (error) throw new Error(error.message || 'Database operation failed');
@@ -152,57 +90,13 @@ export function createSupabaseArchiveRepository(client: any) {
       throwIfError(error);
       return data || [];
     },
-    async hasArchiveLog(userId: string, archiveDate: string) {
-      const { data, error } = await client
-        .from('automatic_archive_log')
-        .select('id')
-        .eq('user_id', userId)
-        .eq('archive_date', archiveDate)
-        .maybeSingle();
+    async archiveUser(userId: string, archiveDate: string) {
+      const { data, error } = await client.rpc('auto_archive_user_records', {
+        target_user_id: userId,
+        target_date: archiveDate,
+      });
       throwIfError(error);
-      return Boolean(data);
-    },
-    async getExistingArchive(userId: string, archiveDate: string) {
-      const { data, error } = await client
-        .from('daily_archives')
-        .select('id')
-        .eq('user_id', userId)
-        .eq('archive_date', archiveDate)
-        .maybeSingle();
-      throwIfError(error);
-      return data || null;
-    },
-    async getTimeline(userId: string, archiveDate: string) {
-      const { data, error } = await client
-        .from('timeline_items')
-        .select('*, food_entries(*)')
-        .eq('user_id', userId)
-        .eq('event_date', archiveDate)
-        .order('event_time', { ascending: true });
-      throwIfError(error);
-      return data || [];
-    },
-    async upsertArchive(payload: Record<string, unknown>) {
-      const { error } = await client
-        .from('daily_archives')
-        .upsert(payload, { onConflict: 'user_id,archive_date' });
-      throwIfError(error);
-    },
-    async deleteTimeline(userId: string, archiveDate: string) {
-      const { data, error } = await client
-        .from('timeline_items')
-        .delete()
-        .eq('user_id', userId)
-        .eq('event_date', archiveDate)
-        .select('id');
-      throwIfError(error);
-      return data?.length || 0;
-    },
-    async insertArchiveLog(payload: Record<string, unknown>) {
-      const { error } = await client
-        .from('automatic_archive_log')
-        .upsert(payload, { onConflict: 'user_id,archive_date', ignoreDuplicates: true });
-      throwIfError(error);
+      return Array.isArray(data) ? data[0] : data;
     },
   };
 }
@@ -220,45 +114,13 @@ async function archiveEligibleUser(
   }
 
   const archiveDate = addDays(userToday, -MIN_ARCHIVE_AGE_DAYS);
-  if (await repository.hasArchiveLog(setting.user_id, archiveDate)) {
-    return { archived: false, reason: 'already-processed' };
-  }
-
-  const [existingArchive, rawTimeline] = await Promise.all([
-    repository.getExistingArchive(setting.user_id, archiveDate),
-    repository.getTimeline(setting.user_id, archiveDate),
-  ]);
-  const timeline = rawTimeline.map(normalizeTimelineItem);
-
-  if (timeline.length > 0 || !existingArchive) {
-    await repository.upsertArchive({
-      user_id: setting.user_id,
-      archive_date: archiveDate,
-      archive_label: formatArchiveLabel(archiveDate),
-      timeline,
-      totals: sumTotals(timeline),
-      is_completed: true,
-      completed_at: now.toISOString(),
-    });
-  }
-
-  // The durable archive must exist before the destructive statement. A failed
-  // archive write therefore cannot delete timeline data. PostgreSQL executes
-  // this single DELETE atomically, including cascading food_entries.
-  const deletedCount = rawTimeline.length > 0
-    ? await repository.deleteTimeline(setting.user_id, archiveDate)
-    : 0;
-
-  await repository.insertArchiveLog({
-    user_id: setting.user_id,
-    archive_date: archiveDate,
-    archived_record_count: deletedCount,
-  });
+  const result = await repository.archiveUser(setting.user_id, archiveDate);
 
   return {
-    archived: true,
+    archived: result?.result_status === 'archived',
+    reason: result?.result_status,
     archiveDate,
-    deletedCount,
+    deletedCount: Number(result?.deleted_count || 0),
   };
 }
 

@@ -1,3 +1,38 @@
+## DB-20260727-001
+
+- 日期：2026-07-27
+- 修改原因：自动归档原先由 Edge Function 分步写归档、删除时间轴和写日志，无法保证跨步骤整体事务安全，也无法完全阻止快照与删除之间的并发写入。
+- 实际修改内容：新增 service-role-only RPC `public.auto_archive_user_records(UUID, DATE)`，在单个 PostgreSQL 事务内完成资格复核、快照、删除和防重日志。
+- 涉及的表：
+  - `public.user_record_settings`：事务内复核用户已启用、配置时间及用户时区。
+  - `public.timeline_items`：锁定后生成目标用户/日期快照并删除。
+  - `public.food_entries`：随时间轴锁定并用于生成食物明细和营养合计；删除仍通过既有外键级联。
+  - `public.daily_archives`：按 `(user_id, archive_date)` 幂等 upsert。
+  - `public.automatic_archive_log`：按既有唯一约束写入成功标记，阻止重复执行。
+- Migration 文件路径：`supabase/migrations/020_auto_archive_transaction.sql`
+- 对现有数据的影响：
+  - 迁移只创建/替换 RPC 和权限，不立即读取、归档或删除任何用户数据。
+  - 只有经服务端 Secret 鉴权后的 Edge Function 使用 service role 调用 RPC 时才处理数据。
+- 事务与幂等机制：
+  - 同一用户/日期通过 `pg_advisory_xact_lock` 串行化。
+  - `timeline_items` 与 `food_entries` 使用 `SHARE ROW EXCLUSIVE` 锁，避免快照与删除间出现新写入。
+  - 快照 upsert、时间轴 DELETE 和防重日志 INSERT 属于同一函数事务；异常自动整体回滚。
+  - 已存在成功日志时返回 `already_processed`；Cron 重试不会重复归档或再次删除。
+- 风险：
+  - 表锁会短暂阻塞相关写入，需在低频 Cron 场景监控锁等待时间。
+  - 本地没有可用 Supabase 测试数据库，SQL 尚未经过真实 PostgreSQL 执行与并发故障注入验证。
+- 回滚方式：
+  - 在用户确认后创建反向 migration，撤销 `public.auto_archive_user_records(UUID, DATE)`；回滚函数前应先停用 Cron 或部署不调用该 RPC 的旧版函数。
+- 测试内容：
+  - `node --test supabase/functions/auto-archive-records/handler.test.mjs supabase/functions/auto-archive-records/migration.test.mjs`
+  - 前端完整测试与生产构建。
+- 测试结果：
+  - 12 项鉴权、范围与事务结构检查通过。
+  - 前端 18 个套件、114 项测试通过；生产构建通过。
+  - 未执行 migration 或真实数据库集成测试。
+- 相关 DEV 编号：`DEV-20260727-076`
+- 相关 Commit ID：未提交
+
 ## DB-20260726-003
 
 - 日期：2026-07-26

@@ -6,8 +6,8 @@ This project is ready to ship as a mobile-friendly web app.
 
 From frontend:
 
-- corepack yarn install
-- corepack yarn build
+- npm ci
+- npm run build
 
 Build already passes in current workspace.
 
@@ -31,10 +31,11 @@ Quick manual checks before each release:
 2. In Vercel, import repository: Finn-623/First-Project-Calendar.
 3. Set Root Directory to frontend.
 4. Framework preset: Create React App.
-5. Add environment variables:
+5. Confirm Install Command is `npm ci`, Build Command is `npm run build`, and Output Directory is `build`.
+6. Add environment variables:
    - REACT_APP_SUPABASE_URL
    - REACT_APP_SUPABASE_ANON_KEY
-6. Deploy.
+7. Deploy.
 
 After first deploy, use the production URL on your phone directly.
 

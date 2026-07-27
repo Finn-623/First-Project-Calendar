@@ -430,6 +430,8 @@ git branch
 当前本机统一使用：
 
 ```bash
+npm install
+npm ci
 npm run build
 CI=true npm test -- --watchAll=false
 ```
@@ -438,9 +440,10 @@ CI=true npm test -- --watchAll=false
 
 - 不得声称 lint 已通过。
 - 不得为了补 lint 而擅自安装依赖。
-- 不得自行删除 `yarn.lock`。
-- 不得自行创建、删除或更新 `package-lock.json`。
-- 不得为了 Yarn 不可用而修改业务代码。
+- 前端统一使用 npm，`frontend/package-lock.json` 是唯一依赖锁文件。
+- 依赖未变化时使用 `npm ci` 验证可重复安装；明确调整依赖时才允许通过 `npm install` 更新 lock，并必须检查差异。
+- 不得重新创建 `yarn.lock`，不得在 Vercel、CI 或发布步骤中混用 Yarn。
+- Vercel 的前端 Root Directory 为 `frontend`，安装命令为 `npm ci`，构建命令为 `npm run build`，输出目录为 `build`。
 
 后端测试仅在后端发生修改或当前需求明确影响后端时执行。运行前必须：
 

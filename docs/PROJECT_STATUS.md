@@ -479,14 +479,15 @@ V0.1当前计分（本次审查）：
 - 后续版本：
   - Roadmap 中模板、周计划、规则自动生成、减脂模式、离线和 AI 功能未纳入 v0.1.2。
 - 待人工核验：
-  - 生产环境迁移 `011`–`019` 的应用顺序和执行结果。
+  - 生产环境迁移 `011`–`020` 的应用顺序和执行结果。
   - 普通用户／管理员双账号的登录、切换、RLS 和公共／个人食物权限。
   - Supabase `version_feedback` 中是否仍有待处理建议。
   - 主要移动端页面真机布局、点击和返回流程。
 - 本地阻断修复：
-  - `react-day-picker` 已升级到兼容 React 19 的 `8.10.2`，包管理统一为 npm 与 `package-lock.json`；无 `node_modules` 的干净环境安装通过。
+  - `react-day-picker` 已升级到兼容 React 19 的 `8.10.2`，包管理统一为 npm 与 `package-lock.json`；全新空 cache、无 `node_modules` 的 `npm ci` 退出码为 0。
+  - Vercel 明确使用 `frontend` Root Directory、`npm ci`、`npm run build` 和 `build` 输出目录；当前发布说明与用户提示不再引导 Yarn。
   - `auto-archive-records` 已增加 `AUTO_ARCHIVE_CRON_SECRET` 服务端 Bearer 鉴权，未授权请求在创建 service-role 客户端前返回 `401`／`403`。
-  - 自动归档改为只处理已启用、到达配置时间且至少保留一日的用户日期；先持久化 `daily_archives`，再按精确用户和日期删除。
+  - 自动归档改为调用 `auto_archive_user_records`：同一事务内串行化用户日期、锁定时间轴与食物明细、复核资格、写归档、删除时间轴并写防重日志；异常整体回滚。
 - 生产环境待人工确认：
-  - 配置 Supabase Secret `AUTO_ARCHIVE_CRON_SECRET`，部署更新后的函数，并同步为 Cron 请求配置同一服务端 Secret；不得把 Secret 写入前端或仓库。
+  - 先审核并应用迁移 `020_auto_archive_transaction.sql`，再配置 Supabase Secret `AUTO_ARCHIVE_CRON_SECRET`、部署更新后的函数，并同步为 Cron 请求配置同一服务端 Secret；不得把 Secret 写入前端或仓库。
   - 用隔离测试账号验证无密钥／错误密钥拒绝、正确密钥执行、归档日期范围与失败恢复，再决定是否启用生产 Cron。

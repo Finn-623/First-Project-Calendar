@@ -55,7 +55,7 @@ function ConfigErrorPage() {
           <p className="text-[12px] font-mono text-[#2C332F]">REACT_APP_SUPABASE_ANON_KEY=your_anon_key</p>
         </div>
         <p className="text-[12px] text-[#858C88] mb-6">
-          配置完成后，请重新启动应用（Ctrl+C 然后 yarn start）
+          配置完成后，请重新启动应用（Ctrl+C 然后 npm start）
         </p>
         <button
           onClick={() => window.location.reload()}
