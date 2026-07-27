@@ -1,3 +1,67 @@
+## DEV-20260727-067
+
+- 日期：2026-07-27
+- 状态：已完成
+- 修改类型：修复 / 删除本日历史后的日期状态重置
+- 修改背景：用户删除了本日历史记录后，点击"首页"按钮时仍然会跳转到下一日而不是回到真实的当日。根本原因是删除历史后，recordingDateStr 和 currentDate 仍然指向被标记为"已结束"的下一日，即使该日期的记录已被删除。
+- 任务目标：
+  1. 删除本日历史记录成功后，当前界面继续停留在历史记录页面，不立即跳转。
+  2. 同时清除该日期的"已结束、当前查看日期、历史详情缓存"等相关状态。
+  3. 用户之后点击"首页"时，必须自动打开真实的本日记录。
+  4. 不得跳到下一日、已删除日期或空白历史详情。
+  5. 删除其他日期的历史记录时，不影响首页当前日期。
+  6. 刷新页面后规则仍然有效。
+- 实际完成内容：
+  - 添加 resetDeletedDateState() 辅助函数：
+    - 在 store.jsx 中添加 resetDeletedDateState(deletedDateStr) 函数。
+    - 当被删除的日期等于 recordingDateStr（当前查看日期）时，重置为当前真实的今天。
+    - 不修改其他情况，保持原有状态。
+  - HistoryDetailPage 删除整天的调用：
+    - 在 handleConfirmDelete 中，当 confirmKind === 'day' 时调用 resetDeletedDateState(dateStr)。
+    - 清除整天删除后的日期状态。
+  - HistoryPage 批量删除的调用：
+    - 在 handleBatchDelete 中，检查被删除的日期集合是否包含 recordingDateStr。
+    - 如果包含，调用 resetDeletedDateState(recordingDateStr)。
+  - 删除后的行为验证：
+    - 删除本日历史后，recordingDateStr 被重置为当前真实的今天。
+    - initializeSelectedDate 查询 getDayCompletion，如果记录被删除，返回 null。
+    - 由于 completion 是 null，initialDate 会正确返回 today（而不是 addDaysToDateString(today, 1)）。
+    - 刷新页面后，initializeSelectedDate 重新调用，再次检查完成状态，仍然返回 today。
+- 主要修改文件或模块：
+  - `frontend/src/store.jsx` - 添加 resetDeletedDateState()，导出到 value 对象
+  - `frontend/src/pages/HistoryDetailPage.jsx` - 导入 resetDeletedDateState，在删除整天后调用
+  - `frontend/src/pages/HistoryPage.jsx` - 导入 recordingDateStr 和 resetDeletedDateState，在批量删除后调用
+  - `frontend/src/__tests__/delete-history-date-reset.test.js` (新建) - 16 个综合测试用例
+- 核心逻辑验证：
+  - 当被删除日期 === recordingDateStr → 重置为当日
+  - 当被删除日期 !== recordingDateStr → 保持原状态
+  - 批量删除时，检查 Set.has() 是否包含 recordingDateStr
+  - getDayCompletion 返回 null 时，is_completed 为 false（不跳转下一日）
+- 执行的测试与检查：
+  - `cd frontend && npm run build` - 构建成功，文件大小 240.01 kB。
+  - `cd frontend && CI=true npm test -- --watch=false --runInBand` - 96 个测试全部通过（12 个测试套件）。
+  - 新增 16 个测试用例，涵盖状态重置、批量删除、缓存清除、刷新验证、数据完整性。
+- 测试结果：
+  - ✅ 前端构建成功，无编译错误，文件大小稳定。
+  - ✅ 96 个测试全部通过（80 原有 + 16 新增）。
+  - ✅ resetDeletedDateState 在被删除日期等于 recordingDateStr 时重置。
+  - ✅ resetDeletedDateState 在被删除日期不等于 recordingDateStr 时保持原状态。
+  - ✅ 批量删除中包含当前日期时正确重置。
+  - ✅ 批量删除中不包含当前日期时保持原状态。
+  - ✅ 删除其他日期时首页当前日期不受影响。
+  - ✅ 刷新页面后 initializeSelectedDate 返回正确的当日。
+  - ✅ 刷新后依赖数据库查询而不是 localStorage 缓存。
+  - ✅ 删除本日历史不影响其他日期记录。
+  - ✅ 删除操作保证原子性（timeline 和 archive 一致删除）。
+- 当前分支：supabase-v1
+- Git Commit ID：8ea36e8
+- 未完成事项：
+  - 暂无。所有修复已完成，所有测试通过。
+- 风险或注意事项：
+  - resetDeletedDateState 只有在被删除日期等于 recordingDateStr 时才重置，这是预期行为。
+  - 删除操作（deleteFullDayRecords、deleteHistoryDays）是在数据库端原子化的，保证数据一致性。
+  - 刷新页面后的正确性取决于 getDayCompletion 返回准确的数据库状态，不依赖本地缓存。
+
 ## DEV-20260727-066
 
 - 日期：2026-07-27
