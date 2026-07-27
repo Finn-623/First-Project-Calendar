@@ -26,6 +26,7 @@
 
 - 修复 React 19 与 `react-day-picker@8.10.1` 的 peer dependency 冲突，统一使用 npm 锁文件并恢复干净环境可重复安装。
 - 修复 `auto-archive-records` 可被匿名请求触发的高风险：增加独立服务端密钥鉴权，并在创建 service-role 客户端前拒绝未授权请求。
+- 加固待部署迁移 015、016、020：保留自定义 RLS policy 和 legacy 完成状态，并将自动归档全表锁收敛为目标记录锁与快照 ID 精确删除。
 - 修复历史详情默认查看模式点击“删除整天记录”无反应。
 - 修复删除真实本日历史后仍停留在下一日、旧查看日期或旧缓存的问题。
 - 修复删除历史条目后错误跳回今天，以及删除餐次最后一个食物后残留空餐次。
@@ -50,6 +51,7 @@
 - 新增 `auto-archive-records` Edge Function 源码及本地配置。
 - 自动归档调用方需配置 Supabase Secret `AUTO_ARCHIVE_CRON_SECRET`，Cron 以 `Authorization: Bearer <secret>` 发起 POST；密钥不得进入前端、仓库或日志。
 - 自动归档仅处理用户启用设置、到达其时区配置时间且至少保留一日的目标记录；快照、删除和防重日志由数据库 RPC 在同一事务完成，失败整体回滚。
+- 新增只读生产预检 SQL `supabase/preflight/v0.1.2_migrations_014_020_readonly.sql`；必须先审查预检结果，再决定是否执行迁移。
 - 本次发布准备未执行任何远程迁移、函数部署或真实数据操作；生产环境应用状态需人工确认。
 
 ### 测试与发布

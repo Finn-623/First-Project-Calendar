@@ -16,10 +16,14 @@ AS $$
 DECLARE
   settings_row public.user_record_settings%ROWTYPE;
   local_now TIMESTAMP;
+  existing_timeline JSONB;
+  new_timeline_snapshot JSONB;
   timeline_snapshot JSONB;
   nutrition_totals JSONB;
   timeline_count INTEGER;
   existing_archive BOOLEAN;
+  archive_already_logged BOOLEAN;
+  target_timeline_ids UUID[];
 BEGIN
   -- Serialize retries for the same user/date.
   PERFORM pg_advisory_xact_lock(
@@ -44,28 +48,46 @@ BEGIN
     RETURN;
   END IF;
 
-  IF EXISTS (
+  SELECT EXISTS (
     SELECT 1
     FROM public.automatic_archive_log
     WHERE user_id = target_user_id
       AND archive_date = target_date
-  ) THEN
+  )
+  INTO archive_already_logged;
+
+  -- Lock only the rows included in this snapshot. New rows inserted after this
+  -- point are not part of target_timeline_ids and therefore cannot be deleted
+  -- by this invocation.
+  SELECT COALESCE(array_agg(locked.id ORDER BY locked.event_time, locked.sort_order, locked.id), ARRAY[]::UUID[])
+  INTO target_timeline_ids
+  FROM (
+    SELECT id, event_time, sort_order
+    FROM public.timeline_items
+    WHERE user_id = target_user_id
+      AND event_date = target_date
+    FOR UPDATE
+  ) AS locked;
+
+  PERFORM 1
+  FROM public.food_entries
+  WHERE timeline_item_id = ANY(target_timeline_ids)
+  FOR UPDATE;
+
+  IF archive_already_logged AND cardinality(target_timeline_ids) = 0 THEN
     RETURN QUERY SELECT 'already_processed'::TEXT, 0;
     RETURN;
   END IF;
 
-  -- Prevent timeline or food-entry writes between snapshot creation and
-  -- deletion. Acquire locks only after the inexpensive eligibility checks.
-  LOCK TABLE public.timeline_items IN SHARE ROW EXCLUSIVE MODE;
-  LOCK TABLE public.food_entries IN SHARE ROW EXCLUSIVE MODE;
+  SELECT timeline
+  INTO existing_timeline
+  FROM public.daily_archives
+  WHERE user_id = target_user_id
+    AND archive_date = target_date
+  FOR UPDATE;
 
-  SELECT EXISTS (
-    SELECT 1
-    FROM public.daily_archives
-    WHERE user_id = target_user_id
-      AND archive_date = target_date
-  )
-  INTO existing_archive;
+  existing_archive := FOUND;
+  existing_timeline := COALESCE(existing_timeline, '[]'::JSONB);
 
   SELECT
     COALESCE(
@@ -125,26 +147,34 @@ BEGIN
       '[]'::JSONB
     ),
     COUNT(*)::INTEGER
-  INTO timeline_snapshot, timeline_count
+  INTO new_timeline_snapshot, timeline_count
   FROM public.timeline_items ti
-  WHERE ti.user_id = target_user_id
-    AND ti.event_date = target_date;
+  WHERE ti.id = ANY(target_timeline_ids);
+
+  -- Preserve an existing archive and merge newly observed rows by timeline ID.
+  -- This also makes a retry after a late insert additive instead of replacing
+  -- the previously committed snapshot.
+  SELECT COALESCE(jsonb_agg(deduplicated.item ORDER BY deduplicated.ordinality), '[]'::JSONB)
+  INTO timeline_snapshot
+  FROM (
+    SELECT DISTINCT ON (item ->> 'id') item, ordinality
+    FROM jsonb_array_elements(existing_timeline || new_timeline_snapshot)
+      WITH ORDINALITY AS combined(item, ordinality)
+    ORDER BY item ->> 'id', ordinality DESC
+  ) AS deduplicated;
 
   SELECT jsonb_build_object(
-    'calories', COALESCE(SUM(fe.calories_snapshot), 0),
-    'protein', COALESCE(SUM(fe.protein_snapshot), 0),
-    'fat', COALESCE(SUM(fe.fat_snapshot), 0),
-    'carbs', COALESCE(SUM(fe.carbs_snapshot), 0)
+    'calories', COALESCE(SUM((food ->> 'cal')::NUMERIC), 0),
+    'protein', COALESCE(SUM((food ->> 'p')::NUMERIC), 0),
+    'fat', COALESCE(SUM((food ->> 'f')::NUMERIC), 0),
+    'carbs', COALESCE(SUM((food ->> 'c')::NUMERIC), 0)
   )
   INTO nutrition_totals
-  FROM public.food_entries fe
-  JOIN public.timeline_items ti ON ti.id = fe.timeline_item_id
-  WHERE ti.user_id = target_user_id
-    AND ti.event_date = target_date
-    AND ti.item_type IN ('breakfast', 'lunch', 'dinner', 'snack');
+  FROM jsonb_array_elements(timeline_snapshot) AS item(value)
+  CROSS JOIN LATERAL jsonb_array_elements(
+    COALESCE(item.value -> 'foods', '[]'::JSONB)
+  ) AS foods(food);
 
-  -- A retry after a previously committed delete but before a legacy log write
-  -- preserves the existing non-empty archive rather than replacing it with [].
   IF timeline_count > 0 OR NOT existing_archive THEN
     INSERT INTO public.daily_archives (
       user_id,
@@ -184,7 +214,8 @@ BEGIN
   END IF;
 
   DELETE FROM public.timeline_items
-  WHERE user_id = target_user_id
+  WHERE id = ANY(target_timeline_ids)
+    AND user_id = target_user_id
     AND event_date = target_date;
   GET DIAGNOSTICS timeline_count = ROW_COUNT;
 
@@ -194,7 +225,11 @@ BEGIN
     archived_record_count
   )
   VALUES (target_user_id, target_date, timeline_count)
-  ON CONFLICT (user_id, archive_date) DO NOTHING;
+  ON CONFLICT (user_id, archive_date)
+  DO UPDATE SET
+    archived_record_count = public.automatic_archive_log.archived_record_count
+      + EXCLUDED.archived_record_count,
+    archived_at = clock_timestamp();
 
   RETURN QUERY SELECT 'archived'::TEXT, timeline_count;
 END;

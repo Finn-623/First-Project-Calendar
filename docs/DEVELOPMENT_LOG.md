@@ -1,3 +1,52 @@
+## DEV-20260727-077
+
+- 日期：2026-07-27
+- 状态：已完成迁移源码加固，待生产预检与隔离环境验证
+- 修改类型：Release Database Blocker Fix / Migration Hardening
+- 任务目标：
+  1. 防止迁移 015 删除生产环境未知 RLS policy。
+  2. 防止迁移 016 改写 legacy completed 意见状态，并使新增 policy 独立幂等。
+  3. 移除迁移 020 的全表级锁，同时保留事务、并发防重和精确删除安全。
+  4. 提供上线前只读生产预检 SQL。
+- 实际完成内容：
+  - 015 仅定向替换 `version_feedback_select_own_or_admin`、`version_feedback_insert_own`、`version_feedback_update_admin_only`，不再遍历 `pg_policies` 删除全部 policy。
+  - 016 删除迁移级历史状态回写；已有 completed 和 completed_at 保持不变，旧数据的 completed_version 可暂时为 NULL，新完成操作仍必须提供真实版本。
+  - 016 的 update-own、update-admin、delete-own policy 均增加 `pg_policies` 存在检查；完成一致性约束按已知名称定向替换，可重复执行。
+  - 020 保留同一用户/日期 advisory lock，改为 `FOR UPDATE` 锁定目标时间轴、关联食物明细和已有归档行，不再使用 `LOCK TABLE`。
+  - 020 先固定 `target_timeline_ids`，快照、归档 upsert、仅按该 ID 集合删除、日志写入仍在同一 RPC 事务；转换或任一步失败时 PostgreSQL 整体回滚。
+  - 若成功日志存在且没有剩余目标记录，返回 `already_processed`；若同日期出现尚未处理记录，则与既有归档按时间轴 ID 合并并增量处理，不覆盖既有快照。
+  - 新增 `supabase/preflight/v0.1.2_migrations_014_020_readonly.sql`，分段检查 014 约束异常、意见字段/状态、未知 policy、摄入计划字段、019 表及 020 依赖对象。
+- 主要修改文件或模块：
+  - `supabase/migrations/015_version_feedback_tasks.sql`
+  - `supabase/migrations/016_version_feedback_history_enhancements.sql`
+  - `supabase/migrations/020_auto_archive_transaction.sql`
+  - `supabase/preflight/v0.1.2_migrations_014_020_readonly.sql`
+  - `supabase/functions/auto-archive-records/migration.test.mjs`
+  - `CHANGELOG.md`
+  - `docs/DEVELOPMENT_LOG.md`
+  - `docs/DATABASE_CHANGES.md`
+  - `docs/PROJECT_STATUS.md`
+  - `docs/version-updates/v0.1.2.md`
+- 执行的测试与检查：
+  - 首次从 `frontend/` 运行根目录 Node 测试路径：失败，原因是工作目录错误、找不到测试文件；未涉及代码失败。
+  - 在项目根目录执行 `node --test supabase/functions/auto-archive-records/handler.test.mjs supabase/functions/auto-archive-records/migration.test.mjs`
+    - 结果：15 项全部通过。
+  - `cd frontend && npm run validate:version`
+    - 结果：通过，输出 `Version validation passed for v0.1.2`。
+  - `git diff --check`
+    - 结果：通过。
+  - Docker/Supabase 本地环境检查：Docker 未安装，因此未运行本地 Supabase migration 或数据库集成测试。
+- 未完成事项：
+  - 在隔离 Supabase 项目运行只读预检并人工审查所有返回结果。
+  - 在隔离环境按 014→020 应用迁移，验证 015 自定义 policy 保留、016 legacy completed 数据不变、020 SQL 编译和 RPC 权限。
+  - 对 020 执行并发 Cron、同日期新增记录、异常 JSON/数值、事务回滚、外键级联和重复调用验证。
+- 风险或注意事项：
+  - 行锁避免了全表写阻塞和误删未快照记录，但读取后新增的同日期记录需要后续同日期重试才能增量归档；生产 Cron 应对非 200/207 和剩余记录进行监控。
+  - 预检文件部分数据查询要求对应可选字段已经存在，已标注按分段、先结构后数据执行。
+  - 本次未连接生产数据库，未执行 migration、db push、函数部署、Cron、生产数据修改、push 或 tag。
+- 当前分支：supabase-v1
+- Git Commit ID：未提交
+
 ## DEV-20260727-076
 
 - 日期：2026-07-27

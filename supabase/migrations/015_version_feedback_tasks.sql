@@ -119,20 +119,11 @@ EXECUTE FUNCTION public.enforce_version_feedback_update();
 
 ALTER TABLE public.version_feedback ENABLE ROW LEVEL SECURITY;
 
-DO $$
-DECLARE
-  policy_name TEXT;
-BEGIN
-  FOR policy_name IN
-    SELECT policyname
-    FROM pg_policies
-    WHERE schemaname = 'public'
-      AND tablename = 'version_feedback'
-  LOOP
-    EXECUTE format('DROP POLICY IF EXISTS %I ON public.version_feedback', policy_name);
-  END LOOP;
-END
-$$;
+-- Replace only policies owned by this migration. Never remove unknown
+-- production policies that may have been added outside this repository.
+DROP POLICY IF EXISTS version_feedback_select_own_or_admin ON public.version_feedback;
+DROP POLICY IF EXISTS version_feedback_insert_own ON public.version_feedback;
+DROP POLICY IF EXISTS version_feedback_update_admin_only ON public.version_feedback;
 
 CREATE POLICY version_feedback_select_own_or_admin
   ON public.version_feedback

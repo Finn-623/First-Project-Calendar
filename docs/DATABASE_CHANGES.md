@@ -1,3 +1,37 @@
+## DB-20260727-002
+
+- 日期：2026-07-27
+- 修改原因：上线前只读审查发现迁移 015 会删除未知 policy、016 会覆盖 legacy completed 状态、020 使用全表级写锁。
+- 实际修改内容：
+  - 015 改为只替换仓库明确命名的 policy。
+  - 016 保留 legacy completed/completed_at，允许 legacy completed_version 为 NULL，并使 policy 创建独立幂等。
+  - 020 改为目标行锁、快照 ID 精确删除和既有归档按 ID 合并；事务及 advisory lock 保留。
+- 涉及对象：
+  - `public.version_feedback` 的约束、触发函数、RPC 和 RLS policy。
+  - `public.auto_archive_user_records(UUID, DATE)`。
+  - `public.timeline_items`、`public.food_entries`、`public.daily_archives`、`public.automatic_archive_log`。
+- Migration 文件路径：
+  - `supabase/migrations/015_version_feedback_tasks.sql`
+  - `supabase/migrations/016_version_feedback_history_enhancements.sql`
+  - `supabase/migrations/020_auto_archive_transaction.sql`
+- 对现有数据的影响：
+  - 应用 015/016 时不再主动重置意见状态或完成时间。
+  - 应用 020 只替换函数定义，不立即处理用户数据；RPC 被授权调用时才归档。
+- 风险：
+  - 尚未在真实 PostgreSQL/Supabase 隔离环境验证 SQL 编译、RLS、并发和回滚。
+  - 020 读取快照后新插入的同日期记录不会被当前调用删除，需要后续同日期调用增量处理。
+- 回滚方式：
+  - 在执行生产迁移前保留当前函数和 policy 定义；如隔离验证失败，不应用 015、016、020。
+  - 已应用后的回滚必须通过新的反向 migration 恢复上一版已知函数/约束/policy，不直接修改 migration history。
+- 测试内容：
+  - 15 项 Node 静态和 handler 测试。
+  - v0.1.2 版本一致性检查。
+- 测试结果：
+  - 15 项测试通过；版本校验通过；`git diff --check` 通过。
+  - Docker 未安装，未运行本地 Supabase。
+- 相关 DEV 编号：`DEV-20260727-077`
+- 相关 Commit ID：未提交
+
 ## DB-20260727-001
 
 - 日期：2026-07-27

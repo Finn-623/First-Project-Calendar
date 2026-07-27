@@ -488,6 +488,9 @@ V0.1当前计分（本次审查）：
   - Vercel 明确使用 `frontend` Root Directory、`npm ci`、`npm run build` 和 `build` 输出目录；当前发布说明与用户提示不再引导 Yarn。
   - `auto-archive-records` 已增加 `AUTO_ARCHIVE_CRON_SECRET` 服务端 Bearer 鉴权，未授权请求在创建 service-role 客户端前返回 `401`／`403`。
   - 自动归档改为调用 `auto_archive_user_records`：同一事务内串行化用户日期、锁定时间轴与食物明细、复核资格、写归档、删除时间轴并写防重日志；异常整体回滚。
+  - 待部署迁移 015 不再删除未知 RLS policy；016 保留 legacy completed 状态和完成时间，允许旧记录的完成版本暂时为空。
+  - 迁移 020 已移除全表级锁，改为锁定目标用户/日期的现有时间轴及其食物明细，只删除已进入本次快照的 ID；同一用户/日期 advisory lock 继续保留。
 - 生产环境待人工确认：
   - 先审核并应用迁移 `020_auto_archive_transaction.sql`，再配置 Supabase Secret `AUTO_ARCHIVE_CRON_SECRET`、部署更新后的函数，并同步为 Cron 请求配置同一服务端 Secret；不得把 Secret 写入前端或仓库。
   - 用隔离测试账号验证无密钥／错误密钥拒绝、正确密钥执行、归档日期范围与失败恢复，再决定是否启用生产 Cron。
+  - 在执行 014–020 前，先运行 `supabase/preflight/v0.1.2_migrations_014_020_readonly.sql` 的各只读分段并人工审查异常数据、未知 policy、依赖对象和约束。

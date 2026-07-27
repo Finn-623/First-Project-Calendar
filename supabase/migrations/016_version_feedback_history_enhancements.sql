@@ -10,15 +10,9 @@ ALTER TABLE public.version_feedback
 ALTER TABLE public.version_feedback
   ADD COLUMN IF NOT EXISTS completed_at TIMESTAMPTZ NULL;
 
--- Keep data consistent before tightening constraints: legacy completed rows without
--- completion version are moved back to pending to avoid fabricating version numbers.
-UPDATE public.version_feedback
-SET
-  status = 'pending',
-  completed_at = NULL,
-  completed_version = NULL,
-  updated_at = NOW()
-WHERE status = 'completed' AND (completed_version IS NULL OR char_length(trim(completed_version)) = 0);
+-- Legacy completed rows keep their original status and completed_at. Their
+-- completed_version may remain NULL until an administrator explicitly sets a
+-- real version; this migration must not invent version history.
 
 ALTER TABLE public.version_feedback
   DROP CONSTRAINT IF EXISTS version_feedback_completed_at_check;
@@ -40,27 +34,22 @@ BEGIN
 END
 $$;
 
-DO $$
-BEGIN
-  IF NOT EXISTS (
-    SELECT 1 FROM pg_constraint
-    WHERE conname = 'version_feedback_completion_consistency_check'
-      AND conrelid = 'public.version_feedback'::regclass
-  ) THEN
-    ALTER TABLE public.version_feedback
-      ADD CONSTRAINT version_feedback_completion_consistency_check
-      CHECK (
-        (status = 'pending' AND completed_at IS NULL AND completed_version IS NULL)
-        OR (
-          status = 'completed'
-          AND completed_at IS NOT NULL
-          AND completed_version IS NOT NULL
-          AND char_length(trim(completed_version)) BETWEEN 2 AND 30
-        )
-      );
-  END IF;
-END
-$$;
+ALTER TABLE public.version_feedback
+  DROP CONSTRAINT IF EXISTS version_feedback_completion_consistency_check;
+
+ALTER TABLE public.version_feedback
+  ADD CONSTRAINT version_feedback_completion_consistency_check
+  CHECK (
+    (status = 'pending' AND completed_at IS NULL AND completed_version IS NULL)
+    OR (
+      status = 'completed'
+      AND completed_at IS NOT NULL
+      AND (
+        completed_version IS NULL
+        OR char_length(trim(completed_version)) BETWEEN 2 AND 30
+      )
+    )
+  );
 
 CREATE OR REPLACE FUNCTION public.enforce_version_feedback_update()
 RETURNS TRIGGER
@@ -199,24 +188,57 @@ GRANT EXECUTE ON FUNCTION public.reopen_version_feedback(UUID) TO authenticated;
 
 DROP POLICY IF EXISTS version_feedback_update_admin_only ON public.version_feedback;
 
-CREATE POLICY version_feedback_update_own
-  ON public.version_feedback
-  FOR UPDATE
-  TO authenticated
-  USING (user_id = auth.uid())
-  WITH CHECK (user_id = auth.uid());
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_policies
+    WHERE schemaname = 'public'
+      AND tablename = 'version_feedback'
+      AND policyname = 'version_feedback_update_own'
+  ) THEN
+    CREATE POLICY version_feedback_update_own
+      ON public.version_feedback
+      FOR UPDATE
+      TO authenticated
+      USING (user_id = auth.uid())
+      WITH CHECK (user_id = auth.uid());
+  END IF;
+END
+$$;
 
-CREATE POLICY version_feedback_update_admin
-  ON public.version_feedback
-  FOR UPDATE
-  TO authenticated
-  USING (public.is_app_admin(auth.uid()))
-  WITH CHECK (public.is_app_admin(auth.uid()));
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_policies
+    WHERE schemaname = 'public'
+      AND tablename = 'version_feedback'
+      AND policyname = 'version_feedback_update_admin'
+  ) THEN
+    CREATE POLICY version_feedback_update_admin
+      ON public.version_feedback
+      FOR UPDATE
+      TO authenticated
+      USING (public.is_app_admin(auth.uid()))
+      WITH CHECK (public.is_app_admin(auth.uid()));
+  END IF;
+END
+$$;
 
-CREATE POLICY version_feedback_delete_own
-  ON public.version_feedback
-  FOR DELETE
-  TO authenticated
-  USING (user_id = auth.uid());
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_policies
+    WHERE schemaname = 'public'
+      AND tablename = 'version_feedback'
+      AND policyname = 'version_feedback_delete_own'
+  ) THEN
+    CREATE POLICY version_feedback_delete_own
+      ON public.version_feedback
+      FOR DELETE
+      TO authenticated
+      USING (user_id = auth.uid());
+  END IF;
+END
+$$;
 
 NOTIFY pgrst, 'reload schema';
