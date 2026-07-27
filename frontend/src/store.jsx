@@ -120,22 +120,25 @@ export const StoreProvider = ({ children, user: initialUser, session: initialSes
   }, []);
 
   /**
-   * 重置被删除日期后的状态（如果被删除的日期是当前查看日期）
-   * 清除"已结束"标记，恢复到真实的当日记录
+   * 清除被删除日期的本地状态。
+   * 删除系统真实本日时，恢复首页到一个全新的真实本日记录。
    */
   const resetDeletedDateState = useCallback((deletedDateStr) => {
     if (!deletedDateStr) return;
 
     const today = getSydneyDateString();
-    
-    // 如果被删除的日期正好是当前查看的日期
-    if (deletedDateStr === recordingDateStr) {
-      // 重置为当前真实的今天（不管是否已结束）
-      // initializeSelectedDate 会正确检查今天的完成状态
-      setRecordingDateStr(today);
-      setCurrentDate(createDateFromString(today));
-    }
-  }, [recordingDateStr]);
+    timelineCacheRef.current.delete(deletedDateStr);
+
+    if (deletedDateStr !== today) return;
+
+    // 忽略删除前发起、可能仍携带旧“已结束”状态的初始化结果。
+    initializationRequestRef.current += 1;
+    selectedTodayDateRef.current = today;
+    setRecordingDateStr(today);
+    setCurrentDate(createDateFromString(today));
+    setTimeline(freshTimeline());
+    setDayInitialized(true);
+  }, []);
 
   const initializeSelectedDate = useCallback(async (userId) => {
     if (!userId) return { success: false, error: '缺少用户 ID' };

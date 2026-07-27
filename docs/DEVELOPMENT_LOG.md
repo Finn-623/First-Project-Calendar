@@ -1,3 +1,64 @@
+## DEV-20260727-071
+
+- 日期：2026-07-27
+- 状态：已完成
+- 修改类型：Bug 修复 / 整日删除后的本日状态恢复
+- 修改背景：
+  1. 历史记录详情页曾因整日删除入口错误依赖 `isEditMode`，导致默认查看模式点击无反应；该入口修复已存在，本次继续验证并补强其取消行为测试。
+  2. 用户结束系统真实本日后，`recordingDateStr` 会推进到下一日。随后删除真实本日历史时，旧版 `resetDeletedDateState()` 仅在删除日期等于 `recordingDateStr` 时重置，因此条件不成立；底部首页仅执行路由导航，不会重新初始化 Store，导致首页继续使用下一日、旧查看状态或缓存时间线。
+- 任务目标：
+  1. 保证默认查看模式下可直接打开整日删除确认弹窗，取消时不删除、不清状态、不导航。
+  2. 删除系统真实本日后，统一恢复首页日期和记录状态为运行时真实本日。
+  3. 删除其他历史日期时不改变首页日期状态。
+  4. 使用真实 `StoreProvider` 测试状态恢复、缓存清理和异步初始化竞争。
+- 实际完成内容：
+  - 保留并验证 `HistoryDetailPage` 中整日删除不依赖编辑模式的既有修复。
+  - 补强取消确认测试，明确验证不调用删除服务、不调用 `resetDeletedDateState()` 且不导航。
+  - 重构 `resetDeletedDateState(deletedDateStr)` 的状态清理边界：
+    - 始终删除被删除日期在 `timelineCacheRef` 中的时间线缓存。
+    - 使用 `getSydneyDateString()` 在运行时判断系统真实本日，不硬编码业务日期。
+    - 仅当删除日期为真实本日时，将 `recordingDateStr` 和 `currentDate` 恢复为真实本日。
+    - 为已删除的真实本日创建全新的空白时间线并将 `dayInitialized` 设为完成。
+    - 递增初始化请求序号，阻止删除前发起的旧“已结束”查询结果重新把首页覆盖到下一日。
+    - 删除非本日历史日期时只清对应缓存，不改变当前首页日期和记录日期。
+  - 新增真实 `StoreProvider` 状态测试，覆盖结束本日、删除本日、旧缓存、旧异步初始化及删除其他历史日期。
+- 主要修改文件或模块：
+  - `frontend/src/store.jsx`
+  - `frontend/src/store.deletedDateState.test.jsx`（新建）
+  - `frontend/src/pages/HistoryDetailPage.test.jsx`
+  - `docs/DEVELOPMENT_LOG.md`
+- 遇到的问题：
+  - 首次定向测试虽然通过，但 Store 测试中的辅助 service mock 在测试清理后返回 `undefined`，产生非阻断 console.error。
+- 解决方式：
+  - 在每个 Store 测试开始前显式恢复 food、target、timeline 和 history service mock 返回值，消除测试辅助错误输出；未安装或升级依赖。
+- 执行的测试与检查：
+  - `CI=true npm test -- --watchAll=false --runInBand src/pages/HistoryDetailPage.test.jsx src/store.deletedDateState.test.jsx src/__tests__/delete-history-date-reset.test.js`
+    - 最终结果：3 个测试套件通过，26 项测试通过。
+    - 覆盖范围：整日删除真实组件交互、真实 Store 日期恢复、缓存清理、异步竞争，以及既有删除本日状态规则。
+  - `npm run build`
+    - 结果：生产构建成功，主 JavaScript gzip 大小为 240.09 kB。
+  - `CI=true npm test -- --watchAll=false`
+    - 结果：14 个测试套件全部通过，106 项测试全部通过，0 个 snapshot。
+  - 项目没有 lint script，本次未运行 lint，也未声称 lint 通过。
+- 测试结果：
+  - ✅ 默认查看模式下整日删除入口及确认弹窗继续正常。
+  - ✅ 取消确认不调用删除服务、不清理状态且不导航。
+  - ✅ 结束本日推进到下一日后，删除真实本日会恢复 `currentDate` 与 `recordingDateStr` 为运行时真实本日。
+  - ✅ 删除真实本日后首页显示新的空白本日时间线，不恢复被删除日期的旧缓存记录。
+  - ✅ 删除前开始的旧初始化结果不会覆盖恢复后的本日状态。
+  - ✅ 删除其他历史日期不改变已存在的首页日期和记录日期。
+  - ✅ 既有删除本日状态测试与结束本日流程测试继续通过。
+  - ✅ 完整前端测试和生产构建通过。
+- 未完成事项：
+  - 建议用户在真实浏览器中按“结束本日 → 历史详情删除真实本日 → 返回历史 → 点击首页”的完整路径进行人工体验确认。
+- 风险或注意事项：
+  - 数据库删除成功但 `loadHistory()` 失败时，现有页面会完成本地本日状态恢复、返回历史页并显示“记录已删除但刷新失败”，避免重复删除和错误成功提示。
+  - 构建输出 Node `fs.F_OK` 弃用 warning，来自现有依赖链，不影响构建成功。
+  - 完整测试输出缺少 `REACT_APP_SUPABASE_URL` 和 `REACT_APP_SUPABASE_ANON_KEY` 的 console.error，但所有测试均通过。
+  - 本次未修改数据库、Supabase RPC、迁移、依赖、锁文件、路由架构或生产环境。
+- 当前分支：supabase-v1
+- Git Commit ID：未提交
+
 ## DEV-20260727-070
 
 - 日期：2026-07-27

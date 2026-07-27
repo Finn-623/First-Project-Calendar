@@ -140,6 +140,8 @@ describe('HistoryDetailPage 删除整天记录', () => {
     fireEvent.click(screen.getByRole('button', { name: '取消' }));
 
     expect(historyService.deleteFullDayRecords).not.toHaveBeenCalled();
+    expect(resetDeletedDateStateMock).not.toHaveBeenCalled();
+    expect(mockNavigate).not.toHaveBeenCalled();
   });
 
   test('确认后删除路由日期并完成刷新、状态清理和导航', async () => {
