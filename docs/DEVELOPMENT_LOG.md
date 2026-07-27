@@ -57,7 +57,7 @@
   - 完整测试输出缺少 `REACT_APP_SUPABASE_URL` 和 `REACT_APP_SUPABASE_ANON_KEY` 的 console.error，但所有测试均通过。
   - 本次未修改数据库、Supabase RPC、迁移、依赖、锁文件、路由架构或生产环境。
 - 当前分支：supabase-v1
-- Git Commit ID：未提交
+- Git Commit ID：babfa06cfef69b39abcf20bf9f0f6da5b8417cef
 
 ## DEV-20260727-070
 
