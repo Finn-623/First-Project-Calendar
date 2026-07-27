@@ -462,23 +462,26 @@ export const StoreProvider = ({ children, user: initialUser, session: initialSes
         return { success: false, error };
       }
 
-      const entries = [];
-      for (const dateStr of dates || []) {
-        const detail = await historyService.getHistoryDetail(userId, dateStr);
-        if (detail?.error) {
-          console.error('Failed to load history detail:', detail.error);
-          continue;
-        }
+      // 并行加载所有历史记录详情，而不是逐个等待
+      const detailPromises = (dates || []).map(dateStr =>
+        historyService.getHistoryDetail(userId, dateStr).then(detail => ({
+          dateStr,
+          detail,
+        }))
+      );
 
-        entries.push({
+      const results = await Promise.all(detailPromises);
+
+      const entries = results
+        .filter(({ detail }) => !detail?.error)
+        .map(({ dateStr, detail }) => ({
           dateStr,
           dateLabel: detail.dateLabel || formatDateLabel(new Date(`${dateStr}T00:00:00`)),
           timeline: detail.timeline || [],
           totals: detail.nutrition || sumTimelineMacros(detail.timeline || []),
           isEmptyDay: detail.isEmptyDay === true,
           isCompleted: detail.isCompleted === true,
-        });
-      }
+        }));
 
       setHistory(entries);
       return { success: true, data: entries };
@@ -852,18 +855,23 @@ export const StoreProvider = ({ children, user: initialUser, session: initialSes
     const timelineToArchive = filterMeaningfulTimelineItems(timeline);
     const totals = sumTimelineMacros(timelineToArchive);
 
+    // 关键操作：保存当日归档
     return historyService.saveDayArchive(userId, dateStr, timelineToArchive, totals)
       .then(async ({ error }) => {
         if (error) {
           throw error;
         }
 
-        await loadHistory(userId);
-
+        // 关键操作：立即推进日期、清空timeline、返回成功
         const nextDateStr = addDaysToDateString(toDateStr(currentDate), 1);
         setRecordingDateStr(nextDateStr);
         setCurrentDate(createDateFromString(nextDateStr));
         setTimeline(freshTimeline());
+
+        // 非关键操作：异步加载历史记录（不阻塞返回）
+        loadHistory(userId).catch((err) => {
+          console.error('Failed to load history in background:', err);
+        });
 
         return { success: true };
       })

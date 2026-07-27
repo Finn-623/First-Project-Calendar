@@ -2,6 +2,16 @@ import { supabase } from '../lib/supabaseClient';
 
 function normalizeError(error) {
   const message = String(error?.message || '').toLowerCase();
+  const details = String(error?.details || '').toLowerCase();
+  const code = String(error?.code || '').toLowerCase();
+
+  // Log full error for debugging
+  console.error('[recordSettingsService error]', {
+    message: error?.message,
+    details: error?.details,
+    code: error?.code,
+    hint: error?.hint,
+  });
 
   if (message.includes('network') || message.includes('fetch')) {
     return '网络错误，请检查网络后重试';
@@ -13,6 +23,25 @@ function normalizeError(error) {
 
   if (message.includes('permission') || message.includes('policy') || message.includes('rls')) {
     return '你没有权限执行该操作';
+  }
+
+  // Table not found error
+  if (
+    message.includes('relation') && message.includes('does not exist') ||
+    code.includes('42p01') ||
+    details.includes('user_record_settings')
+  ) {
+    return '记录设置功能暂未在数据库配置，请稍后重试';
+  }
+
+  // Column not found error
+  if (message.includes('column') && message.includes('does not exist') || code.includes('42703')) {
+    return '数据库结构不完整，请联系管理员';
+  }
+
+  // Authentication required
+  if (code.includes('pgrst') && message.includes('401')) {
+    return '请先登录';
   }
 
   return '操作失败，请稍后重试';
@@ -48,6 +77,13 @@ export const recordSettingsService = {
               auto_archive_time: '00:00:00',
               timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC',
             },
+          };
+        }
+        // Table does not exist
+        if (error.code === '42P01') {
+          return {
+            success: false,
+            error: '记录设置功能暂未在数据库配置，请稍后重试（需要执行数据库迁移）',
           };
         }
         return { success: false, error: normalizeError(error) };
@@ -113,6 +149,13 @@ export const recordSettingsService = {
         .single();
 
       if (error) {
+        // Table does not exist
+        if (error.code === '42P01') {
+          return {
+            success: false,
+            error: '记录设置功能暂未在数据库配置，请稍后重试（需要执行数据库迁移）',
+          };
+        }
         return { success: false, error: normalizeError(error) };
       }
 

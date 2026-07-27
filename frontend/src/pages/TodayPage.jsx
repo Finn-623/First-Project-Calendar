@@ -113,6 +113,7 @@ export const TodayPage = () => {
   const [deletingItemId, setDeletingItemId] = useState(null);
   const [endingItemId, setEndingItemId] = useState(null);
   const [savingEditItemId, setSavingEditItemId] = useState(null);
+  const [endDayLoading, setEndDayLoading] = useState(false);
   const [editActivitySheet, setEditActivitySheet] = useState({ open: false, item: null });
   const fabButtonRef = useRef(null);
   const addMenuRef = useRef(null);
@@ -656,8 +657,14 @@ export const TodayPage = () => {
       return;
     }
 
+    if (endDayLoading) {
+      return; // 防止重复点击
+    }
+
+    setEndDayLoading(true);
     Promise.resolve(endDay()).then((result) => {
       if (result?.duplicate) {
+        setEndDayLoading(false);
         return;
       }
 
@@ -665,10 +672,12 @@ export const TodayPage = () => {
         if (result?.success) {
           toast.success('本日已归档，开启新的一天');
         }
+        setEndDayLoading(false);
         return;
       }
 
       toast.error(result?.error?.message || '归档失败，请稍后重试');
+      setEndDayLoading(false);
     });
   };
 
@@ -831,11 +840,25 @@ export const TodayPage = () => {
         <div className="px-2 mt-4">
           <button
             onClick={handleEndDay}
+            disabled={endDayLoading}
             data-testid="end-day-btn"
-            className="w-full h-12 rounded-2xl bg-white border border-[#2C332F] text-[#2C332F] text-[14px] flex items-center justify-center gap-2 hover:bg-[#2C332F] hover:text-white"
+            className={`w-full h-12 rounded-2xl text-[14px] flex items-center justify-center gap-2 transition-all ${
+              endDayLoading
+                ? 'bg-[#6B8067] border border-[#6B8067] text-white cursor-not-allowed'
+                : 'bg-white border border-[#2C332F] text-[#2C332F] hover:bg-[#2C332F] hover:text-white'
+            }`}
           >
-            <Check size={16} strokeWidth={1.8} />
-            结束本日 · 进入下一日
+            {endDayLoading ? (
+              <>
+                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                处理中...
+              </>
+            ) : (
+              <>
+                <Check size={16} strokeWidth={1.8} />
+                结束本日 · 进入下一日
+              </>
+            )}
           </button>
         </div>
       </section>
