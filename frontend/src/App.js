@@ -14,7 +14,6 @@ import { ProfileInfoPage } from './pages/ProfileInfoPage';
 import { SettingsVersionPage } from './pages/SettingsVersionPage';
 import { VersionFeedbackPage } from './pages/VersionFeedbackPage';
 import { SettingsIntakePlanPage } from './pages/SettingsIntakePlanPage';
-import { SettingsRecordHistoryPage } from './pages/SettingsRecordHistoryPage';
 import { SettingsRecordSettingsPage } from './pages/SettingsRecordSettingsPage';
 import { SettingsAccountActionsPage } from './pages/SettingsAccountActionsPage';
 import { LoginPage } from './pages/LoginPage';
@@ -267,7 +266,6 @@ function App() {
     ['SettingsVersionPage', SettingsVersionPage],
     ['VersionFeedbackPage', VersionFeedbackPage],
     ['SettingsIntakePlanPage', SettingsIntakePlanPage],
-    ['SettingsRecordHistoryPage', SettingsRecordHistoryPage],
     ['SettingsRecordSettingsPage', SettingsRecordSettingsPage],
     ['SettingsAccountActionsPage', SettingsAccountActionsPage],
     ['LoginPage', LoginPage],
@@ -347,7 +345,6 @@ function App() {
                 <Route path="/settings/version" element={<SettingsVersionPage />} />
                 <Route path="/settings/version/feedback" element={<VersionFeedbackPage />} />
                 <Route path="/settings/intake-plan" element={<SettingsIntakePlanPage />} />
-                <Route path="/settings/record-history" element={<SettingsRecordHistoryPage />} />
                 <Route path="/settings/record-settings" element={<SettingsRecordSettingsPage />} />
                 <Route path="/settings/account-actions" element={<SettingsAccountActionsPage />} />
                 <Route path="/plan" element={<PlanPage />} />

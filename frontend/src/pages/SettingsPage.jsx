@@ -59,7 +59,7 @@ const sections = [
         description: '设置每日摄入目标并查看调整记录',
       },
       {
-        to: '/settings/record-history',
+        action: 'record-history',
         icon: History,
         label: '记录历史记录',
         description: '查看已归档的每日记录',
@@ -122,6 +122,12 @@ export const SettingsPage = () => {
     });
   };
 
+  const handleNavigationAction = (action) => {
+    if (action === 'record-history') {
+      navigate('/history', { state: { returnTo: 'settings' } });
+    }
+  };
+
   return (
     <div className="w-full max-w-md mx-auto px-4 pt-6 pb-28">
       <h1 className="text-[20px] font-medium text-[#2C332F] mb-4">设置</h1>
@@ -138,12 +144,20 @@ export const SettingsPage = () => {
               <SettingsNavigationItem
                 key={item.label}
                 to={item.to}
-                onClick={item.action === 'logout' ? () => setLogoutConfirmOpen(true) : undefined}
+                onClick={
+                  item.action === 'logout'
+                    ? () => setLogoutConfirmOpen(true)
+                    : item.action === 'record-history'
+                    ? () => handleNavigationAction('record-history')
+                    : undefined
+                }
                 icon={item.icon}
                 label={item.label}
                 description={item.description}
                 testId={item.action === 'logout'
                   ? 'settings-entry-account-actions'
+                  : item.action === 'record-history'
+                  ? 'settings-entry-record-history'
                   : `settings-entry-${item.to.replace('/settings/', '').replace('/', '-') || 'root'}`}
               />
             ))}
