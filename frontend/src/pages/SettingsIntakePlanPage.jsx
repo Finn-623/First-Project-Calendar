@@ -118,6 +118,7 @@ export const SettingsIntakePlanPage = () => {
     setHistoryCursor(result.nextCursor || null);
   }, [historyHasMore, loadingHistory, user?.id]);
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     if (!user?.id) return;
     loadPlan(user.id).then((result) => {
@@ -126,8 +127,12 @@ export const SettingsIntakePlanPage = () => {
         setDraft(toDraft(result.data));
       }
     });
-    loadHistory({ append: false });
   }, [loadPlan, user?.id]);
+
+  useEffect(() => {
+    if (!user?.id) return;
+    loadHistory({ append: false });
+  }, [user?.id]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const autoValue = calculateAutoField(draft);
 
