@@ -1,3 +1,56 @@
+## DEV-20260727-072
+
+- 日期：2026-07-27
+- 状态：已完成
+- 修改类型：导航调整 / 移除底部历史记录入口
+- 修改背景：底部导航需要精简为“首页、食物库、设置”三个主要入口，同时继续通过“设置 → 记录 → 记录历史记录”访问完整历史记录模块。
+- 任务目标：
+  1. 从底部导航移除“历史”入口。
+  2. 将底部导航调整为三列，避免留下空位。
+  3. 保留历史记录页面、详情页、路由、数据和全部功能。
+  4. 验证设置页的“记录历史记录”入口仍进入现有历史页面。
+- 实际完成内容：
+  - 从 `BottomNav` 的导航项中移除 `/history` 对应的“历史”入口及未再使用的 `History` 图标导入。
+  - 将底部导航布局从 `grid-cols-4` 调整为 `grid-cols-3`，三个入口等宽填满。
+  - 保留首页、食物库和设置的原有路由匹配与选中样式。
+  - 保留 `App.js` 中 `/history` 和 `/history/:dateStr` 路由，未修改历史页面、数据或服务。
+  - 保留并验证设置页 `record-history` 动作继续导航至 `/history`，并携带返回设置的来源状态。
+  - 新增底部导航组件测试和设置历史入口导航测试。
+- 主要修改文件或模块：
+  - `frontend/src/components/BottomNav.jsx`
+  - `frontend/src/components/BottomNav.test.jsx`（新建）
+  - `frontend/src/pages/SettingsPage.navigation.test.jsx`（新建）
+  - `docs/DEVELOPMENT_LOG.md`
+- 遇到的问题：
+  - 暂无。
+- 解决方式：
+  - 直接复用现有 `ITEMS`、`NavLink` 选中逻辑和设置页导航动作，仅调整必要的导航项与网格列数。
+- 执行的测试与检查：
+  - `CI=true npm test -- --watchAll=false --runInBand src/components/BottomNav.test.jsx src/pages/SettingsPage.navigation.test.jsx`
+    - 结果：2 个测试套件通过，6 项测试通过。
+    - 覆盖范围：三个底部入口、三列布局、历史入口移除、各路径选中状态、历史页面不误选其他入口，以及设置页历史入口。
+  - `npm run build`
+    - 结果：生产构建成功，主 JavaScript gzip 大小为 240.07 kB。
+  - `CI=true npm test -- --watchAll=false`
+    - 结果：16 个测试套件全部通过，112 项测试全部通过，0 个 snapshot。
+  - 项目没有 lint script，本次未运行 lint，也未声称 lint 通过。
+- 测试结果：
+  - ✅ 底部导航只显示首页、食物库和设置。
+  - ✅ 三项使用三列布局，不留下空位。
+  - ✅ 首页、食物库和设置路径的选中状态正确。
+  - ✅ 位于历史页面时不会错误选中其他底部入口。
+  - ✅ “设置 → 记录 → 记录历史记录”继续进入现有 `/history` 页面。
+  - ✅ 历史记录路由、页面、数据及功能未删除或修改。
+  - ✅ 完整前端测试和生产构建通过。
+- 未完成事项：
+  - 建议用户在移动端或窄屏浏览器人工确认三个入口的视觉间距和点击区域。
+- 风险或注意事项：
+  - 构建输出 Node `fs.F_OK` 弃用 warning，来自现有依赖链，不影响构建成功。
+  - 完整测试输出缺少 `REACT_APP_SUPABASE_URL` 和 `REACT_APP_SUPABASE_ANON_KEY` 的 console.error，但所有测试均通过。
+  - 本次未修改历史记录路由、业务数据、数据库、依赖、锁文件或生产环境。
+- 当前分支：supabase-v1
+- Git Commit ID：未提交
+
 ## DEV-20260727-071
 
 - 日期：2026-07-27

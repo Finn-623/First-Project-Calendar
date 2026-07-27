@@ -1,10 +1,9 @@
 import React from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
-import { Home, History, BookOpen, Settings } from 'lucide-react';
+import { Home, BookOpen, Settings } from 'lucide-react';
 
 const ITEMS = [
   { to: '/', label: '首页', icon: Home, testId: 'nav-home' },
-  { to: '/history', label: '历史', icon: History, testId: 'nav-history' },
   { to: '/library', label: '食物库', icon: BookOpen, testId: 'nav-library' },
   { to: '/settings', label: '设置', icon: Settings, testId: 'nav-settings' },
 ];
@@ -18,7 +17,7 @@ export const BottomNav = () => {
       style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
       data-testid="bottom-nav"
     >
-      <div className="grid grid-cols-4">
+      <div className="grid grid-cols-3">
         {ITEMS.map(({ to, label, icon: Icon, testId }) => {
           const isCurrent = to === '/'
             ? location.pathname === '/'
