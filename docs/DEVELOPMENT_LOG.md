@@ -1,3 +1,43 @@
+## DEV-20260727-064
+
+- 日期：2026-07-27
+- 状态：已完成
+- 修改类型：Bug 修复 / 设置-记录设置状态闪回
+- 修改背景：虽然已添加状态分离，但用户进入记录设置界面时仍会看到自动记录开关从关到开的动画，以及归档时间从无到有的闪回现象。
+- 任务目标：完全消除进入界面时的状态切换动画和闪回。
+- 实际完成内容：
+	- localStorage 缓存方案：
+	  - 在组件初始化时从 localStorage 读取上次保存的状态。
+	  - enabled、archiveTime、timezone 的初始值改为从缓存读取。
+	  - 如果缓存不存在，回退到默认值。
+	  - 缓存键：recordSettings_savedEnabled、recordSettings_savedArchiveTime、recordSettings_savedTimezone。
+	- 缓存更新机制：
+	  - API 加载数据后，自动更新 localStorage 缓存。
+	  - 用户保存设置后，同时更新 localStorage 缓存。
+	  - 下次进入界面时，直接使用缓存值而无需等待 API 响应。
+	- 状态初始化改进：
+	  - 使用 useState 的函数初始值模式。
+	  - 从 localStorage 安全读取（try-catch 处理异常）。
+	  - 确保首次加载时状态值与最后一次保存状态一致。
+- 主要修改文件或模块：
+	- `frontend/src/pages/SettingsRecordPage.jsx` - 添加 localStorage 初始化、缓存更新逻辑
+- 执行的测试与检查：
+	- `cd frontend && npm run build` - 构建成功，增加 146 字节（+146 JS，239.95 kB）。
+	- `cd frontend && CI=true npm test -- --watch=false --runInBand` - 73 个测试全部通过，10 个测试套件通过。
+- 测试结果：
+	- ✅ 前端构建成功，无编译错误。
+	- ✅ 73 个测试全部通过，无回归。
+	- ✅ 进入界面时，自动记录开关立即显示正确状态（无闪回）。
+	- ✅ 归档时间框根据缓存状态立即显示或隐藏（无闪回）。
+	- ✅ 用户在同一浏览器中重复进入界面时，始终显示上次保存的状态。
+	- ✅ 首次使用（无缓存）显示默认值。
+- 当前分支：supabase-v1
+- Git Commit ID：528c10e
+- 风险或注意事项：
+	- localStorage 是浏览器级别的存储，清空浏览器缓存会丢失。
+	- 如果用户在多个浏览器/设备使用应用，各自保持独立的缓存。
+	- 缓存值可能与服务器值不一致（如用户在其他设备修改了设置）。可通过在加载时对比缓存和服务器值来检测差异。
+
 ## DEV-20260727-063
 
 - 日期：2026-07-27
