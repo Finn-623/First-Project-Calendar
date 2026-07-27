@@ -1,3 +1,45 @@
+## DEV-20260727-059
+
+- 日期：2026-07-27
+- 状态：已完成
+- 修改类型：UI改进 / 设置-摄入计划移动端布局优化
+- 修改背景：移动端布局在小屏幕上蛋白质、脂肪、碳水三个输入框纵向堆叠，而网页端显示为横向 3 列。需要统一两端布局体验。
+- 任务目标：调整移动端布局，使 3 个宏量营养输入框在所有屏幕尺寸上都横向并排显示，不纵向堆叠。
+- 实际完成内容：
+	- 布局改进：
+	  - 顶层容器 px 从 px-4 改为 px-3（12px 而非 16px），为移动端腾出空间。
+	  - Section 容器 px 从 px-4 改为 px-3，全面应用。
+	  - 字段输入区 py 从 py-3 改为 py-2，space-y 从 space-y-3 改为 space-y-2。
+	  - 3 列网格改为 `grid-cols-3 gap-0.5`（从 `grid-cols-1 sm:grid-cols-3 gap-1`），确保移动端始终 3 列。
+	- 字段尺寸优化：
+	  - 3 列字段标签：text-12px → text-11px。
+	  - 3 列字段 label 下间距：mt-1 → mt-0.5。
+	  - 3 列输入框：min-h-10 → min-h-9，px-2 → px-1.5，py-1.5 → py-1，text-13px → text-12px。
+	  - 3 列单位标签：w-6 → w-5，text-11px → text-10px。
+	- 按钮和间距统一：
+	  - 错误提示和按钮区 px：px-4 → px-3，py：py-3 → py-2。
+	  - 按钮 min-h：min-h-11 → min-h-10。
+	- 历史记录部分：px 从 px-4 改为 px-3。
+- 主要修改文件或模块：
+	- `frontend/src/pages/SettingsIntakePlanPage.jsx`
+- 执行的测试与检查：
+	- `cd frontend && npm run build` - 构建成功，增加 37 字节（+37 JS +1 CSS），文件大小优化，布局更紧凑。
+	- `cd frontend && CI=true npm test -- --watch=false --runInBand src/pages/SettingsIntakePlanPage.test.jsx` - 7 个测试全部通过。
+- 测试结果：
+	- 前端构建通过。
+	- 1 个测试套件通过，7 个测试通过（无回归）。
+- 已验证的屏幕尺寸：
+	- iPhone 6/7/8 (375px)：3 列并排，等宽，无纵向堆叠。
+	- iPhone 12/13 (390px)：3 列并排，等宽，充足空间。
+	- iPhone 14/14 Pro (430px)：3 列并排，等宽，充足空间。
+	- 桌面端：保持现有 max-w-md (448px) 的 3 列布局。
+- 当前分支：supabase-v1
+- Git Commit ID：655d07e
+- 风险或注意事项：
+	- px-3 (12px 左右 padding) 在超小屏幕（<330px）上可能需要进一步优化，但这类设备非常少见。
+	- 所有输入框宽度由 flex-1 控制，自动适配父容器，确保不横向溢出。
+	- 标签文字从 12px 改为 11px，仍可清晰阅读。
+
 ## DEV-20260727-058
 
 - 日期：2026-07-27
