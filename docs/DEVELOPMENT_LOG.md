@@ -1,3 +1,44 @@
+## DEV-20260727-060
+
+- 日期：2026-07-27
+- 状态：已完成
+- 修改类型：功能集成 / 设置-历史记录模块集成
+- 修改背景：用户需要在设置中通过"设置 → 记录 → 记录历史记录"访问历史记录模块，同时保留主导航的现有历史记录入口。两个入口需要使用同一套历史记录页面，复用数据和功能。
+- 任务目标：将现有历史记录模块集成到设置导航中，支持从两个不同的入口进入，并根据进入来源显示相应的返回按钮。
+- 实际完成内容：
+	- 导航集成：
+	  - 修改 `SettingsRecordHistoryPage` 从 Link 改为 useNavigate，传递 state `{ returnTo: 'settings' }` 给 /history。
+	  - 修改 `HistoryPage` 通过 useLocation 检查 location.state.returnTo，判断是否从设置来。
+	  - 修改 `HistoryDetailPage` 同样添加状态判断，确保整个流程上下文一致。
+	- 返回按钮优化：
+	  - 从设置进入：HistoryPage 显示"返回设置"按钮，点击返回 /settings；HistoryDetailPage 返回 /history 并传递 state。
+	  - 从主导航进入：正常显示标题"历史记录"，HistoryDetailPage 返回 /history。
+	  - HistoryPage 删除整天记录后，根据来源返回相应页面。
+	- 页面交互流改进：
+	  - 设置导航中 → 设置首页 → 记录 → 记录历史记录 → 进入历史记录 → 返回设置。
+	  - 主导航 → 历史 → 查看详情 → 返回历史。
+	  - 两个流程完全独立，不互相影响。
+- 主要修改文件或模块：
+	- `frontend/src/pages/HistoryPage.jsx` - 添加 useLocation，支持上下文感知返回。
+	- `frontend/src/pages/HistoryDetailPage.jsx` - 添加 useLocation，传递状态给返回导航。
+	- `frontend/src/pages/SettingsRecordHistoryPage.jsx` - 改为 useNavigate，传递 state。
+- 执行的测试与检查：
+	- `cd frontend && npm run build` - 构建成功，增加 202 字节（+202 JS），代码大小最小化。
+	- `cd frontend && CI=true npm test -- --watch=false --runInBand` - 66 个测试全部通过，9 个测试套件通过。
+- 测试结果：
+	- 前端构建成功，无编译错误。
+	- 9 个测试套件全部通过，66 个测试全部通过，无回归。
+	- 已验证的导航流：
+	  - 设置 → 记录历史记录 → 进入历史 → 显示返回设置按钮 → 返回 /settings ✅
+	  - 主导航历史 → 进入历史详情 → 返回历史 ✅
+	  - 删除整天记录后返回到相应入口 ✅
+- 当前分支：supabase-v1
+- Git Commit ID：036f4c0
+- 风险或注意事项：
+	- 使用 React Router 的 location.state 传递上下文信息，在页面刷新后丢失（但应用内导航保持）。
+	- 两个入口完全复用同一套数据和组件，无需创建新页面。
+	- 现有历史记录入口及相关链接保持完全可用，无隐藏或删除。
+
 ## DEV-20260727-059
 
 - 日期：2026-07-27
