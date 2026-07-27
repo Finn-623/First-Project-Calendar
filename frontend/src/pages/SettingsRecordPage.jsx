@@ -11,6 +11,13 @@ export const SettingsRecordPage = () => {
   const { user } = useStore();
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
+
+  // Saved state (from API)
+  const [savedEnabled, setSavedEnabled] = useState(false);
+  const [savedArchiveTime, setSavedArchiveTime] = useState('00:00');
+  const [savedTimezone, setSavedTimezone] = useState(() => Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC');
+
+  // Edit state (for form)
   const [enabled, setEnabled] = useState(false);
   const [archiveTime, setArchiveTime] = useState('00:00');
   const [timezone, setTimezone] = useState(() => Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC');
@@ -30,14 +37,21 @@ export const SettingsRecordPage = () => {
 
       if (result.success) {
         const data = result.data;
+        // Update saved state (for display)
+        setSavedEnabled(data.auto_archive_enabled);
+        setSavedTimezone(data.timezone);
+        
+        // Parse time to HH:mm format
+        let timeStr = '00:00';
+        if (data.auto_archive_time) {
+          timeStr = data.auto_archive_time.split(':').slice(0, 2).join(':');
+        }
+        setSavedArchiveTime(timeStr);
+
+        // Update edit state (for form)
         setEnabled(data.auto_archive_enabled);
         setTimezone(data.timezone);
-
-        // Parse time to HH:mm format
-        if (data.auto_archive_time) {
-          const timeStr = data.auto_archive_time.split(':').slice(0, 2).join(':');
-          setArchiveTime(timeStr);
-        }
+        setArchiveTime(timeStr);
       } else {
         setError(result.error);
       }
@@ -76,6 +90,10 @@ export const SettingsRecordPage = () => {
 
     if (result.success) {
       toast.success('记录设置已更新');
+      // Update saved state
+      setSavedEnabled(enabled);
+      setSavedArchiveTime(archiveTime);
+      setSavedTimezone(timezone);
     } else {
       toast.error(result.error || '设置保存失败');
     }
@@ -102,6 +120,29 @@ export const SettingsRecordPage = () => {
       <SettingsSubpageHeader title="记录设置" />
 
       <div className="space-y-4">
+        {/* Current Status Card */}
+        <div className="rounded-2xl border border-[#E5E5E0] bg-[#F5F8F3] p-4">
+          <p className="text-[12px] text-[#858C88] mb-2">当前状态</p>
+          <div className="space-y-1.5">
+            <div className="flex items-center justify-between">
+              <span className="text-[13px] text-[#2C332F]">自动归档</span>
+              <span className={`text-[13px] font-medium ${savedEnabled ? 'text-[#6B8067]' : 'text-[#858C88]'}`}>
+                {savedEnabled ? '已启用' : '已禁用'}
+              </span>
+            </div>
+            {savedEnabled && (
+              <div className="flex items-center justify-between">
+                <span className="text-[13px] text-[#2C332F]">归档时间</span>
+                <span className="text-[13px] text-[#6B8067] font-medium">{savedArchiveTime}</span>
+              </div>
+            )}
+            <div className="flex items-center justify-between">
+              <span className="text-[13px] text-[#2C332F]">时区</span>
+              <span className="text-[13px] text-[#858C88]">{savedTimezone}</span>
+            </div>
+          </div>
+        </div>
+
         {/* Auto Archive Card */}
         <div className="rounded-2xl border border-[#E5E5E0] p-4">
           <div className="flex items-center justify-between mb-3">
