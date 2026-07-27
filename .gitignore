@@ -62,7 +62,7 @@ chainlit.md
 .vercel
 supabase/.temp/
 package-lock.json
-frontend/package-lock.json
+!frontend/package-lock.json
 
 # Data and databases
 agenthub/agents/youtube/db

@@ -2,5 +2,6 @@
 verify_jwt = false
 
 [functions.auto-archive-records]
+# Cron authenticates with AUTO_ARCHIVE_CRON_SECRET before the service-role
+# client is created; it does not send an end-user Supabase JWT.
 verify_jwt = false
-

@@ -483,5 +483,10 @@ V0.1当前计分（本次审查）：
   - 普通用户／管理员双账号的登录、切换、RLS 和公共／个人食物权限。
   - Supabase `version_feedback` 中是否仍有待处理建议。
   - 主要移动端页面真机布局、点击和返回流程。
-- 阻断风险：
-  - `auto-archive-records` 当前允许未验证 JWT 的请求，且函数使用 service role 并可能删除时间轴数据；在增加可信调用保护或确认生产不部署该函数前，不满足正式上线条件。
+- 本地阻断修复：
+  - `react-day-picker` 已升级到兼容 React 19 的 `8.10.2`，包管理统一为 npm 与 `package-lock.json`；无 `node_modules` 的干净环境安装通过。
+  - `auto-archive-records` 已增加 `AUTO_ARCHIVE_CRON_SECRET` 服务端 Bearer 鉴权，未授权请求在创建 service-role 客户端前返回 `401`／`403`。
+  - 自动归档改为只处理已启用、到达配置时间且至少保留一日的用户日期；先持久化 `daily_archives`，再按精确用户和日期删除。
+- 生产环境待人工确认：
+  - 配置 Supabase Secret `AUTO_ARCHIVE_CRON_SECRET`，部署更新后的函数，并同步为 Cron 请求配置同一服务端 Secret；不得把 Secret 写入前端或仓库。
+  - 用隔离测试账号验证无密钥／错误密钥拒绝、正确密钥执行、归档日期范围与失败恢复，再决定是否启用生产 Cron。

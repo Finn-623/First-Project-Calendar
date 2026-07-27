@@ -1,3 +1,78 @@
+## DEV-20260727-075
+
+- 日期：2026-07-27
+- 状态：已完成本地阻断修复，待生产环境人工验证
+- 修改类型：Release Blocker Fix / 依赖与 Edge Function 安全
+- 修改背景：
+  - React 19 与 `react-day-picker@8.10.1` 的 peer dependency 范围不兼容，干净环境安装返回 `ERESOLVE`。
+  - `auto-archive-records` 配置 `verify_jwt=false`、使用 service role 且可删除时间轴记录，原实现没有可信调用方密钥校验。
+- 任务目标：
+  1. 在不使用 `--force` 或 `--legacy-peer-deps` 的前提下恢复可重复安装。
+  2. 阻止匿名或错误密钥请求触发任何自动归档数据库操作。
+  3. 收紧归档日期、用户设置和删除顺序，避免误删当前日或未归档数据。
+- 实际完成内容：
+  - 将 `react-day-picker` 从 `8.10.1` 升级到兼容 React 19 且保留现有 v8 API 的 `8.10.2`。
+  - 包管理统一为 npm：提交 `frontend/package-lock.json`、删除 `frontend/yarn.lock`，并在 `package.json` 声明 `npm@11.16.0`。
+  - 为现有 Calendar wrapper 增加真实渲染交互测试，覆盖日期选择和月份切换。
+  - 将 Edge Function 的纯处理逻辑拆分到 `handler.ts`，入口只负责读取服务端配置和创建 Supabase service-role client。
+  - 新增 Supabase Secret `AUTO_ARCHIVE_CRON_SECRET` 约定；Cron／服务器必须使用 `Authorization: Bearer <secret>` 发起 POST。
+  - 对提供值与配置值分别计算 SHA-256 后执行固定长度异或比较；无 header 返回 `401`，错误密钥返回 `403`，服务端未配置返回 `503`。
+  - 在鉴权通过前不创建 Supabase 客户端、不读取设置、不执行任何数据库操作；日志只记录聚合数量，不输出密钥、Token、用户 ID 或敏感数据。
+  - 只查询 `auto_archive_enabled=true` 的设置，并按用户时区与配置时间判断；固定至少保留一日，只处理用户本地前一日，绝不自动归档当前日。
+  - 修正归档目标为 `daily_archives`；先持久化快照，再按 `user_id + event_date` 精确删除 `timeline_items`，最后写成功日志。归档写入失败不删除，删除失败保留归档且不写成功日志。
+- 主要修改文件或模块：
+  - `.gitignore`
+  - `frontend/package.json`
+  - `frontend/package-lock.json`
+  - `frontend/yarn.lock`（删除）
+  - `frontend/src/components/ui/calendar.jsx`
+  - `frontend/src/components/ui/calendar.test.jsx`
+  - `supabase/config.toml`
+  - `supabase/functions/auto-archive-records/index.ts`
+  - `supabase/functions/auto-archive-records/handler.ts`
+  - `supabase/functions/auto-archive-records/handler.test.mjs`
+  - `CHANGELOG.md`
+  - `docs/PROJECT_STATUS.md`
+  - `docs/version-updates/v0.1.2.md`
+  - `docs/DEVELOPMENT_LOG.md`
+- 遇到的问题：
+  - 第一次使用独立临时 cache 执行 `npm ci` 时，npm cache 解包出现内容文件 `ENOENT`；这不是 peer dependency 冲突。
+  - 本机没有 Deno 或 Supabase CLI，无法运行真实 Edge Runtime／本地 Supabase 集成测试。
+- 解决方式：
+  - 从完全不存在 `node_modules` 的状态改用用户要求的标准 `npm install` 联网安装，成功安装 1514 个包；未使用强制或 legacy peer 参数。
+  - 将核心逻辑设计为无 Deno 依赖的可注入 handler，用 Node 内置 test runner 验证鉴权、范围和失败顺序；生产环境仍需部署后人工验证。
+- 执行的测试与检查：
+  - `cd frontend && npm install`
+    - 结果：干净依赖目录安装成功；DayPicker 原 `ERESOLVE` 不再出现。
+    - warning：既有 ESLint peer warning、弃用依赖和 npm audit 75 项风险（6 low、5 moderate、64 high）；未执行自动修复或依赖越界升级。
+  - `cd frontend && npm run validate:version`
+    - 结果：通过，输出 `Version validation passed for v0.1.2`。
+  - `node --test supabase/functions/auto-archive-records/handler.test.mjs`
+    - 结果：8 项全部通过。
+    - 覆盖：无鉴权 401、错误密钥 403、服务端缺少密钥 503、正确密钥执行、未到归档时间不写不删、只处理目标用户前一日、归档失败不删除、删除失败不记录成功。
+  - `cd frontend && CI=true npm test -- --watchAll=false`
+    - 结果：18 个测试套件、114 项测试全部通过，0 snapshot。
+    - 覆盖：新增 Calendar 交互、现有历史日期状态和完整前端回归；首页周日历实现未被本次修改，另以构建通过确认集成无编译回归。
+  - `cd frontend && npm run build`
+    - 结果：生产构建成功；主 JavaScript gzip 242.38 kB，CSS gzip 12.33 kB。
+- 测试结果：
+  - ✅ React 19、`react-day-picker@8.10.2` 与 date-fns 3 可被 npm 正常解析和安装。
+  - ✅ 日期选择、月份切换、历史删除日期状态等现有测试通过。
+  - ✅ 未授权请求不创建数据库客户端；目标范围和失败顺序测试通过。
+  - ✅ 完整前端测试与生产构建通过。
+  - ⚠️ 测试环境仍输出缺少 `REACT_APP_SUPABASE_URL`／`REACT_APP_SUPABASE_ANON_KEY` 的既有提示；真实 Supabase 流程未由前端单测覆盖。
+  - ⚠️ 构建输出 Node `fs.F_OK` 弃用 warning，不阻断构建。
+- 未完成事项：
+  - 在 Supabase 生产环境配置 `AUTO_ARCHIVE_CRON_SECRET`，部署更新后的 Edge Function，并同步修改 Cron 的 Authorization header。
+  - 使用隔离测试账号执行 Edge Runtime、真实表结构、RLS、外键级联和失败恢复验证，确认后再启用生产 Cron。
+  - 继续人工处理 npm audit 风险；不得在本发布阻断任务中使用 `audit fix --force` 扩大升级范围。
+- 风险或注意事项：
+  - 本次未执行数据库迁移、远程 Supabase 操作、函数部署、Cron 修改、真实数据写入、生产部署或正式上线时间回填。
+  - `verify_jwt=false` 保留是因为 Cron 使用独立服务端 Bearer Secret，而非用户 JWT；生产 Secret 与 Cron 必须同步配置，否则函数返回 `503`／`401` 且不执行。
+  - 实现保证“先有持久化归档，后删除时间轴”；多用户批次按用户独立处理，单个用户失败会返回 `207` 并继续其他用户，不会输出用户身份明细。
+- 当前分支：supabase-v1
+- Git Commit ID：未提交
+
 ## DEV-20260727-074
 
 - 日期：2026-07-27
