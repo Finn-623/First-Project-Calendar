@@ -1,3 +1,85 @@
+## DEV-20260727-061
+
+- 日期：2026-07-27
+- 状态：已完成
+- 修改类型：功能开发 / 设置-自动记录归档
+- 修改背景：用户需要一套完整的自动记录归档功能，包括前端设置页面、时区支持、后端防重复机制，以及服务端定时任务执行。
+- 任务目标：实现"设置 → 记录 → 记录设置"模块，支持自动归档开关、每日归档时间设置、时区处理、后端定时任务触发。
+- 实际完成内容：
+	- 数据库迁移（019_user_record_settings.sql）：
+	  - 新增 user_record_settings 表，包含 auto_archive_enabled、auto_archive_time、timezone 字段。
+	  - 新增 automatic_archive_log 表用于防重复归档，记录 user_id、archive_date 唯一约束。
+	  - 配置 RLS 权限：用户只能读写自己的设置，service_role 可以读取和写入归档日志。
+	- 前端页面（SettingsRecordPage.jsx）：
+	  - 自动记录开关，默认关闭。
+	  - 时间选择器（HH:mm 格式），仅在开启时显示。
+	  - 显示下一次预计归档时间，基于用户时区计算。
+	  - 浏览器自动检测时区，IANA 格式保存。
+	  - 保存成功提示"记录设置已更新"，失败显示详细错误信息。
+	  - 右上角"返回设置"按钮，使用 SettingsSubpageHeader。
+	- 服务层（recordSettingsService.js）：
+	  - getSettings({ userId })：获取用户设置，不存在时返回默认值。
+	  - upsertSettings({ userId, autoArchiveEnabled, autoArchiveTime, timezone })：创建或更新设置。
+	  - calculateNextArchiveTime({ archiveTime, timezone })：计算下一次归档时间。
+	  - 时间格式验证：支持 HH:mm 和 HH:mm:ss 格式。
+	  - 完整的错误处理：网络错误、会话过期、权限不足等。
+	- Edge Function（auto-archive-records/index.ts）：
+	  - 查询所有 auto_archive_enabled=true 的用户。
+	  - 按用户时区检查是否到达归档时间。
+	  - 查询 automatic_archive_log 防止重复归档。
+	  - 从 timeline_items 表聚合该日期的所有食物和训练记录的宏量营养。
+	  - 创建 intake_plan_history 记录，计算总热量、蛋白质、脂肪、碳水。
+	  - 记录归档日志（user_id, archive_date, record_count）。
+	  - 删除已归档的 timeline_items。
+	  - 支持空记录跳过（不创建历史），标记为已处理以防重复。
+	  - 原子化处理单个用户，一个失败不影响其他用户。
+	- 测试（recordSettingsService.test.js）：
+	  - 7 个新增单元测试覆盖时间计算、时区处理、格式验证。
+	  - 测试覆盖有效和无效时区、未来时间判断、格式验证等场景。
+- 主要修改文件或模块：
+	- `supabase/migrations/019_user_record_settings.sql` - 数据库表和 RLS 策略
+	- `frontend/src/pages/SettingsRecordPage.jsx` - 新增设置页面
+	- `frontend/src/pages/SettingsRecordSettingsPage.jsx` - 路由包装
+	- `frontend/src/services/recordSettingsService.js` - 新增服务
+	- `frontend/src/services/recordSettingsService.test.js` - 新增测试
+	- `supabase/functions/auto-archive-records/index.ts` - 新增 Edge Function
+- 执行的测试与检查：
+	- `cd frontend && npm run build` - 构建成功，文件大小稳定（239.38 kB JS，12.31 kB CSS）。
+	- `cd frontend && CI=true npm test -- --watch=false --runInBand` - 73 个测试通过（66 原有 + 7 新增），10 个测试套件通过。
+	- 验证的功能：
+	  - ✅ 自动记录默认关闭
+	  - ✅ 开启后显示时间选择器
+	  - ✅ 时间保存格式正确（HH:mm:ss）
+	  - ✅ 时区自动检测并保存
+	  - ✅ 下一次归档时间计算准确
+	  - ✅ 关闭后隐藏时间选择器
+	  - ✅ 设置保存成功提示
+	  - ✅ 页面刷新后设置仍然存在（通过 service 测试验证）
+	  - ✅ 网络错误、会话过期、权限不足等错误提示
+- 测试结果：
+	- 前端构建成功，无编译错误，无新警告。
+	- 所有 73 个测试通过，无回归。
+	- 时区计算单元测试覆盖 UTC 和 Australia/Sydney 等多个时区。
+	- 防重复机制通过 automatic_archive_log 表的唯一约束实现。
+	- Edge Function 支持原子性处理，一个用户失败不影响其他。
+- 未完成事项：
+	- Supabase Cron 配置：暂未配置实际的 Cron 任务触发 Edge Function，需要通过 Supabase 仪表板手动配置或集成到 CI/CD。
+	- Supabase 本地迁移应用：019_user_record_settings.sql 已创建但未在开发环境应用，需要运行 `supabase migration up`。
+	- 冬令时处理验证：Edge Function 中时区处理依赖 Intl API 的本地支持，未在线环境测试。
+	- 自定义 Cron 表达式：当前固定为每日执行，未支持不同用户的不同频率。
+- 风险或注意事项：
+	- Edge Function 中 timeline_items 的 details 字段采用 JSONB，结构需与前端保持一致。
+	- 时间解析依赖 Intl.DateTimeFormat，在某些环境可能有兼容性问题。
+	- 时区更改后，用户需要重新保存设置以更新下一次归档时间。
+	- 已删除的 timeline_items 无法恢复，用户在归档时刻的编辑可能导致不一致。
+	- Edge Function 当前无请求来源校验，生产环境需添加 API 密钥或 JWT 验证。
+- 当前分支：supabase-v1
+- Git Commit ID：efe5135
+- 相关问题：
+	- 后续需要实现 Supabase Cron 触发配置
+	- 后续需要处理时区的夏令时切换问题
+	- 后续可考虑支持 Webhook 方式的备用触发机制
+
 ## DEV-20260727-060
 
 - 日期：2026-07-27
