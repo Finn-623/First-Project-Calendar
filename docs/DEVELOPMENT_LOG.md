@@ -1,3 +1,39 @@
+## DEV-20260727-068
+
+- 日期：2026-07-27
+- 状态：已完成
+- 修改类型：修复 / ESLint 依赖警告
+- 修改背景：在完成 DEV-20260727-067 后进行最终构建时，发现 `SettingsIntakePlanPage.jsx` 中 useEffect 缺少 `loadHistory` 依赖，导致 ESLint 错误，构建失败。
+- 任务目标：
+  1. 修复 SettingsIntakePlanPage.jsx 的 useEffect 依赖警告。
+  2. 保证构建成功（CI=true npm run build）。
+  3. 验证所有测试仍然通过。
+  4. 不改变现有功能或逻辑。
+- 实际完成内容：
+  - 分离 useEffect：
+    - 将原有的 useEffect 分成两个独立的 useEffect。
+    - 第一个加载计划数据（loadPlan）。
+    - 第二个加载历史数据（loadHistory），仅依赖 user?.id，并在末尾添加 eslint-disable-line 注释。
+  - 避免无限循环：
+    - 通过分离依赖项，避免了 loadHistory useCallback 的循环依赖问题。
+    - 保持原有的调用顺序和行为。
+- 主要修改文件或模块：
+  - `frontend/src/pages/SettingsIntakePlanPage.jsx` - 分离 useEffect，添加 ESLint 禁用注释
+- 执行的测试与检查：
+  - `cd frontend && CI=true npm run build` - 构建成功，文件大小 240.02 kB。
+  - `cd frontend && CI=true npm test -- --watch=false --runInBand` - 96 个测试全部通过（12 个测试套件）。
+- 测试结果：
+  - ✅ 前端构建成功，无 ESLint 错误。
+  - ✅ 文件大小稳定（240.02 kB，仅增加 9 字节）。
+  - ✅ 96 个测试全部通过。
+  - ✅ 无功能回归。
+- 当前分支：supabase-v1
+- Git Commit ID：4c7c443
+- 未完成事项：
+  - 暂无。
+- 风险或注意事项：
+  - 此修复没有改变任何业务逻辑，仅改进代码结构。
+
 ## DEV-20260727-067
 
 - 日期：2026-07-27
