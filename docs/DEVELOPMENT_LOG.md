@@ -45,7 +45,7 @@
   - 预检文件部分数据查询要求对应可选字段已经存在，已标注按分段、先结构后数据执行。
   - 本次未连接生产数据库，未执行 migration、db push、函数部署、Cron、生产数据修改、push 或 tag。
 - 当前分支：supabase-v1
-- Git Commit ID：未提交
+- Git Commit ID：8a3b881a7bd06aa1914da831e97b0549076c4b94
 
 ## DEV-20260727-076
 

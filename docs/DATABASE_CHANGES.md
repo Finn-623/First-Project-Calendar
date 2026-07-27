@@ -30,7 +30,7 @@
   - 15 项测试通过；版本校验通过；`git diff --check` 通过。
   - Docker 未安装，未运行本地 Supabase。
 - 相关 DEV 编号：`DEV-20260727-077`
-- 相关 Commit ID：未提交
+- 相关 Commit ID：8a3b881a7bd06aa1914da831e97b0549076c4b94
 
 ## DB-20260727-001
 
