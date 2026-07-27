@@ -12,15 +12,57 @@ export const SettingsRecordPage = () => {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
 
-  // Saved state (from API)
-  const [savedEnabled, setSavedEnabled] = useState(false);
-  const [savedArchiveTime, setSavedArchiveTime] = useState('00:00');
-  const [savedTimezone, setSavedTimezone] = useState(() => Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC');
+  // Initialize from localStorage to avoid flicker
+  const [savedEnabled, setSavedEnabled] = useState(() => {
+    try {
+      const cached = localStorage.getItem('recordSettings_savedEnabled');
+      return cached ? JSON.parse(cached) : false;
+    } catch {
+      return false;
+    }
+  });
+  const [savedArchiveTime, setSavedArchiveTime] = useState(() => {
+    try {
+      const cached = localStorage.getItem('recordSettings_savedArchiveTime');
+      return cached ? JSON.parse(cached) : '00:00';
+    } catch {
+      return '00:00';
+    }
+  });
+  const [savedTimezone, setSavedTimezone] = useState(() => {
+    try {
+      const cached = localStorage.getItem('recordSettings_savedTimezone');
+      return cached ? JSON.parse(cached) : (Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC');
+    } catch {
+      return Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC';
+    }
+  });
 
   // Edit state (for form)
-  const [enabled, setEnabled] = useState(false);
-  const [archiveTime, setArchiveTime] = useState('00:00');
-  const [timezone, setTimezone] = useState(() => Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC');
+  const [enabled, setEnabled] = useState(() => {
+    try {
+      const cached = localStorage.getItem('recordSettings_savedEnabled');
+      return cached ? JSON.parse(cached) : false;
+    } catch {
+      return false;
+    }
+  });
+  const [archiveTime, setArchiveTime] = useState(() => {
+    try {
+      const cached = localStorage.getItem('recordSettings_savedArchiveTime');
+      return cached ? JSON.parse(cached) : '00:00';
+    } catch {
+      return '00:00';
+    }
+  });
+  const [timezone, setTimezone] = useState(() => {
+    try {
+      const cached = localStorage.getItem('recordSettings_savedTimezone');
+      return cached ? JSON.parse(cached) : (Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC');
+    } catch {
+      return Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC';
+    }
+  });
   const [nextArchiveTime, setNextArchiveTime] = useState(null);
 
   // Load settings on mount
@@ -37,21 +79,27 @@ export const SettingsRecordPage = () => {
 
       if (result.success) {
         const data = result.data;
-        // Update saved state (for display)
-        setSavedEnabled(data.auto_archive_enabled);
-        setSavedTimezone(data.timezone);
         
         // Parse time to HH:mm format
         let timeStr = '00:00';
         if (data.auto_archive_time) {
           timeStr = data.auto_archive_time.split(':').slice(0, 2).join(':');
         }
-        setSavedArchiveTime(timeStr);
 
-        // Update edit state (for form)
+        // Update and cache saved state
+        setSavedEnabled(data.auto_archive_enabled);
+        setSavedArchiveTime(timeStr);
+        setSavedTimezone(data.timezone);
+
+        // Cache to localStorage
+        localStorage.setItem('recordSettings_savedEnabled', JSON.stringify(data.auto_archive_enabled));
+        localStorage.setItem('recordSettings_savedArchiveTime', JSON.stringify(timeStr));
+        localStorage.setItem('recordSettings_savedTimezone', JSON.stringify(data.timezone));
+
+        // Update edit state
         setEnabled(data.auto_archive_enabled);
-        setTimezone(data.timezone);
         setArchiveTime(timeStr);
+        setTimezone(data.timezone);
       } else {
         setError(result.error);
       }
@@ -94,6 +142,10 @@ export const SettingsRecordPage = () => {
       setSavedEnabled(enabled);
       setSavedArchiveTime(archiveTime);
       setSavedTimezone(timezone);
+      // Cache to localStorage
+      localStorage.setItem('recordSettings_savedEnabled', JSON.stringify(enabled));
+      localStorage.setItem('recordSettings_savedArchiveTime', JSON.stringify(archiveTime));
+      localStorage.setItem('recordSettings_savedTimezone', JSON.stringify(timezone));
     } else {
       toast.error(result.error || '设置保存失败');
     }
