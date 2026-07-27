@@ -50,7 +50,7 @@
   - 历史 DEVELOPMENT_LOG 中的 Yarn 命令作为真实历史记录保留，不代表当前构建入口。
   - 本次未执行数据库迁移、远程 Supabase 操作、函数部署、Cron 修改、生产部署、push 或 tag。
 - 当前分支：supabase-v1
-- Git Commit ID：未提交
+- Git Commit ID：adfb30314fb43b916ca38fb94f1615f5c849d36b
 
 ## DEV-20260727-075
 
