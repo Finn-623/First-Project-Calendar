@@ -83,7 +83,7 @@
   - 发布准备前最后有效 Commit／回滚 Commit：`aa088f83c60272a9eaae318c1bf28f9af293e68e`。
   - 正式上线时间只能在真实生产部署完成后回填。
 - 当前分支：supabase-v1
-- Git Commit ID：未提交
+- Git Commit ID：fabe456539d2ea459d4473289058e0ad7148a4fa
 
 ## DEV-20260727-072
 
