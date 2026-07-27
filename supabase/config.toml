@@ -1,2 +1,6 @@
 [functions.username-login]
 verify_jwt = false
+
+[functions.auto-archive-records]
+verify_jwt = false
+
