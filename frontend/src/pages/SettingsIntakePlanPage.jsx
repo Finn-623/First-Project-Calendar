@@ -202,19 +202,19 @@ export const SettingsIntakePlanPage = () => {
   };
 
   return (
-    <div className="w-full max-w-md mx-auto px-4 pt-6 pb-28">
+    <div className="w-full max-w-md mx-auto px-3 pt-6 pb-28">
       <SettingsSubpageHeader
         title="摄入计划"
         description="设置每日热量和宏量营养目标。"
       />
 
       <section className="rounded-2xl border border-[#E5E5E0] bg-white overflow-hidden">
-        <div className="px-4 py-3 border-b border-[#F0EFE9]">
+        <div className="px-3 py-3 border-b border-[#F0EFE9]">
           <p className="text-[14px] font-medium text-[#2C332F]">编辑摄入计划</p>
           <p className="text-[12px] text-[#858C88] mt-1">填写任意 3 项，第 4 项自动计算</p>
         </div>
 
-        <div className="px-4 py-3 space-y-3">
+        <div className="px-3 py-2 space-y-2">
           {/* 热量字段单独一行 */}
           {FIELD_DEFINITIONS.slice(0, 1).map((field) => {
             const emptyFields = Object.entries(draft).filter(([, v]) => !v || Number(v) === 0).map(([k]) => k);
@@ -245,8 +245,8 @@ export const SettingsIntakePlanPage = () => {
             );
           })}
 
-          {/* 其他3个字段排成一行（响应式） */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-1">
+          {/* 其他3个字段排成一行（移动端也是3列） */}
+          <div className="grid grid-cols-3 gap-0.5">
             {FIELD_DEFINITIONS.slice(1).map((field) => {
               const emptyFields = Object.entries(draft).filter(([, v]) => !v || Number(v) === 0).map(([k]) => k);
               const isAutoField = autoValue !== null && emptyFields.length === 1 && emptyFields[0] === field.key;
@@ -254,10 +254,10 @@ export const SettingsIntakePlanPage = () => {
 
               return (
                 <div key={field.key} className="min-w-0">
-                  <label htmlFor={`intake-${field.key}`} className="text-[12px] text-[#6A6F6C]">
+                  <label htmlFor={`intake-${field.key}`} className="text-[11px] text-[#6A6F6C]">
                     {field.label}
                   </label>
-                  <div className="mt-1 flex items-center gap-0.5 min-w-0">
+                  <div className="mt-0.5 flex items-center gap-0.5 min-w-0">
                     <input
                       id={`intake-${field.key}`}
                       inputMode="decimal"
@@ -267,10 +267,10 @@ export const SettingsIntakePlanPage = () => {
                         setDraft((prev) => ({ ...prev, [field.key]: event.target.value }));
                         setErrorMessage('');
                       }}
-                      className={`flex-1 min-w-0 min-h-10 rounded-lg border px-2 py-1.5 text-[13px] text-center ${isAutoField ? 'border-[#E5E5E0] bg-[#F7F7F5] text-[#6A6F6C]' : 'border-[#D5DCD2] bg-white text-[#2C332F]'}`}
+                      className={`flex-1 min-w-0 min-h-9 rounded-lg border px-1.5 py-1 text-[12px] text-center ${isAutoField ? 'border-[#E5E5E0] bg-[#F7F7F5] text-[#6A6F6C]' : 'border-[#D5DCD2] bg-white text-[#2C332F]'}`}
                       placeholder="0"
                     />
-                    <span className="text-[11px] text-[#858C88] w-6 flex-shrink-0 text-left">{field.unit}</span>
+                    <span className="text-[10px] text-[#858C88] w-5 flex-shrink-0 text-left">{field.unit}</span>
                   </div>
                 </div>
               );
@@ -279,17 +279,17 @@ export const SettingsIntakePlanPage = () => {
         </div>
 
         {errorMessage ? (
-          <div className="px-4 py-2">
+          <div className="px-3 py-2">
             <p className="text-[12px] text-[#A8483E]">{errorMessage}</p>
           </div>
         ) : null}
 
-        <div className="px-4 py-3 border-t border-[#F0EFE9] flex items-center gap-2">
+        <div className="px-3 py-2 border-t border-[#F0EFE9] flex items-center gap-2">
           <button
             type="button"
             onClick={handleCancel}
             disabled={saving}
-            className="min-h-11 px-3 rounded-lg border border-[#D5DCD2] text-[13px] text-[#2C332F] disabled:opacity-55"
+            className="min-h-10 px-3 rounded-lg border border-[#D5DCD2] text-[13px] text-[#2C332F] disabled:opacity-55"
           >
             取消
           </button>
@@ -297,7 +297,7 @@ export const SettingsIntakePlanPage = () => {
             type="button"
             onClick={handleSave}
             disabled={saving}
-            className="min-h-11 px-3 rounded-lg bg-[#6B8067] text-[13px] text-white disabled:opacity-55 flex-1"
+            className="min-h-10 px-3 rounded-lg bg-[#6B8067] text-[13px] text-white disabled:opacity-55 flex-1"
           >
             {saving ? '保存中...' : '保存'}
           </button>
@@ -305,26 +305,26 @@ export const SettingsIntakePlanPage = () => {
       </section>
 
       <section className="rounded-2xl border border-[#E5E5E0] bg-white overflow-hidden mt-4">
-        <div className="px-4 py-3 border-b border-[#F0EFE9]">
+        <div className="px-3 py-3 border-b border-[#F0EFE9]">
           <p className="text-[14px] font-medium text-[#2C332F]">摄入计划历史记录</p>
         </div>
 
         {loadingHistory ? (
-          <p className="px-4 py-3 text-[13px] text-[#6A6F6C]">正在加载历史记录...</p>
+          <p className="px-3 py-3 text-[13px] text-[#6A6F6C]">正在加载历史记录...</p>
         ) : null}
 
         {!loadingHistory && historyError ? (
-          <div className="px-4 py-3">
+          <div className="px-3 py-3">
             <p className="text-[13px] text-[#A8483E]">{historyError}</p>
           </div>
         ) : null}
 
         {!loadingHistory && !historyError && historyItems.length === 0 ? (
-          <p className="px-4 py-3 text-[13px] text-[#6A6F6C]">暂无摄入计划记录</p>
+          <p className="px-3 py-3 text-[13px] text-[#6A6F6C]">暂无摄入计划记录</p>
         ) : null}
 
         {!loadingHistory && !historyError && historyItems.map((item, index) => (
-          <article key={item.id} className="px-4 py-3 border-b border-[#F0EFE9] last:border-b-0">
+          <article key={item.id} className="px-3 py-3 border-b border-[#F0EFE9] last:border-b-0">
             <div className="flex items-center justify-between gap-2">
               <p className="text-[12px] text-[#6A6F6C]">{formatLocalDateTime(item.createdAt)}</p>
               <div className="flex items-center gap-2">
@@ -349,11 +349,11 @@ export const SettingsIntakePlanPage = () => {
         ))}
 
         {!loadingHistory && !historyError && historyItems.length > 0 && historyHasMore ? (
-          <div className="px-4 py-3 border-t border-[#F0EFE9]">
+          <div className="px-3 py-3 border-t border-[#F0EFE9]">
             <button
               type="button"
               onClick={() => loadHistory({ append: true, cursor: historyCursor })}
-              className="w-full min-h-11 rounded-lg border border-[#D5DCD2] text-[13px] text-[#2C332F]"
+              className="w-full min-h-10 rounded-lg border border-[#D5DCD2] text-[13px] text-[#2C332F]"
             >
               查看更多
             </button>
