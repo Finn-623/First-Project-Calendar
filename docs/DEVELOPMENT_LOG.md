@@ -71,7 +71,7 @@
   - `verify_jwt=false` 保留是因为 Cron 使用独立服务端 Bearer Secret，而非用户 JWT；生产 Secret 与 Cron 必须同步配置，否则函数返回 `503`／`401` 且不执行。
   - 实现保证“先有持久化归档，后删除时间轴”；多用户批次按用户独立处理，单个用户失败会返回 `207` 并继续其他用户，不会输出用户身份明细。
 - 当前分支：supabase-v1
-- Git Commit ID：未提交
+- Git Commit ID：7d01ecba40754cc1ae805b57977e16d5ee954abb
 
 ## DEV-20260727-074
 
