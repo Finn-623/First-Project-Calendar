@@ -3,17 +3,16 @@ import {
   formatReleaseTime,
   getFeedbackStatusLabel,
   getFeedbackStatusVariant,
-  getVersionStatusLabel,
 } from './versionInfoUtils';
 
 describe('versionInfoUtils', () => {
-  test('development release time should show not released text', () => {
-    expect(formatReleaseTime(null)).toBe('尚未正式上线');
+  test('missing release time should stay unfilled before deployment', () => {
+    expect(formatReleaseTime(null)).toBe('未填写');
   });
 
   test('released time should format fixed timestamp', () => {
     const result = formatReleaseTime('2026-07-26T18:30:00+10:00');
-    expect(result).not.toBe('尚未正式上线');
+    expect(result).not.toBe('未填写');
     expect(result).toMatch(/2026/);
   });
 
@@ -26,9 +25,7 @@ describe('versionInfoUtils', () => {
     expect(formatLocalDateTime('')).toBe('未记录');
   });
 
-  test('status labels should map correctly', () => {
-    expect(getVersionStatusLabel('development')).toBe('开发中');
-    expect(getVersionStatusLabel('released')).toBe('已上线');
+  test('feedback status labels should map correctly', () => {
     expect(getFeedbackStatusLabel('pending')).toBe('未完成');
     expect(getFeedbackStatusLabel('completed')).toBe('已完成');
   });

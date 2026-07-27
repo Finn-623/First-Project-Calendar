@@ -1,3 +1,53 @@
+## DEV-20260727-074
+
+- 日期：2026-07-27
+- 状态：已完成
+- 修改类型：版本页面调整 / v0.1.2 更新记录
+- 修改背景：网页版本更新页面只应展示最新 v0.1.2，并在正式部署前保持上线时间为空，不展示版本发布状态或旧版本内容。
+- 任务目标：
+  1. 网页只展示 v0.1.2 更新内容。
+  2. 保留并完善版本更新概述。
+  3. 删除版本状态字段和相关展示逻辑。
+  4. 保留上线时间，但正式部署前不预填。
+  5. 保留内部历史文档，不在网页同时展示旧版本。
+- 实际完成内容：
+  - `SettingsVersionPage` 不再遍历 `VERSION_RECORDS` 输出全部版本，仅使用当前 package version 对应的 v0.1.2 记录。
+  - 页面标题和说明调整为当前版本语义，更新区标题明确显示“v0.1.2 版本更新记录”。
+  - 将“版本概述”明确为“版本更新概述”，继续展示简洁版本摘要、本版本重点和分类明细。
+  - 删除页面顶部和更新记录中的“版本状态”字段，并移除网页侧 `getVersionStatusLabel()` 格式化逻辑。
+  - 保留“上线时间”；`releasedAt` 仍为 `null`，页面显示中性占位“未填写”，未使用待上线、准备中或已发布状态文案。
+  - CHANGELOG、VERSION_HISTORY 和独立版本文档中的历史内容保持不变。
+  - 新增真实组件测试，防止旧版本或版本状态重新出现在网页。
+- 主要修改文件或模块：
+  - `frontend/src/pages/SettingsVersionPage.jsx`
+  - `frontend/src/pages/SettingsVersionPage.test.jsx`（新建）
+  - `frontend/src/lib/versionInfoUtils.js`
+  - `frontend/src/lib/versionInfoUtils.test.js`
+  - `docs/DEVELOPMENT_LOG.md`
+- 遇到的问题：
+  - 暂无。
+- 解决方式：
+  - 复用现有当前版本记录、分类结构和上线时间格式化逻辑，只收敛页面渲染范围和状态展示。
+- 执行的测试与检查：
+  - `CI=true npm test -- --watchAll=false --runInBand src/pages/SettingsVersionPage.test.jsx src/lib/versionInfoUtils.test.js src/config/appVersion.test.js`
+    - 结果：3 个测试套件通过，9 项测试通过，0 snapshot。
+    - 覆盖：仅显示 v0.1.2、隐藏 v0.1.1、删除版本状态、保留概述与上线时间、空上线时间不伪造。
+  - `npm run build`
+    - 结果：生产构建成功，主 JavaScript gzip 为 242.37 kB，CSS gzip 为 12.33 kB。
+- 测试结果：
+  - ✅ 网页版本页只展示最新 v0.1.2 更新记录。
+  - ✅ 页面不显示 v0.1.1 或版本状态文案。
+  - ✅ 版本更新概述和分类明细保留。
+  - ✅ 上线时间字段保留，正式部署前未填写时间。
+  - ✅ 定向测试和生产构建通过。
+- 未完成事项：
+  - 正式部署成功后，必须使用实际部署完成的准确日期和时间更新 `releasedAt`。
+- 风险或注意事项：
+  - 构建仍输出 Node `fs.F_OK` 弃用 warning，来自现有依赖链，不影响本次构建成功。
+  - 本次未执行生产部署、数据库操作、依赖安装或 Git tag。
+- 当前分支：supabase-v1
+- Git Commit ID：未提交
+
 ## DEV-20260727-073
 
 - 日期：2026-07-27

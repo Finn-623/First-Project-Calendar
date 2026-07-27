@@ -1,5 +1,5 @@
 export function formatReleaseTime(releasedAt, locale = 'zh-CN') {
-  if (!releasedAt) return '尚未正式上线';
+  if (!releasedAt) return '未填写';
 
   try {
     const date = new Date(releasedAt);
@@ -38,12 +38,6 @@ export function formatLocalDateTime(value, locale = 'zh-CN') {
   } catch {
     return '未记录';
   }
-}
-
-export function getVersionStatusLabel(status) {
-  if (status === 'released') return '已上线';
-  if (status === 'development') return '开发中';
-  return '未知状态';
 }
 
 export function getFeedbackStatusLabel(status) {
