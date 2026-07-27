@@ -1,8 +1,14 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { SettingsSubpageHeader } from '../components/settings/SettingsSubpageHeader';
 
 export const SettingsRecordHistoryPage = () => {
+  const navigate = useNavigate();
+
+  const handleEnterHistory = () => {
+    navigate('/history', { state: { returnTo: 'settings' } });
+  };
+
   return (
     <div className="w-full max-w-md mx-auto px-4 pt-6 pb-28">
       <SettingsSubpageHeader
@@ -11,12 +17,13 @@ export const SettingsRecordHistoryPage = () => {
       />
 
       <section className="rounded-2xl border border-[#E5E5E0] bg-white overflow-hidden">
-        <Link
-          to="/history"
-          className="block min-h-11 px-4 py-3 text-[13px] text-[#2C332F] hover:bg-[#F7F7F5]"
+        <button
+          type="button"
+          onClick={handleEnterHistory}
+          className="block w-full min-h-11 px-4 py-3 text-[13px] text-[#2C332F] hover:bg-[#F7F7F5] text-left"
         >
           进入历史记录
-        </Link>
+        </button>
       </section>
     </div>
   );

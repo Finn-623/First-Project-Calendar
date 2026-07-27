@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { CheckSquare, ChevronRight, Square, Trash2 } from 'lucide-react';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { CheckSquare, ChevronRight, Square, Trash2, ArrowLeft } from 'lucide-react';
 import { toast } from 'sonner';
 import { useStore } from '../store';
 import { sumTimelineMacros } from '../mockData';
@@ -25,10 +25,14 @@ const formatDateRangeLabel = (dateStr) => {
 export const HistoryPage = () => {
   const { history, plan, setHistory } = useStore();
   const navigate = useNavigate();
+  const location = useLocation();
   const [isBatchDeleteMode, setIsBatchDeleteMode] = useState(false);
   const [selectedDateKeys, setSelectedDateKeys] = useState([]);
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [deleting, setDeleting] = useState(false);
+
+  // 判断是否从设置进来
+  const isFromSettings = location.state?.returnTo === 'settings';
 
   const selectedSet = useMemo(() => new Set(selectedDateKeys), [selectedDateKeys]);
   const selectedCount = selectedDateKeys.length;
@@ -108,10 +112,23 @@ export const HistoryPage = () => {
   return (
     <div className="pb-32">
       <header className="px-5 pt-6 pb-4">
+        {isFromSettings ? (
+          <div className="flex items-center justify-between gap-3 mb-4">
+            <button
+              type="button"
+              onClick={() => navigate('/settings')}
+              aria-label="返回设置"
+              className="min-h-11 px-2 -ml-2 rounded-lg text-[13px] text-[#6B8067] hover:bg-[#EEF2EC] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#6B8067]/40 inline-flex items-center gap-1.5"
+            >
+              <ArrowLeft size={16} />
+              返回设置
+            </button>
+          </div>
+        ) : null}
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0">
-            <p className="text-[11px] uppercase tracking-[0.22em] text-[#858C88]">HISTORY</p>
-            <h1 className="text-[22px] font-medium text-[#2C332F] mt-1">历史记录</h1>
+            {!isFromSettings ? <p className="text-[11px] uppercase tracking-[0.22em] text-[#858C88]">HISTORY</p> : null}
+            <h1 className={`text-[22px] font-medium text-[#2C332F] ${!isFromSettings ? 'mt-1' : ''}`}>历史记录</h1>
             <p className="text-[12px] text-[#858C88] mt-1">
               {isBatchDeleteMode ? '选择一个或多个日期后可批量删除' : '点击任意一天回看完整时间轴'}
             </p>

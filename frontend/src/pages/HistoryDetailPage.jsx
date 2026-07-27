@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { ChevronLeft } from 'lucide-react';
 import { toast } from 'sonner';
 import { useStore } from '../store';
@@ -45,7 +45,13 @@ const removeEmptyMeals = (timeline = []) => (timeline || []).filter((item) => {
 export const HistoryDetailPage = () => {
   const { dateStr } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
   const { history, plan, user, loadHistory } = useStore();
+
+  // 判断是否从设置来
+  const isFromSettings = location.state?.returnTo === 'settings';
+  const backPath = isFromSettings ? '/history' : '/history';
+  const backLabel = isFromSettings ? '历史' : '历史';
 
   const entry = history.find((h) => h.dateStr === dateStr);
   const [isEditMode, setIsEditMode] = useState(false);
@@ -280,7 +286,7 @@ export const HistoryDetailPage = () => {
         await loadHistory(user.id);
         setConfirmOpen(false);
         toast.success('历史记录已删除');
-        navigate('/history');
+        navigate('/history', { state: isFromSettings ? { returnTo: 'settings' } : {} });
         return;
       }
 
@@ -350,26 +356,24 @@ export const HistoryDetailPage = () => {
         <div className="flex items-center justify-between gap-2 mb-2">
           <button
             type="button"
-            onClick={() => navigate('/history')}
+            onClick={() => navigate('/history', { state: isFromSettings ? { returnTo: 'settings' } : {} })}
             data-testid="history-detail-back"
             className="flex items-center gap-1 text-[12px] text-[#858C88]"
           >
-            <ChevronLeft size={14} strokeWidth={1.5} /> 历史
+            <ChevronLeft size={14} strokeWidth={1.5} /> {backLabel}
           </button>
 
           <div className="flex items-center gap-2">
-            {isEditMode ? (
-              <button
-                type="button"
-                onClick={handleDeleteDay}
-                className="h-8 px-3 rounded-full border border-[#E5E5E0] text-[12px] text-[#D27D67] disabled:opacity-60"
-                data-testid="history-delete-day"
-                aria-label={`删除${dateStr}整天记录`}
-                disabled={interactionDisabled || hasOpenEditor || confirmOpen}
-              >
-                {deleting && confirmKind === 'day' ? '删除中...' : '删除整天记录'}
-              </button>
-            ) : null}
+            <button
+              type="button"
+              onClick={handleDeleteDay}
+              className="h-8 px-3 rounded-full border border-[#E5E5E0] text-[12px] text-[#D27D67] disabled:opacity-60"
+              data-testid="history-delete-day"
+              aria-label={`删除${dateStr}整天记录`}
+              disabled={interactionDisabled || hasOpenEditor || confirmOpen}
+            >
+              {deleting && confirmKind === 'day' ? '删除中...' : '删除整天记录'}
+            </button>
 
             <button
               type="button"
@@ -397,11 +401,6 @@ export const HistoryDetailPage = () => {
           </h1>
         </div>
 
-        {isEditMode ? (
-          <p className="mt-2 text-[12px] text-[#6B8067]">编辑模式已开启，可使用每条记录右上角按钮编辑或删除。</p>
-        ) : (
-          <p className="mt-2 text-[12px] text-[#858C88]">当前为查看模式，点击右上角“编辑”可操作记录。</p>
-        )}
       </header>
 
       {isEmptyDay ? (
