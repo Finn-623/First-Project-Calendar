@@ -9,7 +9,6 @@ import { Button } from '../components/ui/button';
 
 export const SettingsRecordPage = () => {
   const { user } = useStore();
-  const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
   const [enabled, setEnabled] = useState(false);
@@ -22,11 +21,9 @@ export const SettingsRecordPage = () => {
     const loadSettings = async () => {
       if (!user?.id) {
         setError('未登录用户');
-        setLoading(false);
         return;
       }
 
-      setLoading(true);
       setError('');
 
       const result = await recordSettingsService.getSettings({ userId: user.id });
@@ -44,8 +41,6 @@ export const SettingsRecordPage = () => {
       } else {
         setError(result.error);
       }
-
-      setLoading(false);
     };
 
     loadSettings();
@@ -88,33 +83,25 @@ export const SettingsRecordPage = () => {
     setSaving(false);
   }, [user?.id, enabled, archiveTime, timezone]);
 
-  if (loading) {
-    return (
-      <div className="pb-32">
-        <SettingsSubpageHeader title="记录设置" />
-        <div className="px-5 pt-6">
-          <div className="text-center text-sm text-[#858C88]">加载中...</div>
-        </div>
-      </div>
-    );
-  }
-
   if (error && !user?.id) {
     return (
-      <div className="pb-32">
+      <div className="w-full max-w-md mx-auto px-3 pt-6 pb-28">
         <SettingsSubpageHeader title="记录设置" />
-        <div className="px-5 pt-6">
-          <div className="text-center text-sm text-[#D27D67]">记录设置加载失败，请重试</div>
+        <div className="mt-6">
+          <div className="text-center text-sm text-[#D27D67] leading-relaxed">
+            <p className="font-medium mb-2">⚠️ 加载失败</p>
+            <p>{error}</p>
+          </div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="pb-32">
+    <div className="w-full max-w-md mx-auto px-3 pt-6 pb-28">
       <SettingsSubpageHeader title="记录设置" />
 
-      <div className="px-5 pt-6 space-y-4">
+      <div className="space-y-4">
         {/* Auto Archive Card */}
         <div className="rounded-2xl border border-[#E5E5E0] p-4">
           <div className="flex items-center justify-between mb-3">
