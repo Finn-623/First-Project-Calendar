@@ -46,7 +46,7 @@
   - 构建仍输出 Node `fs.F_OK` 弃用 warning，来自现有依赖链，不影响本次构建成功。
   - 本次未执行生产部署、数据库操作、依赖安装或 Git tag。
 - 当前分支：supabase-v1
-- Git Commit ID：未提交
+- Git Commit ID：9bcf74f960290e62ad91d2161b2b1182597e6fdf
 
 ## DEV-20260727-073
 
