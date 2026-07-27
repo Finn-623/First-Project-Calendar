@@ -264,7 +264,7 @@ export const HistoryDetailPage = () => {
   };
 
   const handleDeleteDay = () => {
-    if (!isEditMode || interactionDisabled) return;
+    if (interactionDisabled || hasOpenEditor || confirmOpen) return;
     setPendingDeleteItem(null);
     setPendingDeleteFood(null);
     setConfirmKind('day');
@@ -272,7 +272,11 @@ export const HistoryDetailPage = () => {
   };
 
   const handleConfirmDelete = async () => {
-    if (!user?.id || deleting) return;
+    if (deleting) return;
+    if (!user?.id) {
+      toast.error('无法确认当前用户，请重新登录后重试');
+      return;
+    }
 
     setDeleting(true);
     try {
@@ -283,13 +287,17 @@ export const HistoryDetailPage = () => {
           return;
         }
 
-        await loadHistory(user.id);
+        const historyResult = await loadHistory(user.id);
         
         // 如果被删除的日期是当前查看的日期（本日），重置状态为真实的今天
         resetDeletedDateState(dateStr);
         
         setConfirmOpen(false);
-        toast.success('历史记录已删除');
+        if (historyResult?.success === false) {
+          toast.error('记录已删除，但历史列表刷新失败，请稍后重试');
+        } else {
+          toast.success('历史记录已删除');
+        }
         navigate('/history', { state: isFromSettings ? { returnTo: 'settings' } : {} });
         return;
       }

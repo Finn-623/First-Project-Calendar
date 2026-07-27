@@ -1,3 +1,60 @@
+## DEV-20260727-070
+
+- 日期：2026-07-27
+- 状态：已完成
+- 修改类型：Bug 修复 / 历史记录整日删除交互
+- 修改背景：历史记录详情页默认处于查看模式，但“删除整天记录”按钮的处理函数错误依赖编辑模式，导致按钮看起来可点击，实际点击后静默返回且不打开确认弹窗。
+- 任务目标：
+  1. 允许用户在默认查看模式直接发起整日删除。
+  2. 保留二次确认、失败保护、历史刷新、日期状态清理和返回历史模块的既有流程。
+  3. 为整日删除补充真实组件交互测试。
+  4. 不改变单项编辑删除规则，不修改数据库、RPC、迁移或路由架构。
+- 实际完成内容：
+  - 修复 `handleDeleteDay()`：
+    - 移除对 `isEditMode` 的错误依赖。
+    - 与按钮禁用条件保持一致，仅在保存、删除、其他编辑器打开或确认弹窗已打开时阻止重复交互。
+  - 完善 `handleConfirmDelete()`：
+    - 缺少当前用户信息时显示明确错误提示，不再静默返回。
+    - 检查 `loadHistory(user.id)` 返回结果；数据库删除成功但历史列表刷新失败时显示部分成功提示，不错误宣称完整成功。
+    - 删除服务失败时保持原有数据状态，不执行刷新后状态清理或导航。
+  - 新增 `HistoryDetailPage` 组件交互测试，覆盖默认查看模式、确认弹窗、取消、成功、失败、缺少用户及刷新失败场景。
+- 主要修改文件或模块：
+  - `frontend/src/pages/HistoryDetailPage.jsx`
+  - `frontend/src/pages/HistoryDetailPage.test.jsx`（新建）
+  - `docs/DEVELOPMENT_LOG.md`
+- 遇到的问题：
+  - 首次定向测试因 Jest mock factory 引用了不符合提升规则的外部变量而失败。
+  - 第二次定向测试因当前 Jest 环境无法直接解析 `react-router-dom` 而失败。
+- 解决方式：
+  - 将路由导航 mock 变量调整为 Jest 允许的 `mock` 前缀命名。
+  - 复用项目现有测试方式，将 `react-router-dom` 声明为 virtual mock；未安装或升级依赖。
+- 执行的测试与检查：
+  - `CI=true npm test -- --watchAll=false --runInBand src/pages/HistoryDetailPage.test.jsx src/__tests__/delete-history-date-reset.test.js`
+    - 最终结果：2 个测试套件通过，22 项测试通过。
+    - 覆盖范围：整日删除真实组件交互，以及删除本日后首页恢复真实本日的既有规则。
+  - `npm run build`
+    - 结果：生产构建成功，主 JavaScript gzip 大小为 240.08 kB。
+  - `CI=true npm test -- --watchAll=false`
+    - 结果：13 个测试套件全部通过，102 项测试全部通过，0 个 snapshot。
+  - 项目没有 lint script，本次未运行 lint，也未声称 lint 通过。
+- 测试结果：
+  - ✅ 默认查看模式下整日删除按钮可点击并打开二次确认弹窗。
+  - ✅ 取消确认不调用 `deleteFullDayRecords`。
+  - ✅ 确认删除使用当前路由日期，并在成功后刷新历史、清理日期状态和返回 `/history`。
+  - ✅ 删除服务失败时显示错误，不导航、不清理仍存在的数据状态。
+  - ✅ 缺少用户信息时显示明确错误反馈。
+  - ✅ 删除成功但历史刷新失败时不显示完整成功提示。
+  - ✅ 既有“删除本日后首页恢复真实本日”测试继续通过。
+  - ✅ 完整前端测试和生产构建通过。
+- 未完成事项：
+  - 建议用户在真实浏览器中人工确认默认查看模式下的弹窗、toast 和返回历史页面体验。
+- 风险或注意事项：
+  - 构建输出 Node `fs.F_OK` 弃用 warning，来自现有依赖链，不影响构建成功。
+  - 完整测试输出缺少 `REACT_APP_SUPABASE_URL` 和 `REACT_APP_SUPABASE_ANON_KEY` 的 console.error，但所有测试均通过。
+  - 本次未修改数据库、Supabase RPC、迁移、依赖、锁文件或生产环境。
+- 当前分支：supabase-v1
+- Git Commit ID：未提交
+
 ## DEV-20260727-069
 
 - 日期：2026-07-27
