@@ -40,7 +40,7 @@ function groupChangesByCategory(changes = []) {
 export const SettingsVersionPage = () => {
   const versionCheck = validateAppVersionMeta(APP_VERSION_META);
   const currentVersionRecord =
-    VERSION_RECORDS.find((record) => record.version === APP_VERSION) || VERSION_RECORDS[0] || null;
+    VERSION_RECORDS.find((record) => record.version === APP_VERSION_META.version) || VERSION_RECORDS[0] || null;
   const groupedCurrentChanges = currentVersionRecord
     ? groupChangesByCategory(currentVersionRecord.changes)
     : {};
@@ -58,7 +58,7 @@ export const SettingsVersionPage = () => {
       <section className="rounded-2xl border border-[#E5E5E0] bg-white overflow-hidden mb-4">
         <div className="px-4 py-3 border-b border-[#F0EFE9]">
           <p className="text-[11px] text-[#858C88]">当前版本号</p>
-          <p className="text-[14px] text-[#2C332F] mt-1">v{APP_VERSION}</p>
+          <p className="text-[14px] text-[#2C332F] mt-1">{APP_VERSION}</p>
           <p className="text-[12px] text-[#6B736F] mt-2">{currentVersionRecord?.name || '版本名称未记录'}</p>
         </div>
         <div className="px-4 py-3 border-b border-[#F0EFE9]">

@@ -1,3 +1,90 @@
+## DEV-20260727-073
+
+- 日期：2026-07-27
+- 状态：已完成上架前准备，待人工处理阻断项
+- 修改类型：Release Preparation / v0.1.2
+- 修改背景：将 v0.1.1 可审计基准之后截至当前的全部已完成修改归入 v0.1.2，统一版本展示、网页更新日志和发布文档，并执行上线前自动化检查。
+- 任务目标：
+  1. 依据 Git、代码和现有文档确定 v0.1.2 真实范围。
+  2. 将现有版本号统一更新为 v0.1.2，不提前填写正式上线时间。
+  3. Review 修改意见、开发记录、Roadmap 和项目状态。
+  4. 检查敏感信息、数据库、Supabase、环境和生产数据风险。
+  5. 执行依赖安装检查、版本校验、核心回归、完整测试与生产构建。
+  6. 形成独立发布准备提交并回填真实 Commit ID。
+- 实际完成内容：
+  - 确认仓库没有 v0.1.1 Git tag，现有 v0.1.1 文档状态也是“尚未正式上线”；采用 v0.1.1 文档回填提交 `aff3d4b6c355c86ddef276887677b15ad6a16653` 作为可审计版本基准。
+  - 核对 `aff3d4b..aa088f8` 共 134 个提交，将其中已完成的功能、修复、优化、调整、删除和工程文档归入 v0.1.2。
+  - 将 `frontend/package.json` 版本更新为 `0.1.2`，通过统一配置使登录页、设置页和版本页显示 `v0.1.2`。
+  - 修复版本信息页重复添加 `v` 和当前版本记录匹配格式错误，避免展示 `vv0.1.2` 或错误回退记录。
+  - 新增 v0.1.2 网页结构化版本记录，并将原 v0.1.1 记录固定为历史版本，避免随 package version 漂移。
+  - 更新 CHANGELOG、版本历史、项目状态和独立版本文档；上线时间保持 `releasedAt=null`／待正式上线确认。
+  - Review 结果：
+    - 历史记录、导航、设置、账户、版本反馈、摄入计划、记录设置及近期修复均已完成并纳入。
+    - Roadmap 中模板、周计划、规则自动生成、减脂模式、离线和 AI 能力保留到后续版本。
+    - Supabase `version_feedback` 的真实 pending 数据无法从本地仓库核验，需要管理员在生产环境人工 Review。
+  - 安全与环境检查：
+    - Git 跟踪文件中仅有 `.env.example`；本地 `.env.local` 被忽略，未读取或记录真实内容。
+    - 未发现被跟踪的密钥、Token、测试账号或演示账号数据。
+    - 开发环境登录性能日志受 `NODE_ENV !== production` 控制，不进入生产执行路径。
+    - 发现自动归档函数 `verify_jwt=false`，函数使用 service role 且可能删除时间轴数据，源码未见额外可信调用密钥校验，列为生产部署阻断风险。
+- 主要修改文件或模块：
+  - `frontend/package.json`
+  - `frontend/src/config/version.config.json`
+  - `frontend/src/config/appVersion.test.js`
+  - `frontend/src/data/versionHistory.js`
+  - `frontend/src/pages/SettingsVersionPage.jsx`
+  - `CHANGELOG.md`
+  - `docs/VERSION_HISTORY.md`
+  - `docs/PROJECT_STATUS.md`
+  - `docs/version-updates/v0.1.2.md`
+  - `docs/DEVELOPMENT_LOG.md`
+- 遇到的问题：
+  - `npm install --package-lock=false` 首次执行因网络长时间无输出被中止。
+  - 离线重试因用户 npm 缓存存在 root 所有文件返回 `EPERM`。
+  - 改用临时缓存并联网重试后，React 19 与 `react-day-picker@8.10.1` 的 peer dependency 不兼容导致 `ERESOLVE`。
+- 解决方式：
+  - 未修改用户 npm 缓存权限，未使用 sudo。
+  - 未使用 `--force`、`--legacy-peer-deps` 或升级依赖掩盖冲突。
+  - 使用项目现有 `node_modules` 完成版本校验、测试和构建；未生成 package-lock，未修改 yarn.lock。
+- 执行的测试与检查：
+  - `npm install --package-lock=false`
+    - 结果：失败／中止，网络无输出。
+  - `npm install --package-lock=false --offline`
+    - 结果：失败，npm 缓存权限 `EPERM`。
+  - `npm install --package-lock=false --cache /private/tmp/first-project-calendar-npm-cache`
+    - 结果：失败，`react-day-picker@8.10.1` 要求 React 16–18，而项目使用 React 19，npm 返回 `ERESOLVE`。
+  - `npm run validate:version`
+    - 结果：通过，v0.1.2 版本配置与独立版本文档一致。
+  - `CI=true npm test -- --watchAll=false --runInBand ...`
+    - 结果：9 个核心测试套件通过，60 项测试通过。
+    - 覆盖：版本配置、历史整日删除、本日状态恢复、底部导航、设置历史入口、摄入计划、版本反馈和记录设置。
+  - `CI=true npm test -- --watchAll=false`
+    - 结果：16 个测试套件全部通过，112 项测试全部通过，0 snapshot。
+  - `npm run build`
+    - 结果：生产构建成功，主 JavaScript gzip 为 242.56 kB，CSS gzip 为 12.33 kB。
+  - lint：
+    - 项目没有 lint script，本次未运行 lint，也未声称 lint 通过。
+- 测试结果：
+  - ✅ v0.1.2 版本一致性校验通过。
+  - ✅ 自动化核心回归和完整测试全部通过。
+  - ✅ 生产构建成功。
+  - ⚠️ 测试输出缺少 Supabase 测试环境变量的既有 `console.error`，真实数据库链路未覆盖。
+  - ⚠️ 构建输出 Node `fs.F_OK` 弃用 warning，不阻断本次构建。
+  - ❌ 干净环境 `npm install` 因 peer dependency 冲突失败，属于可重复安装阻断问题。
+- 未完成事项：
+  - 修复或明确处置 React 19 与 `react-day-picker@8.10.1` 的依赖兼容问题，并在干净环境重新执行安装、测试与构建。
+  - 为自动归档 Edge Function 增加可信调用保护，或明确生产环境不部署／禁用该函数。
+  - 人工确认生产迁移 `011`–`019`、RLS、Edge Function 和环境变量配置。
+  - 使用普通用户和管理员双账号完成登录、切换账户、数据隔离、公共／个人食物权限与修改意见 pending Review。
+  - 完成移动端真机、刷新、直接路由、返回操作和部署后 smoke test。
+- 风险或注意事项：
+  - 本次未执行数据库迁移、远程 Supabase 操作、函数部署、真实数据写入、生产部署或 Git tag。
+  - 自动归档函数存在未经可信鉴权即可触发 service role 数据操作的高风险，当前不满足生产部署条件。
+  - 发布准备前最后有效 Commit／回滚 Commit：`aa088f83c60272a9eaae318c1bf28f9af293e68e`。
+  - 正式上线时间只能在真实生产部署完成后回填。
+- 当前分支：supabase-v1
+- Git Commit ID：未提交
+
 ## DEV-20260727-072
 
 - 日期：2026-07-27
