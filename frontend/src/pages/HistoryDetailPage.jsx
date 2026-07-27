@@ -46,7 +46,7 @@ export const HistoryDetailPage = () => {
   const { dateStr } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
-  const { history, plan, user, loadHistory } = useStore();
+  const { history, plan, user, loadHistory, resetDeletedDateState } = useStore();
 
   // 判断是否从设置来
   const isFromSettings = location.state?.returnTo === 'settings';
@@ -284,6 +284,10 @@ export const HistoryDetailPage = () => {
         }
 
         await loadHistory(user.id);
+        
+        // 如果被删除的日期是当前查看的日期（本日），重置状态为真实的今天
+        resetDeletedDateState(dateStr);
+        
         setConfirmOpen(false);
         toast.success('历史记录已删除');
         navigate('/history', { state: isFromSettings ? { returnTo: 'settings' } : {} });

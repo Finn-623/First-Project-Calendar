@@ -23,7 +23,7 @@ const formatDateRangeLabel = (dateStr) => {
 };
 
 export const HistoryPage = () => {
-  const { history, plan, setHistory } = useStore();
+  const { history, plan, setHistory, recordingDateStr, resetDeletedDateState } = useStore();
   const navigate = useNavigate();
   const location = useLocation();
   const [isBatchDeleteMode, setIsBatchDeleteMode] = useState(false);
@@ -99,6 +99,11 @@ export const HistoryPage = () => {
 
       const selectedLookup = new Set(selectedDateKeys);
       setHistory((prev) => prev.filter((item) => !selectedLookup.has(item.dateStr)));
+
+      // 如果被删除的日期中包含当前查看的日期，重置状态为真实的今天
+      if (selectedLookup.has(recordingDateStr)) {
+        resetDeletedDateState(recordingDateStr);
+      }
 
       setConfirmOpen(false);
       setSelectedDateKeys([]);
