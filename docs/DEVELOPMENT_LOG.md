@@ -1,3 +1,53 @@
+## DEV-20260727-065
+
+- 日期：2026-07-27
+- 状态：已完成
+- 修改类型：重构 / 设置-移除中间层页面
+- 修改背景：用户从"设置 → 记录 → 记录历史记录"进入历史记录时，需要经过SettingsRecordHistoryPage中间页面，该页面仅包含一个"进入历史记录"按钮，增加了不必要的导航层级。
+- 任务目标：
+  1. 移除SettingsRecordHistoryPage中间页面。
+  2. 在"设置 → 记录"中点击"记录历史记录"后直接进入现有历史记录页面。
+  3. 直接复用现有历史记录模块和功能。
+  4. 两个入口（设置和主导航）都进入同一历史记录页面。
+  5. 不影响历史详情、编辑、删除和批量删除功能。
+- 实际完成内容：
+	- 删除中间页面：
+	  - 移除 SettingsRecordHistoryPage.jsx 文件。
+	  - 删除 App.js 中的 /settings/record-history 路由。
+	  - 删除相关导入和页面列表引用。
+	- 导航改进：
+	  - SettingsPage 中"记录历史记录"项改为使用 action 处理器。
+	  - 添加 handleNavigationAction 函数处理 record-history 动作。
+	  - 直接 navigate 到 /history，传递 state { returnTo: 'settings' }。
+	  - 保持返回设置页面的上下文信息。
+	- 功能复用：
+	  - 不创建新逻辑或新数据库表。
+	  - 完全复用现有 HistoryPage、历史记录数据和功能。
+	  - 无需修改历史详情、编辑、删除、批量删除等功能。
+	- 导航流简化：
+	  - 之前：设置 → 记录历史记录 → 进入历史记录 → 历史记录页（3层）
+	  - 现在：设置 → 历史记录页（直接）
+	  - 两个入口统一：设置 history 入口 → /history；底部导航 history 入口 → /history。
+- 主要修改文件或模块：
+	- `frontend/src/pages/SettingsPage.jsx` - 添加 handleNavigationAction，改 record-history 为 action
+	- `frontend/src/App.js` - 删除路由和导入
+	- `frontend/src/pages/SettingsRecordHistoryPage.jsx` - 文件删除
+- 执行的测试与检查：
+	- `cd frontend && npm run build` - 构建成功，文件大小稳定（239.96 kB）。
+	- `cd frontend && CI=true npm test -- --watch=false --runInBand` - 73 个测试全部通过，10 个测试套件通过。
+- 测试结果：
+	- ✅ 前端构建成功，无编译错误。
+	- ✅ 73 个测试全部通过，无回归。
+	- ✅ 从设置直接导航到历史记录页面，无中间页面。
+	- ✅ 返回设置页面的 state 正确传递。
+	- ✅ 历史记录页面所有功能正常（详情、编辑、删除、批量删除）。
+	- ✅ 两个入口都正确进入同一历史记录页面。
+- 当前分支：supabase-v1
+- Git Commit ID：1395a15
+- 风险或注意事项：
+	- 已验证不会影响历史记录的任何功能。
+	- 用户从设置进入历史后，仍可通过"返回设置"返回到设置页面。
+
 ## DEV-20260727-064
 
 - 日期：2026-07-27
