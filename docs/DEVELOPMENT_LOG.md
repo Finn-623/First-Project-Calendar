@@ -1,3 +1,40 @@
+## DEV-20260728-021
+
+- 日期：2026-07-28
+- 状态：已完成
+- 修改类型：发布门禁 / v0.1.3 最终一致性核对
+- 任务目标：以代码、测试、迁移、Git 和版本文档为准，核对 v0.1.3 正式部署前门禁，不执行 Production 部署。
+- 实际完成内容：
+	- 逐项核对历史返回、固定三餐时间、成功提示、使用现在时间、非本日提示、建议历史分区与只读、退出位置、反馈页返回导航和建议历史加载九项需求。
+	- 确认退出账号最终位于记录分组之后、版本信息页脚之前；修改意见页唯一返回入口明确指向 `/settings/version`。
+	- 审查 migration 021 的 completed 保护、pending 权限和管理员完成流程，并重新运行契约测试。
+	- 修复 v0.1.3 文档中两处早期 Commit 回填占位符，使用 Git 历史中的真实回填提交。
+	- Production `version_feedback` 未通过匿名权限冒充管理员核对，继续要求管理员执行精确查询与状态确认。
+- 主要修改文件或模块：
+	- `docs/version-updates/v0.1.3.md`
+	- `docs/DEVELOPMENT_LOG.md`
+- 遇到的问题：
+	- v0.1.3 独立版本文档仍残留范围确认与发布前 Review 的两个“待回填”占位符，不满足全部 Commit ID 已回填的门禁要求。
+- 解决方式：
+	- 从不可变 Git 历史确认回填提交分别为 `a63af746a2eca5c3ccaca0bd5109778b09027a15` 与 `6890ba05d063d540c6e5a39043074ba3a8365756`，仅修正文档，不改动业务代码。
+- 执行的测试：
+	- `node --test supabase/migrations/021_lock_completed_version_feedback.test.mjs`
+	- `npm test -- --runInBand --watchAll=false`
+	- `npm run build`
+- 测试结果：
+	- Migration 契约测试：3 个用例通过。
+	- 全量前端测试：31 个套件、210 个测试通过。
+	- Production build：通过（Compiled successfully）。
+- 未完成事项：
+	- Production 四条原始反馈的 status、completed_version 和新增 pending 列表仍需管理员安全查询确认。
+	- Migration `021_lock_completed_version_feedback.sql` 未部署；Production 未部署。
+- 风险或注意事项：
+	- 测试存在缺少 Supabase 测试环境变量的既有提示和模拟 session 恢复失败的预期日志。
+	- Build 存在 Node `fs.F_OK` 弃用警告，不阻塞产物生成。
+	- 在管理员完成 Production 反馈核对前，不允许进入正式部署。
+- 当前分支：supabase-v1
+- Git Commit ID：未提交
+
 ## DEV-20260728-020
 
 - 日期：2026-07-28
