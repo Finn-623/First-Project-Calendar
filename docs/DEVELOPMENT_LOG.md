@@ -1,3 +1,52 @@
+## DEV-20260728-006
+
+- 日期：2026-07-28
+- 状态：已完成
+- 修改类型：P0 Fix / v0.1.3 退出账号闭环与状态隔离
+- 任务目标：只保留退出账号功能，完成设置入口、确认交互、私有状态清理、普通登录页返回和受保护路由隔离。
+- 实际完成内容：
+	- 将“退出账号”入口移入设置页账号区域，使用项目统一确认弹窗。
+	- 退出期间显示“正在退出...”并通过同步 ref 与禁用状态阻止重复提交；取消不调用退出，失败不导航并显示明确错误。
+	- 成功后复用 Store 现有 `logout -> signOutAndClear`，清理私有查询并以 replace 方式进入普通 `/login`。
+	- 删除 Store 的 `switchAccount` 独立别名和 LoginPage 的账号切换状态/专用提示，不建立第二套认证流程。
+	- 删除重复的 `SettingsAccountActionsPage`；旧 `/settings/account-actions` 路由兼容重定向到设置首页。
+	- 退出成功后清理 session、user、profile、timeline、history、私有 foods、favorites、plan、plan history、日期、记录日、结束/初始化状态、认证错误、请求缓存和临时请求 ref；保留公共食品数据。
+	- 修复退出与日期初始化并发时旧初始化结果回写 `dayInitialized` 的问题，并阻止旧 `initialUser` 在退出后重新加载上一个账号数据。
+- 主要修改文件或模块：
+	- `frontend/src/App.js`
+	- `frontend/src/pages/SettingsPage.jsx`
+	- `frontend/src/pages/LoginPage.jsx`
+	- `frontend/src/pages/SettingsAccountActionsPage.jsx`（删除）
+	- `frontend/src/store.jsx`
+	- `frontend/src/pages/SettingsPage.navigation.test.jsx`
+	- `frontend/src/pages/LoginPage.logout.test.jsx`
+	- `frontend/src/store.logout.test.jsx`
+	- `frontend/src/App.logoutRouting.test.jsx`
+	- `docs/PROJECT_STATUS.md`
+	- `docs/version-updates/v0.1.3.md`
+	- `docs/DEVELOPMENT_LOG.md`
+- 遇到的问题：
+	- 专项测试发现退出清理后，进行中的日期初始化与 `initialUser` prop 仍可能把旧账号初始化状态或数据重新写回。
+- 解决方式：
+	- 使用初始化请求代次校验忽略退出前请求结果；数据加载仅跟随当前 Store user；退出完成后阻止旧初始 props 再同步，并保留公共食品集合。
+- 执行的测试：
+	- `npm test -- --runInBand --watchAll=false src/pages/SettingsPage.navigation.test.jsx src/pages/LoginPage.logout.test.jsx src/store.logout.test.jsx src/App.logoutRouting.test.jsx`
+	- `npm test -- --runInBand --watchAll=false`
+	- `npm run build`
+- 测试结果：
+	- 退出专项测试通过：4 个测试套件、9 个用例全部通过。
+	- 全量测试通过：22 个测试套件、133 个用例全部通过。
+	- 前端生产构建通过（Compiled successfully）。
+- 未完成事项：
+	- 未执行真实浏览器登录态下的 Supabase 退出、刷新及浏览器返回人工验收。
+	- v0.1.3 仍为开发状态，未填写正式上线时间，未声明已上线。
+- 风险或注意事项：
+	- 测试环境仍输出缺少 Supabase 环境变量的既有提示，但测试通过。
+	- 构建输出 Node `fs.F_OK` 弃用警告，但构建成功。
+	- 本需求为统一 push 周期第 1/5 项，本次不执行 push。
+- 当前分支：supabase-v1
+- Git Commit ID：未提交
+
 ## DEV-20260728-005
 
 - 日期：2026-07-28

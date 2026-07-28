@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import {
   Activity,
@@ -42,6 +42,12 @@ const sections = [
         description: '管理用于计划与数据计算的个人身体信息',
       },
       {
+        icon: LogOut,
+        label: '退出账号',
+        description: '退出当前账户',
+        action: 'logout',
+      },
+      {
         to: '/settings/version',
         icon: Info,
         label: '版本信息',
@@ -72,17 +78,6 @@ const sections = [
       },
     ],
   },
-  {
-    title: '账号操作',
-    items: [
-      {
-        icon: LogOut,
-        label: '退出账号',
-        description: '退出当前账户',
-        action: 'logout',
-      },
-    ],
-  },
 ];
 
 export const SettingsPage = () => {
@@ -90,6 +85,8 @@ export const SettingsPage = () => {
   const queryClient = useQueryClient();
   const { profile, authLoading, logout } = useStore();
   const [logoutConfirmOpen, setLogoutConfirmOpen] = useState(false);
+  const [logoutSubmitting, setLogoutSubmitting] = useState(false);
+  const logoutGuardRef = useRef(false);
 
   const displayName = useMemo(() => {
     const value = String(profile?.display_name || '').trim();
@@ -106,20 +103,25 @@ export const SettingsPage = () => {
   };
 
   const handleLogout = async () => {
-    if (authLoading) return;
+    if (authLoading || logoutGuardRef.current) return;
 
-    const result = await logout();
-    if (!result?.success) {
-      toast.error(result?.error || '退出登录失败，请检查网络后重试。');
-      return;
+    logoutGuardRef.current = true;
+    setLogoutSubmitting(true);
+
+    try {
+      const result = await logout();
+      if (!result?.success) {
+        toast.error(result?.error || '退出登录失败，请检查网络后重试。');
+        return;
+      }
+
+      clearPrivateQueries();
+      setLogoutConfirmOpen(false);
+      navigate('/login', { replace: true });
+    } finally {
+      logoutGuardRef.current = false;
+      setLogoutSubmitting(false);
     }
-
-    clearPrivateQueries();
-    setLogoutConfirmOpen(false);
-    navigate('/login', {
-      replace: true,
-      state: { loggedOut: true },
-    });
   };
 
   const handleNavigationAction = (action) => {
@@ -174,25 +176,30 @@ export const SettingsPage = () => {
         </Link>
       </div>
 
-      <AlertDialog open={logoutConfirmOpen} onOpenChange={setLogoutConfirmOpen}>
+      <AlertDialog
+        open={logoutConfirmOpen}
+        onOpenChange={(open) => {
+          if (!logoutSubmitting) setLogoutConfirmOpen(open);
+        }}
+      >
         <AlertDialogContent className="max-w-[92vw] sm:max-w-md rounded-2xl">
           <AlertDialogHeader>
-            <AlertDialogTitle>退出账户</AlertDialogTitle>
+            <AlertDialogTitle>退出账号</AlertDialogTitle>
             <AlertDialogDescription>
               确定要退出当前账户吗？
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel disabled={authLoading}>取消</AlertDialogCancel>
+            <AlertDialogCancel disabled={authLoading || logoutSubmitting}>取消</AlertDialogCancel>
             <AlertDialogAction
               onClick={(e) => {
                 e.preventDefault();
                 handleLogout();
               }}
-              disabled={authLoading}
+              disabled={authLoading || logoutSubmitting}
               className="bg-[#8F3A32] hover:bg-[#7B2F28]"
             >
-              {authLoading ? '正在退出...' : '退出'}
+              {authLoading || logoutSubmitting ? '正在退出...' : '退出'}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

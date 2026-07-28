@@ -1,6 +1,6 @@
 import React, { useRef, useState } from 'react';
 import { LogIn } from 'lucide-react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { authService } from '../services/authService';
 import { APP_VERSION } from '../config/appVersion';
@@ -12,13 +12,11 @@ const USERNAME_FORMAT_MESSAGE = '用户名只能包含3至30位小写字母、�
 
 export const LoginPage = ({ onLoginSuccess }) => {
   const navigate = useNavigate();
-  const location = useLocation();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [submitError, setSubmitError] = useState('');
   const submitGuardRef = useRef(false);
-  const isSwitchingAccount = location.state?.switchingAccount === true;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -106,9 +104,7 @@ export const LoginPage = ({ onLoginSuccess }) => {
         </div>
 
         {/* Login Form */}
-        {isSwitchingAccount && <div className="mb-4 rounded-2xl border border-[#E5E5E0] bg-white px-4 py-3 text-[13px] text-[#2C332F]">当前账户已退出，请登录其他账户。</div>}
-
-        {submitError && !isSwitchingAccount && (
+        {submitError && (
           <div className="mb-4 rounded-2xl border border-[#F1C7C2] bg-[#FFF7F6] px-4 py-3 text-[13px] text-[#8F3A32]" role="alert">
             {submitError}
           </div>

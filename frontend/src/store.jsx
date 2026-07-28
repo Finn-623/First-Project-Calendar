@@ -118,6 +118,7 @@ export const StoreProvider = ({ children, user: initialUser, session: initialSes
   const initializationRequestRef = useRef(0);
   const timelineCacheRef = useRef(new Map());
   const endDaySubmittingRef = useRef(false);
+  const logoutCompletedRef = useRef(false);
 
   const wait = useCallback((ms) => new Promise((resolve) => setTimeout(resolve, ms)), []);
 
@@ -136,6 +137,15 @@ export const StoreProvider = ({ children, user: initialUser, session: initialSes
 
   const clearPrivateUserData = useCallback(() => {
     requestEpochRef.current += 1;
+    initializationRequestRef.current += 1;
+    timelineCacheRef.current.clear();
+    privateFoodSeenCountRef.current.clear();
+    endDaySubmittingRef.current = false;
+    logoutCompletedRef.current = true;
+
+    const today = getSydneyDateString();
+    selectedTodayDateRef.current = today;
+    clearLegacyDateStateCache();
 
     setUser(null);
     setSession(null);
@@ -147,9 +157,9 @@ export const StoreProvider = ({ children, user: initialUser, session: initialSes
     setHistory([]);
     setFavorites([]);
     setFoods((prev) => (prev || []).filter((item) => item?.visibility === 'public'));
-    setPublicFoods([]);
-    setCurrentDate(createDateFromString(getSydneyDateString()));
-    setRecordingDateStr(getSydneyDateString());
+    setPublicFoods((prev) => (prev || []).filter((item) => item?.visibility === 'public'));
+    setCurrentDate(createDateFromString(today));
+    setRecordingDateStr(today);
     setDayInitialized(false);
     setAuthError(null);
   }, []);
@@ -234,14 +244,16 @@ export const StoreProvider = ({ children, user: initialUser, session: initialSes
     } catch (err) {
       return { success: false, error: err };
     } finally {
-      setDayInitialized(true);
+      if (requestId === initializationRequestRef.current) {
+        setDayInitialized(true);
+      }
     }
   }, [resolveHomeTargetDate]);
 
   const refreshFoods = useCallback(async (userId) => {
     if (!userId) {
-      setFoods([]);
-      setPublicFoods([]);
+      setFoods((prev) => (prev || []).filter((item) => item?.visibility === 'public'));
+      setPublicFoods((prev) => (prev || []).filter((item) => item?.visibility === 'public'));
       return { data: [], error: null };
     }
 
@@ -270,7 +282,6 @@ export const StoreProvider = ({ children, user: initialUser, session: initialSes
 
   const loadPublicFoods = useCallback(async (userId) => {
     if (!userId) {
-      setPublicFoods([]);
       return { data: [], error: null };
     }
 
@@ -289,8 +300,8 @@ export const StoreProvider = ({ children, user: initialUser, session: initialSes
   }, []);
 
   useEffect(() => {
-    refreshFoods(initialUser?.id || user?.id).catch(console.error);
-  }, [initialUser?.id, user?.id, refreshFoods]);
+    refreshFoods(user?.id).catch(console.error);
+  }, [user?.id, refreshFoods]);
 
   useEffect(() => {
     let disposed = false;
@@ -334,15 +345,21 @@ export const StoreProvider = ({ children, user: initialUser, session: initialSes
   }, [countPrivateFoods, session?.access_token, user?.id, refreshFoods, wait]);
 
   useEffect(() => {
-    setUser(initialUser || null);
+    if (!logoutCompletedRef.current) {
+      setUser(initialUser || null);
+    }
   }, [initialUser]);
 
   useEffect(() => {
-    setSession(initialSession || null);
+    if (!logoutCompletedRef.current) {
+      setSession(initialSession || null);
+    }
   }, [initialSession]);
 
   useEffect(() => {
-    setProfile(initialProfile || null);
+    if (!logoutCompletedRef.current) {
+      setProfile(initialProfile || null);
+    }
   }, [initialProfile]);
 
   useEffect(() => {
@@ -833,7 +850,7 @@ export const StoreProvider = ({ children, user: initialUser, session: initialSes
   }, [loadPlanHistory]);
 
   useEffect(() => {
-    const userId = initialUser?.id || user?.id;
+    const userId = user?.id;
     if (!userId) return;
 
     void initializeSelectedDate(userId).then((result) => {
@@ -842,7 +859,7 @@ export const StoreProvider = ({ children, user: initialUser, session: initialSes
         scheduleMidnightSync(userId);
       }
     });
-  }, [initialUser?.id, initializeSelectedDate, loadDayData, scheduleMidnightSync, user?.id]);
+  }, [initializeSelectedDate, loadDayData, scheduleMidnightSync, user?.id]);
 
   const signIn = useCallback(async (username, password) => {
     setAuthLoading(true);
@@ -923,10 +940,6 @@ export const StoreProvider = ({ children, user: initialUser, session: initialSes
     return signOutAndClear('退出登录失败，请检查网络后重试。');
   }, [signOutAndClear]);
 
-  const switchAccount = useCallback(async () => {
-    return signOutAndClear('切换账户失败，请检查网络后重试。');
-  }, [signOutAndClear]);
-
   const signOut = useCallback(async () => {
     return logout();
   }, [logout]);
@@ -993,7 +1006,6 @@ export const StoreProvider = ({ children, user: initialUser, session: initialSes
     signIn,
     signOut,
     logout,
-    switchAccount,
     clearPrivateUserData,
     clearAuthError,
     loadProfile,

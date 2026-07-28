@@ -15,7 +15,6 @@ import { SettingsVersionPage } from './pages/SettingsVersionPage';
 import { VersionFeedbackPage } from './pages/VersionFeedbackPage';
 import { SettingsIntakePlanPage } from './pages/SettingsIntakePlanPage';
 import { SettingsRecordSettingsPage } from './pages/SettingsRecordSettingsPage';
-import { SettingsAccountActionsPage } from './pages/SettingsAccountActionsPage';
 import { LoginPage } from './pages/LoginPage';
 import { StoreProvider } from './store';
 import { supabase, isSupabaseConfigured } from './lib/supabaseClient';
@@ -267,7 +266,6 @@ function App() {
     ['VersionFeedbackPage', VersionFeedbackPage],
     ['SettingsIntakePlanPage', SettingsIntakePlanPage],
     ['SettingsRecordSettingsPage', SettingsRecordSettingsPage],
-    ['SettingsAccountActionsPage', SettingsAccountActionsPage],
     ['LoginPage', LoginPage],
   ];
 
@@ -346,7 +344,7 @@ function App() {
                 <Route path="/settings/version/feedback" element={<VersionFeedbackPage />} />
                 <Route path="/settings/intake-plan" element={<SettingsIntakePlanPage />} />
                 <Route path="/settings/record-settings" element={<SettingsRecordSettingsPage />} />
-                <Route path="/settings/account-actions" element={<SettingsAccountActionsPage />} />
+                <Route path="/settings/account-actions" element={<Navigate to="/settings" replace />} />
                 <Route path="/plan" element={<PlanPage />} />
                 <Route path="/login" element={<Navigate to="/" replace />} />
                 <Route path="*" element={<Navigate to="/" replace />} />
