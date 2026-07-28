@@ -1,3 +1,38 @@
+## DB-20260728-001
+
+- 日期：2026-07-28
+- 修改原因：建议历史已完成项需要数据层只读保护，不能只依赖页面隐藏编辑和删除按钮。
+- 实际修改内容：
+  - 替换 `enforce_version_feedback_update()`，禁止普通所有者修改 completed 建议；管理员状态管理仍可通过既有受控 RPC 执行，但不能修改用户标题和描述。
+  - 新增 `prevent_completed_version_feedback_delete()` 与 BEFORE DELETE trigger，拒绝普通应用角色删除 completed 建议。
+  - owner UPDATE 与 DELETE RLS policy 收紧为仅允许本人 pending 建议。
+  - 新增 completed 分区排序索引。
+- 涉及的表和权限：
+  - `public.version_feedback`
+  - `public.enforce_version_feedback_update()`
+  - `public.prevent_completed_version_feedback_delete()`
+  - `version_feedback_update_own`
+  - `version_feedback_delete_own`
+- Migration 文件路径：`supabase/migrations/021_lock_completed_version_feedback.sql`
+- 对现有数据的影响：
+  - Migration 只替换函数、触发器、policy 并新增索引，不修改现有建议内容或状态。
+  - 现有 completed 记录应用后变为常规应用流程不可编辑、不可删除；pending owner 编辑和删除保持。
+- 风险：
+  - 当前会话未连接或执行 Production migration，尚未在真实 PostgreSQL/Supabase 验证 SQL 编译、RLS 与 trigger 组合。
+  - `service_role` 保留删除豁免，用于受控维护与认证用户删除时的外键级联；不得暴露给前端。
+- 回滚方式：
+  - 不修改已应用 migration；如需回滚，创建新的反向 migration，恢复上一版触发函数与 owner policy，并删除新增删除触发器和索引。
+- 测试内容：
+  - `node --test supabase/migrations/021_lock_completed_version_feedback.test.mjs`
+  - 建议历史页面与 service 专项测试。
+  - 前端全量测试与生产构建。
+- 测试结果：
+  - Migration 静态契约 3 个测试通过。
+  - 前端专项 2 个套件、20 个测试通过；全量 30 个套件、197 个测试通过；生产构建通过。
+  - 未执行远程 migration 或真实数据库集成测试。
+- 相关 DEV 编号：`DEV-20260728-016`
+- 相关 Commit ID：未提交
+
 ## DB-20260727-002
 
 - 日期：2026-07-27

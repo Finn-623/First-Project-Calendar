@@ -21,6 +21,7 @@ import { VERSION_RECORDS } from '../data/versionHistory';
 import { validateCompletedVersion, validateFeedbackForm } from '../lib/versionFeedbackValidation';
 import {
   formatLocalDateTime,
+  getLocalCalendarDayDifference,
   getFeedbackStatusLabel,
   getFeedbackStatusVariant,
 } from '../lib/versionInfoUtils';
@@ -61,13 +62,25 @@ export const VersionFeedbackPage = () => {
     return profile?.role === 'admin' || profile?.is_admin === true;
   }, [profile?.is_admin, profile?.role]);
 
-  const mergeAndSortHistory = useCallback((items) => {
-    return [...items].sort((a, b) => {
-      const left = new Date(a.created_at || 0).getTime();
-      const right = new Date(b.created_at || 0).getTime();
-      return right - left;
-    });
+  const mergeHistory = useCallback((items) => {
+    return [...new Map(items.map((item) => [item.id, item])).values()];
   }, []);
+
+  const pendingHistory = useMemo(() => history
+    .filter((item) => item.status === 'pending')
+    .sort((a, b) => (
+      new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime()
+      || String(a.id).localeCompare(String(b.id))
+    )), [history]);
+
+  const completedHistory = useMemo(() => history
+    .filter((item) => item.status === 'completed')
+    .sort((a, b) => (
+      new Date(b.completed_at || 0).getTime() - new Date(a.completed_at || 0).getTime()
+      || new Date(b.updated_at || 0).getTime() - new Date(a.updated_at || 0).getTime()
+      || new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime()
+      || String(a.id).localeCompare(String(b.id))
+    )), [history]);
 
   const loadHistory = useCallback(async () => {
     if (!user?.id) return;
@@ -90,12 +103,12 @@ export const VersionFeedbackPage = () => {
 
     const nextRows = result.data || [];
 
-    setHistory(mergeAndSortHistory(nextRows));
+    setHistory(mergeHistory(nextRows));
     setLoadingHistory(false);
 
     setHasMore(Boolean(result.hasMore));
     setNextCursor(result.nextCursor || null);
-  }, [isAdmin, mergeAndSortHistory, user?.id]);
+  }, [isAdmin, mergeHistory, user?.id]);
 
   const loadMoreHistory = useCallback(async () => {
     if (!user?.id || !hasMore || loadingMore || loadingHistory || !nextCursor) {
@@ -118,11 +131,11 @@ export const VersionFeedbackPage = () => {
     }
 
     const nextRows = result.data || [];
-    setHistory((prev) => mergeAndSortHistory([...prev, ...nextRows]));
+    setHistory((prev) => mergeHistory([...prev, ...nextRows]));
     setHasMore(Boolean(result.hasMore));
     setNextCursor(result.nextCursor || null);
     setLoadingMore(false);
-  }, [hasMore, isAdmin, loadingHistory, loadingMore, mergeAndSortHistory, nextCursor, user?.id]);
+  }, [hasMore, isAdmin, loadingHistory, loadingMore, mergeHistory, nextCursor, user?.id]);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -157,6 +170,7 @@ export const VersionFeedbackPage = () => {
   };
 
   const handleEditStart = (item) => {
+    if (item?.status !== 'pending') return;
     setEditingId(item.id);
     setEditingForm({
       title: item.title || '',
@@ -171,7 +185,7 @@ export const VersionFeedbackPage = () => {
   };
 
   const handleSaveEdit = async (item) => {
-    if (savingEditId || editingId !== item.id) return;
+    if (item?.status !== 'pending' || savingEditId || editingId !== item.id) return;
 
     const validated = validateFeedbackForm(editingForm);
     if (!validated.valid) {
@@ -207,7 +221,7 @@ export const VersionFeedbackPage = () => {
   };
 
   const handleDelete = async () => {
-    if (!deleteTarget?.id || deletingId) return;
+    if (!deleteTarget?.id || deleteTarget?.status !== 'pending' || deletingId) return;
 
     setDeletingId(deleteTarget.id);
     const result = await versionFeedbackService.deleteFeedback({ feedbackId: deleteTarget.id });
@@ -225,7 +239,7 @@ export const VersionFeedbackPage = () => {
   };
 
   const handleComplete = async (item) => {
-    if (!isAdmin || updatingStatusId) return;
+    if (!isAdmin || item?.status !== 'pending' || updatingStatusId) return;
 
     const validation = validateCompletedVersion(completeVersionMap[item.id]);
     if (!validation.valid) {
@@ -254,24 +268,6 @@ export const VersionFeedbackPage = () => {
     setCompleteVersionMap((prev) => ({ ...prev, [item.id]: validation.normalized }));
     setUpdatingStatusId('');
     showSuccess('任务已标记为已完成');
-  };
-
-  const handleReopen = async (item) => {
-    if (!isAdmin || updatingStatusId) return;
-
-    setUpdatingStatusId(item.id);
-    const result = await versionFeedbackService.reopenFeedback({ feedbackId: item.id });
-
-    if (!result.success) {
-      toast.error(result.error || '状态更新失败，请稍后重试');
-      setUpdatingStatusId('');
-      return;
-    }
-
-    setHistory((prev) => prev.map((record) => (record.id === item.id ? { ...record, ...result.data } : record)));
-    setCompleteVersionMap((prev) => ({ ...prev, [item.id]: '' }));
-    setUpdatingStatusId('');
-    showSuccess('任务已恢复为未完成');
   };
 
   useEffect(() => {
@@ -370,27 +366,42 @@ export const VersionFeedbackPage = () => {
               </div>
             ) : null}
 
-            {!loadingHistory && !historyError && history.length === 0 ? (
-              <div className="px-4 py-3">
-                <p className="text-[13px] text-[#6A6F6C]">目前没有记录</p>
-                <button
-                  type="button"
-                  onClick={() => setActiveTab('submit')}
-                  className="mt-2 min-h-11 px-3 rounded-lg border border-[#D5DCD2] text-[13px] text-[#2C332F]"
-                >
-                  提交修改意见
-                </button>
-              </div>
-            ) : null}
-
-            {!loadingHistory && !historyError && history.map((item) => (
+            {!loadingHistory && !historyError ? (
+              <div className="space-y-4 bg-[#F7F7F5] p-3" data-testid="feedback-history-sections">
+                {[
+                  {
+                    key: 'pending',
+                    title: '未完成建议',
+                    items: pendingHistory,
+                    emptyText: '目前没有未完成建议',
+                  },
+                  {
+                    key: 'completed',
+                    title: '已完成建议',
+                    items: completedHistory,
+                    emptyText: '目前没有已完成建议',
+                  },
+                ].map((section) => (
+                  <section
+                    key={section.key}
+                    data-testid={`${section.key}-feedback-section`}
+                    className="min-w-0 overflow-hidden rounded-2xl border border-[#E5E5E0] bg-white"
+                  >
+                    <div className="flex min-w-0 items-center justify-between gap-2 border-b border-[#F0EFE9] px-4 py-3">
+                      <h2 className="min-w-0 break-words text-[14px] font-medium text-[#2C332F]">
+                        {section.title}（{section.items.length}）
+                      </h2>
+                    </div>
+                    {section.items.length === 0 ? (
+                      <p className="px-4 py-4 text-[13px] text-[#6A6F6C]">{section.emptyText}</p>
+                    ) : section.items.map((item) => (
               <article key={item.id} className="px-4 py-3 border-b border-[#F0EFE9] last:border-b-0">
                 <div className="flex items-start justify-between gap-2">
                   <p className="text-[14px] text-[#2C332F] font-medium break-all">{item.title}</p>
                   <Badge variant={getFeedbackStatusVariant(item.status)}>{getFeedbackStatusLabel(item.status)}</Badge>
                 </div>
 
-                {editingId === item.id ? (
+                {item.status === 'pending' && editingId === item.id ? (
                   <div className="mt-2 space-y-2">
                     <div>
                       <label htmlFor={`edit-title-${item.id}`} className="text-[12px] text-[#6A6F6C]">建议标题</label>
@@ -460,6 +471,11 @@ export const VersionFeedbackPage = () => {
                 )}
 
                 <p className="text-[11px] text-[#858C88] mt-2">提交时间：{formatLocalDateTime(item.created_at)}</p>
+                {item.status === 'pending' ? (
+                  <p className="text-[11px] text-[#6B8067] mt-1">
+                    已提交 {getLocalCalendarDayDifference(item.created_at)} 天
+                  </p>
+                ) : null}
                 <p className="text-[11px] text-[#858C88] mt-1">最后修改：{formatLocalDateTime(item.updated_at)}</p>
                 {item.status === 'completed' && item.completed_at ? (
                   <p className="text-[11px] text-[#858C88] mt-1">完成时间：{formatLocalDateTime(item.completed_at)}</p>
@@ -474,7 +490,7 @@ export const VersionFeedbackPage = () => {
                 ) : null}
 
                 <div className="mt-2 flex flex-wrap items-center gap-2">
-                  {item.user_id === user?.id ? (
+                  {item.status === 'pending' && item.user_id === user?.id ? (
                     <>
                       {editingId !== item.id ? (
                         <button
@@ -497,8 +513,7 @@ export const VersionFeedbackPage = () => {
                     </>
                   ) : null}
 
-                  {isAdmin ? (
-                    item.status === 'pending' ? (
+                  {isAdmin && item.status === 'pending' ? (
                       <>
                         <select
                           value={completeVersionMap[item.id] || ''}
@@ -526,16 +541,6 @@ export const VersionFeedbackPage = () => {
                           {updatingStatusId === item.id ? '处理中...' : '标记为已完成'}
                         </button>
                       </>
-                    ) : (
-                      <button
-                        type="button"
-                        disabled={Boolean(updatingStatusId)}
-                        onClick={() => handleReopen(item)}
-                        className="min-h-10 px-3 rounded-lg border border-[#D5DCD2] text-[12px] text-[#2C332F] disabled:opacity-55"
-                      >
-                        {updatingStatusId === item.id ? '处理中...' : '恢复为未完成'}
-                      </button>
-                    )
                   ) : null}
                 </div>
 
@@ -543,7 +548,11 @@ export const VersionFeedbackPage = () => {
                   <p className="text-[12px] text-[#A8483E] mt-1">{completeVersionErrors[item.id]}</p>
                 ) : null}
               </article>
-            ))}
+                    ))}
+                  </section>
+                ))}
+              </div>
+            ) : null}
 
             {!loadingHistory && !historyError && history.length > 0 && hasMore ? (
               <div className="px-4 py-3 border-t border-[#F0EFE9]">

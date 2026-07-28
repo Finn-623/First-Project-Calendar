@@ -1,5 +1,5 @@
 import React from 'react';
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { useStore } from '../store';
 import { versionFeedbackService } from '../services/versionFeedbackService';
 import { toast } from 'sonner';
@@ -100,6 +100,7 @@ function openHistoryTab() {
 
 describe('VersionFeedbackPage history', () => {
   beforeEach(() => {
+    jest.useRealTimers();
     jest.clearAllMocks();
     useStore.mockReturnValue({
       user: { id: 'user-1' },
@@ -114,12 +115,18 @@ describe('VersionFeedbackPage history', () => {
     });
   });
 
-  test('shows no-record state when query succeeds with empty list', async () => {
+  afterEach(() => {
+    jest.useRealTimers();
+  });
+
+  test('shows separate empty states when query succeeds with empty list', async () => {
     renderPage();
     openHistoryTab();
 
-    expect(await screen.findByText('目前没有记录')).toBeTruthy();
-    expect(screen.getByRole('button', { name: '提交修改意见' })).toBeTruthy();
+    expect(await screen.findByText('未完成建议（0）')).toBeTruthy();
+    expect(screen.getByText('目前没有未完成建议')).toBeTruthy();
+    expect(screen.getByText('已完成建议（0）')).toBeTruthy();
+    expect(screen.getByText('目前没有已完成建议')).toBeTruthy();
   });
 
   test('shows error state when history query fails', async () => {
@@ -394,7 +401,7 @@ describe('VersionFeedbackPage history', () => {
       expect(versionFeedbackService.deleteFeedback).toHaveBeenCalledWith({ feedbackId: 'f6' });
     });
 
-    expect(await screen.findByText('目前没有记录')).toBeTruthy();
+    expect(await screen.findByText('目前没有未完成建议')).toBeTruthy();
   });
 
   test('does not show edit and delete for non-owner record', async () => {
@@ -459,9 +466,140 @@ describe('VersionFeedbackPage history', () => {
     renderPage();
     openHistoryTab();
 
-    await screen.findByText('已完成建议');
-    expect(screen.getByText('已完成')).toBeTruthy();
-    expect(screen.getByText(/完成时间：/)).toBeTruthy();
+    const completedSection = await screen.findByTestId('completed-feedback-section');
+    expect(within(completedSection).getByText('已完成建议')).toBeTruthy();
+    expect(within(completedSection).getByText('已完成')).toBeTruthy();
+    expect(within(completedSection).getByText(/完成时间：/)).toBeTruthy();
+    expect(within(completedSection).getByText('完成版本：v0.2.0')).toBeTruthy();
+  });
+
+  test('partitions pending above completed and sorts each section by its business timestamp', async () => {
+    versionFeedbackService.listFeedback.mockResolvedValueOnce({
+      success: true,
+      data: [
+        {
+          id: 'completed-old',
+          user_id: 'user-1',
+          title: '较早完成',
+          description: '内容',
+          status: 'completed',
+          created_at: '2026-07-24T10:00:00.000Z',
+          updated_at: '2026-07-25T10:00:00.000Z',
+          completed_at: '2026-07-25T10:00:00.000Z',
+          completed_version: 'v0.1.2',
+        },
+        {
+          id: 'pending-old',
+          user_id: 'user-1',
+          title: '较早提交',
+          description: '内容',
+          status: 'pending',
+          created_at: '2026-07-20T10:00:00.000Z',
+          updated_at: '2026-07-20T10:00:00.000Z',
+        },
+        {
+          id: 'completed-new',
+          user_id: 'user-1',
+          title: '最近完成',
+          description: '内容',
+          status: 'completed',
+          created_at: '2026-07-19T10:00:00.000Z',
+          updated_at: '2026-07-27T10:00:00.000Z',
+          completed_at: '2026-07-27T10:00:00.000Z',
+          completed_version: 'v0.1.3',
+        },
+        {
+          id: 'pending-new',
+          user_id: 'user-1',
+          title: '最近提交',
+          description: '内容',
+          status: 'pending',
+          created_at: '2026-07-26T10:00:00.000Z',
+          updated_at: '2026-07-26T10:00:00.000Z',
+        },
+      ],
+      hasMore: false,
+      nextCursor: null,
+    });
+
+    renderPage();
+    openHistoryTab();
+
+    const pendingSection = await screen.findByTestId('pending-feedback-section');
+    const completedSection = screen.getByTestId('completed-feedback-section');
+    expect(screen.getByTestId('feedback-history-sections').firstElementChild).toBe(pendingSection);
+    expect(within(pendingSection).getByText('未完成建议（2）')).toBeTruthy();
+    expect(within(completedSection).getByText('已完成建议（2）')).toBeTruthy();
+
+    const pendingNew = within(pendingSection).getByText('最近提交');
+    const pendingOld = within(pendingSection).getByText('较早提交');
+    const completedNew = within(completedSection).getByText('最近完成');
+    const completedOld = within(completedSection).getByText('较早完成');
+    expect(Boolean(pendingNew.compareDocumentPosition(pendingOld) & Node.DOCUMENT_POSITION_FOLLOWING)).toBe(true);
+    expect(Boolean(completedNew.compareDocumentPosition(completedOld) & Node.DOCUMENT_POSITION_FOLLOWING)).toBe(true);
+    expect(within(pendingSection).queryByText('最近完成')).toBeNull();
+    expect(within(completedSection).queryByText('最近提交')).toBeNull();
+  });
+
+  test('shows local calendar-day submission ages without negative values', async () => {
+    jest.useFakeTimers();
+    jest.setSystemTime(new Date(2026, 6, 28, 0, 5));
+    versionFeedbackService.listFeedback.mockResolvedValueOnce({
+      success: true,
+      data: [
+        ['same-day', '当天建议', new Date(2026, 6, 28, 23, 50).toISOString()],
+        ['one-day', '昨日建议', new Date(2026, 6, 27, 23, 55).toISOString()],
+        ['many-days', '多日建议', new Date(2026, 6, 20, 12, 0).toISOString()],
+        ['future', '未来时间异常', new Date(2026, 6, 29, 0, 1).toISOString()],
+      ].map(([id, title, createdAt]) => ({
+        id,
+        user_id: 'user-1',
+        title,
+        description: '内容',
+        status: 'pending',
+        created_at: createdAt,
+        updated_at: createdAt,
+      })),
+      hasMore: false,
+      nextCursor: null,
+    });
+
+    renderPage();
+    openHistoryTab();
+
+    const pendingSection = await screen.findByTestId('pending-feedback-section');
+    expect(within(pendingSection).getAllByText('已提交 0 天')).toHaveLength(2);
+    expect(within(pendingSection).getByText('已提交 1 天')).toBeTruthy();
+    expect(within(pendingSection).getByText('已提交 8 天')).toBeTruthy();
+  });
+
+  test('keeps completed feedback fully read-only for its owner', async () => {
+    versionFeedbackService.listFeedback.mockResolvedValueOnce({
+      success: true,
+      data: [{
+        id: 'completed-owner',
+        user_id: 'user-1',
+        title: '只读建议',
+        description: '完成后不可修改',
+        status: 'completed',
+        created_at: '2026-07-20T10:00:00.000Z',
+        updated_at: '2026-07-22T10:00:00.000Z',
+        completed_at: '2026-07-22T10:00:00.000Z',
+        completed_version: 'v0.1.3',
+      }],
+      hasMore: false,
+      nextCursor: null,
+    });
+
+    renderPage();
+    openHistoryTab();
+
+    const completedSection = await screen.findByTestId('completed-feedback-section');
+    fireEvent.click(within(completedSection).getByText('只读建议'));
+    expect(within(completedSection).queryByRole('button', { name: '编辑' })).toBeNull();
+    expect(within(completedSection).queryByRole('button', { name: '删除' })).toBeNull();
+    expect(within(completedSection).queryByRole('button', { name: /恢复|撤销|保存/ })).toBeNull();
+    expect(within(completedSection).queryByLabelText('建议标题')).toBeNull();
   });
 });
 
@@ -503,5 +641,57 @@ describe('VersionFeedbackPage admin completion flow', () => {
 
     expect(screen.getByText('请选择完成版本')).toBeTruthy();
     expect(versionFeedbackService.completeFeedback).not.toHaveBeenCalled();
+  });
+
+  test('moves a successfully completed item to the top of the read-only completed section', async () => {
+    versionFeedbackService.completeFeedback.mockResolvedValueOnce({
+      success: true,
+      data: {
+        id: 'a1',
+        user_id: 'user-2',
+        title: '管理员处理建议',
+        description: '内容',
+        status: 'completed',
+        created_at: '2026-07-21T10:00:00.000Z',
+        updated_at: '2026-07-28T09:00:00.000Z',
+        completed_at: '2026-07-28T09:00:00.000Z',
+        completed_version: 'v0.1.3',
+      },
+    });
+
+    renderPage();
+    openHistoryTab();
+    await screen.findByText('管理员处理建议');
+    fireEvent.change(screen.getByDisplayValue('选择完成版本'), { target: { value: 'v0.1.3' } });
+    fireEvent.click(screen.getByRole('button', { name: '标记为已完成' }));
+
+    await waitFor(() => {
+      expect(versionFeedbackService.completeFeedback).toHaveBeenCalledTimes(1);
+      expect(within(screen.getByTestId('pending-feedback-section')).queryByText('管理员处理建议')).toBeNull();
+    });
+    const pendingSection = screen.getByTestId('pending-feedback-section');
+    const completedSection = screen.getByTestId('completed-feedback-section');
+    expect(within(pendingSection).queryByText('管理员处理建议')).toBeNull();
+    expect(within(completedSection).getByText('管理员处理建议')).toBeTruthy();
+    expect(within(completedSection).getByText('完成版本：v0.1.3')).toBeTruthy();
+    expect(within(completedSection).queryByRole('button', { name: /编辑|删除|恢复/ })).toBeNull();
+  });
+
+  test('keeps a pending item editable when completion fails', async () => {
+    versionFeedbackService.completeFeedback.mockResolvedValueOnce({
+      success: false,
+      error: '完成失败',
+    });
+
+    renderPage();
+    openHistoryTab();
+    await screen.findByText('管理员处理建议');
+    fireEvent.change(screen.getByDisplayValue('选择完成版本'), { target: { value: 'v0.1.3' } });
+    fireEvent.click(screen.getByRole('button', { name: '标记为已完成' }));
+
+    await waitFor(() => expect(toast.error).toHaveBeenCalledWith('完成失败'));
+    expect(within(screen.getByTestId('pending-feedback-section')).getByText('管理员处理建议')).toBeTruthy();
+    expect(within(screen.getByTestId('completed-feedback-section')).queryByText('管理员处理建议')).toBeNull();
+    expect(screen.getByRole('button', { name: '标记为已完成' })).toBeTruthy();
   });
 });

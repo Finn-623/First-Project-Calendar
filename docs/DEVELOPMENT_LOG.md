@@ -1,3 +1,55 @@
+## DEV-20260728-016
+
+- 日期：2026-07-28
+- 状态：已完成
+- 修改类型：上线前反馈历史稳定性 / 数据权限
+- 任务目标：将建议历史拆分为未完成与已完成区域，补充本地自然日提交天数，并使已完成建议在 UI、service 与数据库权限层只读。
+- 实际完成内容：
+	- 未完成建议在上方按 `created_at` 倒序，已完成建议在下方按 `completed_at`、`updated_at`、`created_at` 倒序稳定排列；两个区域显示数量与独立空状态。
+	- pending 卡片按设备本地年月日显示“已提交 X 天”，当天为 0 天，未来异常值钳制为 0 天。
+	- completed 卡片对普通用户和管理员均移除编辑、删除、保存、撤销与恢复入口，点击不会进入编辑态。
+	- 管理员完成 pending 成功后，本地状态原位更新并立即重新分区到已完成区域顶部；失败时保留 pending。
+	- `versionFeedbackService` 更新与删除增加 `status = pending` 条件及明确只读错误。
+	- 新增 migration 021：更新触发器保护 completed 内容、删除触发器阻止应用调用删除 completed，并将 owner UPDATE/DELETE RLS 收紧到 pending。
+- 主要修改文件或模块：
+	- `frontend/src/pages/VersionFeedbackPage.jsx`
+	- `frontend/src/pages/VersionFeedbackPage.test.jsx`
+	- `frontend/src/services/versionFeedbackService.js`
+	- `frontend/src/services/versionFeedbackService.readOnly.test.js`
+	- `frontend/src/lib/versionInfoUtils.js`
+	- `supabase/migrations/021_lock_completed_version_feedback.sql`
+	- `supabase/migrations/021_lock_completed_version_feedback.test.mjs`
+	- `docs/PROJECT_STATUS.md`
+	- `docs/version-updates/v0.1.3.md`
+	- `docs/DEVELOPMENT_LOG.md`
+	- `docs/DATABASE_CHANGES.md`
+- 遇到的问题：
+	- 首次专项测试中，管理员完成成功测试只等待 service 调用，没有等待 React 完成分区重渲染，导致过早读取旧 DOM。
+	- 一次复跑误在无 `package.json` 的项目根目录执行 npm，测试未启动。
+- 解决方式：
+	- 使用 `waitFor` 同时等待请求与卡片离开未完成区域，保留“立即移动且不重复”的核心断言。
+	- 在规范的 `frontend/` 目录重新执行专项测试。
+- 执行的测试：
+	- `npm test -- --runInBand --watchAll=false src/pages/VersionFeedbackPage.test.jsx src/services/versionFeedbackService.readOnly.test.js`
+	- `node --test supabase/migrations/021_lock_completed_version_feedback.test.mjs`
+	- `npm test -- --runInBand --watchAll=false`
+	- `npm run build`
+- 测试结果：
+	- 专项前端测试：2 个套件、20 个用例通过。
+	- Migration 契约测试：3 个用例通过。
+	- 全量前端测试：30 个套件、197 个用例通过。
+	- Production build：通过（Compiled successfully）。
+- 未完成事项：
+	- Migration 未在远程 Supabase 执行；需正式发布流程中安全应用并验证。
+	- 当前环境未安全查询 Production 是否有对应 pending Feedback ID，未修改线上反馈状态。
+	- 上线前任务第 7—9 项未修改；本次不 push。
+- 风险或注意事项：
+	- 数据库测试为静态契约验证，尚未在真实 PostgreSQL/Supabase 环境验证 SQL 编译与 RLS 行为。
+	- `service_role` 保留删除权限以兼容受控维护与用户级联删除；普通用户及管理员常规应用调用均被 completed 删除触发器拒绝。
+	- 非阻塞输出包括测试环境缺少 Supabase 变量提示、模拟 session 失败日志和构建 `fs.F_OK` 弃用警告。
+- 当前分支：supabase-v1
+- Git Commit ID：未提交
+
 ## DEV-20260728-015
 
 - 日期：2026-07-28

@@ -157,11 +157,15 @@ export const versionFeedbackService = {
         .from('version_feedback')
         .update({ title, description })
         .eq('id', feedbackId)
+        .eq('status', 'pending')
         .select('*')
-        .single();
+        .maybeSingle();
 
       if (error) {
         return { success: false, error: normalizeError(error) };
+      }
+      if (!data) {
+        return { success: false, error: '已完成建议为只读，不能修改' };
       }
 
       return { success: true, data: normalizeFeedbackRow(data) };
@@ -180,13 +184,19 @@ export const versionFeedbackService = {
     }
 
     try {
-      const { error } = await supabase
+      const { data, error } = await supabase
         .from('version_feedback')
         .delete()
-        .eq('id', feedbackId);
+        .eq('id', feedbackId)
+        .eq('status', 'pending')
+        .select('id')
+        .maybeSingle();
 
       if (error) {
         return { success: false, error: normalizeError(error) };
+      }
+      if (!data) {
+        return { success: false, error: '已完成建议为只读，不能删除' };
       }
 
       return { success: true };

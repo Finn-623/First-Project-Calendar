@@ -41,6 +41,25 @@ export function formatLocalDateTime(value, locale = 'zh-CN') {
   }
 }
 
+export function getLocalCalendarDayDifference(value, now = new Date()) {
+  const submitted = value instanceof Date ? value : new Date(value);
+  const current = now instanceof Date ? now : new Date(now);
+  if (Number.isNaN(submitted.getTime()) || Number.isNaN(current.getTime())) return 0;
+
+  const submittedDay = Date.UTC(
+    submitted.getFullYear(),
+    submitted.getMonth(),
+    submitted.getDate()
+  );
+  const currentDay = Date.UTC(
+    current.getFullYear(),
+    current.getMonth(),
+    current.getDate()
+  );
+
+  return Math.max(0, Math.floor((currentDay - submittedDay) / 86_400_000));
+}
+
 export function getFeedbackStatusLabel(status) {
   if (status === 'completed') return '已完成';
   return '未完成';
