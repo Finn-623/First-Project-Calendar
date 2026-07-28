@@ -29,6 +29,7 @@
 - 当前完成情况与优先级任务清单：见 `docs/version-updates/v0.1.3.md`。
 - Commit ID 回填位置：`docs/version-updates/v0.1.3.md` → “相关提交”。
 - 正式上线时间回填位置：`docs/version-updates/v0.1.3.md` → “上线时间”。
+- 发布前 Review Commit：`fcf5f6dcc5199992ed38d16bf20962b050cc20ef`
 
 ## v0.1.2 正式上线
 
