@@ -1,5 +1,5 @@
 {
-  "status": "development",
-  "releasedAt": null,
-  "summary": "基础记录闭环与稳定性收尾已完成发布前检查，等待正式部署与验收。"
+  "status": "released",
+  "releasedAt": "2026-07-28T15:55:36+10:00",
+  "summary": "基础记录闭环与稳定性收尾已正式上线。"
 }

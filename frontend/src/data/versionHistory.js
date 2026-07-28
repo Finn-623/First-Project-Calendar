@@ -18,7 +18,7 @@ export const VERSION_RECORDS = [
     status: versionConfig.status,
     releaseDate: versionConfig.releasedAt,
     lastUpdatedDate: '2026-07-28',
-    summary: '完善首页食物删除、退出账号、日期恢复、刷新与重新登录隔离，并完成主要页面移动端与发布前一致性检查。',
+    summary: '完善首页食物删除、退出账号、日期恢复、刷新与重新登录隔离，并完成主要页面移动端与发布稳定性收尾。',
     highlights: [
       '首页支持删除单个食物，删除最后一个食物时自动清理空餐',
       '设置页统一为退出账号，退出后清理私有状态并返回普通登录页',

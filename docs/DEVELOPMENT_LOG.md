@@ -1,3 +1,54 @@
+## DEV-20260728-022
+
+- 日期：2026-07-28
+- 状态：已完成
+- 修改类型：Release / v0.1.3 正式上线
+- 任务目标：部署 migration 021 与 v0.1.3 功能基线，完成 Production 验收并回填真实上线记录。
+- 实际完成内容：
+	- 确认 Git 基线 `849d2ee7797b7f56abf8dd4fe3576a68fc5a1a75` 与远端一致、工作区干净。
+	- 确认 021 是唯一待部署 migration，成功执行 Production `db push` 并验证远端同步。
+	- Production 四条原始反馈均保持 `completed / v0.1.3`，pending 数为 0；相关 RLS、触发器与管理员完成 RPC 存在。
+	- 重新运行 migration 契约、前端全量测试和 build。
+	- 从功能基线 commit 部署 Vercel Production；READY 后 alias 指向新部署。
+	- 在有效 Production 登录会话中检查首页、设置、版本信息、修改意见和历史记录页面；线上静态资源与本地已测试 build 的 SHA-256 一致。
+	- 将版本配置、版本历史、项目状态、独立版本记录、数据库记录与 CHANGELOG 回填为正式上线。
+- 主要修改文件或模块：
+	- `frontend/src/config/version.config.json`
+	- `frontend/src/data/versionHistory.js`
+	- `frontend/src/pages/SettingsVersionPage.test.jsx`
+	- `docs/PROJECT_STATUS.md`
+	- `docs/VERSION_HISTORY.md`
+	- `docs/version-updates/v0.1.3.md`
+	- `docs/DEVELOPMENT_LOG.md`
+	- `docs/DATABASE_CHANGES.md`
+	- `CHANGELOG.md`
+- 遇到的问题：
+	- Vercel 项目显示名已由本地旧记录 `frontend` 改为 `calendar`。
+	- Safari 禁止 Apple Events 执行页面 JavaScript且当前进程无辅助功能权限，无法用脚本触发线上 destructive 交互。
+	- 版本配置切换为 released 后，版本页旧测试仍断言“尚未正式上线”，首次发布记录全量测试为 30/31 套件、209/210 用例通过。
+- 解决方式：
+	- 以不可变 projectId `prj_qlcEcelRVN4gfD8cpF0pLgLaOBTZ`、Owner、团队和正式 alias 核对目标项目。
+	- 使用真实登录会话的可见页面文本、Production 数据只读查询、正式 alias HTTP 响应和线上/本地资源 SHA-256 一致性完成非破坏性验收；交互路径由同一产物的自动化测试覆盖。
+	- 将版本页测试更新为断言真实上线时间 `2026年7月28日 15:55`，并确认未发布占位文案不再显示。
+- 执行的测试：
+	- `node --test supabase/migrations/021_lock_completed_version_feedback.test.mjs`
+	- `npm test -- --runInBand --watchAll=false`
+	- `npm run build`
+	- Production migration list、反馈/RLS/trigger/RPC 只读查询。
+	- Vercel Production 部署元数据、正式 alias HTTP、Safari 有效登录会话页面与静态资源 SHA-256 检查。
+- 测试结果：
+	- Migration 契约测试：3/3 通过。
+	- 前端全量测试：31 个套件、210 个测试通过。
+	- Build：通过（Compiled successfully）。
+	- 第一次功能部署：`dpl_CPgjD9wqAAXTmiHtpG2cUP24addu`，READY 于 2026-07-28 15:55:36（Australia/Sydney）。
+- 未完成事项：
+	- 发布记录提交、push、最终 Production 同步部署与 v0.1.3 tag 待本任务后续步骤完成。
+- 风险或注意事项：
+	- Vercel 安装日志存在既有 peer dependency、deprecated package 与 npm audit 警告；未影响构建。
+	- 未在 Production 创建或大规模修改测试数据；需要数据写入的交互继续依赖通过的自动化回归。
+- 当前分支：supabase-v1
+- Git Commit ID：未提交
+
 ## DEV-20260728-021
 
 - 日期：2026-07-28

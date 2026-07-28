@@ -2,16 +2,16 @@
 
 | 版本号 | 状态 | 上线时间 | 版本概述 | 详细文档 |
 |---|---|---|---|---|
-| v0.1.3 | 上线前检查完成（待发布） | 待正式上线确认 | 基础记录闭环与稳定性收尾 | docs/version-updates/v0.1.3.md |
+| v0.1.3 | 已正式上线 | 2026-07-28 15:55:36（Australia/Sydney） | 基础记录闭环与稳定性收尾 | docs/version-updates/v0.1.3.md |
 | v0.1.2 | 已正式上线 | 2026-07-28 11:53（Australia/Sydney） | 历史记录、设置、摄入计划与记录体验集中完善 | docs/version-updates/v0.1.2.md |
 | v0.1.1 | 开发中 | 尚未正式上线 | 已形成真实数据闭环并完成结构化版本记录展示 | docs/version-updates/v0.1.1.md |
 
-## v0.1.3 发布前检查
+## v0.1.3 正式上线
 
 - 日期：2026-07-28
-- 类型：Pre-release Review
-- 状态：上线前检查完成（未上线）
-- 上线时间：待正式上线确认（`status=development`，`releasedAt=null`）
+- 类型：Release
+- 状态：已完成正式上线
+- 上线时间：2026-07-28 15:55:36（Australia/Sydney）
 - 版本名称：v0.1.3 — 基础记录闭环与稳定性收尾
 - 版本目标：
   - 以现有代码为准完成 v0.1 阶段核心链路验收闭环。
@@ -30,6 +30,11 @@
 - Commit ID 回填位置：`docs/version-updates/v0.1.3.md` → “相关提交”。
 - 正式上线时间回填位置：`docs/version-updates/v0.1.3.md` → “上线时间”。
 - 发布前 Review Commit：`fcf5f6dcc5199992ed38d16bf20962b050cc20ef`
+- 第一次功能部署 Commit：`849d2ee7797b7f56abf8dd4fe3576a68fc5a1a75`
+- 第一次功能部署 ID：`dpl_CPgjD9wqAAXTmiHtpG2cUP24addu`
+- Production URL：`https://frontend-nu-khaki-18.vercel.app`
+- Migration 021：已部署并验证；四条原始反馈均为 `completed / v0.1.3`，pending 数为 0。
+- 最终验证：31 个前端测试套件、210 个测试通过；migration 契约 3/3 通过；Production build 与线上基础验收通过。
 
 ## v0.1.2 正式上线
 

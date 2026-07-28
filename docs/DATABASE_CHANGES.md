@@ -18,7 +18,7 @@
   - Migration 只替换函数、触发器、policy 并新增索引，不修改现有建议内容或状态。
   - 现有 completed 记录应用后变为常规应用流程不可编辑、不可删除；pending owner 编辑和删除保持。
 - 风险：
-  - 当前会话未连接或执行 Production migration，尚未在真实 PostgreSQL/Supabase 验证 SQL 编译、RLS 与 trigger 组合。
+  - Production 已应用 migration 021；仍需持续保留 service-role key 的服务端边界与审计。
   - `service_role` 保留删除豁免，用于受控维护与认证用户删除时的外键级联；不得暴露给前端。
 - 回滚方式：
   - 不修改已应用 migration；如需回滚，创建新的反向 migration，恢复上一版触发函数与 owner policy，并删除新增删除触发器和索引。
@@ -29,7 +29,8 @@
 - 测试结果：
   - Migration 静态契约 3 个测试通过。
   - 前端专项 2 个套件、20 个测试通过；全量 30 个套件、197 个测试通过；生产构建通过。
-  - 未执行远程 migration 或真实数据库集成测试。
+  - 2026-07-28 正式发布时已成功执行 Production `db push`；远端 migration list 显示 021 同步。
+  - Production 只读验证确认 owner UPDATE/DELETE policy 仅允许 pending，completed 更新/删除触发器与管理员完成 RPC 存在；四条原始反馈保持 `completed / v0.1.3`，pending 数为 0。
 - 相关 DEV 编号：`DEV-20260728-016`
 - 相关 Commit ID：892eaacdfff960eb699510949b82c9cae1dd244c
 

@@ -13,8 +13,8 @@
 
 - 当前Phase：Phase 1（完整饮食管理 App）
 - 当前开发版本：v0.1.3 — 基础记录闭环与稳定性收尾。
-- 当前状态：上线前代码、版本号、自动化测试、构建和发布文档一致性检查已完成，尚未部署 Production。
-- 判断结论：v0.1.3 已达到待发布状态；正式上线时间、部署信息和 tag 必须在真实 Production 验收后回填。
+- 当前状态：v0.1.3 已于 2026-07-28 15:55:36（Australia/Sydney）正式上线。
+- 判断结论：migration 021、功能基线和发布记录均已完成 Production 发布与验收；当前版本为 v0.1.3。
 
 ### 判断原因
 
@@ -666,4 +666,18 @@ P2：
   - 列表查询只选择卡片实际字段；pending/completed 继续由同一次查询结果在前端分区，没有新增串行状态查询或 N+1。
   - 专项测试：2 个套件、34 个用例通过；全量测试：31 个套件、210 个用例通过；Production build 通过。
   - 相关 Commit：cf169e397fb18998cb0481ab1859e276dace2f85
-- v0.1.3 尚未正式上线，本项未触发 Production 部署、tag 或上线时间回填。
+- 当时状态：v0.1.3 尚未正式上线，该项未触发 Production 部署、tag 或上线时间回填。
+
+### 14.9 v0.1.3 正式上线
+
+- 正式上线时间：2026-07-28 15:55:36（Australia/Sydney）。
+- 第一次功能 Production 部署：
+  - URL：`https://calendar-6qar9eu10-finn23.vercel.app`
+  - 部署 ID：`dpl_CPgjD9wqAAXTmiHtpG2cUP24addu`
+  - Production alias：`https://frontend-nu-khaki-18.vercel.app`
+  - Git Commit：`849d2ee7797b7f56abf8dd4fe3576a68fc5a1a75`
+- Migration 021：已应用到 Production，远端 migration 列表显示 local/remote 均为 `021`。
+- Production Feedback Review：四条原始反馈均保持 `completed`，`completed_version` 均为 `v0.1.3`，pending 数为 0。
+- 最终验证：前端 31 个套件、210 个测试通过；migration 契约 3/3 通过；Production build 成功。
+- 线上验收：正式 alias 返回 200；首页、设置、版本信息、修改意见和历史页均在有效 Production 会话中正常渲染；Production JS/CSS 与本地已测试构建产物 SHA-256 一致。
+- 非阻塞事项：依赖安装存在既有 peer/deprecation/audit 输出；真实设备软键盘、安全区、系统字体放大和动画细节继续作为后续优化。
