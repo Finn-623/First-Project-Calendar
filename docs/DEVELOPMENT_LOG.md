@@ -1,3 +1,40 @@
+## DEV-20260728-019
+
+- 日期：2026-07-28
+- 状态：已完成
+- 修改类型：上线前设置页位置修正 / v0.1.2 布局恢复
+- 任务目标：修正上一项将退出账号放到版本信息之后的错误位置，恢复 v0.1.2 的真实设置页顺序。
+- 实际完成内容：
+	- 通过 Git tag `v0.1.2` 读取当时的 `SettingsPage.jsx`，确认顺序为账号、记录、账号操作（退出账号）、底部版本号。
+	- 将唯一退出入口恢复为独立“账号操作”分组，紧跟记录分组并位于底部版本信息区域上方。
+	- 删除版本号链接之后的退出区域，保证退出账号不是页面最后一个元素，也不存在重复入口。
+	- 保留页面 `pb-32` 与安全区留白；320px 下退出入口保持完整可点击。
+	- 退出确认、取消、防重复、失败处理、私有状态清理、公共食品保留及 replace 登录页逻辑未修改。
+- 主要修改文件或模块：
+	- `frontend/src/pages/SettingsPage.jsx`
+	- `frontend/src/pages/SettingsPage.navigation.test.jsx`
+	- `docs/PROJECT_STATUS.md`
+	- `docs/version-updates/v0.1.3.md`
+	- `docs/DEVELOPMENT_LOG.md`
+- 遇到的问题：专项测试首次使用了项目未注册的 `toContainElement` matcher。
+- 解决方式：改用原生 `Element.contains()` 验证退出分组后的版本区域，保留严格 DOM 顺序断言。
+- 执行的测试：
+	- `npm test -- --runInBand --watchAll=false src/pages/SettingsPage.navigation.test.jsx src/store.logout.test.jsx src/App.logoutRouting.test.jsx src/pages/LoginPage.logout.test.jsx src/components/mobileAcceptance.test.jsx`
+	- `npm test -- --runInBand --watchAll=false`
+	- `npm run build`
+- 测试结果：
+	- 专项测试：5 个套件、38 个用例通过。
+	- 全量测试：31 个套件、204 个用例通过。
+	- Production build：通过（Compiled successfully）。
+- 未完成事项：
+	- 剩余建议历史响应速度优化未修改；本次不 push。
+	- Migration `021_lock_completed_version_feedback.sql` 未部署。
+- 风险或注意事项：
+	- 非阻塞输出包括测试环境缺少 Supabase 变量提示、模拟 session 失败日志和构建 `fs.F_OK` 弃用警告。
+	- 本任务没有数据库变化，未修改 `docs/DATABASE_CHANGES.md`。
+- 当前分支：supabase-v1
+- Git Commit ID：未提交
+
 ## DEV-20260728-018
 
 - 日期：2026-07-28

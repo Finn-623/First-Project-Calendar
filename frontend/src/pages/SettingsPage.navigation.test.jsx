@@ -78,18 +78,17 @@ describe('SettingsPage 导航与退出账号', () => {
     expect(screen.queryByText(/请登录其他账号|正在切换账号/)).toBeNull();
   });
 
-  test('退出账号位于所有主要设置和版本入口之后', () => {
+  test('退出账号恢复到记录分组之后且位于底部版本信息之前', () => {
     render(<SettingsPage />);
 
-    const versionEntry = screen.getByTestId('settings-entry-version');
     const recordSettingsEntry = screen.getByTestId('settings-entry-record-settings');
     const versionFooter = screen.getByRole('link', { name: /版本 v0\.1\.3/ });
     const logoutEntry = screen.getByTestId('settings-entry-account-actions');
 
-    expect(Boolean(versionEntry.compareDocumentPosition(logoutEntry) & Node.DOCUMENT_POSITION_FOLLOWING)).toBe(true);
     expect(Boolean(recordSettingsEntry.compareDocumentPosition(logoutEntry) & Node.DOCUMENT_POSITION_FOLLOWING)).toBe(true);
-    expect(Boolean(versionFooter.compareDocumentPosition(logoutEntry) & Node.DOCUMENT_POSITION_FOLLOWING)).toBe(true);
-    expect(screen.getByTestId('settings-logout-section').contains(logoutEntry)).toBe(true);
+    expect(Boolean(logoutEntry.compareDocumentPosition(versionFooter) & Node.DOCUMENT_POSITION_FOLLOWING)).toBe(true);
+    expect(logoutEntry.parentElement.parentElement.querySelector('h2').textContent).toBe('账号操作');
+    expect(logoutEntry.parentElement.parentElement.nextElementSibling.contains(versionFooter)).toBe(true);
   });
 
   test('点击底部退出入口仍显示原有确认弹窗', () => {
@@ -160,7 +159,7 @@ describe('SettingsPage 导航与退出账号', () => {
     expect(screen.getByRole('dialog')).toBeTruthy();
   });
 
-  test('320px 移动端保持底部退出入口可点击并预留导航安全空间', () => {
+  test('320px 移动端保持记录后退出入口可点击并预留导航安全空间', () => {
     Object.defineProperty(window, 'innerWidth', { configurable: true, value: 320 });
     Object.defineProperty(window, 'innerHeight', { configurable: true, value: 568 });
     window.dispatchEvent(new Event('resize'));
@@ -168,10 +167,12 @@ describe('SettingsPage 导航与退出账号', () => {
     render(<SettingsPage />);
 
     const page = screen.getByTestId('settings-page');
+    const recordSettingsEntry = screen.getByTestId('settings-entry-record-settings');
     const logoutEntry = screen.getByTestId('settings-entry-account-actions');
-    expect(screen.getByTestId('settings-logout-section').contains(logoutEntry)).toBe(true);
+    const versionFooter = screen.getByRole('link', { name: /版本 v0\.1\.3/ });
+    expect(Boolean(recordSettingsEntry.compareDocumentPosition(logoutEntry) & Node.DOCUMENT_POSITION_FOLLOWING)).toBe(true);
+    expect(Boolean(logoutEntry.compareDocumentPosition(versionFooter) & Node.DOCUMENT_POSITION_FOLLOWING)).toBe(true);
     expect(logoutEntry.disabled).toBe(false);
-    expect(screen.getByTestId('settings-logout-section').className).toContain('mt-6');
     expect(page.className).toContain('pb-32');
   });
 });

@@ -72,14 +72,18 @@ const sections = [
       },
     ],
   },
+  {
+    title: '账号操作',
+    items: [
+      {
+        icon: LogOut,
+        label: '退出账号',
+        description: '退出当前账户',
+        action: 'logout',
+      },
+    ],
+  },
 ];
-
-const logoutItem = {
-  icon: LogOut,
-  label: '退出账号',
-  description: '退出当前账户',
-  action: 'logout',
-};
 
 export const SettingsPage = () => {
   const navigate = useNavigate();
@@ -180,18 +184,6 @@ export const SettingsPage = () => {
           版本 {APP_VERSION}
         </Link>
       </div>
-
-      <section className="mt-6" data-testid="settings-logout-section">
-        <div className="rounded-2xl border border-[#E5E5E0] bg-white overflow-hidden">
-          <SettingsNavigationItem
-            onClick={() => setLogoutConfirmOpen(true)}
-            icon={logoutItem.icon}
-            label={logoutItem.label}
-            description={logoutItem.description}
-            testId="settings-entry-account-actions"
-          />
-        </div>
-      </section>
 
       <AlertDialog
         open={logoutConfirmOpen}
