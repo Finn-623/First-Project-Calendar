@@ -559,7 +559,7 @@ export const FoodLibraryPage = () => {
             >
               <div className="min-w-0">
                 <div className="flex items-center gap-2 flex-wrap">
-                  <p className="text-[13.5px] text-[#2C332F]">{f.name}</p>
+                  <p className="text-[13.5px] text-[#2C332F] break-words">{f.name}</p>
                   <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-[#F0EFE9] text-[#858C88]">
                     {f.category || (isPublic ? '公共' : '我的')}
                   </span>
@@ -572,7 +572,7 @@ export const FoodLibraryPage = () => {
                 {isPublic && f.notes ? (
                   <p className="text-[11px] text-[#858C88] mt-1 line-clamp-2">来源：{f.notes}</p>
                 ) : null}
-                <p className="font-num text-[11px] text-[#858C88] mt-1">
+                <p className="font-num text-[11px] text-[#858C88] mt-1 break-words">
                   每100g · P{f.p100 || 0} · F{f.f100 || 0} · C{f.c100 || 0}
                 </p>
               </div>

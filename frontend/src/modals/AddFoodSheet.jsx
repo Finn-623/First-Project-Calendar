@@ -1,5 +1,5 @@
 import React, { useMemo, useState, useEffect } from 'react';
-import { Sheet, SheetContent, SheetHeader, SheetTitle } from '../components/ui/sheet';
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from '../components/ui/sheet';
 import { Input } from '../components/ui/input';
 import { Button } from '../components/ui/button';
 import { Search } from 'lucide-react';
@@ -98,7 +98,7 @@ export const AddFoodSheet = ({ open, onOpenChange, targetTitle, onConfirm }) => 
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent
         side="bottom"
-        className="rounded-t-3xl border-[#E5E5E0] bg-[#F7F7F5] max-w-md mx-auto p-0 h-[86vh]"
+        className="rounded-t-3xl border-[#E5E5E0] bg-[#F7F7F5] max-w-md mx-auto p-0 h-[86dvh] max-h-[calc(100dvh-16px)] overflow-hidden"
         data-testid="add-food-sheet"
       >
         <div className="flex flex-col h-full">
@@ -106,6 +106,9 @@ export const AddFoodSheet = ({ open, onOpenChange, targetTitle, onConfirm }) => 
             <SheetTitle className="text-base font-medium text-[#2C332F]">
               添加食物 · <span className="text-[#858C88] text-sm">{targetTitle}</span>
             </SheetTitle>
+            <SheetDescription className="sr-only">
+              搜索并选择食物，输入克重后添加到当前餐次。
+            </SheetDescription>
           </SheetHeader>
 
           {!selected && (
@@ -135,13 +138,13 @@ export const AddFoodSheet = ({ open, onOpenChange, targetTitle, onConfirm }) => 
                       data-testid={`food-select-${f.id || index}`}
                       className="w-full text-left rounded-2xl bg-white border border-[#E5E5E0] p-3.5 flex items-center justify-between hover:border-[#6B8067]/40"
                     >
-                      <div>
-                        <p className="text-[13.5px] text-[#2C332F]">{f.name}</p>
+                      <div className="min-w-0 pr-2">
+                        <p className="text-[13.5px] text-[#2C332F] break-words">{f.name}</p>
                         <p className="font-num text-[11px] text-[#858C88] mt-0.5">
                           每100g · P{f.p100 || 0} · F{f.f100 || 0} · C{f.c100 || 0}
                         </p>
                       </div>
-                      <p className="font-num text-[14px] text-[#2C332F]">
+                      <p className="font-num text-[14px] text-[#2C332F] shrink-0">
                         {f.cal100 || 0} <span className="text-[10px] text-[#858C88]">kcal</span>
                       </p>
                     </button>
@@ -156,9 +159,9 @@ export const AddFoodSheet = ({ open, onOpenChange, targetTitle, onConfirm }) => 
           )}
 
           {selected && (
-            <div className="px-5 pb-6 space-y-4">
+            <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain px-5 pb-6 space-y-4">
               <div className="rounded-2xl bg-white border border-[#E5E5E0] p-4">
-                <p className="text-[13px] text-[#2C332F]">{selected.name}</p>
+                <p className="text-[13px] text-[#2C332F] break-words">{selected.name}</p>
                 <p className="text-[11px] text-[#858C88] mt-1">输入克重后确认添加</p>
               </div>
 

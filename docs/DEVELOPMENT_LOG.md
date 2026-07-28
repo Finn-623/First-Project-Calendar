@@ -1,3 +1,52 @@
+## DEV-20260728-009
+
+- 日期：2026-07-28
+- 状态：已完成
+- 修改类型：P1 Fix / v0.1.3 手机端主要页面验收
+- 任务目标：在常见手机宽度下系统核对主要页面与关键操作，修复遮挡、溢出、点击区或弹窗高度等影响正常使用的问题，并形成正式验收记录。
+- 实际完成内容：
+	- 对 320×568、375×667、390×844、430×932 四档 viewport 建立移动端结构与交互回归。
+	- 核对登录、首页、添加食物、历史列表、历史详情、食物库、添加/编辑食物、计划、设置、退出确认和底部导航。
+	- 添加食物 Sheet 改用动态视口高度和可滚动内容区，补充辅助说明；超长名称可换行且不挤压热量和操作区。
+	- 通用 Dialog 与 AlertDialog 增加窄屏宽度、动态最大高度和内部滚动保护。
+	- 首页食物删除入口由 28×28px 增至 40×40px；食物库长名称和营养文字增加换行保护。
+	- 确认主要页面具有底部留白，底部导航仅保留首页、食物库、设置且处理底部安全区。
+- 逐页验收结果：
+	- 通过：登录页、历史列表、计划页、设置页、底部导航。
+	- 已修复后通过：首页、添加食物 Sheet、历史详情确认交互、食物库及添加/编辑食物 Dialog、退出确认弹窗。
+	- 尚需后续优化：真实 iOS/Android 的软键盘、安全区和系统字体放大视觉复核；不影响当前 v0.1 正常使用。
+- 是否发现并修复实际移动端问题：是。
+	- 原因：Sheet 使用固定 `vh` 且选中后的内容区不可滚动；公共 Dialog/AlertDialog 缺少动态高度限制；删除点击区偏小；长食品名称缺少明确换行保护。
+	- 解决方式：复用现有布局增加 `dvh`、`max-height`、内部滚动、换行和点击面积样式，不改变信息架构或业务逻辑。
+- 主要修改文件或模块：
+	- `frontend/src/components/TimelineItem.jsx`
+	- `frontend/src/components/ui/alert-dialog.jsx`
+	- `frontend/src/components/ui/dialog.jsx`
+	- `frontend/src/modals/AddFoodSheet.jsx`
+	- `frontend/src/pages/FoodLibraryPage.jsx`
+	- `frontend/src/components/mobileAcceptance.test.jsx`
+	- `docs/PROJECT_STATUS.md`
+	- `docs/version-updates/v0.1.3.md`
+	- `docs/DEVELOPMENT_LOG.md`
+- 执行的测试：
+	- `npm test -- --runInBand --watchAll=false src/components/mobileAcceptance.test.jsx src/components/BottomNav.test.jsx src/pages/TodayPage.foodDeletion.test.jsx src/pages/HistoryDetailPage.test.jsx src/pages/SettingsPage.navigation.test.jsx src/pages/SettingsIntakePlanPage.test.jsx src/pages/LoginPage.logout.test.jsx`
+	- `npm test -- --runInBand --watchAll=false`
+	- `npm run build`
+- 测试结果：
+	- 专项第一次：新增套件因 Jest 未解析构建可用的 `@/lib/utils` 别名而在加载阶段失败；其余 6 个套件、32 个测试通过。补充稳定别名 mock 后修复。
+	- 专项最终通过：7 个测试套件、52 个用例全部通过。
+	- 全量测试通过：23 个测试套件、164 个用例全部通过。
+	- 前端生产构建通过（Compiled successfully）。
+- 未完成事项：
+	- 未连接真实 Supabase，未执行真实手机或软键盘人工操作；验收基于固定 viewport 自动化、结构审查和构建。
+	- v0.1.3 仍为开发状态，未填写正式上线时间，未声明已上线。
+- 风险或注意事项：
+	- 测试环境输出缺少 Supabase 环境变量及模拟 session 失败的既有日志，但测试通过。
+	- 构建输出 Node `fs.F_OK` 弃用警告，但构建成功。
+	- 本需求为统一 push 周期第 4/5 项，本次不执行 push。
+- 当前分支：supabase-v1
+- Git Commit ID：未提交
+
 ## DEV-20260728-008
 
 - 日期：2026-07-28

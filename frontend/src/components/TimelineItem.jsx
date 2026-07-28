@@ -178,7 +178,7 @@ export const TimelineItem = ({
                         disabled={deleting || deletingFoodEntryKey === (f?.entryId || f?.id || f?.foodEntryId || `legacy-${i}-${f?.foodId || f?.name || 'food'}`)}
                         aria-label={`删除${item.title}中的${f.name}`}
                         data-testid={`delete-food-entry-${item.id}-${i}`}
-                        className="h-7 w-7 rounded-lg border border-[#E5E5E0] text-[#858C88] hover:text-[#D27D67] hover:border-[#D27D67]/40 flex items-center justify-center disabled:opacity-60 disabled:cursor-not-allowed"
+                        className="h-10 w-10 rounded-xl border border-[#E5E5E0] text-[#858C88] hover:text-[#D27D67] hover:border-[#D27D67]/40 flex items-center justify-center disabled:opacity-60 disabled:cursor-not-allowed"
                       >
                         {deletingFoodEntryKey === (f?.entryId || f?.id || f?.foodEntryId || `legacy-${i}-${f?.foodId || f?.name || 'food'}`)
                           ? <Loader2 size={13} className="animate-spin" />
