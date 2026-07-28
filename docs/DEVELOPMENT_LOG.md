@@ -1,3 +1,44 @@
+## DEV-20260728-008
+
+- 日期：2026-07-28
+- 状态：已完成
+- 修改类型：P1 Fix / v0.1.3 刷新与重新登录状态一致性
+- 任务目标：保证刷新、关闭后重开和退出后重新登录时，认证、日期与用户数据正确恢复，且账号切换和异步请求不会泄漏上一账号状态。
+- 实际完成内容：
+	- 有效 session 恢复期间保持认证加载页，完成用户与 profile 恢复后再渲染受保护页面；session 恢复失败时清空认证状态并返回普通登录页。
+	- 认证回调检测账号变化，先清空旧 profile 再加载新 profile；相同 session 的重复回调不重复加载 profile。
+	- 为 history、plan 和 plan history 加入既有请求 epoch 隔离，账号切换后忽略旧账号迟到的成功或失败响应。
+	- 扩展认证路由、退出重登、跨账号隔离及日期重新初始化测试；复用既有已结束本日与删除本日后的固定日期回归。
+- 是否发现并修复生产代码缺陷：是。
+	- 原因：账号变化的认证回调会在新 profile 返回前保留旧 profile；history、plan 和 plan history 请求缺少账号切换后的迟到响应保护；session 恢复失败停留在专用错误页而非普通登录页。
+	- 解决方式：账号变化时立即清空 profile；用 Store 既有 request epoch 校验异步响应归属；恢复失败统一清空认证状态并结束 loading。
+- 主要修改文件或模块：
+	- `frontend/src/App.js`
+	- `frontend/src/store.jsx`
+	- `frontend/src/App.logoutRouting.test.jsx`
+	- `frontend/src/store.logout.test.jsx`
+	- `docs/PROJECT_STATUS.md`
+	- `docs/version-updates/v0.1.3.md`
+	- `docs/DEVELOPMENT_LOG.md`
+- 执行的测试：
+	- `npm test -- --runInBand --watchAll=false src/App.logoutRouting.test.jsx src/store.logout.test.jsx src/store.deletedDateState.test.jsx`
+	- `npm test -- --runInBand --watchAll=false`
+	- `npm run build`
+- 测试结果：
+	- 专项第一次：3 个套件中 1 个断言失败；公共食品 mock 被初始化请求提前消耗，修正为该测试全程稳定返回后重新执行。
+	- 专项第二次通过：3 个测试套件、21 个用例全部通过。
+	- 全量测试通过：22 个测试套件、144 个用例全部通过。
+	- 前端生产构建通过（Compiled successfully）。
+- 未完成事项：
+	- 未连接真实 Supabase、未执行浏览器关闭重开和真实双账号人工验收；本次自动化使用固定日期与稳定 mock。
+	- v0.1.3 仍为开发状态，未填写正式上线时间，未声明已上线。
+- 风险或注意事项：
+	- 测试环境输出缺少 Supabase 环境变量的既有提示，session 失败用例输出预期错误日志，均未造成测试失败。
+	- 构建输出 Node `fs.F_OK` 弃用警告，但构建成功。
+	- 本需求为统一 push 周期第 3/5 项，本次不执行 push。
+- 当前分支：supabase-v1
+- Git Commit ID：未提交
+
 ## DEV-20260728-007
 
 - 日期：2026-07-28

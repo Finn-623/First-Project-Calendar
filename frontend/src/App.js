@@ -75,6 +75,7 @@ function App() {
   const [authInitError, setAuthInitError] = useState(null);
   const mountedRef = useRef(true);
   const profileLoadRef = useRef({ userId: null, promise: null });
+  const activeSessionUserRef = useRef(null);
 
   const fetchLegacyAdminFlag = useCallback(async (userId) => {
     if (!userId || !supabase) return false;
@@ -178,12 +179,17 @@ function App() {
 
         if (sessionError) {
           console.error('Session check error:', sessionError);
-          setAuthInitError('认证检查失败');
+          activeSessionUserRef.current = null;
+          setSession(null);
+          setUser(null);
+          setProfile(null);
+          setAuthInitError(null);
           setIsLoading(false);
           return;
         }
 
         if (existingSession?.user) {
+          activeSessionUserRef.current = existingSession.user.id;
           setSession(existingSession);
           setUser(existingSession.user);
           // Load profile
@@ -199,12 +205,18 @@ function App() {
           if (!mountedRef.current) return; // Component unmounted
 
           if (newSession?.user) {
+            const nextUserId = newSession.user.id;
+            const isSameUser = activeSessionUserRef.current === nextUserId;
+            activeSessionUserRef.current = nextUserId;
             setSession(newSession);
             setUser(newSession.user);
             markLoginPerf('T7', { authEvent: event });
-            // Load profile asynchronously
-            loadUserProfile(newSession.user.id).catch(console.error);
+            if (!isSameUser) {
+              setProfile(null);
+              loadUserProfile(nextUserId).catch(console.error);
+            }
           } else {
+            activeSessionUserRef.current = null;
             setSession(null);
             setUser(null);
             setProfile(null);
@@ -213,7 +225,11 @@ function App() {
       } catch (err) {
         console.error('Auth setup error:', err);
         if (mountedRef.current) {
-          setAuthInitError('认证初始化失败');
+          activeSessionUserRef.current = null;
+          setSession(null);
+          setUser(null);
+          setProfile(null);
+          setAuthInitError(null);
           setIsLoading(false);
         }
       }
@@ -239,6 +255,10 @@ function App() {
 
   const handleLoginSuccess = (loggedInUser, loggedInSession) => {
     if (!mountedRef.current) return;
+    if (activeSessionUserRef.current !== loggedInUser?.id) {
+      setProfile(null);
+    }
+    activeSessionUserRef.current = loggedInUser?.id || null;
     setUser(loggedInUser);
     setSession(loggedInSession);
     markLoginPerf('T7', { authEvent: 'LOGIN_SUBMIT_SUCCESS' });

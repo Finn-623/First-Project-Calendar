@@ -346,6 +346,7 @@ export const StoreProvider = ({ children, user: initialUser, session: initialSes
 
   useEffect(() => {
     if (!logoutCompletedRef.current) {
+      requestEpochRef.current += 1;
       setUser(initialUser || null);
     }
   }, [initialUser]);
@@ -362,13 +363,8 @@ export const StoreProvider = ({ children, user: initialUser, session: initialSes
     }
   }, [initialProfile]);
 
-  useEffect(() => {
-    if (user?.id) {
-      requestEpochRef.current += 1;
-    }
-  }, [user?.id]);
-
   const updateAuthState = useCallback((newUser, newSession, newProfile) => {
+    requestEpochRef.current += 1;
     setUser(newUser);
     setSession(newSession);
     setProfile(newProfile);
@@ -504,13 +500,20 @@ export const StoreProvider = ({ children, user: initialUser, session: initialSes
       return { success: false, error: '缺少用户 ID' };
     }
 
+    const epoch = requestEpochRef.current;
     try {
       const { data, error } = await targetService.getLatestTarget(userId);
 
       if (error) {
         console.error('Failed to load plan:', error);
-        setPlan(null);
+        if (isActiveRequest(epoch, userId)) {
+          setPlan(null);
+        }
         return { success: false, error };
+      }
+
+      if (!isActiveRequest(epoch, userId)) {
+        return { success: false, ignored: true, error: '用户已切换，忽略旧请求结果' };
       }
 
       setPlan(normalizePlan(data));
@@ -518,10 +521,12 @@ export const StoreProvider = ({ children, user: initialUser, session: initialSes
       return { success: true, data: normalizePlan(data) };
     } catch (err) {
       console.error('Failed to load plan:', err);
-      setPlan(null);
+      if (isActiveRequest(epoch, userId)) {
+        setPlan(null);
+      }
       return { success: false, error: err };
     }
-  }, []);
+  }, [isActiveRequest]);
 
   const loadPlanHistory = useCallback(async (userId) => {
     if (!userId) {
@@ -529,13 +534,20 @@ export const StoreProvider = ({ children, user: initialUser, session: initialSes
       return { success: false, error: '缺少用户 ID' };
     }
 
+    const epoch = requestEpochRef.current;
     try {
       const { data, error } = await targetService.getTargetHistory(userId);
 
       if (error) {
         console.error('Failed to load plan history:', error);
-        setPlanHistory([]);
+        if (isActiveRequest(epoch, userId)) {
+          setPlanHistory([]);
+        }
         return { success: false, error };
+      }
+
+      if (!isActiveRequest(epoch, userId)) {
+        return { success: false, ignored: true, error: '用户已切换，忽略旧请求结果' };
       }
 
       setPlanHistory((data || []).map((item) => ({
@@ -547,10 +559,12 @@ export const StoreProvider = ({ children, user: initialUser, session: initialSes
       return { success: true, data };
     } catch (err) {
       console.error('Failed to load plan history:', err);
-      setPlanHistory([]);
+      if (isActiveRequest(epoch, userId)) {
+        setPlanHistory([]);
+      }
       return { success: false, error: err };
     }
-  }, []);
+  }, [isActiveRequest]);
 
   const loadHistory = useCallback(async (userId) => {
     if (!userId) {
@@ -558,12 +572,15 @@ export const StoreProvider = ({ children, user: initialUser, session: initialSes
       return { success: false, error: '缺少用户 ID' };
     }
 
+    const epoch = requestEpochRef.current;
     try {
       const { data: dates, error } = await historyService.getHistoryDates(userId, 60);
 
       if (error) {
         console.error('Failed to load history dates:', error);
-        setHistory([]);
+        if (isActiveRequest(epoch, userId)) {
+          setHistory([]);
+        }
         return { success: false, error };
       }
 
@@ -576,6 +593,10 @@ export const StoreProvider = ({ children, user: initialUser, session: initialSes
       );
 
       const results = await Promise.all(detailPromises);
+
+      if (!isActiveRequest(epoch, userId)) {
+        return { success: false, ignored: true, error: '用户已切换，忽略旧请求结果' };
+      }
 
       const entries = results
         .filter(({ detail }) => !detail?.error)
@@ -592,10 +613,12 @@ export const StoreProvider = ({ children, user: initialUser, session: initialSes
       return { success: true, data: entries };
     } catch (err) {
       console.error('Failed to load history:', err);
-      setHistory([]);
+      if (isActiveRequest(epoch, userId)) {
+        setHistory([]);
+      }
       return { success: false, error: err };
     }
-  }, []);
+  }, [isActiveRequest]);
 
   const loadDayData = useCallback(async (dateStr, userId = user?.id) => {
     if (!userId || !dateStr) return { success: false, error: '缺少必要参数' };
