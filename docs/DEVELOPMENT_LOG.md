@@ -33,7 +33,7 @@
 	- Build 存在 Node `fs.F_OK` 弃用警告，不阻塞产物生成。
 	- 在管理员完成 Production 反馈核对前，不允许进入正式部署。
 - 当前分支：supabase-v1
-- Git Commit ID：未提交
+- Git Commit ID：567fb514269fb2dce7c8bd773bbfb4a4bd902f43
 
 ## DEV-20260728-020
 
