@@ -30,8 +30,11 @@ jest.mock('../store', () => ({
 }));
 
 jest.mock('../components/settings/SettingsNavigationItem', () => ({
-  SettingsNavigationItem: ({ onClick, label, testId }) => (
-    <button type="button" onClick={onClick} data-testid={testId}>{label}</button>
+  SettingsNavigationItem: ({ onClick, label, description, testId }) => (
+    <button type="button" onClick={onClick} data-testid={testId}>
+      <span>{label}</span>
+      <span>{description}</span>
+    </button>
   ),
 }));
 
@@ -67,14 +70,32 @@ describe('SettingsPage 导航与退出账号', () => {
     });
   });
 
-  test('账户区域只显示退出账号入口，点击后显示确认弹窗', () => {
+  test('只显示一个退出账号入口且不显示切换账号文案', () => {
     render(<SettingsPage />);
 
-    expect(screen.getByRole('button', { name: '退出账号' })).toBeTruthy();
+    expect(screen.getAllByRole('button', { name: /退出账号/ })).toHaveLength(1);
     expect(screen.queryByText('切换账号')).toBeNull();
     expect(screen.queryByText(/请登录其他账号|正在切换账号/)).toBeNull();
+  });
 
-    fireEvent.click(screen.getByRole('button', { name: '退出账号' }));
+  test('退出账号位于所有主要设置和版本入口之后', () => {
+    render(<SettingsPage />);
+
+    const versionEntry = screen.getByTestId('settings-entry-version');
+    const recordSettingsEntry = screen.getByTestId('settings-entry-record-settings');
+    const versionFooter = screen.getByRole('link', { name: /版本 v0\.1\.3/ });
+    const logoutEntry = screen.getByTestId('settings-entry-account-actions');
+
+    expect(Boolean(versionEntry.compareDocumentPosition(logoutEntry) & Node.DOCUMENT_POSITION_FOLLOWING)).toBe(true);
+    expect(Boolean(recordSettingsEntry.compareDocumentPosition(logoutEntry) & Node.DOCUMENT_POSITION_FOLLOWING)).toBe(true);
+    expect(Boolean(versionFooter.compareDocumentPosition(logoutEntry) & Node.DOCUMENT_POSITION_FOLLOWING)).toBe(true);
+    expect(screen.getByTestId('settings-logout-section').contains(logoutEntry)).toBe(true);
+  });
+
+  test('点击底部退出入口仍显示原有确认弹窗', () => {
+    render(<SettingsPage />);
+
+    fireEvent.click(screen.getByRole('button', { name: /退出账号/ }));
 
     expect(screen.getByRole('dialog')).toBeTruthy();
     expect(screen.getByRole('heading', { name: '退出账号' })).toBeTruthy();
@@ -84,7 +105,7 @@ describe('SettingsPage 导航与退出账号', () => {
   test('取消确认保持登录状态且不导航', () => {
     render(<SettingsPage />);
 
-    fireEvent.click(screen.getByRole('button', { name: '退出账号' }));
+    fireEvent.click(screen.getByRole('button', { name: /退出账号/ }));
     fireEvent.click(screen.getByRole('button', { name: '取消' }));
 
     expect(logoutMock).not.toHaveBeenCalled();
@@ -94,7 +115,7 @@ describe('SettingsPage 导航与退出账号', () => {
   test('确认后调用现有退出方法、清理私有查询并进入普通登录页', async () => {
     render(<SettingsPage />);
 
-    fireEvent.click(screen.getByRole('button', { name: '退出账号' }));
+    fireEvent.click(screen.getByRole('button', { name: /退出账号/ }));
     fireEvent.click(screen.getByRole('button', { name: '退出' }));
 
     await waitFor(() => {
@@ -111,7 +132,7 @@ describe('SettingsPage 导航与退出账号', () => {
     }));
     render(<SettingsPage />);
 
-    fireEvent.click(screen.getByRole('button', { name: '退出账号' }));
+    fireEvent.click(screen.getByRole('button', { name: /退出账号/ }));
     const confirmButton = screen.getByRole('button', { name: '退出' });
 
     fireEvent.click(confirmButton);
@@ -129,7 +150,7 @@ describe('SettingsPage 导航与退出账号', () => {
     logoutMock.mockResolvedValue({ success: false, error: '网络异常，退出失败' });
     render(<SettingsPage />);
 
-    fireEvent.click(screen.getByRole('button', { name: '退出账号' }));
+    fireEvent.click(screen.getByRole('button', { name: /退出账号/ }));
     fireEvent.click(screen.getByRole('button', { name: '退出' }));
 
     await waitFor(() => {
@@ -137,5 +158,20 @@ describe('SettingsPage 导航与退出账号', () => {
     });
     expect(mockNavigate).not.toHaveBeenCalled();
     expect(screen.getByRole('dialog')).toBeTruthy();
+  });
+
+  test('320px 移动端保持底部退出入口可点击并预留导航安全空间', () => {
+    Object.defineProperty(window, 'innerWidth', { configurable: true, value: 320 });
+    Object.defineProperty(window, 'innerHeight', { configurable: true, value: 568 });
+    window.dispatchEvent(new Event('resize'));
+
+    render(<SettingsPage />);
+
+    const page = screen.getByTestId('settings-page');
+    const logoutEntry = screen.getByTestId('settings-entry-account-actions');
+    expect(screen.getByTestId('settings-logout-section').contains(logoutEntry)).toBe(true);
+    expect(logoutEntry.disabled).toBe(false);
+    expect(screen.getByTestId('settings-logout-section').className).toContain('mt-6');
+    expect(page.className).toContain('pb-32');
   });
 });

@@ -42,12 +42,6 @@ const sections = [
         description: '管理用于计划与数据计算的个人身体信息',
       },
       {
-        icon: LogOut,
-        label: '退出账号',
-        description: '退出当前账户',
-        action: 'logout',
-      },
-      {
         to: '/settings/version',
         icon: Info,
         label: '版本信息',
@@ -79,6 +73,13 @@ const sections = [
     ],
   },
 ];
+
+const logoutItem = {
+  icon: LogOut,
+  label: '退出账号',
+  description: '退出当前账户',
+  action: 'logout',
+};
 
 export const SettingsPage = () => {
   const navigate = useNavigate();
@@ -131,7 +132,11 @@ export const SettingsPage = () => {
   };
 
   return (
-    <div className="w-full max-w-md mx-auto px-4 pt-6 pb-28">
+    <div
+      className="w-full max-w-md mx-auto px-4 pt-6 pb-32"
+      style={{ paddingBottom: 'calc(8rem + env(safe-area-inset-bottom))' }}
+      data-testid="settings-page"
+    >
       <h1 className="text-[20px] font-medium text-[#2C332F] mb-4">设置</h1>
 
       <div className="rounded-2xl border border-[#E5E5E0] bg-white px-4 py-3.5 mb-5">
@@ -175,6 +180,18 @@ export const SettingsPage = () => {
           版本 {APP_VERSION}
         </Link>
       </div>
+
+      <section className="mt-6" data-testid="settings-logout-section">
+        <div className="rounded-2xl border border-[#E5E5E0] bg-white overflow-hidden">
+          <SettingsNavigationItem
+            onClick={() => setLogoutConfirmOpen(true)}
+            icon={logoutItem.icon}
+            label={logoutItem.label}
+            description={logoutItem.description}
+            testId="settings-entry-account-actions"
+          />
+        </div>
+      </section>
 
       <AlertDialog
         open={logoutConfirmOpen}

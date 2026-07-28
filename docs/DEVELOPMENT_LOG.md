@@ -1,3 +1,44 @@
+## DEV-20260728-017
+
+- 日期：2026-07-28
+- 状态：已完成
+- 修改类型：上线前设置页布局 / 退出账号入口
+- 任务目标：将既有“退出账号”入口移动到设置页面全部内容之后，降低误触风险，同时完整保留退出闭环。
+- 实际完成内容：
+	- 从“账号”分组配置中移除退出入口，设置页不再在上方账号区域显示退出操作。
+	- 在账户、个人信息、版本信息、记录设置及底部版本链接之后渲染独立退出区域，保证退出账号是最后一个可操作设置项。
+	- 页面只保留一个“退出账号”，未增加“切换账号”、底部导航入口、悬浮或固定按钮。
+	- 独立退出区域使用顶部间距；页面底部调整为 `pb-32` 并叠加安全区 padding，避免移动端底部导航遮挡。
+	- 退出确认、取消、加载态、防重复、失败提示、私有查询清理、Store 状态清理和 replace 登录页逻辑未修改。
+- 主要修改文件或模块：
+	- `frontend/src/pages/SettingsPage.jsx`
+	- `frontend/src/pages/SettingsPage.navigation.test.jsx`
+	- `docs/PROJECT_STATUS.md`
+	- `docs/version-updates/v0.1.3.md`
+	- `docs/DEVELOPMENT_LOG.md`
+- 遇到的问题：
+	- 首次专项测试使用了缺少既有 `v` 前缀的版本链接匹配条件。
+	- jsdom 不保留包含 CSS `env()` 的内联样式值，无法直接从 `element.style` 断言安全区表达式。
+- 解决方式：
+	- 测试改为匹配页面真实版本文案。
+	- 移动端测试通过实际末尾 DOM 顺序、唯一可点击入口、独立间距和 `pb-32` 验证可操作及防遮挡结构；生产代码继续保留安全区表达式。
+- 执行的测试：
+	- `npm test -- --runInBand --watchAll=false src/pages/SettingsPage.navigation.test.jsx src/store.logout.test.jsx src/App.logoutRouting.test.jsx src/pages/LoginPage.logout.test.jsx src/components/mobileAcceptance.test.jsx`
+	- `npm test -- --runInBand --watchAll=false`
+	- `npm run build`
+- 测试结果：
+	- 专项测试：5 个套件、38 个用例通过。
+	- 全量测试：30 个套件、200 个用例通过。
+	- Production build：通过（Compiled successfully）。
+- 未完成事项：
+	- 第 8—9 项上线前任务未修改；本次不 push。
+	- Migration `021_lock_completed_version_feedback.sql` 未部署。
+- 风险或注意事项：
+	- 非阻塞输出包括测试环境缺少 Supabase 变量提示、模拟 session 失败日志和构建 `fs.F_OK` 弃用警告。
+	- 本任务没有数据库结构或权限变化，因此未修改 `docs/DATABASE_CHANGES.md`。
+- 当前分支：supabase-v1
+- Git Commit ID：未提交
+
 ## DEV-20260728-016
 
 - 日期：2026-07-28
