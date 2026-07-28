@@ -109,8 +109,11 @@ export const TodayPage = () => {
   const [timeSheet, setTimeSheet] = useState({ open: false, item: null });
   const [fabOpen, setFabOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [deleteDialogKind, setDeleteDialogKind] = useState('timeline-item');
   const [pendingDeleteItem, setPendingDeleteItem] = useState(null);
+  const [pendingDeleteFood, setPendingDeleteFood] = useState(null);
   const [deletingItemId, setDeletingItemId] = useState(null);
+  const [deletingFoodEntryKey, setDeletingFoodEntryKey] = useState(null);
   const [endingItemId, setEndingItemId] = useState(null);
   const [savingEditItemId, setSavingEditItemId] = useState(null);
   const [endDayLoading, setEndDayLoading] = useState(false);
@@ -118,6 +121,7 @@ export const TodayPage = () => {
   const fabButtonRef = useRef(null);
   const addMenuRef = useRef(null);
   const pendingOpenPerfRef = useRef(null);
+  const deletingFoodGuardRef = useRef(false);
   const now = useCurrentTime();
 
   useEffect(() => {
@@ -216,6 +220,16 @@ export const TodayPage = () => {
   });
 
   const createSessionTime = (dateStr, timeStr) => combineLocalDateAndTime(dateStr, timeStr);
+
+  const isLikelySupabaseUuid = (value) => typeof value === 'string'
+    && /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(value);
+
+  const buildFoodEntryKey = (food, index) => {
+    if (food?.entryId) return String(food.entryId);
+    if (food?.id) return String(food.id);
+    if (food?.foodEntryId) return String(food.foodEntryId);
+    return `legacy-${index}-${food?.foodId || food?.name || 'food'}`;
+  };
 
   const runningSessionConflictMessage = '请先结束当前正在进行的记录';
   const createHandledError = (message) => {
@@ -620,35 +634,151 @@ export const TodayPage = () => {
   };
 
   const handleDeleteClick = (item) => {
+    if (deletingFoodEntryKey || deletingItemId) return;
+    setDeleteDialogKind('timeline-item');
     setPendingDeleteItem(item);
+    setPendingDeleteFood(null);
     setDeleteDialogOpen(true);
   };
 
+  const handleDeleteFood = (mealItem, food, foodIndex) => {
+    if (!mealItem || deletingFoodEntryKey || deletingItemId) return;
+
+    setDeleteDialogKind('food-entry');
+    setPendingDeleteItem(mealItem);
+
+    setPendingDeleteFood({
+      mealItemId: mealItem.id,
+      foodIndex,
+      foodEntryKey: buildFoodEntryKey(food, foodIndex),
+      foodName: food?.name || '该食物',
+      mealTitle: mealItem?.title || '该餐次',
+    });
+
+    setDeleteDialogOpen(true);
+  };
+
+  const removeFoodEntryFromTimeline = (currentTimeline, mealItemId, foodEntryKey, foodIndex = null) => currentTimeline
+    .map((item) => {
+      if (item.id !== mealItemId) return item;
+
+      const nextFoods = Array.isArray(item.foods) ? [...item.foods] : [];
+
+      if (Number.isInteger(foodIndex) && foodIndex >= 0 && foodIndex < nextFoods.length) {
+        nextFoods.splice(foodIndex, 1);
+      } else {
+        const filteredFoods = nextFoods.filter((food, index) => buildFoodEntryKey(food, index) !== foodEntryKey);
+        nextFoods.splice(0, nextFoods.length, ...filteredFoods);
+      }
+
+      if (nextFoods.length === 0) {
+        return null;
+      }
+
+      return {
+        ...item,
+        foods: nextFoods,
+      };
+    })
+    .filter(Boolean);
   const handleConfirmDelete = async () => {
     if (!pendingDeleteItem) return;
+
+    if (!user?.id) {
+      toast.error('请先登录');
+      return;
+    }
+
+    if (deleteDialogKind === 'food-entry') {
+      if (deletingFoodGuardRef.current) return;
+
+      if (!pendingDeleteFood?.mealItemId || !pendingDeleteFood?.foodEntryKey) {
+        return;
+      }
+
+      const mealItem = timeline.find((it) => it.id === pendingDeleteFood.mealItemId);
+      if (!mealItem || mealItem.type !== 'meal') {
+        toast.error('目标餐次不存在，请刷新后重试');
+        setDeleteDialogOpen(false);
+        setPendingDeleteFood(null);
+        setPendingDeleteItem(null);
+        return;
+      }
+
+      const foods = Array.isArray(mealItem.foods) ? mealItem.foods : [];
+      const targetIndex = foods.findIndex((food, index) => buildFoodEntryKey(food, index) === pendingDeleteFood.foodEntryKey);
+      if (targetIndex < 0) {
+        toast.error('目标食物不存在，请刷新后重试');
+        setDeleteDialogOpen(false);
+        setPendingDeleteFood(null);
+        setPendingDeleteItem(null);
+        return;
+      }
+
+      const isLastFood = foods.length === 1;
+      const shouldDeleteMealRow = isLastFood && isLikelySupabaseUuid(mealItem.id);
+      const shouldDeleteFoodRow = !isLastFood && isLikelySupabaseUuid(pendingDeleteFood.foodEntryKey);
+
+      deletingFoodGuardRef.current = true;
+      setDeletingFoodEntryKey(pendingDeleteFood.foodEntryKey);
+
+      const nextTimeline = removeFoodEntryFromTimeline(
+        timeline,
+        mealItem.id,
+        pendingDeleteFood.foodEntryKey,
+        pendingDeleteFood.foodIndex,
+      );
+
+      try {
+        if (shouldDeleteMealRow) {
+          const { error } = await timelineService.deleteTimelineItemByUser(mealItem.id, user.id);
+          if (error) {
+            toast.error(error?.message || '删除失败，请稍后重试');
+            return;
+          }
+        } else if (shouldDeleteFoodRow) {
+          const { error } = await timelineService.deleteFoodEntry(pendingDeleteFood.foodEntryKey, user.id);
+          if (error) {
+            toast.error(error?.message || '删除失败，请稍后重试');
+            return;
+          }
+        } else {
+          toast.error('食物记录缺少有效标识，请刷新后重试');
+          return;
+        }
+
+        setTimeline(nextTimeline);
+        setDeleteDialogOpen(false);
+        setPendingDeleteFood(null);
+        setPendingDeleteItem(null);
+        toast.success('食物已删除');
+        return;
+      } finally {
+        deletingFoodGuardRef.current = false;
+        setDeletingFoodEntryKey(null);
+      }
+    }
 
     const item = pendingDeleteItem;
     setDeletingItemId(item.id);
 
-    const isLikelySupabaseUuid = typeof item.id === 'string' && /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(item.id);
-
-    if (isLikelySupabaseUuid) {
-      const { error } = await timelineService.deleteTimelineItem(item.id);
-      if (error) {
-        toast.error('删除失败，请稍后重试');
-        setDeletingItemId(null);
-        setDeleteDialogOpen(false);
-        setPendingDeleteItem(null);
-        return;
+    try {
+      if (isLikelySupabaseUuid(item.id)) {
+        const { error } = await timelineService.deleteTimelineItemByUser(item.id, user.id);
+        if (error) {
+          toast.error(error?.message || '删除失败，请稍后重试');
+          return;
+        }
       }
+
+      setTimeline((prev) => prev.filter((it) => it.id !== item.id));
+      setDeleteDialogOpen(false);
+      setPendingDeleteItem(null);
+      setPendingDeleteFood(null);
+      toast.success('活动已删除');
+    } finally {
+      setDeletingItemId(null);
     }
-
-    setTimeline((prev) => prev.filter((it) => it.id !== item.id));
-    toast.success('活动已删除');
-
-    setDeletingItemId(null);
-    setDeleteDialogOpen(false);
-    setPendingDeleteItem(null);
   };
 
   const handleEndDay = () => {
@@ -825,12 +955,14 @@ export const TodayPage = () => {
                 item={item}
                 layout="home-time-left"
                 onAddFood={handleAddFood}
+                onDeleteFood={handleDeleteFood}
                 onEditTime={(it) => setTimeSheet({ open: true, item: it })}
                 onEditRecord={(it) => setEditActivitySheet({ open: true, item: it })}
                 onDelete={handleDeleteClick}
                 onEnd={handleEndTimelineItem}
                 ending={endingItemId === item.id}
                 deleting={deletingItemId === item.id}
+                deletingFoodEntryKey={deletingFoodEntryKey}
                 now={now}
               />
             );
@@ -949,22 +1081,24 @@ export const TodayPage = () => {
       <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
         <AlertDialogContent className="max-w-[92vw] sm:max-w-md rounded-2xl">
           <AlertDialogHeader>
-            <AlertDialogTitle>确认删除活动</AlertDialogTitle>
+            <AlertDialogTitle>{deleteDialogKind === 'food-entry' ? '确认删除食物' : '确认删除活动'}</AlertDialogTitle>
             <AlertDialogDescription>
-              确定删除这个活动吗？删除后无法恢复。
+              {deleteDialogKind === 'food-entry'
+                ? `将从${pendingDeleteFood?.mealTitle || '该餐次'}中删除“${pendingDeleteFood?.foodName || '该食物'}”。如果这是该餐次最后一个食物，会同时删除该餐次记录。`
+                : '确定删除这个活动吗？删除后无法恢复。'}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel disabled={Boolean(deletingItemId)}>取消</AlertDialogCancel>
+            <AlertDialogCancel disabled={Boolean(deletingItemId) || Boolean(deletingFoodEntryKey)}>取消</AlertDialogCancel>
             <AlertDialogAction
               onClick={(e) => {
                 e.preventDefault();
-                if (!deletingItemId) handleConfirmDelete();
+                if (!deletingItemId && !deletingFoodEntryKey) handleConfirmDelete();
               }}
-              disabled={Boolean(deletingItemId)}
+              disabled={Boolean(deletingItemId) || Boolean(deletingFoodEntryKey)}
               className="bg-[#D27D67] hover:bg-[#bf6e59]"
             >
-              {deletingItemId ? '删除中...' : '确认删除'}
+              {deletingItemId || deletingFoodEntryKey ? '删除中...' : '确认删除'}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

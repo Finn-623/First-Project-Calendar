@@ -359,4 +359,70 @@ export const timelineService = {
       return { error: err };
     }
   },
+
+  /**
+   * Delete a timeline item with an ownership guard.
+   * @param {string} itemId
+   * @param {string} userId
+   * @returns {Promise<{error}>}
+   */
+  async deleteTimelineItemByUser(itemId, userId) {
+    try {
+      if (!userId) {
+        return { error: new Error('缺少用户 ID') };
+      }
+
+      const { data, error } = await supabase
+        .from('timeline_items')
+        .delete()
+        .eq('id', itemId)
+        .eq('user_id', userId)
+        .select('id')
+        .maybeSingle();
+      if (error) {
+        return { error };
+      }
+
+      if (!data) {
+        return { error: new Error('无权限或记录不存在') };
+      }
+
+      return { error: null };
+    } catch (err) {
+      return { error: err };
+    }
+  },
+
+  /**
+   * Delete a single food entry with an ownership guard.
+   * @param {string} entryId
+   * @param {string} userId
+   * @returns {Promise<{error}>}
+   */
+  async deleteFoodEntry(entryId, userId) {
+    try {
+      if (!userId) {
+        return { error: new Error('缺少用户 ID') };
+      }
+
+      const { data, error } = await supabase
+        .from('food_entries')
+        .delete()
+        .eq('id', entryId)
+        .eq('user_id', userId)
+        .select('id')
+        .maybeSingle();
+      if (error) {
+        return { error };
+      }
+
+      if (!data) {
+        return { error: new Error('无权限或记录不存在') };
+      }
+
+      return { error: null };
+    } catch (err) {
+      return { error: err };
+    }
+  },
 };

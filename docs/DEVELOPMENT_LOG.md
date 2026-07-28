@@ -1,3 +1,47 @@
+## DEV-20260728-005
+
+- 日期：2026-07-28
+- 状态：已完成
+- 修改类型：P0 Fix / v0.1.3 首页当日食物删除闭环
+- 任务目标：为首页当日餐次补齐单个食物删除入口，并在删除最后一个食物后自动清理整餐，避免空餐卡片。
+- 实际完成内容：
+	- 在首页餐次的每个食物行增加明确删除入口，复用项目现有确认弹窗样式。
+	- 多食物餐次删除单项时仅删除对应 `food_entries` 记录，保留父餐次和其他食物。
+	- 删除最后一个食物时删除对应 `timeline_items` 父记录，由既有外键 `ON DELETE CASCADE` 清理关联食物，页面同步移除整餐。
+	- 删除成功后更新首页时间轴，热量、蛋白质、脂肪和碳水汇总随当前时间轴立即重算。
+	- 删除失败时保留原前端数据并显示服务端错误；删除期间通过同步 ref 与按钮禁用防止重复请求。
+	- 服务层强制要求当前用户 ID，并在删除条件中同时约束记录 ID 与 `user_id`；数据库既有 RLS 继续提供第二层用户隔离。
+	- 对缺少可持久化 UUID 的旧食物结构拒绝静默本地删除，提示刷新重试，避免前后端数据不一致。
+- 主要修改文件或模块：
+	- `frontend/src/services/timelineService.js`
+	- `frontend/src/pages/TodayPage.jsx`
+	- `frontend/src/components/TimelineItem.jsx`
+	- `frontend/src/pages/TodayPage.foodDeletion.test.jsx`
+	- `docs/PROJECT_STATUS.md`
+	- `docs/version-updates/v0.1.3.md`
+	- `docs/DEVELOPMENT_LOG.md`
+- 遇到的问题：
+	- 首次专项测试中 4 个成功路径用例保留了初始数组；删除请求本身已正确发出。
+- 解决方式：
+	- 定位为测试 mock 的 `setTimelineMock` 实现被测试环境重置为无操作函数；在每个用例开始时显式恢复 setter 实现，并在异步删除完成后按真实 Store 更新节奏重渲染。未删除、跳过或弱化核心断言。
+- 执行的测试：
+	- `npm test -- --runInBand --watchAll=false src/pages/TodayPage.foodDeletion.test.jsx`
+	- `npm test -- --runInBand --watchAll=false`
+	- `npm run build`
+- 测试结果：
+	- 专项测试通过：1 个测试套件、5 个用例全部通过。
+	- 全量测试通过：19 个测试套件、125 个用例全部通过。
+	- 前端生产构建通过（Compiled successfully）。
+- 未完成事项：
+	- 未执行真实登录态下的在线 Supabase 删除与移动端人工点击验收。
+	- v0.1.3 仍处于开发状态，未声明上线，未填写正式上线时间。
+- 风险或注意事项：
+	- 测试环境输出缺少 Supabase 环境变量的既有提示，但测试均通过。
+	- 构建输出 Node `fs.F_OK` 弃用警告，但构建成功。
+	- 历史数据若存在缺少 `entryId/id/foodEntryId` 或非 UUID 的食物项，首页不会静默本地删除，需刷新或后续数据修复；当前读取路径不会主动清理既有空餐。
+- 当前分支：supabase-v1
+- Git Commit ID：未提交
+
 ## DEV-20260728-004
 
 - 日期：2026-07-28
