@@ -17,8 +17,8 @@ export const VERSION_RECORDS = [
     name: 'v0.1.2：记录体验与设置能力完善',
     status: versionConfig.status,
     releaseDate: versionConfig.releasedAt,
-    lastUpdatedDate: '2026-07-27',
-    summary: '本版本汇总 v0.1.1 基准后的已完成修改，重点完善历史记录、实时记录、设置与摄入计划，并修复删除状态和移动端交互问题。',
+    lastUpdatedDate: '2026-07-28',
+    summary: '本版本汇总 v0.1.1 基准后的已完成修改，已于 2026-07-28 11:53（Australia/Sydney）正式上线。',
     highlights: [
       '历史详情支持查看/编辑模式、单项删除、整日删除与批量删除',
       '删除本日历史后恢复真实本日，避免停留在下一日或旧缓存',

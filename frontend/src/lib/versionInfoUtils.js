@@ -8,6 +8,7 @@ export function formatReleaseTime(releasedAt, locale = 'zh-CN') {
     }
 
     return new Intl.DateTimeFormat(locale, {
+      timeZone: 'Australia/Sydney',
       year: 'numeric',
       month: 'long',
       day: 'numeric',

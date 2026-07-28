@@ -11,9 +11,8 @@ describe('versionInfoUtils', () => {
   });
 
   test('released time should format fixed timestamp', () => {
-    const result = formatReleaseTime('2026-07-26T18:30:00+10:00');
-    expect(result).not.toBe('未填写');
-    expect(result).toMatch(/2026/);
+    const result = formatReleaseTime('2026-07-28T11:53:00+10:00');
+    expect(result).toBe('2026年7月28日 11:53');
   });
 
   test('invalid release time should show fallback text', () => {

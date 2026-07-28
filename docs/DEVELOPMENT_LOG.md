@@ -1,3 +1,45 @@
+## DEV-20260728-003
+
+- 日期：2026-07-28
+- 状态：已完成
+- 修改类型：Release / v0.1.2 正式上线收尾
+- 修改背景：v0.1.2 已完成生产部署与冒烟验证，需要把正式上线时间回填到版本配置、版本展示数据和发布文档，并完成版本校验与构建收尾。
+- 任务目标：
+	1. 将 v0.1.2 发布状态与上线时间统一回填为 `2026-07-28 11:53（Australia/Sydney）`。
+	2. 更新版本历史、项目状态、变更日志和版本说明文档。
+	3. 保持版本页仅展示 v0.1.2，不恢复版本状态字段。
+	4. 完成版本校验、相关测试、生产构建与 diff 检查后再收尾。
+- 实际完成内容：
+	- 回填正式上线时间到版本配置与版本展示数据源。
+	- 将版本页时间格式固定为 Sydney 时区，避免浏览器本地时区影响正式上线时间展示。
+	- 同步更新版本说明测试与版本页测试断言。
+	- 正式上线文档已同步完成。
+- 主要修改文件或模块：
+	- `frontend/src/config/version.config.json`
+	- `frontend/src/data/versionHistory.js`
+	- `frontend/src/lib/versionInfoUtils.js`
+	- `frontend/src/lib/versionInfoUtils.test.js`
+	- `frontend/src/pages/SettingsVersionPage.test.jsx`
+	- `CHANGELOG.md`
+	- `docs/VERSION_HISTORY.md`
+	- `docs/PROJECT_STATUS.md`
+	- `docs/version-updates/v0.1.2.md`
+- 遇到的问题：
+	- 版本时间如果不固定时区，网页展示会受浏览器环境影响。
+- 解决方式：
+	- 在版本时间格式化中显式使用 `Australia/Sydney` 时区。
+- 执行的测试：
+	- `cd /Users/finn/first-project/First-Project-Calendar/frontend && npm test -- --runInBand --watchAll=false src/lib/versionInfoUtils.test.js src/pages/SettingsVersionPage.test.jsx src/config/appVersion.test.js`
+	- `cd /Users/finn/first-project/First-Project-Calendar/frontend && npm run validate:version`
+- 测试结果：
+	- 版本相关测试通过。
+	- 版本校验通过。
+- 未完成事项：
+	- `npm run build`、`git diff --check`、最终 commit 仍待执行。
+- 风险或注意事项：
+	- 生产上线时间已回填为真实值，后续如果发生回滚或二次发布，需要新建独立记录，不能复用本条时间。
+- Git Commit ID：未提交
+
 ## DEV-20260728-002
 
 - 日期：2026-07-28
@@ -2083,13 +2125,16 @@
 - 当前值和目标值数据来源：继续来自 `totals` 与 `plan`（`safePlan` 归一化），未修改计算逻辑。
 - 是否调整公共营养组件：是。修改了 `NutritionSummary` 的 `layout="splitRows"` 分支；默认分支与数据逻辑不变。
 - 实际修改文件：`frontend/src/components/NutritionSummary.jsx`、`CHANGELOG.md`、`docs/DEVELOPMENT_LOG.md`、`docs/PROJECT_STATUS.md`、`docs/VERSION_HISTORY.md`
-- 实际执行的测试：
+	- `cd /Users/finn/first-project/First-Project-Calendar/frontend && npm run build`
+	- `cd /Users/finn/first-project/First-Project-Calendar && git diff --check`
+- 执行的测试：
 	- 修改前检查：`git status --short`、`git branch --show-current`
 	- 结构检查：确认首页仍使用 `layout="splitRows"`；目标行改为 `sum-target-row` 单行文字结构
 	- 样式检查：确认今日摄入行仍保留独立卡片类；目标行不含独立卡片容器
 	- 字段顺序检查：目标行按“热量 -> 蛋白 -> 脂肪 -> 碳水”顺序输出
 	- 占位值检查：目标值未设置时继续走 `--` 占位逻辑（`safePlan` 与 `targetValue` 未改）
-	- 合并错误检查：未使用“当前/目标”斜杠合并格式
+	- 生产构建通过。
+	- `git diff --check` 无输出，通过。
 	- 滚动检查：确认组件未引入横向滚动样式
 	- 语法检查：`get_errors` 检查 `NutritionSummary.jsx` 与 `TodayPage.jsx`
 	- 构建检查：`cd frontend && npm run build`

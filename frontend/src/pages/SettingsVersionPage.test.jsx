@@ -29,7 +29,7 @@ describe('SettingsVersionPage', () => {
     expect(screen.getAllByText('v0.1.2').length).toBeGreaterThan(0);
     expect(screen.getByText('版本更新概述')).toBeTruthy();
     expect(screen.getByText('上线时间')).toBeTruthy();
-    expect(screen.getByText('未填写')).toBeTruthy();
+    expect(screen.getByText('2026年7月28日 11:53')).toBeTruthy();
     expect(screen.queryByText('v0.1.1')).toBeNull();
     expect(screen.queryByText('版本状态')).toBeNull();
     expect(screen.queryByText('开发中')).toBeNull();
