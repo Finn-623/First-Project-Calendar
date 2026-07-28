@@ -48,7 +48,7 @@
 	- `service_role` 保留删除权限以兼容受控维护与用户级联删除；普通用户及管理员常规应用调用均被 completed 删除触发器拒绝。
 	- 非阻塞输出包括测试环境缺少 Supabase 变量提示、模拟 session 失败日志和构建 `fs.F_OK` 弃用警告。
 - 当前分支：supabase-v1
-- Git Commit ID：未提交
+- Git Commit ID：892eaacdfff960eb699510949b82c9cae1dd244c
 
 ## DEV-20260728-015
 

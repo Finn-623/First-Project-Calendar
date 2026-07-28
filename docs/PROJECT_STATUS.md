@@ -642,5 +642,5 @@ P2：
   - Service 写入增加 `status = pending` 条件；新增 migration 通过触发器和 RLS 阻止普通应用流程编辑或删除 completed，管理员仍可通过既有受控 RPC 完成必要状态管理。
   - 专项测试：前端 2 个套件、20 个用例与 migration 契约 3 个用例通过；全量测试：30 个套件、197 个用例通过；Production build 通过。
   - Migration 尚未执行到 Production；执行前仍需在目标 Supabase 环境验证 SQL、RLS 和触发器。
-  - 相关 Commit：待回填
+  - 相关 Commit：892eaacdfff960eb699510949b82c9cae1dd244c
 - v0.1.3 尚未正式上线，本项未触发 Production 部署、tag 或上线时间回填。
