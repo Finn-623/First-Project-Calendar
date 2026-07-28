@@ -37,7 +37,7 @@
 	- 构建输出 Node `fs.F_OK` 弃用警告，但构建成功。
 	- 本需求为统一 push 周期第 3/5 项，本次不执行 push。
 - 当前分支：supabase-v1
-- Git Commit ID：未提交
+- Git Commit ID：81860a472efdb3b048ef1eba2c8d6c03a93b59c0
 
 ## DEV-20260728-007
 
