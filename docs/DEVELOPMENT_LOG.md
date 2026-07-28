@@ -1,3 +1,41 @@
+## DEV-20260728-007
+
+- 日期：2026-07-28
+- 状态：已完成
+- 修改类型：P0 Test / v0.1.3 日期与历史删除关键路径回归
+- 任务目标：建立“结束本日／删除本日历史／返回首页”自动化关键路径回归，锁定真实本日、下一记录日、完成状态和历史删除之间的既定规则。
+- 实际完成内容：
+	- 在现有固定日期 Store 集成测试中扩展贯穿式回归，复用真实 `endDay`、`goHome`、`initializeSelectedDate`、`resetDeletedDateState` 和历史服务 mock。
+	- 覆盖真实本日未结束时首页显示本日；结束后保存归档、生成历史并推进到下一记录日。
+	- 覆盖本日已结束时从其他页面再次点击首页仍保持下一记录日。
+	- 覆盖删除真实本日历史成功后停留历史页，清除历史、完成/查看状态和日期缓存，随后返回首页恢复真实本日。
+	- 覆盖删除其他日期不改变真实本日完成状态与当前记录日。
+	- 覆盖取消删除和删除失败不提前执行本地日期状态重置。
+	- 覆盖重新挂载/初始化时根据数据库完成状态恢复下一记录日，以及删除完成状态后恢复真实本日。
+- 是否发现并修复实际功能缺陷：否。现有生产实现满足本次确认的业务规则，本次仅扩展测试与文档。
+- 主要修改文件或模块：
+	- `frontend/src/store.deletedDateState.test.jsx`
+	- `docs/PROJECT_STATUS.md`
+	- `docs/version-updates/v0.1.3.md`
+	- `docs/DEVELOPMENT_LOG.md`
+- 执行的测试：
+	- `npm test -- --runInBand --watchAll=false src/store.deletedDateState.test.jsx src/pages/HistoryDetailPage.test.jsx src/components/BottomNav.test.jsx`
+	- `npm test -- --runInBand --watchAll=false`
+	- `npm run build`
+- 测试结果：
+	- 专项测试通过：3 个测试套件、26 个用例全部通过。
+	- 全量测试通过：22 个测试套件、138 个用例全部通过。
+	- 前端生产构建通过（Compiled successfully）。
+- 未完成事项：
+	- 未连接真实 Supabase 或执行浏览器人工流程，本次验证基于固定日期与稳定 mock。
+	- v0.1.3 仍为开发状态，未填写正式上线时间，未声明已上线。
+- 风险或注意事项：
+	- 测试环境仍输出缺少 Supabase 环境变量的既有提示，但测试通过。
+	- 构建输出 Node `fs.F_OK` 弃用警告，但构建成功。
+	- 本需求为统一 push 周期第 2/5 项，本次不执行 push。
+- 当前分支：supabase-v1
+- Git Commit ID：未提交
+
 ## DEV-20260728-006
 
 - 日期：2026-07-28

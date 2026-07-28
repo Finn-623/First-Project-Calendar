@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { StoreProvider, toDateStr, useStore } from './store';
 import { foodService } from './services/foodService';
@@ -59,11 +59,13 @@ jest.mock('./services/historyService', () => {
       getHistoryDates: jest.fn().mockResolvedValue({ data: [], error: null }),
       getHistoryDetail: jest.fn(),
       saveDayArchive: jest.fn(),
+      deleteFullDayRecords: jest.fn(),
     },
   };
 });
 
 const StoreProbe = () => {
+  const [route, setRoute] = useState('home');
   const {
     currentDate,
     recordingDateStr,
@@ -77,8 +79,17 @@ const StoreProbe = () => {
     setTimeline,
   } = useStore();
 
+  const deleteHistoryDate = async (dateStr) => {
+    const { error } = await historyService.deleteFullDayRecords(dateStr);
+    if (error) return;
+
+    resetDeletedDateState(dateStr);
+    setRoute('history');
+  };
+
   return (
     <div>
+      <span data-testid="route">{route}</span>
       <span data-testid="current-date">{toDateStr(currentDate)}</span>
       <span data-testid="recording-date">{recordingDateStr}</span>
       <span data-testid="day-initialized">{String(dayInitialized)}</span>
@@ -86,6 +97,31 @@ const StoreProbe = () => {
       <span data-testid="history-count">{String(history.length)}</span>
       <button type="button" onClick={() => endDay()} data-testid="end-day">结束本日</button>
       <button type="button" onClick={() => goHome()} data-testid="go-home">返回首页</button>
+      <button
+        type="button"
+        onClick={() => {
+          setRoute('home');
+          goHome();
+        }}
+        data-testid="nav-home"
+      >
+        点击首页
+      </button>
+      <button
+        type="button"
+        onClick={() => deleteHistoryDate('2026-07-27')}
+        data-testid="delete-today-history"
+      >
+        确认删除本日历史
+      </button>
+      <button
+        type="button"
+        onClick={() => deleteHistoryDate('2026-07-20')}
+        data-testid="delete-other-history"
+      >
+        确认删除其他历史
+      </button>
+      <button type="button" data-testid="cancel-delete">取消删除</button>
       <button
         type="button"
         onClick={() => resetDeletedDateState('2026-07-27')}
@@ -145,7 +181,164 @@ describe('Store 删除日期后的首页状态恢复', () => {
     timelineService.getRunningTimelineItems.mockResolvedValue({ data: [], error: null });
     historyService.getDayCompletion.mockResolvedValue({ data: null, error: null });
     historyService.getHistoryDates.mockResolvedValue({ data: [], error: null });
+    historyService.getHistoryDetail.mockResolvedValue({
+      timeline: [],
+      nutrition: { calories: 0, protein: 0, fat: 0, carbs: 0 },
+      isEmptyDay: true,
+      isCompleted: true,
+    });
     historyService.saveDayArchive.mockResolvedValue({ data: null, error: null });
+    historyService.deleteFullDayRecords.mockResolvedValue({ data: null, error: null });
+  });
+
+  test('关键路径：结束真实本日后生成历史并保持下一记录日首页规则', async () => {
+    historyService.getHistoryDates.mockResolvedValue({ data: ['2026-07-27'], error: null });
+
+    renderStore();
+
+    await waitFor(() => {
+      expect(screen.getByTestId('current-date').textContent).toBe('2026-07-27');
+      expect(screen.getByTestId('recording-date').textContent).toBe('2026-07-27');
+    });
+
+    fireEvent.click(screen.getByTestId('end-day'));
+
+    await waitFor(() => {
+      expect(historyService.saveDayArchive).toHaveBeenCalledWith(
+        'user-1',
+        '2026-07-27',
+        expect.any(Array),
+        expect.objectContaining({ cal: expect.any(Number) }),
+      );
+      expect(screen.getByTestId('current-date').textContent).toBe('2026-07-28');
+      expect(screen.getByTestId('recording-date').textContent).toBe('2026-07-28');
+      expect(screen.getByTestId('history-count').textContent).toBe('1');
+    });
+
+    historyService.getDayCompletion.mockResolvedValue({
+      data: { is_completed: true },
+      error: null,
+    });
+    fireEvent.click(screen.getByTestId('nav-home'));
+
+    await waitFor(() => {
+      expect(screen.getByTestId('route').textContent).toBe('home');
+      expect(screen.getByTestId('current-date').textContent).toBe('2026-07-28');
+      expect(screen.getByTestId('recording-date').textContent).toBe('2026-07-28');
+    });
+  });
+
+  test('关键路径：删除真实本日历史后停留历史页，再回首页恢复真实本日', async () => {
+    historyService.getDayCompletion.mockResolvedValue({
+      data: { is_completed: true },
+      error: null,
+    });
+    historyService.getHistoryDates.mockResolvedValue({ data: ['2026-07-27'], error: null });
+
+    renderStore();
+
+    await waitFor(() => {
+      expect(screen.getByTestId('recording-date').textContent).toBe('2026-07-28');
+      expect(screen.getByTestId('history-count').textContent).toBe('1');
+    });
+
+    fireEvent.click(screen.getByTestId('delete-today-history'));
+
+    await waitFor(() => {
+      expect(historyService.deleteFullDayRecords).toHaveBeenCalledWith('2026-07-27');
+      expect(screen.getByTestId('route').textContent).toBe('history');
+      expect(screen.getByTestId('history-count').textContent).toBe('0');
+      expect(screen.getByTestId('current-date').textContent).toBe('2026-07-27');
+      expect(screen.getByTestId('recording-date').textContent).toBe('2026-07-27');
+    });
+
+    historyService.getDayCompletion.mockResolvedValue({ data: null, error: null });
+    fireEvent.click(screen.getByTestId('nav-home'));
+
+    await waitFor(() => {
+      expect(screen.getByTestId('route').textContent).toBe('home');
+      expect(screen.getByTestId('current-date').textContent).toBe('2026-07-27');
+      expect(screen.getByTestId('recording-date').textContent).toBe('2026-07-27');
+    });
+  });
+
+  test('关键路径：删除其他日期不改变真实本日完成状态或当前记录日', async () => {
+    historyService.getDayCompletion.mockResolvedValue({
+      data: { is_completed: true },
+      error: null,
+    });
+
+    renderStore();
+    await waitFor(() => {
+      expect(screen.getByTestId('recording-date').textContent).toBe('2026-07-28');
+    });
+
+    fireEvent.click(screen.getByTestId('delete-other-history'));
+
+    await waitFor(() => {
+      expect(historyService.deleteFullDayRecords).toHaveBeenCalledWith('2026-07-20');
+      expect(screen.getByTestId('route').textContent).toBe('history');
+      expect(screen.getByTestId('current-date').textContent).toBe('2026-07-28');
+      expect(screen.getByTestId('recording-date').textContent).toBe('2026-07-28');
+    });
+
+    fireEvent.click(screen.getByTestId('nav-home'));
+    await waitFor(() => {
+      expect(screen.getByTestId('current-date').textContent).toBe('2026-07-28');
+      expect(screen.getByTestId('recording-date').textContent).toBe('2026-07-28');
+    });
+  });
+
+  test('关键路径：取消或删除失败均不提前重置日期状态', async () => {
+    historyService.getDayCompletion.mockResolvedValue({
+      data: { is_completed: true },
+      error: null,
+    });
+
+    renderStore();
+    await waitFor(() => {
+      expect(screen.getByTestId('recording-date').textContent).toBe('2026-07-28');
+    });
+
+    fireEvent.click(screen.getByTestId('cancel-delete'));
+    expect(historyService.deleteFullDayRecords).not.toHaveBeenCalled();
+    expect(screen.getByTestId('current-date').textContent).toBe('2026-07-28');
+    expect(screen.getByTestId('recording-date').textContent).toBe('2026-07-28');
+
+    historyService.deleteFullDayRecords.mockResolvedValue({
+      data: null,
+      error: new Error('删除失败'),
+    });
+    fireEvent.click(screen.getByTestId('delete-today-history'));
+
+    await waitFor(() => {
+      expect(historyService.deleteFullDayRecords).toHaveBeenCalledWith('2026-07-27');
+    });
+    expect(screen.getByTestId('route').textContent).toBe('home');
+    expect(screen.getByTestId('current-date').textContent).toBe('2026-07-28');
+    expect(screen.getByTestId('recording-date').textContent).toBe('2026-07-28');
+  });
+
+  test('关键路径：刷新初始化按完成状态恢复，删除本日后重新初始化恢复真实本日', async () => {
+    historyService.getDayCompletion.mockResolvedValue({
+      data: { is_completed: true },
+      error: null,
+    });
+
+    const firstMount = renderStore();
+    await waitFor(() => {
+      expect(screen.getByTestId('day-initialized').textContent).toBe('true');
+      expect(screen.getByTestId('current-date').textContent).toBe('2026-07-28');
+    });
+    firstMount.unmount();
+
+    historyService.getDayCompletion.mockResolvedValue({ data: null, error: null });
+    renderStore();
+    await waitFor(() => {
+      expect(screen.getByTestId('day-initialized').textContent).toBe('true');
+      expect(screen.getByTestId('current-date').textContent).toBe('2026-07-27');
+      expect(screen.getByTestId('recording-date').textContent).toBe('2026-07-27');
+    });
   });
 
   test('结束本日推进到下一日后，删除真实本日会恢复真实本日和空白时间线', async () => {
