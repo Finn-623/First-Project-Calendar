@@ -40,7 +40,7 @@
 	- 构建输出 Node `fs.F_OK` 弃用警告，但构建成功。
 	- 历史数据若存在缺少 `entryId/id/foodEntryId` 或非 UUID 的食物项，首页不会静默本地删除，需刷新或后续数据修复；当前读取路径不会主动清理既有空餐。
 - 当前分支：supabase-v1
-- Git Commit ID：未提交
+- Git Commit ID：deb10ece832d4f4dcee6bf34a78c486f03d96546
 
 ## DEV-20260728-004
 
