@@ -30,7 +30,7 @@
 	- 本次 Roadmap 是已确认产品范围，不代表其中功能已经实现。
 	- 未修改 Production、数据库、产品代码或版本 tag。
 - 当前分支：supabase-v1
-- Git Commit ID：未提交
+- Git Commit ID：b011a999c18a59128994d3baa69b557c737d9d6e
 
 ## DEV-20260728-022
 
