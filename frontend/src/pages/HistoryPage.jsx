@@ -33,6 +33,22 @@ export const HistoryPage = () => {
 
   // 判断是否从设置进来
   const isFromSettings = location.state?.returnTo === 'settings';
+  const shouldFallbackToSettings = isFromSettings || location.state?.fallbackTo === 'settings';
+
+  const handleBack = () => {
+    if (shouldFallbackToSettings) {
+      navigate('/settings');
+      return;
+    }
+
+    const historyIndex = Number(window.history.state?.idx);
+    if (Number.isFinite(historyIndex) && historyIndex > 0) {
+      navigate(-1);
+      return;
+    }
+
+    navigate('/settings', { replace: true });
+  };
 
   const selectedSet = useMemo(() => new Set(selectedDateKeys), [selectedDateKeys]);
   const selectedCount = selectedDateKeys.length;
@@ -117,19 +133,18 @@ export const HistoryPage = () => {
   return (
     <div className="pb-32">
       <header className="px-5 pt-6 pb-4">
-        {isFromSettings ? (
-          <div className="flex items-center justify-between gap-3 mb-4">
-            <button
-              type="button"
-              onClick={() => navigate('/settings')}
-              aria-label="返回设置"
-              className="min-h-11 px-2 -ml-2 rounded-lg text-[13px] text-[#6B8067] hover:bg-[#EEF2EC] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#6B8067]/40 inline-flex items-center gap-1.5"
-            >
-              <ArrowLeft size={16} />
-              返回设置
-            </button>
-          </div>
-        ) : null}
+        <div className="flex items-center justify-between gap-3 mb-4">
+          <button
+            type="button"
+            onClick={handleBack}
+            aria-label="返回上一页"
+            data-testid="history-page-back"
+            className="min-h-11 min-w-11 px-2 -ml-2 rounded-lg text-[13px] text-[#6B8067] hover:bg-[#EEF2EC] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#6B8067]/40 inline-flex items-center gap-1.5"
+          >
+            <ArrowLeft size={16} />
+            返回
+          </button>
+        </div>
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0">
             {!isFromSettings ? <p className="text-[11px] uppercase tracking-[0.22em] text-[#858C88]">HISTORY</p> : null}
@@ -207,7 +222,9 @@ export const HistoryPage = () => {
               return;
             }
 
-            navigate(`/history/${d.dateStr}`);
+            navigate(`/history/${d.dateStr}`, {
+              state: isFromSettings ? { returnTo: 'settings' } : {},
+            });
           };
 
           return (

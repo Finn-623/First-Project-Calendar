@@ -297,7 +297,9 @@ export const HistoryDetailPage = () => {
         } else {
           toast.success('历史记录已删除');
         }
-        navigate('/history', { state: isFromSettings ? { returnTo: 'settings' } : {} });
+        navigate('/history', {
+          state: isFromSettings ? { returnTo: 'settings' } : { fallbackTo: 'settings' },
+        });
         return;
       }
 
@@ -367,7 +369,9 @@ export const HistoryDetailPage = () => {
         <div className="flex items-center justify-between gap-2 mb-2">
           <button
             type="button"
-            onClick={() => navigate('/history', { state: isFromSettings ? { returnTo: 'settings' } : {} })}
+            onClick={() => navigate('/history', {
+              state: isFromSettings ? { returnTo: 'settings' } : { fallbackTo: 'settings' },
+            })}
             data-testid="history-detail-back"
             className="flex items-center gap-1 text-[12px] text-[#858C88]"
           >

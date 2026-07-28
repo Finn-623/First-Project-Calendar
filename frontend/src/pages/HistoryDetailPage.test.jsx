@@ -153,7 +153,7 @@ describe('HistoryDetailPage 删除整天记录', () => {
       expect(historyService.deleteFullDayRecords).toHaveBeenCalledWith('2026-07-27');
       expect(loadHistoryMock).toHaveBeenCalledWith('user-1');
       expect(resetDeletedDateStateMock).toHaveBeenCalledWith('2026-07-27');
-      expect(mockNavigate).toHaveBeenCalledWith('/history', { state: {} });
+      expect(mockNavigate).toHaveBeenCalledWith('/history', { state: { fallbackTo: 'settings' } });
       expect(toast.success).toHaveBeenCalledWith('历史记录已删除');
     });
   });
@@ -201,7 +201,7 @@ describe('HistoryDetailPage 删除整天记录', () => {
     await waitFor(() => {
       expect(toast.error).toHaveBeenCalledWith('记录已删除，但历史列表刷新失败，请稍后重试');
       expect(resetDeletedDateStateMock).toHaveBeenCalledWith('2026-07-27');
-      expect(mockNavigate).toHaveBeenCalledWith('/history', { state: {} });
+      expect(mockNavigate).toHaveBeenCalledWith('/history', { state: { fallbackTo: 'settings' } });
     });
     expect(toast.success).not.toHaveBeenCalled();
   });

@@ -1,3 +1,41 @@
+## DEV-20260728-011
+
+- 日期：2026-07-28
+- 状态：已完成
+- 修改类型：Production Feedback Fix / 历史列表返回导航
+- 任务目标：修复 Feedback `4571c958-7f36-42e2-b8a1-0f697452d18b`，确保删除历史或从详情返回列表后始终存在安全返回入口。
+- 实际完成内容：
+	- 历史列表顶部左侧返回按钮改为始终渲染，增加清晰 `aria-label`、测试标识和至少 44×44px 点击区。
+	- 明确设置来源返回 `/settings`；其他有效应用内上一页使用 `navigate(-1)`；直接访问、刷新或详情安全回退使用 replace 到 `/settings`。
+	- 历史列表进入详情时传递设置来源；详情普通返回和删除成功返回列表时传递设置来源或安全回退标记。
+	- 单条删除、批量删除后仍停留历史列表，返回按钮不随列表内容或删除模式消失。
+	- 未修改历史删除服务、批量删除、日期状态清理、首页日期规则或底部导航。
+- 主要修改文件或模块：
+	- `frontend/src/pages/HistoryPage.jsx`
+	- `frontend/src/pages/HistoryDetailPage.jsx`
+	- `frontend/src/pages/HistoryPage.navigation.test.jsx`
+	- `frontend/src/pages/HistoryDetailPage.test.jsx`
+	- `docs/PROJECT_STATUS.md`
+	- `docs/version-updates/v0.1.3.md`
+	- `docs/DEVELOPMENT_LOG.md`
+- 执行的测试：
+	- `npm test -- --runInBand --watchAll=false src/pages/HistoryPage.navigation.test.jsx src/pages/HistoryDetailPage.test.jsx src/pages/SettingsPage.navigation.test.jsx src/store.deletedDateState.test.jsx`
+	- `npm test -- --runInBand --watchAll=false`
+	- `npm run build`
+- 测试结果：
+	- 专项测试通过：4 个测试套件、31 个用例全部通过。
+	- 全量测试通过：24 个测试套件、170 个用例全部通过。
+	- 前端生产构建通过（Compiled successfully）。
+- 未完成事项：
+	- Production feedback 状态尚未更新；当前环境无安全管理权限时需管理员执行精确 SQL。
+	- 其余 3 条 Production pending 反馈未修改。
+- 风险或注意事项：
+	- 测试环境输出缺少 Supabase 环境变量及模拟 session 失败的既有日志，不影响通过。
+	- 构建输出 Node `fs.F_OK` 弃用警告，但构建成功。
+	- Production 反馈修复进度 1/4；本次禁止 push、部署和 tag。
+- 当前分支：supabase-v1
+- Git Commit ID：未提交
+
 ## DEV-20260728-010
 
 - 日期：2026-07-28
