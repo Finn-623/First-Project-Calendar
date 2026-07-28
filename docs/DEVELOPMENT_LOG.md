@@ -1,3 +1,38 @@
+## DEV-20260728-004
+
+- 日期：2026-07-28
+- 状态：已完成
+- 修改类型：Documentation / v0.1.3 范围确认与任务清单建立
+- 修改背景：正式进入 v0.1.3，需要先完成版本范围边界和优先级任务定义，不修改业务代码。
+- 任务目标：
+	1. 基于现有代码与文档核对关键功能完成状态。
+	2. 建立 v0.1.3 正式章节，明确纳入与不纳入范围。
+	3. 建立当前完成情况、待处理清单、上线验收标准及回填位置。
+- 实际完成内容：
+	- 完成登录、首页、历史、设置、食物库、计划、日期规则与删除规则的代码证据复核。
+	- 新建 `docs/version-updates/v0.1.3.md`，写入版本目标、范围边界、分类核对、优先级清单和验收标准。
+	- 在 `docs/ROADMAP.md`、`docs/PROJECT_STATUS.md`、`docs/VERSION_HISTORY.md` 建立 v0.1.3 章节并同步口径。
+	- 明确排除统计、模板、AI、离线数据库、图片体系扩展、GI/GL 扩展、健身扩展与记账模块。
+- 主要修改文件或模块：
+	- `docs/ROADMAP.md`
+	- `docs/PROJECT_STATUS.md`
+	- `docs/VERSION_HISTORY.md`
+	- `docs/version-updates/v0.1.3.md`
+	- `docs/DEVELOPMENT_LOG.md`
+- 遇到的问题：
+	- 线上 `version_feedback` pending 与 Production 实际部署状态无法在本地仓库直接校验。
+- 解决方式：
+	- 在 v0.1.3 文档中将该项归入上线前必须执行的人工核对清单。
+- 执行的测试：
+	- `cd /Users/finn/first-project/First-Project-Calendar && git diff --check`
+- 测试结果：
+	- 文档改动未引入格式错误（空输出）。
+- 未完成事项：
+	- 待后续 v0.1.3 功能修复任务逐项落地并补回归测试。
+- 风险或注意事项：
+	- 本次仅完成范围确认，不代表 v0.1.3 已上线。
+- Git Commit ID：未提交
+
 ## DEV-20260728-003
 
 - 日期：2026-07-28
