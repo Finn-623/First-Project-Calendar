@@ -1,3 +1,60 @@
+## DEV-20260728-001
+
+- 日期：2026-07-28
+- 状态：已完成
+- 修改类型：Release Blocker Fix / v0.1.2 Preview 删除本日后首页日期回归异常
+- 修改背景：Preview 验收发现删除“本日”历史记录后，页面虽停留在历史页，但点击底部“首页”仍可能显示已删除日期、错误日期或空白时间轴，未回到真实本日。
+- 任务目标：
+	1. 删除本日历史后继续停留历史页面。
+	2. 清除已删除日期对应的日期状态、结束态与相关缓存状态。
+	3. 点击首页后以真实本日为默认基准，不落在已删日期或下一日。
+	4. 删除非本日历史不强制改变首页日期。
+	5. 刷新/重新挂载后不恢复旧日期状态。
+- 实际完成内容：
+	- Store 状态源修复：
+		- `resetDeletedDateState` 新增对 `history` 列表的同步清理，删除日即刻从本地状态剔除，即使历史刷新失败也不回流旧数据。
+		- 删除日期时始终清理 `timelineCacheRef` 对应条目；命中“本日删除”时额外清理本日与当前记录日缓存。
+		- 删除本日时重置 `recordingDateStr/currentDate/timeline/dayInitialized` 到真实本日，阻断旧初始化结果覆盖。
+		- 增加 legacy 日期缓存清理（localStorage 中与日期状态、completed/end-day、persist/zustand 相关键）。
+	- 删除流程修复：
+		- `HistoryDetailPage` 改为“先清理状态源，再刷新 history”，避免刷新失败后首页回退到已删日期。
+		- `HistoryPage` 批量删除后逐日期调用状态清理，覆盖本日与非本日混合删除场景。
+	- 首页基准修复：
+		- `TodayPage` 的 `todaySydneyStr` 改为依赖当前时间动态计算，避免挂载时快照跨时段失真。
+		- `BottomNav` 首页入口点击时统一将 Store 选中日期回归真实本日（Australia/Sydney 基准）。
+- 主要修改文件或模块：
+	- `frontend/src/store.jsx`
+	- `frontend/src/pages/HistoryDetailPage.jsx`
+	- `frontend/src/pages/HistoryPage.jsx`
+	- `frontend/src/pages/TodayPage.jsx`
+	- `frontend/src/components/BottomNav.jsx`
+	- `frontend/src/store.deletedDateState.test.jsx`
+	- `frontend/src/components/BottomNav.test.jsx`
+	- `CHANGELOG.md`
+	- `docs/DEVELOPMENT_LOG.md`
+	- `docs/version-updates/v0.1.2.md`
+- 执行的测试与检查：
+	- `cd frontend && CI=true npm test -- --watchAll=false --runInBand src/store.deletedDateState.test.jsx src/pages/HistoryDetailPage.test.jsx src/components/BottomNav.test.jsx`
+		- 结果：3 个测试套件通过，19 项测试通过。
+	- `cd frontend && CI=true npm test -- --watchAll=false`
+		- 结果：18 个测试套件通过，118 项测试通过。
+	- `cd frontend && npm run build`
+		- 结果：构建成功，主 JS gzip 242.7 kB，CSS gzip 12.33 kB。
+- 测试结果：
+	- ✅ 删除本日后仍停留历史页。
+	- ✅ 点击首页后回到真实本日。
+	- ✅ 删除日期相关状态与结束态已清理。
+	- ✅ 删除非本日不强制改变首页日期。
+	- ✅ 重新挂载后不会恢复旧日期。
+	- ✅ 全量回归与构建通过。
+- 未完成事项：
+	- 暂无。
+- 风险或注意事项：
+	- 首页“真实本日”基准仍以 `Australia/Sydney` 日期字符串为准，与现有业务规则保持一致。
+	- 测试环境仍会输出缺少 Supabase 环境变量的既有 `console.error`，不影响测试通过。
+- 当前分支：supabase-v1
+- Git Commit ID：4829c0658fe8ff55d7995330926c7b6f84394719
+
 ## DEV-20260727-077
 
 - 日期：2026-07-27
