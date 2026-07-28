@@ -47,7 +47,7 @@
 	- Vercel 安装日志存在既有 peer dependency、deprecated package 与 npm audit 警告；未影响构建。
 	- 未在 Production 创建或大规模修改测试数据；需要数据写入的交互继续依赖通过的自动化回归。
 - 当前分支：supabase-v1
-- Git Commit ID：未提交
+- Git Commit ID：fbaa8be74489f2c9d0afadfe64d5a8bb24b1804e
 
 ## DEV-20260728-021
 

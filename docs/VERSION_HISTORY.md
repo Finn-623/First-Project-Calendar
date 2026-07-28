@@ -35,6 +35,7 @@
 - Production URL：`https://frontend-nu-khaki-18.vercel.app`
 - Migration 021：已部署并验证；四条原始反馈均为 `completed / v0.1.3`，pending 数为 0。
 - 最终验证：31 个前端测试套件、210 个测试通过；migration 契约 3/3 通过；Production build 与线上基础验收通过。
+- 发布记录 Commit：`fbaa8be74489f2c9d0afadfe64d5a8bb24b1804e`
 
 ## v0.1.2 正式上线
 
