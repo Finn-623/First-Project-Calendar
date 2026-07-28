@@ -184,36 +184,59 @@ export const StoreProvider = ({ children, user: initialUser, session: initialSes
     setDayInitialized(true);
   }, [recordingDateStr]);
 
+  const resolveHomeTargetDate = useCallback(async (userId) => {
+    if (!userId) {
+      return { success: false, error: '缺少用户 ID' };
+    }
+
+    const today = getSydneyDateString();
+    const { data: completion, error } = await historyService.getDayCompletion(userId, today);
+    if (error) {
+      return { success: false, error };
+    }
+
+    return {
+      success: true,
+      today,
+      selectedDate: completion?.is_completed ? addDaysToDateString(today, 1) : today,
+      isTodayCompleted: completion?.is_completed === true,
+    };
+  }, []);
+
   const initializeSelectedDate = useCallback(async (userId) => {
     if (!userId) return { success: false, error: '缺少用户 ID' };
 
     const requestId = ++initializationRequestRef.current;
-    const today = getSydneyDateString();
     setDayInitialized(false);
 
     try {
-      const { data: completion, error } = await historyService.getDayCompletion(userId, today);
-      if (error) {
-        return { success: false, error };
+      const resolved = await resolveHomeTargetDate(userId);
+      if (!resolved.success) {
+        return resolved;
       }
 
       if (requestId !== initializationRequestRef.current) {
         return { success: false, ignored: true };
       }
 
-      const initialDate = completion?.is_completed ? addDaysToDateString(today, 1) : today;
-      selectedTodayDateRef.current = today;
-      setRecordingDateStr(initialDate);
-      setCurrentDate(createDateFromString(initialDate));
+      selectedTodayDateRef.current = resolved.today;
+      setRecordingDateStr(resolved.selectedDate);
+      setCurrentDate(createDateFromString(resolved.selectedDate));
+      setTimeline(freshTimeline());
       setDayInitialized(true);
 
-      return { success: true, selectedDate: initialDate, today };
+      return {
+        success: true,
+        selectedDate: resolved.selectedDate,
+        today: resolved.today,
+        isTodayCompleted: resolved.isTodayCompleted,
+      };
     } catch (err) {
       return { success: false, error: err };
     } finally {
       setDayInitialized(true);
     }
-  }, []);
+  }, [resolveHomeTargetDate]);
 
   const refreshFoods = useCallback(async (userId) => {
     if (!userId) {
@@ -668,6 +691,14 @@ export const StoreProvider = ({ children, user: initialUser, session: initialSes
     setTimeline(resolveTimelineForDate(nextDateStr));
   }, [currentDate, resolveTimelineForDate, timeline]);
 
+  const goHome = useCallback(async (userId = user?.id) => {
+    if (!userId) {
+      return { success: false, error: '缺少用户 ID' };
+    }
+
+    return initializeSelectedDate(userId);
+  }, [initializeSelectedDate, user?.id]);
+
   const requireAdmin = useCallback(() => {
     if (!user?.id) {
       return { success: false, error: '请先登录' };
@@ -1001,6 +1032,7 @@ export const StoreProvider = ({ children, user: initialUser, session: initialSes
     favorites,
     setFavorites,
     endDay,
+    goHome,
     resetDeletedDateState,
   };
 

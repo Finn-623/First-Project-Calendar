@@ -71,6 +71,7 @@ const StoreProbe = () => {
     history,
     dayInitialized,
     endDay,
+    goHome,
     resetDeletedDateState,
     setSelectedDate,
     setTimeline,
@@ -84,6 +85,7 @@ const StoreProbe = () => {
       <span data-testid="timeline-title">{timeline[0]?.title || 'empty'}</span>
       <span data-testid="history-count">{String(history.length)}</span>
       <button type="button" onClick={() => endDay()} data-testid="end-day">结束本日</button>
+      <button type="button" onClick={() => goHome()} data-testid="go-home">返回首页</button>
       <button
         type="button"
         onClick={() => resetDeletedDateState('2026-07-27')}
@@ -167,6 +169,54 @@ describe('Store 删除日期后的首页状态恢复', () => {
       expect(screen.getByTestId('recording-date').textContent).toBe('2026-07-27');
       expect(screen.getByTestId('timeline-title').textContent).toBe('早餐');
     });
+
+    await act(async () => {
+      fireEvent.click(screen.getByTestId('go-home'));
+    });
+    await waitFor(() => {
+      expect(screen.getByTestId('current-date').textContent).toBe('2026-07-27');
+      expect(screen.getByTestId('recording-date').textContent).toBe('2026-07-27');
+    });
+  });
+
+  test('本日未结束时点击首页保持真实本日', async () => {
+    historyService.getDayCompletion.mockResolvedValueOnce({ data: null, error: null });
+
+    renderStore();
+
+    await waitFor(() => {
+      expect(screen.getByTestId('current-date').textContent).toBe('2026-07-27');
+      expect(screen.getByTestId('recording-date').textContent).toBe('2026-07-27');
+    });
+
+    await act(async () => {
+      fireEvent.click(screen.getByTestId('go-home'));
+    });
+
+    await waitFor(() => {
+      expect(screen.getByTestId('current-date').textContent).toBe('2026-07-27');
+      expect(screen.getByTestId('recording-date').textContent).toBe('2026-07-27');
+    });
+  });
+
+  test('本日已结束且历史存在时点击首页保持下一日', async () => {
+    historyService.getDayCompletion.mockResolvedValue({ data: { is_completed: true }, error: null });
+
+    renderStore();
+
+    await waitFor(() => {
+      expect(screen.getByTestId('current-date').textContent).toBe('2026-07-28');
+      expect(screen.getByTestId('recording-date').textContent).toBe('2026-07-28');
+    });
+
+    await act(async () => {
+      fireEvent.click(screen.getByTestId('go-home'));
+    });
+
+    await waitFor(() => {
+      expect(screen.getByTestId('current-date').textContent).toBe('2026-07-28');
+      expect(screen.getByTestId('recording-date').textContent).toBe('2026-07-28');
+    });
   });
 
   test('删除真实本日会清除旧日期缓存和可能残留的持久化日期键', async () => {
@@ -195,6 +245,8 @@ describe('Store 删除日期后的首页状态恢复', () => {
   });
 
   test('删除其他历史日期不会改变已推进的首页日期状态', async () => {
+    historyService.getDayCompletion.mockResolvedValue({ data: { is_completed: true }, error: null });
+
     renderStore();
     await screen.findByText('true');
 
@@ -204,6 +256,9 @@ describe('Store 删除日期后的首页状态恢复', () => {
     });
 
     fireEvent.click(screen.getByTestId('reset-history'));
+    await act(async () => {
+      fireEvent.click(screen.getByTestId('go-home'));
+    });
 
     expect(screen.getByTestId('current-date').textContent).toBe('2026-07-28');
     expect(screen.getByTestId('recording-date').textContent).toBe('2026-07-28');
@@ -264,6 +319,14 @@ describe('Store 删除日期后的首页状态恢复', () => {
     });
 
     fireEvent.click(screen.getByTestId('reset-today'));
+    await waitFor(() => {
+      expect(screen.getByTestId('recording-date').textContent).toBe('2026-07-27');
+      expect(screen.getByTestId('current-date').textContent).toBe('2026-07-27');
+    });
+
+    await act(async () => {
+      fireEvent.click(screen.getByTestId('go-home'));
+    });
     await waitFor(() => {
       expect(screen.getByTestId('recording-date').textContent).toBe('2026-07-27');
       expect(screen.getByTestId('current-date').textContent).toBe('2026-07-27');

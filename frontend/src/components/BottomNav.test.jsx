@@ -2,7 +2,7 @@ import React from 'react';
 import { fireEvent, render, screen } from '@testing-library/react';
 import { BottomNav } from './BottomNav';
 
-const mockSetSelectedDate = jest.fn();
+const mockGoHome = jest.fn();
 
 let mockPathname = '/';
 
@@ -23,7 +23,7 @@ jest.mock('react-router-dom', () => ({
 
 jest.mock('../store', () => ({
   useStore: () => ({
-    setSelectedDate: mockSetSelectedDate,
+    goHome: mockGoHome,
   }),
 }));
 
@@ -34,7 +34,7 @@ jest.mock('../services/historyService', () => ({
 describe('BottomNav', () => {
   beforeEach(() => {
     mockPathname = '/';
-    mockSetSelectedDate.mockClear();
+    mockGoHome.mockClear();
   });
 
   test('只显示首页、食物库和设置，并使用三列布局', () => {
@@ -74,7 +74,7 @@ describe('BottomNav', () => {
 
     fireEvent.click(screen.getByTestId('nav-home'));
 
-    expect(mockSetSelectedDate).toHaveBeenCalledWith('2026-07-28');
+    expect(mockGoHome).toHaveBeenCalled();
   });
 
   test('当前已在首页时再次点击首页，仍可触发日期基准恢复', () => {
@@ -83,6 +83,6 @@ describe('BottomNav', () => {
 
     fireEvent.click(screen.getByTestId('nav-home'));
 
-    expect(mockSetSelectedDate).toHaveBeenCalledWith('2026-07-28');
+    expect(mockGoHome).toHaveBeenCalled();
   });
 });

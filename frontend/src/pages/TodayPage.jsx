@@ -101,7 +101,7 @@ const AddPickerMenu = ({ onSnack, onTraining, onEvent, testIdPrefix = 'picker' }
 );
 
 export const TodayPage = () => {
-  const { timeline, setTimeline, plan, dateLabel, endDay, dayInitialized, currentDate, recordingDateStr, setSelectedDate, user, loadHistory } = useStore();
+  const { timeline, setTimeline, plan, dateLabel, endDay, dayInitialized, currentDate, recordingDateStr, setSelectedDate, goHome, user, loadHistory } = useStore();
   const [foodSheet, setFoodSheet] = useState({ open: false, target: null });
   const [snackSheetOpen, setSnackSheetOpen] = useState(false);
   const [trainingOpen, setTrainingOpen] = useState(false);
@@ -235,7 +235,7 @@ export const TodayPage = () => {
 
   const handleBackToToday = () => {
     if (!showBackToToday) return;
-    setSelectedDate(todaySydneyStr);
+    void goHome();
   };
 
   const handleAddFood = (mealItem) => setFoodSheet({ open: true, target: mealItem });
