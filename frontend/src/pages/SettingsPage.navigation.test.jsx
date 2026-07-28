@@ -122,6 +122,10 @@ describe('SettingsPage 导航与退出账号', () => {
       expect(mockRemoveQueries).toHaveBeenCalledTimes(1);
       expect(mockNavigate).toHaveBeenCalledWith('/login', { replace: true });
     });
+    const removePrivateQueries = mockRemoveQueries.mock.calls[0][0].predicate;
+    expect(removePrivateQueries({
+      queryKey: ['private', 'version-feedback', 'user-1', 'owner'],
+    })).toBe(true);
   });
 
   test('连续确认只提交一次并显示退出加载状态', async () => {

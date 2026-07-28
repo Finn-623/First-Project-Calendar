@@ -1,4 +1,5 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { showSuccess } from '../lib/notifications';
 import { useStore } from '../store';
@@ -26,9 +27,11 @@ import {
 } from '../lib/versionInfoUtils';
 
 const DESCRIPTION_PREVIEW_LIMIT = 120;
+const FEEDBACK_CACHE_STALE_TIME = 60_000;
 
 export const VersionFeedbackPage = () => {
   const { user, profile } = useStore();
+  const queryClient = useQueryClient();
   const [activeTab, setActiveTab] = useState('submit');
   const [loadingHistory, setLoadingHistory] = useState(false);
   const [loadingMore, setLoadingMore] = useState(false);
@@ -49,6 +52,7 @@ export const VersionFeedbackPage = () => {
   const [completeVersionErrors, setCompleteVersionErrors] = useState({});
   const [formData, setFormData] = useState({ title: '', description: '' });
   const [errors, setErrors] = useState({});
+  const mountedRef = useRef(false);
 
   const availableVersions = useMemo(() => {
     const values = VERSION_RECORDS
@@ -60,6 +64,14 @@ export const VersionFeedbackPage = () => {
   const isAdmin = useMemo(() => {
     return profile?.role === 'admin' || profile?.is_admin === true;
   }, [profile?.is_admin, profile?.role]);
+
+  const historyQueryKey = useMemo(
+    () => ['private', 'version-feedback', user?.id || 'anonymous', isAdmin ? 'admin' : 'owner'],
+    [isAdmin, user?.id]
+  );
+  const historyRequestIdentity = historyQueryKey.join(':');
+  const activeRequestIdentityRef = useRef(historyRequestIdentity);
+  activeRequestIdentityRef.current = historyRequestIdentity;
 
   const mergeHistory = useCallback((items) => {
     return [...new Map(items.map((item) => [item.id, item])).values()];
@@ -81,33 +93,74 @@ export const VersionFeedbackPage = () => {
       || String(a.id).localeCompare(String(b.id))
     )), [history]);
 
-  const loadHistory = useCallback(async () => {
+  const applyHistoryResult = useCallback((result) => {
+    setHistory(mergeHistory(result?.data || []));
+    setHasMore(Boolean(result?.hasMore));
+    setNextCursor(result?.nextCursor || null);
+  }, [mergeHistory]);
+
+  const loadHistory = useCallback(async ({ force = false } = {}) => {
     if (!user?.id) return;
 
-    setLoadingHistory(true);
+    const requestIdentity = historyRequestIdentity;
+    const cachedResult = queryClient.getQueryData(historyQueryKey);
+    const cachedState = queryClient.getQueryState(historyQueryKey);
+    if (cachedResult?.success) {
+      applyHistoryResult(cachedResult);
+      setLoadingHistory(false);
+    } else {
+      setLoadingHistory(true);
+    }
     setHistoryError('');
 
-    const result = await versionFeedbackService.listFeedback({
-      userId: user.id,
-      isAdmin,
-      limit: 10,
-      cursor: null,
+    const cacheIsFresh = cachedResult?.success
+      && cachedState?.dataUpdatedAt
+      && !cachedState.isInvalidated
+      && Date.now() - cachedState.dataUpdatedAt < FEEDBACK_CACHE_STALE_TIME;
+    if (!force && cacheIsFresh) {
+      return;
+    }
+
+    if (force) {
+      await queryClient.invalidateQueries({
+        queryKey: historyQueryKey,
+        exact: true,
+        refetchType: 'none',
+      });
+    }
+
+    const result = await queryClient.fetchQuery({
+      queryKey: historyQueryKey,
+      staleTime: force ? 0 : FEEDBACK_CACHE_STALE_TIME,
+      queryFn: () => versionFeedbackService.listFeedback({
+        userId: user.id,
+        isAdmin,
+        limit: 10,
+        cursor: null,
+      }),
     });
 
-    if (!result.success) {
+    if (!mountedRef.current || activeRequestIdentityRef.current !== requestIdentity) {
+      return;
+    }
+
+    if (!result?.success) {
+      queryClient.removeQueries({ queryKey: historyQueryKey, exact: true });
       setHistoryError('记录加载失败，请重试');
       setLoadingHistory(false);
       return;
     }
 
-    const nextRows = result.data || [];
-
-    setHistory(mergeHistory(nextRows));
+    applyHistoryResult(result);
     setLoadingHistory(false);
-
-    setHasMore(Boolean(result.hasMore));
-    setNextCursor(result.nextCursor || null);
-  }, [isAdmin, mergeHistory, user?.id]);
+  }, [
+    applyHistoryResult,
+    historyQueryKey,
+    historyRequestIdentity,
+    isAdmin,
+    queryClient,
+    user?.id,
+  ]);
 
   const loadMoreHistory = useCallback(async () => {
     if (!user?.id || !hasMore || loadingMore || loadingHistory || !nextCursor) {
@@ -123,6 +176,10 @@ export const VersionFeedbackPage = () => {
       cursor: nextCursor,
     });
 
+    if (!mountedRef.current || activeRequestIdentityRef.current !== historyRequestIdentity) {
+      return;
+    }
+
     if (!result.success) {
       toast.error(result.error || '记录加载失败，请重试');
       setLoadingMore(false);
@@ -130,11 +187,31 @@ export const VersionFeedbackPage = () => {
     }
 
     const nextRows = result.data || [];
-    setHistory((prev) => mergeHistory([...prev, ...nextRows]));
+    setHistory((prev) => {
+      const mergedRows = mergeHistory([...prev, ...nextRows]);
+      queryClient.setQueryData(historyQueryKey, {
+        success: true,
+        data: mergedRows,
+        hasMore: Boolean(result.hasMore),
+        nextCursor: result.nextCursor || null,
+      });
+      return mergedRows;
+    });
     setHasMore(Boolean(result.hasMore));
     setNextCursor(result.nextCursor || null);
     setLoadingMore(false);
-  }, [hasMore, isAdmin, loadingHistory, loadingMore, mergeHistory, nextCursor, user?.id]);
+  }, [
+    hasMore,
+    historyQueryKey,
+    historyRequestIdentity,
+    isAdmin,
+    loadingHistory,
+    loadingMore,
+    mergeHistory,
+    nextCursor,
+    queryClient,
+    user?.id,
+  ]);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -165,7 +242,7 @@ export const VersionFeedbackPage = () => {
     setSubmitting(false);
     showSuccess('修改意见已提交');
     setActiveTab('history');
-    await loadHistory();
+    loadHistory({ force: true });
   };
 
   const handleEditStart = (item) => {
@@ -213,7 +290,13 @@ export const VersionFeedbackPage = () => {
       return;
     }
 
-    setHistory((prev) => prev.map((record) => (record.id === item.id ? { ...record, ...result.data } : record)));
+    setHistory((prev) => {
+      const nextRows = prev.map((record) => (record.id === item.id ? { ...record, ...result.data } : record));
+      queryClient.setQueryData(historyQueryKey, (cached) => (
+        cached?.success ? { ...cached, data: nextRows } : cached
+      ));
+      return nextRows;
+    });
     setSavingEditId('');
     setEditingId('');
     showSuccess('修改意见已更新');
@@ -231,7 +314,13 @@ export const VersionFeedbackPage = () => {
       return;
     }
 
-    setHistory((prev) => prev.filter((record) => record.id !== deleteTarget.id));
+    setHistory((prev) => {
+      const nextRows = prev.filter((record) => record.id !== deleteTarget.id);
+      queryClient.setQueryData(historyQueryKey, (cached) => (
+        cached?.success ? { ...cached, data: nextRows } : cached
+      ));
+      return nextRows;
+    });
     setDeletingId('');
     setDeleteTarget(null);
     showSuccess('修改意见已删除');
@@ -263,17 +352,55 @@ export const VersionFeedbackPage = () => {
       return;
     }
 
-    setHistory((prev) => prev.map((record) => (record.id === item.id ? { ...record, ...result.data } : record)));
+    setHistory((prev) => {
+      const nextRows = prev.map((record) => (record.id === item.id ? { ...record, ...result.data } : record));
+      queryClient.setQueryData(historyQueryKey, (cached) => (
+        cached?.success ? { ...cached, data: nextRows } : cached
+      ));
+      return nextRows;
+    });
     setCompleteVersionMap((prev) => ({ ...prev, [item.id]: validation.normalized }));
     setUpdatingStatusId('');
     showSuccess('任务已标记为已完成');
   };
 
   useEffect(() => {
+    mountedRef.current = true;
+    return () => {
+      mountedRef.current = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    const cachedResult = queryClient.getQueryData(historyQueryKey);
+    if (cachedResult?.success) {
+      applyHistoryResult(cachedResult);
+    } else {
+      setHistory([]);
+      setHasMore(false);
+      setNextCursor(null);
+    }
+    setHistoryError('');
+    setLoadingMore(false);
+
     if (activeTab === 'history') {
       loadHistory();
     }
-  }, [activeTab, isAdmin, loadHistory, user?.id]);
+  }, [
+    activeTab,
+    applyHistoryResult,
+    historyQueryKey,
+    historyRequestIdentity,
+    loadHistory,
+    queryClient,
+  ]);
+
+  const handleTabChange = (value) => {
+    setActiveTab(value);
+    if (value === 'history') {
+      loadHistory();
+    }
+  };
 
   const toggleExpanded = (id) => {
     setExpandedMap((prev) => ({
@@ -292,7 +419,7 @@ export const VersionFeedbackPage = () => {
         backReplace
       />
 
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+      <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
         <TabsList className="w-full grid grid-cols-2 h-11">
           <TabsTrigger value="submit">提交建议</TabsTrigger>
           <TabsTrigger
@@ -353,7 +480,7 @@ export const VersionFeedbackPage = () => {
                 <p className="text-[13px] text-[#A8483E]">记录加载失败，请重试</p>
                 <button
                   type="button"
-                  onClick={loadHistory}
+                  onClick={() => loadHistory({ force: true })}
                   className="mt-2 min-h-11 px-3 rounded-lg border border-[#D5DCD2] text-[13px] text-[#2C332F]"
                 >
                   重试
@@ -361,7 +488,7 @@ export const VersionFeedbackPage = () => {
               </div>
             ) : null}
 
-            {!loadingHistory && !historyError ? (
+            {!historyError ? (
               <div className="space-y-4 bg-[#F7F7F5] p-3" data-testid="feedback-history-sections">
                 {[
                   {
@@ -387,7 +514,7 @@ export const VersionFeedbackPage = () => {
                         {section.title}（{section.items.length}）
                       </h2>
                     </div>
-                    {section.items.length === 0 ? (
+                    {!loadingHistory && section.items.length === 0 ? (
                       <p className="px-4 py-4 text-[13px] text-[#6A6F6C]">{section.emptyText}</p>
                     ) : section.items.map((item) => (
               <article key={item.id} className="px-4 py-3 border-b border-[#F0EFE9] last:border-b-0">

@@ -1,5 +1,6 @@
 import React from 'react';
-import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
+import { act, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useStore } from '../store';
 import { versionFeedbackService } from '../services/versionFeedbackService';
 import { toast } from 'sonner';
@@ -81,8 +82,34 @@ jest.mock('sonner', () => ({
 
 import { VersionFeedbackPage } from './VersionFeedbackPage';
 
-function renderPage() {
-  return render(<VersionFeedbackPage />);
+let testQueryClient;
+
+function createTestQueryClient() {
+  return new QueryClient({
+    defaultOptions: {
+      queries: {
+        retry: false,
+        staleTime: 60_000,
+      },
+    },
+  });
+}
+
+function renderPage({ strict = false } = {}) {
+  if (!testQueryClient) {
+    testQueryClient = createTestQueryClient();
+  }
+  const page = strict ? (
+    <React.StrictMode>
+      <VersionFeedbackPage />
+    </React.StrictMode>
+  ) : <VersionFeedbackPage />;
+
+  return render(
+    <QueryClientProvider client={testQueryClient}>
+      {page}
+    </QueryClientProvider>
+  );
 }
 
 function openHistoryTab() {
@@ -93,6 +120,7 @@ describe('VersionFeedbackPage history', () => {
   beforeEach(() => {
     jest.useRealTimers();
     jest.clearAllMocks();
+    testQueryClient = createTestQueryClient();
     useStore.mockReturnValue({
       user: { id: 'user-1' },
       profile: { role: 'user', is_admin: false },
@@ -136,22 +164,39 @@ describe('VersionFeedbackPage history', () => {
     renderPage();
     openHistoryTab();
 
-    expect(await screen.findByText('未完成建议（0）')).toBeTruthy();
-    expect(screen.getByText('目前没有未完成建议')).toBeTruthy();
+    expect(await screen.findByText('目前没有未完成建议')).toBeTruthy();
+    expect(screen.getByText('未完成建议（0）')).toBeTruthy();
     expect(screen.getByText('已完成建议（0）')).toBeTruthy();
     expect(screen.getByText('目前没有已完成建议')).toBeTruthy();
   });
 
-  test('shows error state when history query fails', async () => {
+  test('stops loading on failure and retries the request successfully', async () => {
     versionFeedbackService.listFeedback.mockResolvedValueOnce({
       success: false,
       error: 'network',
+    }).mockResolvedValueOnce({
+      success: true,
+      data: [{
+        id: 'retry-success',
+        user_id: 'user-1',
+        title: '重试成功建议',
+        description: '内容',
+        status: 'pending',
+        created_at: '2026-07-28T10:00:00.000Z',
+        updated_at: '2026-07-28T10:00:00.000Z',
+      }],
+      hasMore: false,
+      nextCursor: null,
     });
 
     renderPage();
     openHistoryTab();
 
     expect(await screen.findByText('记录加载失败，请重试')).toBeTruthy();
+    expect(screen.queryByText('正在加载建议历史...')).toBeNull();
+    fireEvent.click(screen.getByRole('button', { name: '重试' }));
+    expect(await screen.findByText('重试成功建议')).toBeTruthy();
+    expect(versionFeedbackService.listFeedback).toHaveBeenCalledTimes(2);
   });
 
   test('keeps records sorted by created_at desc in history view', async () => {
@@ -479,7 +524,8 @@ describe('VersionFeedbackPage history', () => {
     renderPage();
     openHistoryTab();
 
-    const completedSection = await screen.findByTestId('completed-feedback-section');
+    await screen.findByText('已完成建议');
+    const completedSection = screen.getByTestId('completed-feedback-section');
     expect(within(completedSection).getByText('已完成建议')).toBeTruthy();
     expect(within(completedSection).getByText('已完成')).toBeTruthy();
     expect(within(completedSection).getByText(/完成时间：/)).toBeTruthy();
@@ -538,7 +584,8 @@ describe('VersionFeedbackPage history', () => {
     renderPage();
     openHistoryTab();
 
-    const pendingSection = await screen.findByTestId('pending-feedback-section');
+    await screen.findByText('最近提交');
+    const pendingSection = screen.getByTestId('pending-feedback-section');
     const completedSection = screen.getByTestId('completed-feedback-section');
     expect(screen.getByTestId('feedback-history-sections').firstElementChild).toBe(pendingSection);
     expect(within(pendingSection).getByText('未完成建议（2）')).toBeTruthy();
@@ -580,7 +627,8 @@ describe('VersionFeedbackPage history', () => {
     renderPage();
     openHistoryTab();
 
-    const pendingSection = await screen.findByTestId('pending-feedback-section');
+    await screen.findByText('当天建议');
+    const pendingSection = screen.getByTestId('pending-feedback-section');
     expect(within(pendingSection).getAllByText('已提交 0 天')).toHaveLength(2);
     expect(within(pendingSection).getByText('已提交 1 天')).toBeTruthy();
     expect(within(pendingSection).getByText('已提交 8 天')).toBeTruthy();
@@ -607,7 +655,8 @@ describe('VersionFeedbackPage history', () => {
     renderPage();
     openHistoryTab();
 
-    const completedSection = await screen.findByTestId('completed-feedback-section');
+    await screen.findByText('只读建议');
+    const completedSection = screen.getByTestId('completed-feedback-section');
     fireEvent.click(within(completedSection).getByText('只读建议'));
     expect(within(completedSection).queryByRole('button', { name: '编辑' })).toBeNull();
     expect(within(completedSection).queryByRole('button', { name: '删除' })).toBeNull();
@@ -616,9 +665,217 @@ describe('VersionFeedbackPage history', () => {
   });
 });
 
+describe('VersionFeedbackPage history loading responsiveness', () => {
+  const feedbackRow = (overrides = {}) => ({
+    id: 'feedback-1',
+    user_id: 'user-1',
+    title: '缓存建议',
+    description: '内容',
+    status: 'pending',
+    created_at: '2026-07-28T10:00:00.000Z',
+    updated_at: '2026-07-28T10:00:00.000Z',
+    completed_at: null,
+    completed_version: null,
+    ...overrides,
+  });
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+    testQueryClient = createTestQueryClient();
+    useStore.mockReturnValue({
+      user: { id: 'user-1' },
+      profile: { role: 'user', is_admin: false },
+    });
+  });
+
+  test('renders both section structures and a loading state before an uncached request resolves', async () => {
+    let resolveRequest;
+    versionFeedbackService.listFeedback.mockReturnValueOnce(new Promise((resolve) => {
+      resolveRequest = resolve;
+    }));
+
+    renderPage();
+    openHistoryTab();
+
+    expect(screen.getByText('正在加载建议历史...')).toBeTruthy();
+    expect(screen.getByText('未完成建议（0）')).toBeTruthy();
+    expect(screen.getByText('已完成建议（0）')).toBeTruthy();
+    expect(versionFeedbackService.listFeedback).toHaveBeenCalledTimes(1);
+
+    await act(async () => {
+      resolveRequest({
+        success: true,
+        data: [
+          feedbackRow(),
+          feedbackRow({
+            id: 'completed-1',
+            title: '已完成缓存建议',
+            status: 'completed',
+            completed_at: '2026-07-28T11:00:00.000Z',
+            completed_version: 'v0.1.3',
+          }),
+        ],
+        hasMore: false,
+        nextCursor: null,
+      });
+    });
+
+    expect(await screen.findByText('缓存建议')).toBeTruthy();
+    expect(screen.getByText('已完成缓存建议')).toBeTruthy();
+  });
+
+  test('deduplicates the equivalent history request under Strict Mode', async () => {
+    let resolveRequest;
+    versionFeedbackService.listFeedback.mockReturnValue(new Promise((resolve) => {
+      resolveRequest = resolve;
+    }));
+
+    renderPage({ strict: true });
+    openHistoryTab();
+    expect(versionFeedbackService.listFeedback).toHaveBeenCalledTimes(1);
+
+    await act(async () => {
+      resolveRequest({
+        success: true,
+        data: [feedbackRow()],
+        hasMore: false,
+        nextCursor: null,
+      });
+    });
+    expect(await screen.findByText('缓存建议')).toBeTruthy();
+    expect(versionFeedbackService.listFeedback).toHaveBeenCalledTimes(1);
+  });
+
+  test('shows a fresh user-scoped cache immediately when returning without another request', async () => {
+    versionFeedbackService.listFeedback.mockResolvedValue({
+      success: true,
+      data: [feedbackRow()],
+      hasMore: false,
+      nextCursor: null,
+    });
+
+    const firstRender = renderPage();
+    openHistoryTab();
+    expect(await screen.findByText('缓存建议')).toBeTruthy();
+    firstRender.unmount();
+
+    renderPage();
+    openHistoryTab();
+
+    expect(screen.getByText('缓存建议')).toBeTruthy();
+    expect(screen.queryByText('正在加载建议历史...')).toBeNull();
+    expect(versionFeedbackService.listFeedback).toHaveBeenCalledTimes(1);
+  });
+
+  test('shows stale cache first and replaces it with refreshed data without duplicates', async () => {
+    testQueryClient.setQueryData(
+      ['private', 'version-feedback', 'user-1', 'owner'],
+      {
+        success: true,
+        data: [feedbackRow({ id: 'stale', title: '旧缓存建议' })],
+        hasMore: false,
+        nextCursor: null,
+      },
+      { updatedAt: Date.now() - 120_000 }
+    );
+    versionFeedbackService.listFeedback.mockResolvedValueOnce({
+      success: true,
+      data: [feedbackRow({ id: 'fresh', title: '刷新后建议' })],
+      hasMore: false,
+      nextCursor: null,
+    });
+
+    renderPage();
+    openHistoryTab();
+
+    expect(screen.getByText('旧缓存建议')).toBeTruthy();
+    expect(await screen.findByText('刷新后建议')).toBeTruthy();
+    expect(screen.queryByText('旧缓存建议')).toBeNull();
+    expect(screen.getAllByText('刷新后建议')).toHaveLength(1);
+    expect(versionFeedbackService.listFeedback).toHaveBeenCalledTimes(1);
+  });
+
+  test('ignores a late response after unmount while retaining the safe query cache', async () => {
+    let resolveRequest;
+    versionFeedbackService.listFeedback.mockReturnValueOnce(new Promise((resolve) => {
+      resolveRequest = resolve;
+    }));
+    const view = renderPage();
+    openHistoryTab();
+    view.unmount();
+
+    resolveRequest({
+      success: true,
+      data: [feedbackRow({ title: '卸载后返回' })],
+      hasMore: false,
+      nextCursor: null,
+    });
+    await waitFor(() => {
+      expect(testQueryClient.getQueryData(
+        ['private', 'version-feedback', 'user-1', 'owner']
+      )?.data?.[0]?.title).toBe('卸载后返回');
+    });
+    expect(view.container.innerHTML).toBe('');
+  });
+
+  test('prevents an old account response from overwriting the new account view', async () => {
+    let currentStore = {
+      user: { id: 'user-1' },
+      profile: { role: 'user', is_admin: false },
+    };
+    let resolveAccountA;
+    useStore.mockImplementation(() => currentStore);
+    versionFeedbackService.listFeedback.mockImplementation(({ userId }) => {
+      if (userId === 'user-1') {
+        return new Promise((resolve) => {
+          resolveAccountA = resolve;
+        });
+      }
+      return Promise.resolve({
+        success: true,
+        data: [feedbackRow({
+          id: 'account-b',
+          user_id: 'user-2',
+          title: '账号 B 建议',
+        })],
+        hasMore: false,
+        nextCursor: null,
+      });
+    });
+
+    const view = renderPage();
+    openHistoryTab();
+    currentStore = {
+      user: { id: 'user-2' },
+      profile: { role: 'user', is_admin: false },
+    };
+    view.rerender(
+      <QueryClientProvider client={testQueryClient}>
+        <VersionFeedbackPage />
+      </QueryClientProvider>
+    );
+    expect(await screen.findByText('账号 B 建议')).toBeTruthy();
+
+    resolveAccountA({
+      success: true,
+      data: [feedbackRow({ title: '账号 A 迟到建议' })],
+      hasMore: false,
+      nextCursor: null,
+    });
+    await waitFor(() => {
+      expect(screen.queryByText('账号 A 迟到建议')).toBeNull();
+    });
+    expect(screen.getByText('账号 B 建议')).toBeTruthy();
+    expect(testQueryClient.getQueryData(
+      ['private', 'version-feedback', 'user-2', 'owner']
+    )?.data?.[0]?.title).toBe('账号 B 建议');
+  });
+});
+
 describe('VersionFeedbackPage admin completion flow', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    testQueryClient = createTestQueryClient();
     useStore.mockReturnValue({
       user: { id: 'admin-1' },
       profile: { role: 'admin', is_admin: true },

@@ -1,3 +1,52 @@
+## DEV-20260728-020
+
+- 日期：2026-07-28
+- 状态：已完成
+- 修改类型：上线前性能稳定性 / 建议历史加载
+- 任务目标：缩短进入建议历史后的无响应感，减少等价请求，并保证缓存与迟到响应不造成跨账号数据泄漏。
+- 实际完成内容：
+	- 定位到历史数据仅存页面 state、返回无缓存、提交后存在 effect 与显式加载双路径，以及缺少卸载/账号切换迟到响应保护。
+	- 使用项目已有 React Query 管理首屏反馈结果，query key 包含 `private`、用户 ID 和管理员权限，缓存按账号完全隔离。
+	- 60 秒内新鲜缓存同步展示并直接返回；过期缓存先展示再刷新；同 key 并发通过 `fetchQuery` 合并，Strict Mode 下只发送一次等价请求。
+	- 无缓存时点击 Tab 立即显示标题、返回入口、两个分区结构和 loading；失败时停止 loading、清除失败缓存并提供强制重试。
+	- 请求写页面前校验 mounted 状态和请求身份，账号 A 的迟到响应不能覆盖账号 B；卸载后不更新组件 state。
+	- 编辑、删除、管理员完成与分页结果同步更新缓存，保持返回页面数据和分区一致。
+	- 确认设置页退出账号的 private query 清理 predicate 会清除反馈缓存。
+	- Supabase 列表查询只选择实际展示字段，保留分区和排序所需时间/status 字段；未拆分 pending/completed 查询。
+- 主要修改文件或模块：
+	- `frontend/src/pages/VersionFeedbackPage.jsx`
+	- `frontend/src/pages/VersionFeedbackPage.test.jsx`
+	- `frontend/src/pages/SettingsPage.navigation.test.jsx`
+	- `frontend/src/services/versionFeedbackService.js`
+	- `docs/PROJECT_STATUS.md`
+	- `docs/version-updates/v0.1.3.md`
+	- `docs/DEVELOPMENT_LOG.md`
+- 遇到的问题：
+	- 即时分区结构使旧测试等待点过早，需要等待真实数据或空状态完成。
+	- 新鲜缓存最初仍经过异步 `fetchQuery` 返回路径，造成无意义的重复 state 写入和测试 `act` warning。
+	- 首次 build 暴露新增 effect 依赖 warning。
+- 解决方式：
+	- 测试改为等待卡片或空状态，不以立即出现的分区标题误判加载完成。
+	- 新鲜缓存同步应用后直接返回，不再进入异步路径。
+	- 补全 Hook effect 依赖，并以请求次数测试确认 handler/effect/Strict Mode 仍只产生一次网络请求。
+- 执行的测试：
+	- `npm test -- --runInBand --watchAll=false src/pages/VersionFeedbackPage.test.jsx src/pages/SettingsPage.navigation.test.jsx`
+	- `npm test -- --runInBand --watchAll=false`
+	- `npm run build`
+- 测试结果：
+	- 专项测试：2 个套件、34 个用例通过。
+	- 全量测试：31 个套件、210 个用例通过。
+	- Production build：通过（Compiled successfully），无本次新增 ESLint warning。
+- 未完成事项：
+	- 代码、测试和文档提交后需统一 push，并核对本地/远程 HEAD。
+	- Migration `021_lock_completed_version_feedback.sql` 未部署；Production 未部署。
+- 风险或注意事项：
+	- 管理员列表仍需在反馈主查询后批量读取提交人资料，这是一个批量查询而非逐卡 N+1；本次不改变数据关系。
+	- 非阻塞输出包括测试环境缺少 Supabase 变量提示、模拟 session 失败日志和构建 `fs.F_OK` 弃用警告。
+	- 未新增 migration，未修改 `docs/DATABASE_CHANGES.md`。
+- 当前分支：supabase-v1
+- Git Commit ID：未提交
+
 ## DEV-20260728-019
 
 - 日期：2026-07-28

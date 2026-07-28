@@ -93,7 +93,7 @@ export const versionFeedbackService = {
 
       let query = supabase
         .from('version_feedback')
-        .select('*')
+        .select('id, user_id, title, description, status, created_at, completed_at, completed_version, updated_at')
         .order('created_at', { ascending: false })
         .limit(safeLimit + 1);
 
