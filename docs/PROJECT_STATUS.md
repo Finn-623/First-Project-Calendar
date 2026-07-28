@@ -627,5 +627,5 @@ P2：
   - 保存、权限、防重复、失败保留输入、排序与刷新恢复仍沿用现有逻辑。
   - 专项测试：5 个套件、37 个用例通过；全量测试：28 个套件、185 个用例通过；Production build 通过。
   - 当前环境无法安全查询 Production 是否存在对应 pending feedback，未伪造 Feedback ID。
-  - 相关 Commit：待提交
+  - 相关 Commit：4986525fef380e81cc68e6ca9c1df05ddea4e3b6
 - v0.1.3 尚未正式上线，本项未触发 Production 部署、tag 或上线时间回填。
