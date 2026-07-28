@@ -1,3 +1,61 @@
+## DEV-20260728-002
+
+- 日期：2026-07-28
+- 状态：已完成
+- 修改类型：Release Blocker Fix / v0.1.2 Preview 首页日期动态规则回归修复
+- 修改背景：v0.1.2 Preview 验收中发现，上轮修复把底部“首页”改成了无条件返回真实本日，导致本日已结束且历史存在时，本应进入下一日的规则被破坏。
+- 任务目标：
+	1. 真实本日未结束时，点击首页进入真实本日。
+	2. 真实本日已结束且历史存在时，点击首页进入并保持下一日。
+	3. 删除真实本日历史后，首页重新回到真实本日。
+	4. 删除非本日历史不影响首页当前记录日。
+	5. 刷新或重新挂载后，首页规则仍与数据库中的真实完成状态一致。
+- 实际完成内容：
+	- 统一首页目标日期计算：
+		- 在 Store 中新增统一的首页目标日期解析动作，基于 Sydney 当日和 `daily_archives` 的完成状态决定首页目标日期。
+		- `initializeSelectedDate` 重新恢复为“读取真实完成状态 → 决定今日或次日”的入口，不再把首页永久锁死在真实本日。
+		- 首页点击不再硬编码 `today`，而是通过统一动作获取目标日期。
+	- 首页入口与页面同步：
+		- `BottomNav` 首页入口改为调用统一首页动作。
+		- `TodayPage` 的“今天”按钮也复用统一动作，避免不同入口出现分叉规则。
+	- 删除后状态清理保持：
+		- `resetDeletedDateState` 继续负责删除本日后的状态源清理、缓存清理和真实本日恢复。
+		- 删除非本日仍不会改变首页完成状态或当前记录日。
+	- 测试与回归覆盖：
+		- 补齐本日未结束、已结束、删除本日、删除非本日、刷新／重新挂载、不同入口点击首页等回归场景。
+- 主要修改文件或模块：
+	- `frontend/src/store.jsx`
+	- `frontend/src/components/BottomNav.jsx`
+	- `frontend/src/pages/TodayPage.jsx`
+	- `frontend/src/store.deletedDateState.test.jsx`
+	- `frontend/src/components/BottomNav.test.jsx`
+	- `CHANGELOG.md`
+	- `docs/DEVELOPMENT_LOG.md`
+	- `docs/version-updates/v0.1.2.md`
+- 执行的测试与检查：
+	- `cd frontend && CI=true npm test -- --watchAll=false --runInBand src/store.deletedDateState.test.jsx`
+		- 结果：1 个测试套件通过，8 项测试通过。
+	- `cd frontend && CI=true npm test -- --watchAll=false --runInBand src/store.deletedDateState.test.jsx src/pages/HistoryDetailPage.test.jsx src/components/BottomNav.test.jsx`
+		- 结果：3 个测试套件通过，21 项测试通过。
+	- `cd frontend && CI=true npm test -- --watchAll=false`
+		- 结果：18 个测试套件通过，120 项测试通过。
+	- `cd frontend && npm run build`
+		- 结果：构建成功，主 JS gzip 242.85 kB，CSS gzip 12.33 kB。
+- 测试结果：
+	- ✅ 首页未结束时进入真实本日。
+	- ✅ 首页已结束且历史存在时保持下一日。
+	- ✅ 删除真实本日历史后回到真实本日。
+	- ✅ 删除非本日不影响首页日期。
+	- ✅ 刷新与重新挂载规则一致。
+	- ✅ 全量测试与构建通过。
+- 未完成事项：
+	- 暂无。
+- 风险或注意事项：
+	- 首页目标仍依赖 Sydney 本地日期与数据库完成状态，需在 Preview 和生产环境保持时区配置一致。
+	- 测试环境仍会输出缺少 Supabase 环境变量的既有提示，不影响测试通过。
+- 当前分支：supabase-v1
+- Git Commit ID：1a12138574a95ce4ff7d5fb60544b45f13d4bf27
+
 ## DEV-20260728-001
 
 - 日期：2026-07-28
