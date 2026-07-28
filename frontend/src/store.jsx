@@ -21,6 +21,18 @@ const freshTimeline = () => ([
   { id: `m3-${Date.now() + 2}`, type: 'meal', subtype: 'dinner', title: '晚餐', time: '19:00', fixed: true, foods: [] },
 ]);
 
+const mergePersistedTimelineWithFixedMeals = (persistedTimeline = []) => {
+  const persisted = Array.isArray(persistedTimeline) ? persistedTimeline : [];
+  const persistedFixedTypes = new Set(
+    persisted
+      .filter((item) => item?.type === 'meal' && ['breakfast', 'lunch', 'dinner'].includes(item?.subtype))
+      .map((item) => item.subtype)
+  );
+  const missingFixedMeals = freshTimeline().filter((item) => !persistedFixedTypes.has(item.subtype));
+
+  return [...persisted, ...missingFixedMeals];
+};
+
 const cloneTimeline = (items = []) => (items || []).map((item) => ({
   ...item,
   foods: Array.isArray(item?.foods) ? item.foods.map((food) => ({ ...food })) : [],
@@ -625,14 +637,20 @@ export const StoreProvider = ({ children, user: initialUser, session: initialSes
 
     setCurrentDate(createDateFromString(dateStr));
 
-    const [profileResult, foodsResult, planResult, planHistoryResult, historyResult, runningResult] = await Promise.allSettled([
+    const epoch = requestEpochRef.current;
+    const [profileResult, foodsResult, planResult, planHistoryResult, historyResult, runningResult, timelineResult] = await Promise.allSettled([
       loadProfile(userId),
       refreshFoods(userId),
       loadPlan(userId),
       loadPlanHistory(userId),
       loadHistory(userId),
       timelineService.getRunningTimelineItems(userId),
+      timelineService.getTimelineByDate?.(userId, dateStr) || Promise.resolve({ data: [], error: null }),
     ]);
+
+    if (isActiveRequest(epoch, userId) && timelineResult.status === 'fulfilled' && !timelineResult.value?.error) {
+      setTimeline(mergePersistedTimelineWithFixedMeals(timelineResult.value?.data));
+    }
 
     return {
       success: true,
@@ -642,8 +660,9 @@ export const StoreProvider = ({ children, user: initialUser, session: initialSes
       planHistoryResult,
       historyResult,
       runningResult,
+      timelineResult,
     };
-  }, [loadHistory, loadPlan, loadPlanHistory, loadProfile, refreshFoods, user?.id]);
+  }, [isActiveRequest, loadHistory, loadPlan, loadPlanHistory, loadProfile, refreshFoods, user?.id]);
 
   const syncSelectedDate = useCallback(async (userId, force = false) => {
     if (!userId) return { success: false, error: '缺少用户 ID' };

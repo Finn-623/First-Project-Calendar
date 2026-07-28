@@ -38,6 +38,7 @@ export const TimelineItem = ({
   const Icon = iconFor(item);
   const accent = accentFor(item);
   const isMeal = item.type === 'meal';
+  const isFixedMeal = isMeal && ['breakfast', 'lunch', 'dinner'].includes(item.subtype);
   const totals = isMeal ? sumMealMacros(item.foods || []) : null;
   const empty = isMeal && (!item.foods || item.foods.length === 0);
   const timeLabel = formatClockTime(item.time || item.started_at) || '未设置';
@@ -62,7 +63,7 @@ export const TimelineItem = ({
     : null;
 
   const canEdit = !readOnly && (
-    (isMeal && Boolean(onEditTime))
+    (isMeal && !isFixedMeal && Boolean(onEditTime))
     || (!isMeal && Boolean(onEditRecord))
   );
 
@@ -73,8 +74,6 @@ export const TimelineItem = ({
   const titleClass = layout === 'home-time-left'
     ? 'text-[13.5px] font-medium text-[#2C332F] break-words leading-5'
     : 'text-[13.5px] font-medium text-[#2C332F] truncate';
-
-  const timeEditLabel = layout === 'home-time-left' ? '修改时间' : timeLabel;
 
   const cardContent = (
     <div className="rounded-2xl bg-white border border-[#E5E5E0] p-3.5">
@@ -88,10 +87,20 @@ export const TimelineItem = ({
           </div>
           <div className="min-w-0">
             <p className={titleClass}>{isMeal ? mealTitle : activityTitle}</p>
-            {isMeal ? (
+            {isFixedMeal && !readOnly && onEditTime ? (
+              <button
+                type="button"
+                onClick={() => onEditTime(item)}
+                aria-label={`修改${item.title}时间，当前${timeLabel}`}
+                className="mt-0.5 flex min-h-6 items-center gap-1 text-[11px] text-[#858C88] hover:text-[#6B8067]"
+              >
+                <Clock size={11} strokeWidth={1.5} />
+                <span className="font-num">{timeLabel}</span>
+              </button>
+            ) : isMeal ? (
               <p className="mt-0.5 flex items-center gap-1 text-[11px] text-[#858C88]">
                 <Clock size={11} strokeWidth={1.5} />
-                <span className="font-num">{timeEditLabel}</span>
+                <span className="font-num">{timeLabel}</span>
               </p>
             ) : (
               <p className="mt-0.5 text-[11px] text-[#858C88]">{item?.type === 'aerobic' ? '有氧训练' : '记录'}</p>
@@ -249,9 +258,21 @@ export const TimelineItem = ({
   if (layout === 'home-time-left') {
     return (
       <div className="grid grid-cols-[56px_18px_minmax(0,1fr)] gap-2 py-2.5" data-testid={`timeline-item-${item.id}`}>
-        <div className="font-num text-[12px] text-[#858C88] text-right leading-6 pt-1 whitespace-nowrap">
-          {timeLabel}
-        </div>
+        {isFixedMeal && !readOnly && onEditTime ? (
+          <button
+            type="button"
+            onClick={() => onEditTime(item)}
+            aria-label={`修改${item.title}时间，当前${timeLabel}`}
+            data-testid={`meal-time-trigger-${item.id}`}
+            className="min-h-11 self-start font-num text-[12px] text-[#858C88] hover:text-[#6B8067] text-right leading-6 whitespace-nowrap"
+          >
+            {timeLabel}
+          </button>
+        ) : (
+          <div className="font-num text-[12px] text-[#858C88] text-right leading-6 pt-1 whitespace-nowrap">
+            {timeLabel}
+          </div>
+        )}
 
         <div className="pt-3.5 flex justify-center">
           <div

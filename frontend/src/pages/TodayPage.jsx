@@ -628,9 +628,53 @@ export const TodayPage = () => {
     }
   };
 
-  const handleTimeConfirm = (newTime) => {
-    setTimeline(timeline.map((it) => (it.id === timeSheet.item.id ? { ...it, time: newTime } : it)));
-    toast.success('时间已更新');
+  const handleTimeConfirm = async (newTime) => {
+    const item = timeSheet.item;
+    if (!user?.id || !item?.id) {
+      const error = new Error('请先登录');
+      toast.error(error.message);
+      throw error;
+    }
+    if (!['breakfast', 'lunch', 'dinner'].includes(item.subtype)) {
+      const error = new Error('只能修改固定三餐时间');
+      toast.error(error.message);
+      throw error;
+    }
+    if (!/^([01]\d|2[0-3]):[0-5]\d$/.test(newTime)) {
+      const error = new Error('请输入有效的 24 小时时间');
+      toast.error(error.message);
+      throw error;
+    }
+    if (savingEditItemId === item.id || newTime === item.time) return;
+
+    setSavingEditItemId(item.id);
+    try {
+      const result = isLikelySupabaseUuid(item.id)
+        ? await timelineService.updateTimelineItemByUser(item.id, user.id, { event_time: newTime })
+        : await timelineService.createTimelineItem(user.id, {
+          event_date: currentDateStr,
+          event_time: newTime,
+          item_type: item.subtype,
+          title: item.title,
+          notes: null,
+          details: {},
+          sort_order: ['breakfast', 'lunch', 'dinner'].indexOf(item.subtype) + 1,
+        });
+
+      if (result.error) throw result.error;
+
+      setTimeline((prev) => prev.map((entry) => (
+        entry.id === item.id
+          ? { ...entry, ...(result.data || {}), foods: entry.foods || [], time: newTime, fixed: true }
+          : entry
+      )));
+      toast.success('时间已更新');
+    } catch (error) {
+      toast.error(error?.message || '时间保存失败，请稍后重试');
+      throw error;
+    } finally {
+      setSavingEditItemId(null);
+    }
   };
 
   const handleDeleteClick = (item) => {

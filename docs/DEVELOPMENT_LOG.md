@@ -1,3 +1,53 @@
+## DEV-20260728-012
+
+- 日期：2026-07-28
+- 状态：已完成
+- 修改类型：Production Feedback Fix / 固定三餐时间编辑
+- 任务目标：修复 Feedback `33bd0635-8244-44e7-96bc-a02a98b4d588`，移除首页固定三餐的多余编辑按钮，并使早餐、午餐、晚餐时间可直接修改和持久化。
+- 实际完成内容：
+	- 以 `meal` 类型及 `breakfast`、`lunch`、`dinner` subtype 识别固定三餐；不改变加餐和其他时间轴项目。
+	- 固定三餐不再显示独立“编辑”按钮，用户可直接点击当前时间打开现有风格的时间 Sheet。
+	- Sheet 显示当前 24 小时时间，支持取消、非法值拦截、保存加载态、防重复提交和失败后保留输入。
+	- 已落库餐次通过 `id + user_id` 权限条件更新 `timeline_items.event_time`；尚未落库的默认固定餐次首次修改时只创建一条对应类型记录，并用返回的数据库 ID 替换临时 ID。
+	- 数据库成功后才合并更新前端餐次，保留原餐内食物；失败时不改页面时间并显示明确错误。
+	- 首页按实际时间稳定排序；当前日期初始化读取已持久化时间，并将缺失的固定三餐默认项补齐，因此刷新后恢复修改时间且不重复固定餐次。
+	- 历史详情继续保留原有查看/编辑模式和时间编辑逻辑。
+- 主要修改文件或模块：
+	- `frontend/src/components/TimelineItem.jsx`
+	- `frontend/src/modals/EditTimeSheet.jsx`
+	- `frontend/src/pages/TodayPage.jsx`
+	- `frontend/src/services/timelineService.js`
+	- `frontend/src/store.jsx`
+	- `frontend/src/pages/TodayPage.mealTimeEditing.test.jsx`
+	- `frontend/src/modals/EditTimeSheet.test.jsx`
+	- `docs/PROJECT_STATUS.md`
+	- `docs/version-updates/v0.1.3.md`
+	- `docs/DEVELOPMENT_LOG.md`
+- 遇到的问题：
+	- 原实现的时间确认只修改 React 内存状态，没有数据库请求；Sheet 又立即关闭，无法正确呈现保存失败。
+	- 新专项测试首次缺少通用 UI 组件 mock，随后测试替身的异步行为和 Store setter 也与真实组件不一致。
+- 解决方式：
+	- 复用 `timeline_items.event_time` 和现有创建服务，新增带用户所有权约束的更新方法，并在当前日期初始化时恢复持久化记录。
+	- 按第一个明确错误逐次修正测试 UI mock、异步等待和 Store setter，不弱化核心断言。
+- 执行的测试：
+	- `npm test -- --runInBand --watchAll=false src/pages/TodayPage.mealTimeEditing.test.jsx src/modals/EditTimeSheet.test.jsx src/pages/HistoryDetailPage.test.jsx`
+	- `npm test -- --runInBand --watchAll=false`
+	- `npm run build`
+- 测试结果：
+	- 专项测试通过：3 个测试套件、12 个用例全部通过。
+	- 全量测试通过：26 个测试套件、176 个用例全部通过。
+	- 前端生产构建通过（Compiled successfully）。
+- 未完成事项：
+	- Production feedback 状态尚未更新；当前环境无安全管理权限时需管理员执行精确 SQL。
+	- 其余 2 条 Production pending 反馈未修改。
+- 风险或注意事项：
+	- 旧数据若此前已经存在同一用户、同一日期、同一固定餐次类型的重复行，本次不执行数据迁移或自动删除；当前 UI 合并逻辑不会主动创建第二条已落库餐次。
+	- 测试环境输出缺少 Supabase 环境变量及模拟 session 失败的既有日志，不影响通过。
+	- 构建输出 Node `fs.F_OK` 弃用警告，但构建成功。
+	- Production 反馈修复进度 2/4；本次禁止 push、部署和 tag。
+- 当前分支：supabase-v1
+- Git Commit ID：未提交
+
 ## DEV-20260728-011
 
 - 日期：2026-07-28

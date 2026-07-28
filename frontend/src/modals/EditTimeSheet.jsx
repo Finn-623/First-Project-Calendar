@@ -5,10 +5,36 @@ import { Button } from '../components/ui/button';
 
 export const EditTimeSheet = ({ open, onOpenChange, item, onConfirm }) => {
   const [time, setTime] = useState('12:00');
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState('');
 
   useEffect(() => {
-    if (open && item) setTime(item.time || '12:00');
+    if (open && item) {
+      setTime(item.time || '12:00');
+      setSubmitting(false);
+      setError('');
+    }
   }, [open, item]);
+
+  const isValidTime = /^([01]\d|2[0-3]):[0-5]\d$/.test(time);
+
+  const handleConfirm = async () => {
+    if (submitting || !isValidTime) {
+      if (!isValidTime) setError('请输入有效的 24 小时时间');
+      return;
+    }
+
+    setSubmitting(true);
+    setError('');
+    try {
+      await onConfirm(time);
+      onOpenChange(false);
+    } catch (confirmError) {
+      setError(confirmError?.message || '时间保存失败，请稍后重试');
+    } finally {
+      setSubmitting(false);
+    }
+  };
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
@@ -26,17 +52,36 @@ export const EditTimeSheet = ({ open, onOpenChange, item, onConfirm }) => {
           <Input
             type="time"
             value={time}
-            onChange={(e) => setTime(e.target.value)}
+            onChange={(e) => {
+              setTime(e.target.value);
+              setError('');
+            }}
+            disabled={submitting}
+            aria-invalid={Boolean(error)}
             className="h-14 text-2xl font-num bg-white border-[#E5E5E0] rounded-xl"
             data-testid="edit-time-input"
           />
+          {error ? <p role="alert" className="mt-2 text-sm text-[#B85C4A]">{error}</p> : null}
+          <div className="mt-4 grid grid-cols-2 gap-3">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => onOpenChange(false)}
+              disabled={submitting}
+              data-testid="edit-time-cancel"
+              className="h-12 rounded-2xl"
+            >
+              取消
+            </Button>
           <Button
-            onClick={() => { onConfirm(time); onOpenChange(false); }}
+            onClick={handleConfirm}
+            disabled={submitting || !isValidTime}
             data-testid="edit-time-confirm"
-            className="w-full h-12 rounded-2xl bg-[#6B8067] hover:bg-[#5a6d57] text-white mt-4"
+            className="h-12 rounded-2xl bg-[#6B8067] hover:bg-[#5a6d57] text-white"
           >
-            保存
+            {submitting ? '保存中...' : '保存'}
           </Button>
+          </div>
         </div>
       </SheetContent>
     </Sheet>

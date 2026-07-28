@@ -279,6 +279,32 @@ export const timelineService = {
     }
   },
 
+  async updateTimelineItemByUser(itemId, userId, updates) {
+    try {
+      if (!userId) {
+        return { data: null, error: new Error('缺少用户 ID') };
+      }
+
+      const payload = {
+        ...updates,
+        updated_at: new Date().toISOString(),
+      };
+      const { data, error } = await supabase
+        .from('timeline_items')
+        .update(payload)
+        .eq('id', itemId)
+        .eq('user_id', userId)
+        .select()
+        .maybeSingle();
+
+      if (error) return { data: null, error };
+      if (!data) return { data: null, error: new Error('无权限或记录不存在') };
+      return { data: normalizeTimelineItem(data), error: null };
+    } catch (err) {
+      return { data: null, error: err };
+    }
+  },
+
   async completeRunningTimelineItem(itemId, userId, updates) {
     try {
       const baseUpdate = {
