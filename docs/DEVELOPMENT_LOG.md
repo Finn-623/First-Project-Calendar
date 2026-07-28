@@ -1,3 +1,43 @@
+## DEV-20260728-014
+
+- 日期：2026-07-28
+- 状态：已完成
+- 修改类型：Pre-release UX Fix / 使用现在时间
+- 任务目标：为所有现有记录时间编辑界面增加“使用现在时间”操作，填入设备当前本地时间但不自动保存。
+- 实际完成内容：
+	- 复用 `getLocalTimeInputValue(new Date())`，按设备本地时区生成补零的 `HH:mm`，不包含秒且不进行 UTC 转换。
+	- 共享 `EditTimeSheet` 增加“使用现在时间”，覆盖首页固定三餐、首页加餐以及历史详情餐次时间编辑。
+	- `EditActivitySheet` 的开始时间和结束时间各增加独立按钮，覆盖首页与历史详情的训练/其他事件编辑；点击只更新对应字段，不同时覆盖另一个字段。
+	- 按钮只更新表单本地状态，不触发保存请求、不关闭 Sheet；用户仍可继续手动编辑，取消不写数据库。
+	- 保存继续使用原有权限、数据库更新、防重复、错误保留输入和 2 秒成功提示逻辑。
+	- 进行中记录原本禁止修改开始/结束时间，对应按钮同步禁用。
+	- 新增加餐/训练/事件 Sheet 与自动归档时间属于创建或设置流程，不是既有记录时间修改入口，本次未添加按钮。
+- 主要修改文件或模块：
+	- `frontend/src/modals/EditTimeSheet.jsx`
+	- `frontend/src/modals/EditActivitySheet.jsx`
+	- `frontend/src/modals/EditTimeSheet.test.jsx`
+	- `frontend/src/modals/EditActivitySheet.test.jsx`
+	- `docs/PROJECT_STATUS.md`
+	- `docs/version-updates/v0.1.3.md`
+	- `docs/DEVELOPMENT_LOG.md`
+- 执行的测试：
+	- `npm test -- --runInBand --watchAll=false src/modals/EditTimeSheet.test.jsx src/modals/EditActivitySheet.test.jsx src/pages/TodayPage.mealTimeEditing.test.jsx src/pages/HistoryDetailPage.test.jsx src/components/mobileAcceptance.test.jsx`
+	- `npm test -- --runInBand --watchAll=false`
+	- `npm run build`
+- 测试结果：
+	- 专项测试通过：5 个测试套件、37 个用例全部通过。
+	- 全量测试通过：28 个测试套件、185 个用例全部通过。
+	- 前端生产构建通过（Compiled successfully）。
+- 未完成事项：
+	- 当前环境无安全 Production 管理权限，无法查询是否存在独立“使用现在时间” pending feedback；未伪造 Feedback ID。
+	- 另外 2 项上线前任务未修改。
+- 风险或注意事项：
+	- 测试环境输出缺少 Supabase 环境变量及模拟 session 失败的既有日志，不影响通过。
+	- 构建输出 Node `fs.F_OK` 弃用警告，但构建成功。
+	- 当前上线前任务进度 4/6；本次禁止 push、部署和 tag。
+- 当前分支：supabase-v1
+- Git Commit ID：未提交
+
 ## DEV-20260728-013
 
 - 日期：2026-07-28

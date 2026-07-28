@@ -4,7 +4,7 @@ import { Input } from '../components/ui/input';
 import { Textarea } from '../components/ui/textarea';
 import { Button } from '../components/ui/button';
 import { STRENGTH_BODY_PART_OPTIONS, normalizeStrengthBodyParts } from '../constants/trainingBodyParts';
-import { formatClockTime, formatTimeInputWithSeconds } from '../lib/localDateTime';
+import { formatClockTime, formatTimeInputWithSeconds, getLocalTimeInputValue } from '../lib/localDateTime';
 
 const toDateInput = (value) => {
   if (!value) return '';
@@ -353,6 +353,19 @@ export const EditActivitySheet = ({ open, onOpenChange, item, onConfirm }) => {
                   data-testid="edit-activity-start-time-input"
                   disabled={running || submitting}
                 />
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => {
+                    setStartTime(getLocalTimeInputValue(new Date()));
+                    setTimeError('');
+                  }}
+                  disabled={running || submitting}
+                  data-testid="edit-activity-start-use-now"
+                  className="mt-2 min-h-11 w-full rounded-xl border-[#D9DDD8] bg-white text-[#5E6660]"
+                >
+                  使用现在时间
+                </Button>
               </div>
               <div>
                 <label className="text-[12px] text-[#858C88]">结束时间</label>
@@ -365,6 +378,19 @@ export const EditActivitySheet = ({ open, onOpenChange, item, onConfirm }) => {
                   data-testid="edit-activity-end-time-input"
                   disabled={running || submitting}
                 />
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => {
+                    setEndTime(getLocalTimeInputValue(new Date()));
+                    setTimeError('');
+                  }}
+                  disabled={running || submitting}
+                  data-testid="edit-activity-end-use-now"
+                  className="mt-2 min-h-11 w-full rounded-xl border-[#D9DDD8] bg-white text-[#5E6660]"
+                >
+                  使用现在时间
+                </Button>
               </div>
             </div>
 

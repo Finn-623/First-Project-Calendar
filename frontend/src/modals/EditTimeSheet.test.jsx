@@ -16,6 +16,56 @@ jest.mock('../components/ui/button', () => ({
 }));
 
 describe('EditTimeSheet', () => {
+  afterEach(() => {
+    jest.useRealTimers();
+  });
+
+  test('使用现在时间填入本地 HH:mm，不保存或关闭，且仍可手动修改和取消', () => {
+    jest.useFakeTimers();
+    jest.setSystemTime(new Date(2026, 6, 28, 9, 5, 42));
+    const onConfirm = jest.fn();
+    const onOpenChange = jest.fn();
+    render(
+      <EditTimeSheet
+        open
+        onOpenChange={onOpenChange}
+        item={{ title: '早餐', time: '08:00' }}
+        onConfirm={onConfirm}
+      />
+    );
+
+    fireEvent.click(screen.getByTestId('edit-time-use-now'));
+    expect(screen.getByTestId('edit-time-input').value).toBe('09:05');
+    expect(onConfirm).not.toHaveBeenCalled();
+    expect(onOpenChange).not.toHaveBeenCalled();
+
+    fireEvent.change(screen.getByTestId('edit-time-input'), { target: { value: '09:07' } });
+    expect(screen.getByTestId('edit-time-input').value).toBe('09:07');
+    fireEvent.click(screen.getByTestId('edit-time-cancel'));
+    expect(onConfirm).not.toHaveBeenCalled();
+    expect(onOpenChange).toHaveBeenCalledWith(false);
+  });
+
+  test('填入现在时间后仅在点击保存时提交该值', async () => {
+    jest.useFakeTimers();
+    jest.setSystemTime(new Date(2026, 6, 28, 9, 5));
+    const onConfirm = jest.fn().mockResolvedValue(undefined);
+    render(
+      <EditTimeSheet
+        open
+        onOpenChange={jest.fn()}
+        item={{ title: '早餐', time: '08:00' }}
+        onConfirm={onConfirm}
+      />
+    );
+
+    fireEvent.click(screen.getByTestId('edit-time-use-now'));
+    await act(async () => {
+      fireEvent.click(screen.getByTestId('edit-time-confirm'));
+    });
+    expect(onConfirm).toHaveBeenCalledWith('09:05');
+  });
+
   test('非法时间不能提交', () => {
     const onConfirm = jest.fn();
     render(

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '../components/ui/sheet';
 import { Input } from '../components/ui/input';
 import { Button } from '../components/ui/button';
+import { getLocalTimeInputValue } from '../lib/localDateTime';
 
 export const EditTimeSheet = ({ open, onOpenChange, item, onConfirm }) => {
   const [time, setTime] = useState('12:00');
@@ -61,6 +62,19 @@ export const EditTimeSheet = ({ open, onOpenChange, item, onConfirm }) => {
             className="h-14 text-2xl font-num bg-white border-[#E5E5E0] rounded-xl"
             data-testid="edit-time-input"
           />
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => {
+              setTime(getLocalTimeInputValue(new Date()));
+              setError('');
+            }}
+            disabled={submitting}
+            data-testid="edit-time-use-now"
+            className="mt-2 min-h-11 w-full rounded-xl border-[#D9DDD8] bg-white text-[#5E6660]"
+          >
+            使用现在时间
+          </Button>
           {error ? <p role="alert" className="mt-2 text-sm text-[#B85C4A]">{error}</p> : null}
           <div className="mt-4 grid grid-cols-2 gap-3">
             <Button
