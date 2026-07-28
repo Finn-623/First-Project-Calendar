@@ -1,3 +1,43 @@
+## DEV-20260728-018
+
+- 日期：2026-07-28
+- 状态：已完成
+- 修改类型：上线前导航一致性 / 修改意见子页面
+- 任务目标：将所有修改意见相关子页面的顶部返回入口统一为“返回版本信息”，删除页面内重复入口并使用明确版本路由。
+- 实际完成内容：
+	- 路由审查确认版本信息正式路径为 `/settings/version`，修改意见仅有 `/settings/version/feedback` 一个实际子页面，提交、历史和管理员操作均在该页 Tabs 内。
+	- 为共享 `SettingsSubpageHeader` 增加可选返回目标、文案和 replace 属性；默认仍返回设置，避免影响其他设置子页面。
+	- feedback 页顶部按钮统一显示及标注“返回版本信息”，明确 replace 到 `/settings/version`，不依赖浏览器历史。
+	- 删除 feedback 页面正文原有重复“返回版本信息”链接，每页只保留一个顶部返回入口。
+	- 版本信息页自身未增加返回版本信息入口，不产生导航循环。
+- 主要修改文件或模块：
+	- `frontend/src/components/settings/SettingsSubpageHeader.jsx`
+	- `frontend/src/components/settings/SettingsSubpageHeader.test.jsx`
+	- `frontend/src/pages/VersionFeedbackPage.jsx`
+	- `frontend/src/pages/VersionFeedbackPage.test.jsx`
+	- `frontend/src/pages/SettingsVersionPage.test.jsx`
+	- `docs/PROJECT_STATUS.md`
+	- `docs/version-updates/v0.1.3.md`
+	- `docs/DEVELOPMENT_LOG.md`
+- 遇到的问题：无生产代码缺陷；现有重复导航来自共享 Header 默认返回设置与页面正文额外链接并存。
+- 解决方式：复用共享 Header 的单一顶部入口，通过显式 props 定制 feedback 返回目标，并删除正文重复链接。
+- 执行的测试：
+	- `npm test -- --runInBand --watchAll=false src/components/settings/SettingsSubpageHeader.test.jsx src/pages/VersionFeedbackPage.test.jsx src/pages/SettingsVersionPage.test.jsx src/pages/SettingsPage.navigation.test.jsx src/components/mobileAcceptance.test.jsx src/services/versionFeedbackService.readOnly.test.js`
+	- `npm test -- --runInBand --watchAll=false`
+	- `npm run build`
+- 测试结果：
+	- 专项测试：6 个套件、54 个用例通过。
+	- 全量测试：31 个套件、204 个用例通过。
+	- Production build：通过（Compiled successfully）。
+- 未完成事项：
+	- 第 9 项上线前任务未修改；本次不 push。
+	- Migration `021_lock_completed_version_feedback.sql` 未部署。
+- 风险或注意事项：
+	- 非阻塞输出包括测试环境缺少 Supabase 变量提示、模拟 session 失败日志和构建 `fs.F_OK` 弃用警告。
+	- 本任务未修改反馈数据、权限或数据库，因此未更新 `docs/DATABASE_CHANGES.md`。
+- 当前分支：supabase-v1
+- Git Commit ID：未提交
+
 ## DEV-20260728-017
 
 - 日期：2026-07-28

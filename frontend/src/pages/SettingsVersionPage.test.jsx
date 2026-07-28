@@ -35,5 +35,6 @@ describe('SettingsVersionPage', () => {
     expect(screen.queryByText('版本状态')).toBeNull();
     expect(screen.queryByText('开发中')).toBeNull();
     expect(screen.queryByText('已上线')).toBeNull();
+    expect(screen.queryByText('返回版本信息')).toBeNull();
   });
 });

@@ -4,14 +4,7 @@ import { useStore } from '../store';
 import { versionFeedbackService } from '../services/versionFeedbackService';
 import { toast } from 'sonner';
 
-jest.mock('../components/settings/SettingsSubpageHeader', () => ({
-  SettingsSubpageHeader: ({ title, description }) => (
-    <div>
-      <h1>{title}</h1>
-      <p>{description}</p>
-    </div>
-  ),
-}));
+const mockNavigate = jest.fn();
 
 jest.mock('../components/ui/badge', () => ({
   Badge: ({ children }) => <span>{children}</span>,
@@ -61,9 +54,7 @@ jest.mock('../components/ui/alert-dialog', () => ({
 }));
 
 jest.mock('react-router-dom', () => ({
-  Link: ({ children, to, ...props }) => (
-    <a href={to} {...props}>{children}</a>
-  ),
+  useNavigate: () => mockNavigate,
 }), { virtual: true });
 
 jest.mock('../store', () => ({
@@ -117,6 +108,28 @@ describe('VersionFeedbackPage history', () => {
 
   afterEach(() => {
     jest.useRealTimers();
+  });
+
+  test('shows one top back action that explicitly returns to version information', () => {
+    renderPage();
+
+    const backActions = screen.getAllByRole('button', { name: '返回版本信息' });
+    expect(backActions).toHaveLength(1);
+    expect(screen.queryByText('返回设置')).toBeNull();
+    fireEvent.click(backActions[0]);
+    expect(mockNavigate).toHaveBeenCalledWith('/settings/version', { replace: true });
+  });
+
+  test('keeps the only back action complete and clickable at 320px width', () => {
+    Object.defineProperty(window, 'innerWidth', { configurable: true, value: 320 });
+    Object.defineProperty(window, 'innerHeight', { configurable: true, value: 568 });
+    window.dispatchEvent(new Event('resize'));
+
+    renderPage();
+
+    const backAction = screen.getByRole('button', { name: '返回版本信息' });
+    expect(backAction.disabled).toBe(false);
+    expect(backAction.textContent).toBe('返回版本信息');
   });
 
   test('shows separate empty states when query succeeds with empty list', async () => {

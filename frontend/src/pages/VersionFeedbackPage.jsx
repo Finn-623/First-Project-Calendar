@@ -1,5 +1,4 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { Link } from 'react-router-dom';
 import { toast } from 'sonner';
 import { showSuccess } from '../lib/notifications';
 import { useStore } from '../store';
@@ -288,14 +287,10 @@ export const VersionFeedbackPage = () => {
       <SettingsSubpageHeader
         title="修改意见"
         description="提交使用建议，并查看建议的处理进度。"
+        backTo="/settings/version"
+        backLabel="返回版本信息"
+        backReplace
       />
-
-      <Link
-        to="/settings/version"
-        className="inline-flex mb-4 min-h-11 items-center rounded-lg px-3 text-[13px] text-[#6B8067] hover:bg-[#EEF2EC]"
-      >
-        返回版本信息
-      </Link>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
         <TabsList className="w-full grid grid-cols-2 h-11">
