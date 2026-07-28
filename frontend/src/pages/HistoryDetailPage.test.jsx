@@ -154,7 +154,10 @@ describe('HistoryDetailPage 删除整天记录', () => {
       expect(loadHistoryMock).toHaveBeenCalledWith('user-1');
       expect(resetDeletedDateStateMock).toHaveBeenCalledWith('2026-07-27');
       expect(mockNavigate).toHaveBeenCalledWith('/history', { state: { fallbackTo: 'settings' } });
-      expect(toast.success).toHaveBeenCalledWith('历史记录已删除');
+      expect(toast.success).toHaveBeenCalledWith(
+        '历史记录已删除',
+        expect.objectContaining({ duration: 2000 })
+      );
     });
   });
 

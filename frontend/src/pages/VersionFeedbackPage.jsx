@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { toast } from 'sonner';
+import { showSuccess } from '../lib/notifications';
 import { useStore } from '../store';
 import { SettingsSubpageHeader } from '../components/settings/SettingsSubpageHeader';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
@@ -150,7 +151,7 @@ export const VersionFeedbackPage = () => {
 
     setFormData({ title: '', description: '' });
     setSubmitting(false);
-    toast.success('修改意见已提交');
+    showSuccess('修改意见已提交');
     setActiveTab('history');
     await loadHistory();
   };
@@ -202,7 +203,7 @@ export const VersionFeedbackPage = () => {
     setHistory((prev) => prev.map((record) => (record.id === item.id ? { ...record, ...result.data } : record)));
     setSavingEditId('');
     setEditingId('');
-    toast.success('修改意见已更新');
+    showSuccess('修改意见已更新');
   };
 
   const handleDelete = async () => {
@@ -220,7 +221,7 @@ export const VersionFeedbackPage = () => {
     setHistory((prev) => prev.filter((record) => record.id !== deleteTarget.id));
     setDeletingId('');
     setDeleteTarget(null);
-    toast.success('修改意见已删除');
+    showSuccess('修改意见已删除');
   };
 
   const handleComplete = async (item) => {
@@ -252,7 +253,7 @@ export const VersionFeedbackPage = () => {
     setHistory((prev) => prev.map((record) => (record.id === item.id ? { ...record, ...result.data } : record)));
     setCompleteVersionMap((prev) => ({ ...prev, [item.id]: validation.normalized }));
     setUpdatingStatusId('');
-    toast.success('任务已标记为已完成');
+    showSuccess('任务已标记为已完成');
   };
 
   const handleReopen = async (item) => {
@@ -270,7 +271,7 @@ export const VersionFeedbackPage = () => {
     setHistory((prev) => prev.map((record) => (record.id === item.id ? { ...record, ...result.data } : record)));
     setCompleteVersionMap((prev) => ({ ...prev, [item.id]: '' }));
     setUpdatingStatusId('');
-    toast.success('任务已恢复为未完成');
+    showSuccess('任务已恢复为未完成');
   };
 
   useEffect(() => {

@@ -11,6 +11,7 @@ import { EditActivitySheet } from '../modals/EditActivitySheet';
 import { sumTimelineMacros } from '../mockData';
 import { Plus, Check, ChevronLeft, ChevronRight } from 'lucide-react';
 import { toast } from 'sonner';
+import { showSuccess } from '../lib/notifications';
 import { useStore } from '../store';
 import { timelineService } from '../services/timelineService';
 import { addDaysToDateString, getSydneyDateString } from '../services/historyService';
@@ -260,7 +261,7 @@ export const TodayPage = () => {
         it.id === foodSheet.target.id ? { ...it, foods: [...(it.foods || []), food] } : it
       )
     );
-    toast.success(`已添加 ${food.name} 到 ${foodSheet.target.title}`);
+    showSuccess(`已添加 ${food.name} 到 ${foodSheet.target.title}`);
   };
 
   const handleOpenSnackSheet = () => {
@@ -283,7 +284,7 @@ export const TodayPage = () => {
         foods: [],
       },
     ]);
-    toast.success('已添加加餐');
+    showSuccess('已添加加餐');
   };
 
   const openTraining = () => {
@@ -366,7 +367,7 @@ export const TodayPage = () => {
         appendTimelineItem(data, perfFlowId);
       }
 
-      toast.success(`已开始${title}`);
+      showSuccess(`已开始${title}`);
 
       if (perfFlowId) {
         markCreatePerf(perfFlowId, 'create_success');
@@ -439,7 +440,7 @@ export const TodayPage = () => {
 
       Promise.resolve(refreshDayState()).catch(() => null);
 
-      toast.success(`已添加 ${payload.title}`);
+      showSuccess(`已添加 ${payload.title}`);
 
       if (perfFlowId) {
         markCreatePerf(perfFlowId, 'create_success');
@@ -520,7 +521,7 @@ export const TodayPage = () => {
 
       Promise.resolve(refreshDayState()).catch(() => null);
 
-      toast.success(`已添加 ${title}`);
+      showSuccess(`已添加 ${title}`);
 
       if (perfFlowId) {
         markCreatePerf(perfFlowId, 'create_success');
@@ -559,7 +560,7 @@ export const TodayPage = () => {
         await refreshDayState();
       }
 
-      toast.success('记录已结束');
+      showSuccess('记录已结束');
     } catch (error) {
       toast.error(error?.message || '结束失败，请稍后重试');
     } finally {
@@ -619,7 +620,7 @@ export const TodayPage = () => {
         }
       }
 
-      toast.success('记录已更新');
+      showSuccess('记录已更新');
     } catch (error) {
       toast.error(error?.message || '更新失败，请稍后重试');
       throw error;
@@ -668,7 +669,7 @@ export const TodayPage = () => {
           ? { ...entry, ...(result.data || {}), foods: entry.foods || [], time: newTime, fixed: true }
           : entry
       )));
-      toast.success('时间已更新');
+      showSuccess('时间已更新');
     } catch (error) {
       toast.error(error?.message || '时间保存失败，请稍后重试');
       throw error;
@@ -795,7 +796,7 @@ export const TodayPage = () => {
         setDeleteDialogOpen(false);
         setPendingDeleteFood(null);
         setPendingDeleteItem(null);
-        toast.success('食物已删除');
+        showSuccess('食物已删除');
         return;
       } finally {
         deletingFoodGuardRef.current = false;
@@ -819,7 +820,7 @@ export const TodayPage = () => {
       setDeleteDialogOpen(false);
       setPendingDeleteItem(null);
       setPendingDeleteFood(null);
-      toast.success('活动已删除');
+      showSuccess('活动已删除');
     } finally {
       setDeletingItemId(null);
     }
@@ -844,7 +845,7 @@ export const TodayPage = () => {
 
       if (result?.success || result?.skipped) {
         if (result?.success) {
-          toast.success('本日已归档，开启新的一天');
+          showSuccess('本日已归档，开启新的一天');
         }
         setEndDayLoading(false);
         return;

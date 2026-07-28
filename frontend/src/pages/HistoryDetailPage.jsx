@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { ChevronLeft } from 'lucide-react';
 import { toast } from 'sonner';
+import { showSuccess } from '../lib/notifications';
 import { useStore } from '../store';
 import { TimelineItem } from '../components/TimelineItem';
 import { NutritionSummary } from '../components/NutritionSummary';
@@ -120,7 +121,7 @@ export const HistoryDetailPage = () => {
       }
 
       await loadHistory(user.id);
-      toast.success(successMessage);
+      showSuccess(successMessage);
       return true;
     } finally {
       setSavingAction(false);
@@ -295,7 +296,7 @@ export const HistoryDetailPage = () => {
         if (historyResult?.success === false) {
           toast.error('记录已删除，但历史列表刷新失败，请稍后重试');
         } else {
-          toast.success('历史记录已删除');
+          showSuccess('历史记录已删除');
         }
         navigate('/history', {
           state: isFromSettings ? { returnTo: 'settings' } : { fallbackTo: 'settings' },

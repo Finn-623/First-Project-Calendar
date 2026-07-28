@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { toast } from 'sonner';
+import { showSuccess } from '../lib/notifications';
 import { useStore } from '../store';
 import { SettingsSubpageHeader } from '../components/settings/SettingsSubpageHeader';
 import {
@@ -103,7 +104,7 @@ export const ProfileInfoPage = () => {
       return;
     }
 
-    toast.success('个人信息已保存');
+    showSuccess('个人信息已保存');
     setSaving(false);
     setEditMode(false);
   };

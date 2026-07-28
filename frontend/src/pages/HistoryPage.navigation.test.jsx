@@ -127,7 +127,10 @@ describe('HistoryPage 返回导航', () => {
       expect(historyService.deleteHistoryDays).toHaveBeenCalledWith(['2026-07-27']);
       expect(mockSetHistory).toHaveBeenCalled();
       expect(mockResetDeletedDateState).toHaveBeenCalledWith('2026-07-27');
-      expect(toast.success).toHaveBeenCalledWith('已删除 1 天历史记录');
+      expect(toast.success).toHaveBeenCalledWith(
+        '已删除 1 天历史记录',
+        expect.objectContaining({ duration: 2000 })
+      );
     });
     expect(screen.getByRole('button', { name: '返回上一页' })).toBeTruthy();
   });

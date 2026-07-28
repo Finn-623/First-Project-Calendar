@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Search, Plus, Pencil, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
+import { showSuccess } from '../lib/notifications';
 import { useStore } from '../store';
 import { foodService } from '../services/foodService';
 import { Input } from '../components/ui/input';
@@ -284,7 +285,7 @@ export const FoodLibraryPage = () => {
     }
 
     await refreshFoods(user.id);
-    toast.success('已添加到我的食物库');
+    showSuccess('已添加到我的食物库');
     setCreateOpen(false);
     resetPrivateForm();
   };
@@ -330,7 +331,7 @@ export const FoodLibraryPage = () => {
     }
 
     await refreshFoods(user.id);
-    toast.success('已更新私人食物');
+    showSuccess('已更新私人食物');
     closeEditPrivateDialog();
   };
 
@@ -359,7 +360,7 @@ export const FoodLibraryPage = () => {
     }
 
     await refreshFoods(user.id);
-    toast.success('已删除私人食物');
+    showSuccess('已删除私人食物');
   };
 
   const openCreatePublicDialog = () => {
@@ -429,7 +430,7 @@ export const FoodLibraryPage = () => {
     }
 
     await reloadFoods();
-    toast.success(mode === 'edit' ? '公共食品已更新' : '公共食品已新增');
+    showSuccess(mode === 'edit' ? '公共食品已更新' : '公共食品已新增');
     closePublicDialog();
   };
 
@@ -462,7 +463,7 @@ export const FoodLibraryPage = () => {
     }
 
     await reloadFoods();
-    toast.success(food.isActive ? '公共食品已停用' : '公共食品已启用');
+    showSuccess(food.isActive ? '公共食品已停用' : '公共食品已启用');
   };
 
   return (

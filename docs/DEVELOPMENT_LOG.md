@@ -1,3 +1,46 @@
+## DEV-20260728-013
+
+- 日期：2026-07-28
+- 状态：已完成
+- 修改类型：Production Feedback Fix / 成功提示自动消失
+- 任务目标：修复 Feedback `d08f38c9-07e9-48ec-a734-6c994672f823`，缩短添加、修改和保存成功提示的显示时间并自动消失，同时保持错误与校验提示清晰可见。
+- 实际完成内容：
+	- 复用项目现有 Sonner `Toaster`，新增统一 `showSuccess` 封装，成功提示持续时间统一为 2000ms。
+	- 以成功文案生成稳定 toast ID；相同操作连续触发时更新同一提示，不堆叠无法关闭的重复项。
+	- 首页添加食物/加餐/训练/事件、修改记录和餐次时间、结束与删除等成功反馈统一接入自动消失。
+	- 食物库添加/编辑/删除、历史编辑和删除、摄入计划、个人资料、账户展示名称、记录设置、密码修改和修改意见管理的成功反馈统一接入。
+	- 保持 `toast.error` 的 Sonner 默认时长与手动关闭能力；页面内表单校验错误、EditTimeSheet 错误、Dialog、AlertDialog 和固定页面提示均未缩短。
+	- 提示生命周期由根级 Sonner 管理；组件卸载后不会由页面私有计时器触发状态更新。
+- 主要修改文件或模块：
+	- `frontend/src/lib/notifications.js`
+	- `frontend/src/lib/notifications.test.jsx`
+	- 使用 Sonner 成功提示的首页、食物库、历史、计划、设置、账户、登录和反馈页面/组件
+	- 相关现有页面测试
+	- `docs/PROJECT_STATUS.md`
+	- `docs/version-updates/v0.1.3.md`
+	- `docs/DEVELOPMENT_LOG.md`
+- 遇到的问题：
+	- Sonner 在 Jest fake timers 下通过延迟任务挂载 Toast，专项测试首次在挂载任务执行前断言，导致未找到成功提示。
+- 解决方式：
+	- 测试先推进极短的 Sonner 挂载时间，再独立推进 2000ms 生命周期；生产实现无需页面计时器或额外修改。
+- 执行的测试：
+	- `npm test -- --runInBand --watchAll=false src/lib/notifications.test.jsx src/pages/TodayPage.foodDeletion.test.jsx src/pages/TodayPage.mealTimeEditing.test.jsx src/pages/HistoryDetailPage.test.jsx src/pages/HistoryPage.navigation.test.jsx src/pages/SettingsIntakePlanPage.test.jsx src/pages/VersionFeedbackPage.test.jsx`
+	- `npm test -- --runInBand --watchAll=false`
+	- `npm run build`
+- 测试结果：
+	- 专项测试通过：7 个测试套件、44 个用例全部通过。
+	- 全量测试通过：27 个测试套件、180 个用例全部通过。
+	- 前端生产构建通过（Compiled successfully）。
+- 未完成事项：
+	- Production feedback 状态尚未更新；当前环境无安全管理权限时需管理员执行精确 SQL。
+	- 另外 2 条功能反馈未修改。
+- 风险或注意事项：
+	- 测试环境输出缺少 Supabase 环境变量及模拟 session 失败的既有日志，不影响通过。
+	- 构建输出 Node `fs.F_OK` 弃用警告，但构建成功。
+	- Production 反馈修复进度 3/5；本次禁止 push、部署和 tag。
+- 当前分支：supabase-v1
+- Git Commit ID：未提交
+
 ## DEV-20260728-012
 
 - 日期：2026-07-28

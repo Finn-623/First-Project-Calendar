@@ -254,7 +254,10 @@ describe('TodayPage 食物删除闭环', () => {
     });
 
     await waitFor(() => {
-      expect(toast.success).toHaveBeenCalledWith('食物已删除');
+      expect(toast.success).toHaveBeenCalledWith(
+        '食物已删除',
+        expect.objectContaining({ duration: 2000 })
+      );
     });
     rerenderPage();
 

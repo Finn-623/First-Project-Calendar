@@ -2,6 +2,7 @@ import React, { useRef, useState } from 'react';
 import { LogIn } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
+import { showSuccess } from '../lib/notifications';
 import { authService } from '../services/authService';
 import { APP_VERSION } from '../config/appVersion';
 import { finalizeLoginPerfAttempt, markLoginPerf, startLoginPerfAttempt, updateLoginPerfMeta } from '../lib/loginPerf';
@@ -75,7 +76,7 @@ export const LoginPage = ({ onLoginSuccess }) => {
 
       if (user && session) {
         markLoginPerf('T7');
-        toast.success('欢迎回来');
+        showSuccess('欢迎回来');
         setSubmitError('');
         onLoginSuccess(user, session);
         navigate('/', { replace: true });

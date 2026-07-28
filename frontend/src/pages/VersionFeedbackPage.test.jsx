@@ -256,7 +256,10 @@ describe('VersionFeedbackPage history', () => {
     });
 
     expect(await screen.findByText('新标题')).toBeTruthy();
-    expect(toast.success).toHaveBeenCalledWith('修改意见已更新');
+    expect(toast.success).toHaveBeenCalledWith(
+      '修改意见已更新',
+      expect.objectContaining({ duration: 2000 })
+    );
   });
 
   test('keeps edit inputs when update fails', async () => {

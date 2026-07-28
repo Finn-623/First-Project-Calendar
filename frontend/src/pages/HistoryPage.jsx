@@ -2,6 +2,7 @@ import React, { useMemo, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { CheckSquare, ChevronRight, Square, Trash2, ArrowLeft } from 'lucide-react';
 import { toast } from 'sonner';
+import { showSuccess } from '../lib/notifications';
 import { useStore } from '../store';
 import { sumTimelineMacros } from '../mockData';
 import { historyService } from '../services/historyService';
@@ -124,7 +125,7 @@ export const HistoryPage = () => {
       setConfirmOpen(false);
       setSelectedDateKeys([]);
       setIsBatchDeleteMode(false);
-      toast.success(`已删除 ${selectedLookup.size} 天历史记录`);
+      showSuccess(`已删除 ${selectedLookup.size} 天历史记录`);
     } finally {
       setDeleting(false);
     }

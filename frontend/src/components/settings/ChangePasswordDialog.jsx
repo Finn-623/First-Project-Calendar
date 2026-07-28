@@ -1,6 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import { Eye, EyeOff } from 'lucide-react';
 import { toast } from 'sonner';
+import { showSuccess } from '../../lib/notifications';
 import { supabase } from '../../lib/supabaseClient';
 import {
   mapPasswordErrorMessage,
@@ -125,7 +126,7 @@ export const ChangePasswordDialog = ({
 
       resetState();
       onOpenChange(false);
-      toast.success('密码修改成功');
+      showSuccess('密码修改成功');
     } catch (error) {
       const mappedMessage = mapPasswordErrorMessage(error);
       toast.error(mappedMessage);

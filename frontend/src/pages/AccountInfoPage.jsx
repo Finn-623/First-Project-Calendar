@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { KeyRound, PencilLine } from 'lucide-react';
 import { toast } from 'sonner';
+import { showSuccess } from '../lib/notifications';
 import { useStore } from '../store';
 import { supabase } from '../lib/supabaseClient';
 import { SettingsSubpageHeader } from '../components/settings/SettingsSubpageHeader';
@@ -121,7 +122,7 @@ export const AccountInfoPage = () => {
         const message = '展示名称已更新，但刷新页面资料失败';
         toast.error(message);
       } else {
-        toast.success('展示名称已更新');
+        showSuccess('展示名称已更新');
       }
 
       cancelDisplayNameEdit();

@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { toast } from 'sonner';
+import { showSuccess } from '../lib/notifications';
 import { useStore } from '../store';
 import { SettingsSubpageHeader } from '../components/settings/SettingsSubpageHeader';
 import { recordSettingsService } from '../services/recordSettingsService';
@@ -137,7 +138,7 @@ export const SettingsRecordPage = () => {
     });
 
     if (result.success) {
-      toast.success('记录设置已更新');
+      showSuccess('记录设置已更新');
       // Update saved state
       setSavedEnabled(enabled);
       setSavedArchiveTime(archiveTime);

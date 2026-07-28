@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { toast } from 'sonner';
+import { showSuccess } from '../lib/notifications';
 import { useStore } from '../store';
 import { SettingsSubpageHeader } from '../components/settings/SettingsSubpageHeader';
 import { intakePlanService } from '../services/intakePlanService';
@@ -177,7 +178,7 @@ export const SettingsIntakePlanPage = () => {
     setCurrentPlan(nextPlan);
     setDraft(toDraft(nextPlan));
     setSaving(false);
-    toast.success('摄入计划已更新');
+    showSuccess('摄入计划已更新');
     await loadHistory({ append: false });
   };
 
@@ -203,7 +204,7 @@ export const SettingsIntakePlanPage = () => {
 
     setHistoryItems((prev) => prev.filter((item) => item.id !== historyId));
     setDeletingLoading(false);
-    toast.success('历史记录已删除');
+    showSuccess('历史记录已删除');
   };
 
   return (
