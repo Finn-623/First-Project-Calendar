@@ -150,7 +150,7 @@ export const TodayPage = () => {
   );
 
   const currentDateStr = useMemo(() => getSydneyDateString(currentDate), [currentDate]);
-  const todaySydneyStr = useMemo(() => getSydneyDateString(), []);
+  const todaySydneyStr = useMemo(() => getSydneyDateString(now), [now]);
   const isViewingToday = currentDateStr === todaySydneyStr;
   const isViewingRecordingDate = currentDateStr === recordingDateStr;
   const isAutoAdvancedDay = isViewingRecordingDate && recordingDateStr !== todaySydneyStr;

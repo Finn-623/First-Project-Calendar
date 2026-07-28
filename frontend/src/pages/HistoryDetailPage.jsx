@@ -287,11 +287,10 @@ export const HistoryDetailPage = () => {
           return;
         }
 
-        const historyResult = await loadHistory(user.id);
-        
-        // 如果被删除的日期是当前查看的日期（本日），重置状态为真实的今天
+        // 先清理本地状态源，避免刷新失败时恢复到已删除日期。
         resetDeletedDateState(dateStr);
-        
+        const historyResult = await loadHistory(user.id);
+
         setConfirmOpen(false);
         if (historyResult?.success === false) {
           toast.error('记录已删除，但历史列表刷新失败，请稍后重试');

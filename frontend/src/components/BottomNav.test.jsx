@@ -1,6 +1,8 @@
 import React from 'react';
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import { BottomNav } from './BottomNav';
+
+const mockSetSelectedDate = jest.fn();
 
 let mockPathname = '/';
 
@@ -19,9 +21,20 @@ jest.mock('react-router-dom', () => ({
   },
 }), { virtual: true });
 
+jest.mock('../store', () => ({
+  useStore: () => ({
+    setSelectedDate: mockSetSelectedDate,
+  }),
+}));
+
+jest.mock('../services/historyService', () => ({
+  getSydneyDateString: () => '2026-07-28',
+}));
+
 describe('BottomNav', () => {
   beforeEach(() => {
     mockPathname = '/';
+    mockSetSelectedDate.mockClear();
   });
 
   test('只显示首页、食物库和设置，并使用三列布局', () => {
@@ -53,5 +66,23 @@ describe('BottomNav', () => {
     expect(screen.getByTestId('nav-home').className).toContain('text-[#858C88]');
     expect(screen.getByTestId('nav-library').className).toContain('text-[#858C88]');
     expect(screen.getByTestId('nav-settings').className).toContain('text-[#858C88]');
+  });
+
+  test('点击首页入口时会将首页基准日期恢复到真实本日', () => {
+    mockPathname = '/history';
+    render(<BottomNav />);
+
+    fireEvent.click(screen.getByTestId('nav-home'));
+
+    expect(mockSetSelectedDate).toHaveBeenCalledWith('2026-07-28');
+  });
+
+  test('当前已在首页时再次点击首页，仍可触发日期基准恢复', () => {
+    mockPathname = '/';
+    render(<BottomNav />);
+
+    fireEvent.click(screen.getByTestId('nav-home'));
+
+    expect(mockSetSelectedDate).toHaveBeenCalledWith('2026-07-28');
   });
 });

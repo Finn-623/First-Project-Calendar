@@ -68,6 +68,7 @@ const StoreProbe = () => {
     currentDate,
     recordingDateStr,
     timeline,
+    history,
     dayInitialized,
     endDay,
     resetDeletedDateState,
@@ -81,6 +82,7 @@ const StoreProbe = () => {
       <span data-testid="recording-date">{recordingDateStr}</span>
       <span data-testid="day-initialized">{String(dayInitialized)}</span>
       <span data-testid="timeline-title">{timeline[0]?.title || 'empty'}</span>
+      <span data-testid="history-count">{String(history.length)}</span>
       <button type="button" onClick={() => endDay()} data-testid="end-day">结束本日</button>
       <button
         type="button"
@@ -132,6 +134,7 @@ function renderStore() {
 describe('Store 删除日期后的首页状态恢复', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    localStorage.clear();
     foodService.getAllFoods.mockResolvedValue({ data: [], error: null });
     foodService.loadPublicFoods.mockResolvedValue({ data: [], error: null });
     targetService.getLatestTarget.mockResolvedValue({ data: null, error: null });
@@ -164,6 +167,31 @@ describe('Store 删除日期后的首页状态恢复', () => {
       expect(screen.getByTestId('recording-date').textContent).toBe('2026-07-27');
       expect(screen.getByTestId('timeline-title').textContent).toBe('早餐');
     });
+  });
+
+  test('删除真实本日会清除旧日期缓存和可能残留的持久化日期键', async () => {
+    localStorage.setItem('persist:recordingDateStr', '2026-07-28');
+    localStorage.setItem('zustand-date-store', '{"viewingDate":"2026-07-27"}');
+    localStorage.setItem('recordSettings_savedTimezone', JSON.stringify('Australia/Sydney'));
+
+    renderStore();
+    await screen.findByText('true');
+
+    fireEvent.click(screen.getByTestId('end-day'));
+    await waitFor(() => {
+      expect(screen.getByTestId('recording-date').textContent).toBe('2026-07-28');
+    });
+
+    fireEvent.click(screen.getByTestId('reset-today'));
+
+    await waitFor(() => {
+      expect(screen.getByTestId('recording-date').textContent).toBe('2026-07-27');
+    });
+
+    expect(localStorage.getItem('persist:recordingDateStr')).toBeNull();
+    expect(localStorage.getItem('zustand-date-store')).toBeNull();
+    // 非日期状态键不应被误删
+    expect(localStorage.getItem('recordSettings_savedTimezone')).toBe(JSON.stringify('Australia/Sydney'));
   });
 
   test('删除其他历史日期不会改变已推进的首页日期状态', async () => {
@@ -220,6 +248,33 @@ describe('Store 删除日期后的首页状态恢复', () => {
     await waitFor(() => {
       expect(screen.getByTestId('current-date').textContent).toBe('2026-07-27');
       expect(screen.getByTestId('recording-date').textContent).toBe('2026-07-27');
+    });
+  });
+
+  test('删除真实本日后即使重新挂载，也不会恢复到旧的下一日', async () => {
+    const { unmount } = renderStore();
+
+    await waitFor(() => {
+      expect(screen.getByTestId('recording-date').textContent).toBe('2026-07-27');
+    });
+
+    fireEvent.click(screen.getByTestId('end-day'));
+    await waitFor(() => {
+      expect(screen.getByTestId('recording-date').textContent).toBe('2026-07-28');
+    });
+
+    fireEvent.click(screen.getByTestId('reset-today'));
+    await waitFor(() => {
+      expect(screen.getByTestId('recording-date').textContent).toBe('2026-07-27');
+      expect(screen.getByTestId('current-date').textContent).toBe('2026-07-27');
+    });
+
+    unmount();
+    renderStore();
+
+    await waitFor(() => {
+      expect(screen.getByTestId('recording-date').textContent).toBe('2026-07-27');
+      expect(screen.getByTestId('current-date').textContent).toBe('2026-07-27');
     });
   });
 });

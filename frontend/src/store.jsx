@@ -49,6 +49,41 @@ const normalizePlan = (target) => {
 
 const createDateFromString = (dateStr) => new Date(`${dateStr}T00:00:00`);
 
+const DATE_STATE_CACHE_KEYWORDS = [
+  'recordingdate',
+  'selecteddate',
+  'viewingdate',
+  'currentdate',
+  'completedday',
+  'historydetail',
+  'endday',
+  'zustand',
+  'persist',
+];
+
+const clearLegacyDateStateCache = () => {
+  if (typeof window === 'undefined' || !window.localStorage) return;
+
+  const keysToRemove = [];
+  for (let index = 0; index < window.localStorage.length; index += 1) {
+    const key = window.localStorage.key(index);
+    if (!key) continue;
+
+    const lowerKey = String(key).toLowerCase();
+    if (DATE_STATE_CACHE_KEYWORDS.some((keyword) => lowerKey.includes(keyword))) {
+      keysToRemove.push(key);
+    }
+  }
+
+  keysToRemove.forEach((key) => {
+    try {
+      window.localStorage.removeItem(key);
+    } catch {
+      // Ignore localStorage cleanup failures in strict/privacy modes.
+    }
+  });
+};
+
 const isAdminProfile = (profile) => {
   const role = String(profile?.role || '').toLowerCase();
   const accountType = String(profile?.account_type || '').toLowerCase();
@@ -128,17 +163,26 @@ export const StoreProvider = ({ children, user: initialUser, session: initialSes
 
     const today = getSydneyDateString();
     timelineCacheRef.current.delete(deletedDateStr);
+    setHistory((prev) => prev.filter((item) => item?.dateStr !== deletedDateStr));
 
-    if (deletedDateStr !== today) return;
+    const shouldResetToToday = deletedDateStr === today || deletedDateStr === selectedTodayDateRef.current;
+    if (!shouldResetToToday) return;
 
     // 忽略删除前发起、可能仍携带旧“已结束”状态的初始化结果。
     initializationRequestRef.current += 1;
+    clearLegacyDateStateCache();
+
+    timelineCacheRef.current.delete(today);
+    timelineCacheRef.current.delete(recordingDateStr);
+
+    const nextFreshTimeline = freshTimeline();
     selectedTodayDateRef.current = today;
     setRecordingDateStr(today);
     setCurrentDate(createDateFromString(today));
-    setTimeline(freshTimeline());
+    setTimeline(nextFreshTimeline);
+    timelineCacheRef.current.set(today, cloneTimeline(nextFreshTimeline));
     setDayInitialized(true);
-  }, []);
+  }, [recordingDateStr]);
 
   const initializeSelectedDate = useCallback(async (userId) => {
     if (!userId) return { success: false, error: '缺少用户 ID' };

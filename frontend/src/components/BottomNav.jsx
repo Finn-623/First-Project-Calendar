@@ -1,6 +1,8 @@
 import React from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import { Home, BookOpen, Settings } from 'lucide-react';
+import { useStore } from '../store';
+import { getSydneyDateString } from '../services/historyService';
 
 const ITEMS = [
   { to: '/', label: '首页', icon: Home, testId: 'nav-home' },
@@ -10,6 +12,7 @@ const ITEMS = [
 
 export const BottomNav = () => {
   const location = useLocation();
+  const { setSelectedDate } = useStore();
 
   return (
     <nav
@@ -30,6 +33,10 @@ export const BottomNav = () => {
               end={to === '/'}
               data-testid={testId}
               onClick={(e) => {
+                if (to === '/') {
+                  setSelectedDate(getSydneyDateString());
+                }
+
                 if (isCurrent) {
                   e.preventDefault();
                 }
