@@ -38,7 +38,7 @@
 	- `npm run build`、`git diff --check`、最终 commit 仍待执行。
 - 风险或注意事项：
 	- 生产上线时间已回填为真实值，后续如果发生回滚或二次发布，需要新建独立记录，不能复用本条时间。
-- Git Commit ID：未提交
+- Git Commit ID：5d06fea
 
 ## DEV-20260728-002
 
