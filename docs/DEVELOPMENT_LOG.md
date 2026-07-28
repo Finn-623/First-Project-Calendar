@@ -45,7 +45,7 @@
 	- 非阻塞输出包括测试环境缺少 Supabase 变量提示、模拟 session 失败日志和构建 `fs.F_OK` 弃用警告。
 	- 未新增 migration，未修改 `docs/DATABASE_CHANGES.md`。
 - 当前分支：supabase-v1
-- Git Commit ID：未提交
+- Git Commit ID：cf169e397fb18998cb0481ab1859e276dace2f85
 
 ## DEV-20260728-019
 
