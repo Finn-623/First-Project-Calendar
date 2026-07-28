@@ -1,5 +1,5 @@
 {
-  "status": "released",
-  "releasedAt": "2026-07-28T11:53:00+10:00",
-  "summary": "完成历史记录、设置、摄入计划与记录体验更新，已于 2026-07-28 11:53（Australia/Sydney）正式上线。"
+  "status": "development",
+  "releasedAt": null,
+  "summary": "基础记录闭环与稳定性收尾已完成发布前检查，等待正式部署与验收。"
 }

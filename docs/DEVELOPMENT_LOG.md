@@ -1,3 +1,58 @@
+## DEV-20260728-010
+
+- 日期：2026-07-28
+- 状态：已完成
+- 修改类型：Release Review / v0.1.3 发布前版本一致性与建议 Review
+- 任务目标：核对 v0.1.3 实际代码、测试、版本配置、版本文档和修改建议状态，形成可直接用于正式上线的检查清单。
+- 实际完成内容：
+	- 逐项核对首页食物删除、退出账号、日期关键路径、刷新/重新登录隔离和手机端验收的实现、测试与 Git 提交证据。
+	- 将 package、lock 根包、版本配置和网页最新版本记录统一到 v0.1.3；保持 `status=development`、`releasedAt=null`。
+	- 新增 v0.1.3 网页版本概述、重点和分类明细，保留 v0.1.2 历史记录，页面不展示状态字段。
+	- Review 修改意见能力与历史文档：功能能力已在 v0.1.2 完成，v0.1.3 相关仓库项均有明确归属；真实 Production pending 数据未虚构为已完成。
+	- 明确后续版本范围和正式上线前 7 步清单；本任务仅完成本地检查、提交与统一 push，不部署、不填上线时间、不创建 tag。
+- 是否发现上线阻塞问题：否。
+	- 发现并修正版本元数据仍指向已发布 v0.1.2 的一致性问题。
+	- 全量测试首次发现未发布上线时间显示“未填写”而非既定“尚未正式上线”，已统一现有格式化函数与测试。
+- 修改意见／建议 Review：
+	- 已完成：提交、查看、编辑、删除、完成/重开、完成时间和完成版本关联能力（v0.1.2）。
+	- 已纳入 v0.1.3：五项基础闭环与稳定性任务。
+	- 后续版本：真实设备软键盘/安全区/字体放大、动画视觉，以及统计、模板、AI、离线数据库、图片、GI/GL、健身、记账。
+	- 无法本地核验：Production `version_feedback` 真实 pending 列表，需管理员部署前复核。
+- 主要修改文件或模块：
+	- `frontend/package.json`
+	- `frontend/package-lock.json`
+	- `frontend/src/config/version.config.json`
+	- `frontend/src/data/versionHistory.js`
+	- `frontend/src/config/appVersion.test.js`
+	- `frontend/src/pages/SettingsVersionPage.test.jsx`
+	- `frontend/src/lib/versionInfoUtils.js`
+	- `frontend/src/lib/versionInfoUtils.test.js`
+	- `docs/PROJECT_STATUS.md`
+	- `docs/VERSION_HISTORY.md`
+	- `docs/version-updates/v0.1.3.md`
+	- `docs/DEVELOPMENT_LOG.md`
+- 明确未修改：
+	- `CHANGELOG.md`：v0.1.3 尚未正式发布，不提前写正式发布记录。
+	- `docs/ROADMAP.md`：只完成范围 Review，不改写既有规划。
+- 执行的测试：
+	- `npm run validate:version`
+	- `npm test -- --runInBand --watchAll=false`
+	- `npm run build`
+- 测试结果：
+	- 版本校验通过：`Version validation passed for v0.1.3`。
+	- 全量测试第一次：23 个套件中 1 个失败，163/164 通过；修复未发布上线时间文案后重新执行。
+	- 全量测试最终通过：23 个测试套件、164 个用例全部通过。
+	- 前端生产构建通过（Compiled successfully）。
+- 未完成事项：
+	- Production 部署、线上版本验证、上线时间/部署信息回填和 v0.1.3 tag 创建均未执行。
+	- Production 修改意见 pending 列表与真实手机环境仍需人工确认。
+- 风险或注意事项：
+	- 测试环境输出缺少 Supabase 环境变量和模拟 session 失败的既有日志，不影响通过。
+	- 构建输出 Node `fs.F_OK` 弃用警告，但构建成功。
+	- 本需求为统一 push 周期第 5/5 项，提交及回填完成后统一 push。
+- 当前分支：supabase-v1
+- Git Commit ID：未提交
+
 ## DEV-20260728-009
 
 - 日期：2026-07-28

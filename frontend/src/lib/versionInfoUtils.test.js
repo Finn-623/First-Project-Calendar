@@ -6,8 +6,8 @@ import {
 } from './versionInfoUtils';
 
 describe('versionInfoUtils', () => {
-  test('missing release time should stay unfilled before deployment', () => {
-    expect(formatReleaseTime(null)).toBe('未填写');
+  test('missing release time should show the pre-release label', () => {
+    expect(formatReleaseTime(null)).toBe('尚未正式上线');
   });
 
   test('released time should format fixed timestamp', () => {

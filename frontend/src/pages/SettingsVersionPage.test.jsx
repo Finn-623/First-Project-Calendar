@@ -23,13 +23,14 @@ jest.mock('../components/ui/accordion', () => ({
 }));
 
 describe('SettingsVersionPage', () => {
-  test('网页只展示最新 v0.1.2，不展示旧版本或版本状态', () => {
+  test('网页只展示最新 v0.1.3，不展示旧版本或版本状态', () => {
     render(<SettingsVersionPage />);
 
-    expect(screen.getAllByText('v0.1.2').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('v0.1.3').length).toBeGreaterThan(0);
     expect(screen.getByText('版本更新概述')).toBeTruthy();
     expect(screen.getByText('上线时间')).toBeTruthy();
-    expect(screen.getByText('2026年7月28日 11:53')).toBeTruthy();
+    expect(screen.getByText('尚未正式上线')).toBeTruthy();
+    expect(screen.queryByText('v0.1.2')).toBeNull();
     expect(screen.queryByText('v0.1.1')).toBeNull();
     expect(screen.queryByText('版本状态')).toBeNull();
     expect(screen.queryByText('开发中')).toBeNull();
