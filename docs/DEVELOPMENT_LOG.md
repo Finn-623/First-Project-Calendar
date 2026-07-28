@@ -1,3 +1,40 @@
+## DEV-20260728-015
+
+- 日期：2026-07-28
+- 状态：已完成
+- 修改类型：Production Feedback Fix / 首页非本日日期提示
+- 任务目标：修复 Feedback `ec401249-78d3-4c3c-b0fc-6dfae568cd89`，当首页查看或修改日期不是真实设备本日时持续提示当前记录日期。
+- 实际完成内容：
+	- 首页同步状态之后、日期标题之前增加页面内固定状态卡片；不使用 Toast、Dialog 或悬浮层，不自动消失。
+	- 复用 `getLocalDateKey`，分别从 `currentDate` 与当前设备时间读取本地年月日，仅按日期键比较，不使用 `toISOString()`。
+	- 当前日期为同年其他日期时显示“月日”，跨年时显示“年月日”。
+	- 文案统一为“你已离开本日，当前正在查看和修改 X 的记录与计划。”，明确当前操作范围。
+	- 过去、未来、结束本日自动推进和刷新恢复到非本日记录日时均显示；切换或删除本日历史恢复真实本日后立即消失。
+	- 取代只覆盖自动推进下一日的旧 NEXT DAY 卡片，不修改记录日、周日历、结束本日、历史删除或返回首页规则。
+- 主要修改文件或模块：
+	- `frontend/src/pages/TodayPage.jsx`
+	- `frontend/src/pages/TodayPage.nonTodayNotice.test.jsx`
+	- `docs/PROJECT_STATUS.md`
+	- `docs/version-updates/v0.1.3.md`
+	- `docs/DEVELOPMENT_LOG.md`
+- 执行的测试：
+	- `npm test -- --runInBand --watchAll=false src/pages/TodayPage.nonTodayNotice.test.jsx src/store.deletedDateState.test.jsx src/pages/TodayPage.mealTimeEditing.test.jsx src/components/mobileAcceptance.test.jsx`
+	- `npm test -- --runInBand --watchAll=false`
+	- `npm run build`
+- 测试结果：
+	- 专项测试通过：4 个测试套件、41 个用例全部通过。
+	- 全量测试通过：29 个测试套件、189 个用例全部通过。
+	- 前端生产构建通过（Compiled successfully）。
+- 未完成事项：
+	- Production feedback 状态尚未更新；当前环境无安全管理权限，需管理员执行精确 SQL。
+	- 第 6 项上线前任务未修改。
+- 风险或注意事项：
+	- 测试环境输出缺少 Supabase 环境变量及模拟 session 失败的既有日志，不影响通过。
+	- 构建输出 Node `fs.F_OK` 弃用警告，但构建成功。
+	- 当前上线前任务进度 5/6；本次禁止 push、部署和 tag。
+- 当前分支：supabase-v1
+- Git Commit ID：未提交
+
 ## DEV-20260728-014
 
 - 日期：2026-07-28

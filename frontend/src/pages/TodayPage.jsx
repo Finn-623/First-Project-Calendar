@@ -15,7 +15,7 @@ import { showSuccess } from '../lib/notifications';
 import { useStore } from '../store';
 import { timelineService } from '../services/timelineService';
 import { addDaysToDateString, getSydneyDateString } from '../services/historyService';
-import { combineLocalDateAndTime, diffSecondsBetween, getLocalTimeInputValue, secondsToDurationMinutes } from '../lib/localDateTime';
+import { combineLocalDateAndTime, diffSecondsBetween, getLocalDateKey, getLocalTimeInputValue, secondsToDurationMinutes } from '../lib/localDateTime';
 import { useCurrentTime } from '../hooks/useCurrentTime';
 import { beginCreatePerfFlow, markCreatePerf, summarizeCreatePerfFlow } from '../lib/timelineCreatePerf';
 import {
@@ -80,6 +80,13 @@ const getWeekDateStrings = (dateStr) => {
   const mondayOffset = (weekday + 6) % 7;
   const mondayDateStr = addDaysToDateString(dateStr, -mondayOffset);
   return Array.from({ length: 7 }, (_, idx) => addDaysToDateString(mondayDateStr, idx));
+};
+
+export const formatNonTodayNoticeDate = (dateStr, deviceTodayStr) => {
+  const [year, month, day] = String(dateStr || '').split('-').map(Number);
+  const todayYear = Number(String(deviceTodayStr || '').split('-')[0]);
+  if (!year || !month || !day) return '';
+  return year === todayYear ? `${month}月${day}日` : `${year}年${month}月${day}日`;
 };
 
 const AddPickerMenu = ({ onSnack, onTraining, onEvent, testIdPrefix = 'picker' }) => (
@@ -156,9 +163,15 @@ export const TodayPage = () => {
 
   const currentDateStr = useMemo(() => getSydneyDateString(currentDate), [currentDate]);
   const todaySydneyStr = useMemo(() => getSydneyDateString(now), [now]);
+  const selectedLocalDateStr = useMemo(() => getLocalDateKey(currentDate), [currentDate]);
+  const deviceTodayStr = useMemo(() => getLocalDateKey(now), [now]);
+  const isViewingDeviceToday = selectedLocalDateStr === deviceTodayStr;
+  const nonTodayNoticeDate = useMemo(
+    () => formatNonTodayNoticeDate(selectedLocalDateStr, deviceTodayStr),
+    [deviceTodayStr, selectedLocalDateStr]
+  );
   const isViewingToday = currentDateStr === todaySydneyStr;
   const isViewingRecordingDate = currentDateStr === recordingDateStr;
-  const isAutoAdvancedDay = isViewingRecordingDate && recordingDateStr !== todaySydneyStr;
   const dateSectionTitle = isViewingToday ? 'TODAY' : '历史记录';
   const weekDateStrings = useMemo(() => getWeekDateStrings(currentDateStr), [currentDateStr]);
   const [currentYear, currentMonth] = currentDateStr.split('-').map(Number);
@@ -861,11 +874,15 @@ export const TodayPage = () => {
       {!dayInitialized ? (
         <div className="px-5 pt-10 text-[13px] text-[#858C88]">正在同步今日日期...</div>
       ) : null}
-      {dayInitialized && isAutoAdvancedDay ? (
-        <div className="mx-5 mt-5 rounded-2xl border border-[#D7E8E0] bg-[#EEF7F2] px-4 py-3 text-[#2C332F]">
-          <div className="text-[11px] uppercase tracking-[0.22em] text-[#6D8376]">NEXT DAY</div>
-          <div className="mt-1 text-[13px] leading-5">
-            前一天已结束，当前正在记录下一日。
+      {dayInitialized && !isViewingDeviceToday ? (
+        <div
+          className="mx-5 mt-5 max-w-full rounded-2xl border border-[#D7E8E0] bg-[#EEF7F2] px-4 py-3 text-[#2C332F]"
+          data-testid="non-today-date-notice"
+          role="status"
+        >
+          <div className="text-[11px] uppercase tracking-[0.22em] text-[#6D8376]">DATE NOTICE</div>
+          <div className="mt-1 break-words text-[13px] leading-5">
+            你已离开本日，当前正在查看和修改 {nonTodayNoticeDate}的记录与计划。
           </div>
         </div>
       ) : null}
