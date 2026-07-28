@@ -680,4 +680,5 @@ P2：
 - Production Feedback Review：四条原始反馈均保持 `completed`，`completed_version` 均为 `v0.1.3`，pending 数为 0。
 - 最终验证：前端 31 个套件、210 个测试通过；migration 契约 3/3 通过；Production build 成功。
 - 线上验收：正式 alias 返回 200；首页、设置、版本信息、修改意见和历史页均在有效 Production 会话中正常渲染；Production JS/CSS 与本地已测试构建产物 SHA-256 一致。
+- 发布记录同步部署：`dpl_66s7uKJP9nRepwp7dxedEyJNJz1e`，对应 Commit `714674ab7ba6c9eaafe4301bbaf42d503b52da98`；正式 alias 已显示 v0.1.3 与真实上线时间。
 - 非阻塞事项：依赖安装存在既有 peer/deprecation/audit 输出；真实设备软键盘、安全区、系统字体放大和动画细节继续作为后续优化。

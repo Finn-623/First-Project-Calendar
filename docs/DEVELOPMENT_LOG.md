@@ -41,8 +41,9 @@
 	- 前端全量测试：31 个套件、210 个测试通过。
 	- Build：通过（Compiled successfully）。
 	- 第一次功能部署：`dpl_CPgjD9wqAAXTmiHtpG2cUP24addu`，READY 于 2026-07-28 15:55:36（Australia/Sydney）。
+	- 发布记录同步部署：`dpl_66s7uKJP9nRepwp7dxedEyJNJz1e`，Commit `714674ab7ba6c9eaafe4301bbaf42d503b52da98`，READY 于 2026-07-28 16:07:22（Australia/Sydney）。
 - 未完成事项：
-	- 发布记录提交、push、最终 Production 同步部署与 v0.1.3 tag 待本任务后续步骤完成。
+	- v0.1.3 tag 待最终 Production HEAD 对齐后创建并推送。
 - 风险或注意事项：
 	- Vercel 安装日志存在既有 peer dependency、deprecated package 与 npm audit 警告；未影响构建。
 	- 未在 Production 创建或大规模修改测试数据；需要数据写入的交互继续依赖通过的自动化回归。
