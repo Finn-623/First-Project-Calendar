@@ -4641,3 +4641,10 @@
 	- 前端最小长度仍为 3 位，但如果 Supabase 后台策略更高，会以后台策略报错为准。
 - 当前分支：supabase-v1
 - Git Commit ID：176c4de2213dcd4d8e5d3b4322756d36571f0760
+## 2026-07-29: Added AFCD Data Converter (v0.2.1)
+- Implemented afcd-converter.mjs using xlsx to parse AFCD Excel files.
+- AFCD files identified and mapped: Details (Food details), Profiles (All solids & liquids per 100 g).
+- Normalization Logic: Food Key as external_food_id, Energy mapping (kJ/4.184), Standardized nutrients, Prep state (raw/cooked).
+- Dry-run: Processed 1,588 records successfully; 0 nulls for core nutrients.
+- Testing: Passed full frontend test suite and build.
+- Commit ID: b307f2ac91db6fba3c4e7055ecf266d96238b498

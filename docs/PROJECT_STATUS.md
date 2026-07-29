@@ -702,3 +702,8 @@ P2：
 - 线上验收：正式 alias 返回 200；首页、设置、版本信息、修改意见和历史页均在有效 Production 会话中正常渲染；Production JS/CSS 与本地已测试构建产物 SHA-256 一致。
 - 发布记录同步部署：`dpl_66s7uKJP9nRepwp7dxedEyJNJz1e`，对应 Commit `714674ab7ba6c9eaafe4301bbaf42d503b52da98`；正式 alias 已显示 v0.1.3 与真实上线时间。
 - 非阻塞事项：依赖安装存在既有 peer/deprecation/audit 输出；真实设备软键盘、安全区、系统字体放大和动画细节继续作为后续优化。
+## v0.2.1 Status Update (2026-07-29)
+- AFCD Data Converter implemented and verified with 1,588 records (local-only dry-run).
+- Official data files for AFCD (Release 3) and USDA Foundation Foods identified.
+- Mapping rules established and validated for AFCD Excel sources.
+- Pending: USDA converter, Chinese name translation, intake types, portion/alias association, and database dynamic validation.
