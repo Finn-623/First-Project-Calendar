@@ -1,3 +1,45 @@
+## DB-20260729-001
+
+- 日期：2026-07-29
+- 修改原因：v0.2.1 需要在不重建 foods 系统、不破坏个人食品和历史记录的前提下，为公共食品导入、个人副本、审核、分类、扩展营养、份量与别名建立数据库基础和强制权限边界。
+- 实际修改内容：
+  - 增量扩展 `public.foods`：增加英文原名、来源、外部 ID、来源公共食品、审核状态、生熟状态、两级分类、主要摄入类型以及每 100g 规范营养字段。
+  - 保留既有 `visibility` 与 `user_id` 身份模型；公共食品无 owner，个人食品必须有 owner，个人副本通过 `source_public_food_id` 关联公共来源。
+  - 新建 `public.food_portions`、`public.food_public_aliases`、`public.food_private_aliases`。
+  - 新增来源唯一索引、食品审核/分类/摄入类型/营养/糖类关系约束、份量正数与默认份量索引、大小写不敏感别名唯一索引。
+  - 新增 foods 规范营养同步和关联合法性 trigger；新增已引用食品与公共食品普通硬删除保护 trigger。
+  - 重建 foods RLS，并为份量与别名建立 RLS；管理员判断继续复用 `public.is_app_admin(auth.uid())`，service role 保留数据库级批量导入能力。
+- 涉及的表和字段：
+  - `public.foods`：`name_en`、`source_name`、`external_food_id`、`source_public_food_id`、`review_status`、`preparation_state`、`primary_category`、`secondary_category`、`intake_types`。
+  - `public.foods` 每 100g 营养：`energy_kcal`、`protein_g`、`carbohydrate_g`、`fat_g`、`fiber_g`、`saturated_fat_g`、`monounsaturated_fat_g`、`polyunsaturated_fat_g`、`trans_fat_g`、`total_sugar_g`、`added_sugar_g`、`sugar_alcohol_g`、`sodium_mg`、`potassium_mg`。
+  - 新表：`public.food_portions`、`public.food_public_aliases`、`public.food_private_aliases`。
+- Migration 文件路径：`supabase/migrations/022_food_database_foundation.sql`
+- 对现有数据的影响：
+  - 不重建或删除既有 foods；热量、蛋白质、碳水、脂肪回填至规范字段并由 trigger 双向兼容当前客户端。
+  - 旧数据缺少的 `fiber_g` 与扩展营养保持 `NULL`，不使用 0 伪造未知值。
+  - 现有 `food_entries` 的名称和营养快照、`daily_archives` JSON 快照不变；食品后续改名、审核或停用不会改写历史。
+  - 五项核心营养的完整性采用分阶段约束：本次先建立字段、回填和非负/关系约束；待存量纤维与现有编辑入口补齐后用后续 migration 收紧完整性。
+- 权限与删除策略：
+  - anon/authenticated 默认只读取 `approved + is_active` 的公共食品；authenticated 只能读取和维护自己的个人食品。
+  - 普通用户不能写公共食品；管理员可新增、读取全部审核状态、修改/审核/停用公共食品。
+  - 公共别名仅管理员写；个人别名仅 owner 可见可写；份量权限跟随关联食品。
+  - 公共食品不提供应用角色 DELETE policy；普通操作必须停用。存在 `food_entries.source_food_id` 引用的食品由 trigger 拒绝硬删除。
+- 风险：
+  - 本机 Docker daemon 未运行且无 Supabase CLI，本次只完成静态契约验证，尚未验证 PostgreSQL 实际编译和动态 RLS。
+  - 正式应用前必须在隔离环境验证存量数据约束、PostgREST policy 组合、管理员审核、service role 导入和删除 trigger。
+- 回滚方式：
+  - 不修改旧 migration。若隔离验证失败则不部署 022；若已部署，创建新的反向 migration 删除新 policy/trigger/表/索引和新增字段，回滚前先导出新表及新字段数据。
+- 测试内容：
+  - `node --test supabase/migrations/022_food_database_foundation.test.mjs`
+  - `node --test supabase/migrations/*.test.mjs supabase/functions/auto-archive-records/migration.test.mjs supabase/functions/auto-archive-records/handler.test.mjs`
+  - 前端全量测试与 Production build。
+- 测试结果：
+  - 022 静态契约 13/13 通过；全部 migration/归档静态契约 31/31 通过。
+  - 前端 31 个套件、210 个测试通过；Production build 通过。
+  - 未执行本地或远程 migration，未操作 Production。
+- 相关 DEV 编号：`DEV-20260729-001`
+- 相关 Commit ID：b0cb3c9ed5919e03e5a4a3a463d8b8a2f022091b
+
 ## DB-20260728-001
 
 - 日期：2026-07-28

@@ -1,3 +1,52 @@
+## DEV-20260729-001
+
+- 日期：2026-07-29
+- 状态：已完成
+- 修改类型：Database / v0.2.1 食品数据基础
+- 任务目标：在兼容既有 `foods`、个人食品和历史快照的前提下，建立公共食品与个人食品后续导入、审核、分类、份量和别名所需的数据结构与数据库权限边界。
+- 实际完成内容：
+	- 以增量 migration 扩展既有 `foods`，补充中英文身份、来源、外部 ID、来源公共食品、审核状态、生熟状态、分类、主要摄入类型及每 100g 扩展营养字段。
+	- 复用既有 `visibility + user_id` 公共/个人模型；支持个人食品通过 `source_public_food_id` 追溯来源公共食品，不建立第二套食品主表。
+	- 建立 `food_portions`、`food_public_aliases`、`food_private_aliases`，分别支持固定份量、管理员公共别名和按用户隔离的个人别名。
+	- 加入来源去重、营养非负、糖类关系、分类、审核状态、摄入类型、份量克数与别名唯一性约束。
+	- 重建 foods 与新表 RLS：匿名/登录用户只读取 approved 且启用的公共食品；登录用户仅操作自己的个人食品和个人别名；管理员管理所有公共状态、公共别名及公共份量；service role 继续通过数据库角色保留批量导入能力。
+	- 禁止普通应用硬删除公共食品；已被 `food_entries` 引用的食品禁止普通硬删除，继续以停用为主。
+	- 保留 `food_entries` 名称与四项营养快照以及 `daily_archives` JSON 快照契约，食品改名或停用不改变既有历史展示。
+	- 旧四项营养安全回填到规范字段；无法推断的纤维和扩展营养保持 `NULL`。五项核心营养的全面强制采用分阶段策略，待现有编辑器与存量数据补齐后再收紧，避免本 migration 破坏旧数据。
+- 主要修改文件或模块：
+	- `supabase/migrations/022_food_database_foundation.sql`
+	- `supabase/migrations/022_food_database_foundation.test.mjs`
+	- `docs/PROJECT_STATUS.md`
+	- `docs/DATABASE_CHANGES.md`
+	- `docs/DEVELOPMENT_LOG.md`
+- 遇到的问题：
+	- 既有 foods 只有热量、蛋白质、脂肪和碳水，没有可可靠推断的膳食纤维；直接添加五项 NOT NULL 会导致存量迁移失败。
+	- 本机存在 Docker 命令，但 Docker daemon 未运行，且未安装 Supabase CLI，不能启动本地 Supabase 做动态 SQL/RLS 集成验证。
+- 解决方式：
+	- 对旧四项进行无损回填并通过触发器保持旧字段与规范字段同步；未知纤维及扩展营养保持 `NULL`，在注释和数据库记录中明确后续约束收紧条件。
+	- 新增 Node 静态 migration 契约，覆盖字段、约束、RLS、管理员权限、别名/份量隔离、硬删除保护和历史快照兼容；未使用 Production 替代本地测试。
+- 执行的测试：
+	- `node --test supabase/migrations/022_food_database_foundation.test.mjs`
+	- `node --test supabase/migrations/*.test.mjs supabase/functions/auto-archive-records/migration.test.mjs supabase/functions/auto-archive-records/handler.test.mjs`
+	- `cd frontend && CI=true npm test -- --runInBand --watchAll=false`
+	- `cd frontend && npm run build`
+	- `git diff --check`
+- 测试结果：
+	- 本次 migration 契约 13/13 通过。
+	- migration 与自动归档静态契约合计 31/31 通过。
+	- 前端全量 31 个套件、210 个测试通过。
+	- Production build 成功（Compiled successfully）。
+- 未完成事项：
+	- 未批量导入公共食品，未开发食品搜索页面。
+	- 未升级现有食品编辑器以采集全部五项核心营养和扩展字段；核心五项数据库完整性约束仍处于兼容性分阶段。
+	- 未在本地 PostgreSQL/Supabase 执行 migration，未部署 Production，未 push。
+- 风险或注意事项：
+	- 正式部署 022 前必须在隔离 Supabase 环境执行 migration，并用普通用户、管理员、跨账号和 service role 做动态 RLS 验证。
+	- 测试日志包含缺少测试 Supabase 环境变量、模拟 session 恢复失败的预期输出；Build 包含 Node `fs.F_OK` 弃用警告，均未造成失败。
+	- `docs/ROADMAP.md` 存在用户确认保留的既有未提交修改，本任务未修改且不会纳入提交。
+- 当前分支：supabase-v1
+- Git Commit ID：b0cb3c9ed5919e03e5a4a3a463d8b8a2f022091b
+
 ## DEV-20260728-023
 
 - 日期：2026-07-28
