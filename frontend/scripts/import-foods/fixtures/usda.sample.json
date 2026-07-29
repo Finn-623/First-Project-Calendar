@@ -1,0 +1,33 @@
+[
+  {
+    "fdcId": 9990001,
+    "description": "Test lentils, cooked",
+    "name_zh": "测试熟扁豆",
+    "preparation_state": "cooked",
+    "foodCategory": { "description": "Legumes and Legume Products" },
+    "category_primary": "豆类及豆制品",
+    "intake_types": ["carbohydrate", "protein", "fiber"],
+    "foodNutrients": [
+      { "nutrient": { "name": "Energy", "unitName": "KCAL" }, "amount": 116 },
+      { "nutrient": { "name": "Protein", "unitName": "G" }, "amount": 9.02 },
+      {
+        "nutrient": { "name": "Carbohydrate, by difference", "unitName": "G" },
+        "amount": 20.13
+      },
+      { "nutrient": { "name": "Total lipid (fat)", "unitName": "G" }, "amount": 0.38 },
+      { "nutrient": { "name": "Fiber, total dietary", "unitName": "G" }, "amount": 7.9 },
+      {
+        "nutrient": { "name": "Fatty acids, total saturated", "unitName": "G" },
+        "amount": 0.05
+      },
+      {
+        "nutrient": { "name": "Sugars, total including NLEA", "unitName": "G" },
+        "amount": 1.8
+      },
+      { "nutrient": { "name": "Sodium, Na", "unitName": "G" }, "amount": 0.002 },
+      { "nutrient": { "name": "Potassium, K", "unitName": "MG" }, "amount": 369 }
+    ],
+    "portions": [{ "name": "1杯", "grams": 198, "is_default": true }],
+    "aliases": ["熟扁豆"]
+  }
+]

@@ -65,6 +65,7 @@
     "start": "craco start",
     "build": "craco build",
     "test": "craco test",
+    "import:foods": "node scripts/import-foods/cli.mjs",
     "validate:version": "node scripts/validate-version.js"
   },
   "browserslist": {

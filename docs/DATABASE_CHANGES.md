@@ -1,3 +1,39 @@
+## DB-20260729-002
+
+- 日期：2026-07-29
+- 修改原因：v0.2.1 后续公共食品导入需要可审计、可失败隔离且不会留下孤立份量/别名的服务端数据库入口，普通用户不能接触导入运行信息或批量写入能力。
+- 实际修改内容：
+  - 新建 `public.food_import_runs`，记录来源、输入文件/批次标识、运行状态、总计与成功/跳过/失败计数、开始/完成时间、创建者、执行角色、错误摘要和小型安全元数据。
+  - 新建 `public.food_import_errors`，按运行记录行号或外部 ID、错误代码、可读消息和白名单原始摘要。
+  - 为审计表建立状态、非负计数、完成时间一致性和 JSON object 约束，以及来源/时间和运行/行号索引。
+  - 两表启用 RLS；普通 authenticated 与 anon 被撤销默认权限，authenticated 仅在 `public.is_app_admin(auth.uid())` 为真时通过 policy，service role 显式保留全部权限。
+  - 新增 `public.import_public_food_item(UUID, JSONB, JSONB, JSONB)` SECURITY DEFINER RPC，仅允许管理员或 service role。
+  - RPC 强制来源、外部 ID、名称、一级分类和五项核心营养；固定以 `visibility='public'`、`review_status='pending'` 写入，不能绕过审核展示规则。
+  - RPC 以 `source_name + external_food_id` 返回 skipped，不更新既有公共食品；单个 PL/pgSQL 子事务内写入食品、份量和别名，附属写入失败会回滚主食品。
+- 涉及对象：
+  - `public.food_import_runs`
+  - `public.food_import_errors`
+  - `public.import_public_food_item(UUID, JSONB, JSONB, JSONB)`
+- Migration 文件路径：`supabase/migrations/023_public_food_import_audit.sql`
+- 对现有数据的影响：
+  - 仅新增审计表、索引、RLS 与 RPC，不读取、修改或导入现有 foods。
+  - 不执行 migration 时对现有环境无影响；本任务没有正式食品写入。
+- 风险：
+  - 当前没有可运行的本地 Supabase/PostgreSQL，SQL 编译、RLS policy 组合、SECURITY DEFINER 权限、并发唯一冲突和真实事务回滚尚未动态验证。
+  - SECURITY DEFINER RPC 必须保持固定 `search_path`、调用者角色检查和最小 grant；service role key 不得进入浏览器或日志。
+- 回滚方式：
+  - 如未部署则不执行 023；如已部署，创建新反向 migration，先撤销 RPC grant 并删除 RPC，再备份并删除两个审计表及其 policy/index。
+- 测试内容：
+  - 023 migration 静态权限与原子 RPC 契约。
+  - Node repository/mock 的去重、幂等、失败隔离、计数与无孤立附属数据测试。
+  - 全部 migration/归档契约、前端全量测试和 Production build。
+- 测试结果：
+  - 本次导入与 023 专项 29/29 通过；全部 Node 契约 60/60 通过。
+  - 前端 31 个套件、210 个测试通过；Production build 通过。
+  - 未执行本地或远程 migration，未操作 Production。
+- 相关 DEV 编号：`DEV-20260729-002`
+- 相关 Commit ID：e786b21db56d1c3e0c51e88125b48094dd650409
+
 ## DB-20260729-001
 
 - 日期：2026-07-29

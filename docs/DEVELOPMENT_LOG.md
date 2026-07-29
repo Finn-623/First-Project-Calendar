@@ -1,3 +1,59 @@
+## DEV-20260729-002
+
+- 日期：2026-07-29
+- 状态：已完成
+- 修改类型：Database tooling / v0.2.1 公共食品导入框架
+- 任务目标：建立与数据源解耦的公共食品批量导入、标准化、校验、幂等去重、失败隔离和安全审计能力，不导入正式食品数据。
+- 实际完成内容：
+	- 新增 migration 023，建立导入运行与单行错误审计表；记录来源、输入标识、状态、总数、成功/跳过/失败计数、时间、执行身份及安全错误摘要。
+	- 审计表启用 RLS，authenticated 只有通过 `is_app_admin` 才可访问，service role 保留受控批量导入能力，anon 与普通用户无权限。
+	- 新增 `import_public_food_item` SECURITY DEFINER RPC，以单条事务原子写入 pending 公共食品、固定份量和公共别名；主食品或附属数据失败时整体回滚。
+	- 建立统一 Node.js 导入模型，覆盖来源、外部 ID、中英文名、品牌、生熟状态、两级分类、摄入类型、Migration 022 全部营养字段、份量和公共别名。
+	- 新增 AFCD 与 USDA JSON 适配器；完成字段映射、文本清理、kJ→kcal、g→mg、缺失值 `NULL` 保留和安全数值解析。
+	- 校验五项核心营养、非负数、糖类关系、摄入类型、份量克数、唯一默认份量和名称/来源必填；区分读取/解析错误、业务校验错误和数据库错误。
+	- 通过 `source_name + external_food_id` 在输入内和数据库中去重；默认重复记 skipped，不按名称合并，不提供隐式更新模式。
+	- 正式导入按 batch size 预取已存在身份、分批并发调用原子 RPC；单行失败不阻断其他食品，并批量写入脱敏错误审计。
+	- 新增 `npm run import:foods` 命令，支持 `--source`、`--input`、`--dry-run`、`--batch-size`；写入模式缺少服务端环境变量时快速失败且不输出凭据。
+	- 只提交 7 条人工测试记录（AFCD 6、USDA 1），不构成正式公共食品库。
+- 主要修改文件或模块：
+	- `supabase/migrations/023_public_food_import_audit.sql`
+	- `supabase/migrations/023_public_food_import_audit.test.mjs`
+	- `frontend/scripts/import-foods/`
+	- `frontend/package.json`
+	- `docs/PROJECT_STATUS.md`
+	- `docs/DATABASE_CHANGES.md`
+	- `docs/DEVELOPMENT_LOG.md`
+- 遇到的问题：
+	- 当前本机 Docker daemon 未运行且没有 Supabase CLI，无法在本地数据库动态执行 022/023 或验证真实 RLS/RPC。
+	- Migration 022 为旧数据兼容允许扩展营养 `NULL`；正式公共导入仍需要更严格地要求五项核心营养。
+- 解决方式：
+	- 使用 repository 抽象与内存 repository 测试覆盖幂等、失败隔离、计数和附属数据原子性，并用静态 migration 契约覆盖权限与 RPC 结构；未使用 Production 代替。
+	- 在 CLI validator 与 023 RPC 双层要求五项核心营养，同时继续让未知扩展营养保留 `NULL`。
+- 执行的测试：
+	- `node --test scripts/import-foods/*.test.mjs ../supabase/migrations/023_public_food_import_audit.test.mjs`
+	- `node scripts/import-foods/cli.mjs --source AFCD --input scripts/import-foods/fixtures/afcd.sample.json --dry-run --batch-size 2`
+	- `node --test supabase/migrations/*.test.mjs supabase/functions/auto-archive-records/migration.test.mjs supabase/functions/auto-archive-records/handler.test.mjs frontend/scripts/import-foods/*.test.mjs`
+	- `cd frontend && CI=true npm test -- --runInBand --watchAll=false`
+	- `cd frontend && npm run build`
+	- `git diff --check`
+- 测试结果：
+	- 本次导入与 023 专项 29/29 通过。
+	- 全部 migration、归档及导入 Node 契约 60/60 通过。
+	- AFCD dry-run：总计 6、有效 2、重复跳过 1、非法 3，状态 `partially_failed`，退出码 2，未写数据库。
+	- 前端全量 31 个套件、210 个测试通过。
+	- Production build 成功（Compiled successfully）。
+- 未完成事项：
+	- 未准备或导入正式 300–500 种食品，未联网抓取 AFCD/USDA，未开发搜索或前端管理页面。
+	- 未动态验证 PostgreSQL SQL 编译、审计 RLS、管理员路径、service role RPC、并发唯一冲突和事务回滚。
+	- 未执行本地/远程 migration，未部署 Production，未 push。
+- 风险或注意事项：
+	- 正式导入前必须在隔离 Supabase 环境先应用并动态验证 022、023，再使用经授权的 service role 进程执行 dry-run 与小批量试导入。
+	- service role key 仅从 Node 进程环境读取；脚本、fixture、日志和 Git 中均不得包含真实密钥。
+	- 测试存在既有缺少 Supabase 测试变量和模拟 session 失败日志；Build 存在 `fs.F_OK` 弃用警告，均不阻塞。
+	- `docs/ROADMAP.md` 的用户既有修改保持不动且不纳入本任务提交。
+- 当前分支：supabase-v1
+- Git Commit ID：e786b21db56d1c3e0c51e88125b48094dd650409
+
 ## DEV-20260729-001
 
 - 日期：2026-07-29

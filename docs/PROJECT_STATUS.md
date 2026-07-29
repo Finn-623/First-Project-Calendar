@@ -14,8 +14,8 @@
 - 当前Phase：Phase 1（完整饮食管理 App）
 - 当前正式版本：v0.1.3 — 基础记录闭环与稳定性收尾，已于 2026-07-28 15:55:36（Australia/Sydney）正式上线。
 - 当前开发版本：v0.2.1 — 公共食品数据库。
-- 当前状态：v0.2.1 已开始开发；食品数据库基础 migration 022 已在本地建立并通过静态契约，尚未部署。
-- 判断结论：Production 仍运行 v0.1.3；v0.2.1 当前仅完成第一个独立需求的本地数据库基础，不代表公共食品导入或 v0.2.1 已上线。
+- 当前状态：v0.2.1 已开始开发；食品数据库基础 022 与公共食品导入审计/RPC 023 已在本地建立并通过静态契约，尚未部署。
+- 判断结论：Production 仍运行 v0.1.3；v0.2.1 当前完成前两个独立需求的本地基础，不代表正式公共食品数据已导入或 v0.2.1 已上线。
 
 ### 判断原因
 
@@ -33,9 +33,15 @@
 - Migration：`022_food_database_foundation.sql`，未执行本地或 Production migration。
 - 验证：022 契约 13/13、全部 migration/归档契约 31/31、前端 31 套件 210 测试通过，Production build 通过。
 - 兼容策略：旧四项营养安全回填；无法推断的纤维和扩展营养保持 `NULL`；五项核心营养完整性待现有编辑器和存量数据补齐后通过后续 migration 收紧。
-- `未开始` 公共食品批量导入。
+- `已完成（本地框架，待动态验证）` 公共食品导入标准模型、AFCD/USDA JSON 适配器、校验、来源 ID 去重、失败隔离、dry-run 与 service-role CLI。
+- `已完成（本地框架，待动态验证）` migration 023 导入运行/错误审计及单食品、份量、公共别名原子写入 RPC；正式食品固定写为 pending。
+- 导入命令：
+  - dry-run：`cd frontend && npm run import:foods -- --source AFCD --input <file.json> --dry-run --batch-size 50`
+  - 正式运行：由受控服务端环境提供 `SUPABASE_URL` 与 `SUPABASE_SERVICE_ROLE_KEY` 后移除 `--dry-run`；不得在前端或命令记录中写入密钥。
+- 验证：导入与 023 专项 29/29、全部 migration/归档/导入 Node 契约 60/60、前端 31 套件 210 测试、Production build 通过。
+- `未开始` 正式 300–500 种公共食品数据准备与首批导入。
 - `未开始` 食品搜索页面与完整 v0.2.1 UI。
-- `未部署` migration 022、Vercel Production；未 push。
+- `未部署` migration 022/023、Vercel Production；未执行正式导入，未 push。
 
 ## 3. 已完成
 
