@@ -1,3 +1,52 @@
+## DEV-20260731-003
+
+- 日期：2026-07-31
+- 状态：已完成
+- 修改类型：Database integration validation / v0.2.1 本地小批量试导入
+- 任务目标：关闭停用食品仍可被直接引用新增记录的数据库缺口，并在完全隔离的本地 Supabase 中对最终 400 条数据包执行可重复的 20 条代表性试导入；不连接远程环境、不执行正式导入。
+- 实际完成内容：
+	- 新增 Migration 025，在 `food_entries.source_food_id` 新增或改变时强制来源食品必须为 `approved + active`；普通用户、管理员和 service role 均不能绕过。既有引用、无食品引用事件和历史快照仍可查询和进行不改变来源的编辑。
+	- 动态测试扩展到 43 项，覆盖停用公共/个人食品、管理员/service role、重新启用、既有历史编辑和无食品事件。
+	- 从最终 400 条 AFCD 包中固定选择 20 条代表性食品，覆盖不同分类、生熟状态、空/多摄入类型、别名和固定份量；清单只引用已审计最终包，不复制或改写源数据。
+	- 新增只允许 loopback API/数据库的本地试导入命令；自动创建本地用户 A、用户 B 和管理员 JWT，完成 pending 导入、RLS 可见性、管理员审核、alias/portion 可见性、幂等重跑、失败隔离、审计权限和清理。
+	- 首次真实试导入发现规范营养字段 `NUMERIC(10,2)` 会截断最终包四位小数；新增 Migration 026 将 14 个规范营养字段调整为 `NUMERIC(14,4)`，不改 legacy 显示字段或历史快照。
+	- 修正试导入孤儿检查，使其对照数据库内全部现存食品，不把其他动态测试创建的合法食品误判为孤儿。
+- 主要修改文件或模块：
+	- `supabase/migrations/025_block_disabled_food_entries.sql`
+	- `supabase/migrations/025_block_disabled_food_entries.test.mjs`
+	- `supabase/migrations/026_preserve_food_nutrient_precision.sql`
+	- `supabase/migrations/026_preserve_food_nutrient_precision.test.mjs`
+	- `frontend/scripts/import-foods/local-supabase-integration.mjs`
+	- `frontend/scripts/import-foods/run-local-trial-import.mjs`
+	- `frontend/scripts/import-foods/local-trial-import.test.mjs`
+	- `frontend/scripts/import-foods/dataset/local-trial-import-manifest.json`
+	- `frontend/scripts/import-foods/dataset/local-trial-import-audit.json`
+	- `frontend/package.json`
+- 执行的测试：
+	- `npx --no-install supabase db reset`，完整应用 Migration 001–026。
+	- `cd frontend && npm run test:food-db-local`（43/43，连续回归通过）。
+	- `cd frontend && npm run import:foods:trial:local -- --mode full`（完全隔离重复运行）。
+	- Migration/归档静态契约、`scripts/import-foods/*.test.mjs`、阶段 3–7 五个数据集验证。
+	- `cd frontend && npm test -- --runInBand --watchAll=false`
+	- `cd frontend && npm run build`
+- 测试结果：
+	- 本地试导入首轮 20 success、0 failed、0 skipped；相同数据重跑 20 skipped、0 duplicate。
+	- 失败隔离批次 5 条闭合为 3 success、1 failed、1 skipped；失败行没有食品、alias 或 portion 残留。
+	- 试导入写入 20 食品、7 aliases、45 portions；管理员审核 2 条后普通用户只看到该 2 条及其附属数据。
+	- 动态权限/RPC 43/43；Migration/归档静态契约 46/46；import-foods 26/26；阶段 3–7验证全部通过。
+	- 前端全量 31 个套件、210 个测试通过；Production Build 成功。
+	- 非阻塞输出为既有测试环境缺少前端 Supabase 变量日志、模拟 session 错误日志和 Node `fs.F_OK` 弃用警告。
+- 未完成事项：
+	- 未执行远程/Production Migration 022–026，未正式导入 400 条食品，未部署 Production。
+	- 未进入阶段 8C；24 条专业中文名称和 40 条延期份量仍保留人工复核状态。
+- 风险或注意事项：
+	- 试导入和测试用户均在本地流程结束时清理；最终 400 条数据包 SHA-256 保持不变。
+	- `docs/ROADMAP.md` 的用户既有修改保持完全不动且未纳入提交。
+- 停用食品约束 Commit：`ea2d18a570bb27ce36b603538b5af751bf3d3027`
+- 营养精度修复 Commit：`8f4d6a0f92cf5db299950b37d17d9f93ec5c5bef`
+- 本地试导入 Commit：`47709a26a28060699945d2bb75d8317d11531bb8`
+- Git Commit ID：由本独立文档提交承载，不自引用其自身哈希。
+
 ## DEV-20260731-002
 
 - 日期：2026-07-31

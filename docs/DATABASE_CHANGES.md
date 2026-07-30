@@ -1,3 +1,42 @@
+## DB-20260731-002
+
+- 日期：2026-07-31
+- 修改原因：本地动态验证确认停用食品仍能通过直接写入 `food_entries.source_food_id` 建立新引用；首次最终包试导入同时确认规范营养字段两位小数会丢失已审计源数据精度。
+- 实际修改内容：
+  - 新增 Migration 025 和触发函数 `enforce_food_entry_source_available()`；仅在新增或改变食品引用时要求来源食品为 `approved` 且 `is_active = true`，不存在角色绕过。
+  - 保留 `source_food_id IS NULL`、既有来源不变的历史编辑、历史名称与四项营养快照，以及无食品引用时间轴事件。
+  - 新增 Migration 026，将 14 个规范每 100g 营养字段由 `NUMERIC(10,2)` 调整为 `NUMERIC(14,4)`，精确保存最终 AFCD 包的小数；不改 legacy `calories/protein/fat/carbs` 或 `food_entries` 快照。
+- 涉及对象：
+  - `public.food_entries.source_food_id`
+  - `public.enforce_food_entry_source_available()`
+  - `public.foods` 的 14 个规范营养字段
+- Migration 文件路径：
+  - `supabase/migrations/025_block_disabled_food_entries.sql`
+  - `supabase/migrations/026_preserve_food_nutrient_precision.sql`
+- 对现有数据的影响：
+  - 025 不更新或删除现有记录；已引用食品停用后，既有记录和快照继续有效，只阻止新建引用或改指向停用食品。
+  - 026 为无损扩精度类型变更，不回填、不舍入既有值，不改历史快照。
+- 风险：
+  - 022–026 均只在本地 Supabase 验证，尚未应用任何远程环境。
+  - Production 应在正式导入前按顺序部署完整 Migration 链，并再次验证实际数据量下的类型变更锁时长。
+- 回滚方式：
+  - 025 如需回滚，应以新 migration 删除 trigger/function；不得修改已应用文件。
+  - 026 如需降回两位小数会产生数据精度损失，必须先审计所有四位小数值并由用户确认，再以新 migration 执行。
+- 测试内容：
+  - 本地 reset 完整应用 Migration 001–026。
+  - 43 项真实 JWT/RLS/RPC 动态测试。
+  - 20 条最终包小批量试导入、幂等重跑和 5 条失败隔离批次。
+  - Migration 静态契约、import-foods、数据集、前端全量测试与 Production Build。
+- 测试结果：
+  - 动态权限/RPC 43/43；试导入 20/20，重跑 20 skipped，失败批次 3 success/1 failed/1 skipped。
+  - Migration/归档静态契约 46/46；import-foods 26/26；前端 31 套件 210 测试通过；Build 成功。
+  - 未执行远程 Migration、正式食品导入或部署。
+- 相关 DEV 编号：`DEV-20260731-003`
+- 相关 Commit ID：
+  - `ea2d18a570bb27ce36b603538b5af751bf3d3027`
+  - `8f4d6a0f92cf5db299950b37d17d9f93ec5c5bef`
+  - `47709a26a28060699945d2bb75d8317d11531bb8`
+
 ## DB-20260731-001
 
 - 日期：2026-07-31

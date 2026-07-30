@@ -14,8 +14,8 @@
 - 当前Phase：Phase 1（完整饮食管理 App）
 - 当前正式版本：v0.1.3 — 基础记录闭环与稳定性收尾，已于 2026-07-28 15:55:36（Australia/Sydney）正式上线。
 - 当前开发版本：v0.2.1 — 公共食品数据库。
-- 当前状态：v0.2.1 阶段 8A 已完成；食品数据库基础、导入框架、400 条 AFCD 数据包、离线验证及本地 Supabase 动态权限/RPC 验证已完成，尚未执行小批量试导入或正式导入。
-- 判断结论：Production 仍运行 v0.1.3；v0.2.1 的完整迁移链已在隔离本地环境通过动态验证，但 Migration 022–024 尚未应用到任何远程环境。
+- 当前状态：v0.2.1 阶段 8B 已完成；食品数据库基础、导入框架、400 条 AFCD 数据包、动态权限/RPC 验证及隔离小批量试导入均已完成，尚未执行正式导入。
+- 判断结论：Production 仍运行 v0.1.3；v0.2.1 的完整迁移链已在隔离本地环境通过动态验证，但 Migration 022–026 尚未应用到任何远程环境。
 
 ### 判断原因
 
@@ -30,8 +30,8 @@
 - `已完成（本地动态验证）` 建立固定份量、公共别名和个人别名表及其唯一性约束。
 - `已完成（本地动态验证）` 建立 approved 公共读取、个人数据双向隔离、管理员公共管理、份量跟随食品及别名隔离 RLS。
 - `已完成（本地动态验证）` 食品引用硬删除保护、`food_entries` 历史快照保持和公共食品个人副本隔离。
-- Migration：`022_food_database_foundation.sql`、`023_public_food_import_audit.sql`、`024_food_database_runtime_permissions.sql`；仅在隔离本地 Supabase 应用，均未部署 Production。
-- 验证：本地 reset 完整应用 Migration 001–024；动态权限/RPC 34/34、静态契约 41/41、import-foods 23/23、前端 31 套件 210 测试通过，Production build 通过。
+- Migration：`022_food_database_foundation.sql` 至 `026_preserve_food_nutrient_precision.sql`；仅在隔离本地 Supabase 应用，均未部署 Production。
+- 验证：本地 reset 完整应用 Migration 001–026；动态权限/RPC 43/43、静态契约 46/46、import-foods 26/26、前端 31 套件 210 测试通过，Production build 通过。
 - 兼容策略：旧四项营养安全回填；无法推断的纤维和扩展营养保持 `NULL`；五项核心营养完整性待现有编辑器和存量数据补齐后通过后续 migration 收紧。
 - `已完成（本地动态验证）` 公共食品导入标准模型、AFCD/USDA JSON 适配器、校验、来源 ID 去重、失败隔离、dry-run 与 service-role CLI。
 - `已完成（本地动态验证）` migration 023 导入运行/错误审计及单食品、份量、公共别名原子写入 RPC；正常写入、三类失败回滚、幂等 skip、批次失败隔离与计数闭合均通过。
@@ -50,9 +50,11 @@
 - `已完成（离线契约）` 400 条 AFCD 首批公共食品导入 JSON，包含 100 条 aliases、阶段 5 intake_types 和原始 AFCD 营养；24 条中文名称 needs_review 保留，全部食品状态为 pending。
 - `已完成（离线 dry-run）` 400/400 解析和统一模型校验成功，0 failed；没有连接数据库、创建 import run 或调用 RPC。阶段 7 Commit：`93f0af1e66ba59af492e2c3c4a40876d87f671ad`。
 - `已完成（仅本地）` 阶段 8A Migration 022–024 应用与动态 RLS/RPC 验证；功能 Commit：`0393e60311809e3603493cfeecd8798a76b1f1f5`。
-- `未开始` 阶段 8B 隔离环境小批量试导入；正式首批公共食品写入和管理员审核仍未执行。
+- `已完成（仅本地）` 阶段 8B：Migration 025 阻止停用食品建立新记录引用；Migration 026 保留最终包四位营养精度；20 条代表食品试导入、审核可见性、幂等重跑、失败隔离和审计清理均通过。
+- 阶段 8B Commit：停用食品约束 `ea2d18a570bb27ce36b603538b5af751bf3d3027`；营养精度 `8f4d6a0f92cf5db299950b37d17d9f93ec5c5bef`；本地试导入 `47709a26a28060699945d2bb75d8317d11531bb8`。
+- `未执行` 正式首批 400 条公共食品写入、管理员审核或阶段 8C。
 - `未开始` 食品搜索页面与完整 v0.2.1 UI。
-- `未部署` migration 022/023/024、Vercel Production；未执行远程或正式导入。
+- `未部署` migration 022–026、Vercel Production；未执行远程或正式导入。
 
 ## 3. 已完成
 
