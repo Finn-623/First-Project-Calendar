@@ -1,0 +1,38 @@
+{
+  "package": "AFCD initial public foods local trial",
+  "manifest_food_count": 20,
+  "expected_alias_count": 7,
+  "expected_portion_count": 45,
+  "initial_import": {
+    "total": 20,
+    "success": 20,
+    "failed": 0,
+    "skipped": 0,
+    "status": "completed"
+  },
+  "idempotent_rerun": {
+    "total": 20,
+    "success": 0,
+    "failed": 0,
+    "skipped": 20,
+    "status": "completed"
+  },
+  "failure_isolation": {
+    "total": 5,
+    "success": 3,
+    "failed": 1,
+    "skipped": 1,
+    "status": "partially_failed"
+  },
+  "approved_for_visibility_test": ["F009034", "F005634"],
+  "rls": {
+    "pending_visible_to_anon": 0,
+    "pending_visible_to_user_a": 0,
+    "pending_visible_to_user_b": 0,
+    "approved_visible_to_users": 2,
+    "pending_remaining": 18
+  },
+  "final_package_sha256": "4b9b3f342727ff39aafa1fb189496f13a76c3e11d5c125c55b858076c5d4696b",
+  "contains_credentials": false,
+  "remote_environment_allowed": false
+}

@@ -1,0 +1,222 @@
+[
+  {
+    "external_food_id": "F007661",
+    "name_en": "Rice, white, boiled or rice cooker, no added salt",
+    "name_zh": "白米饭（水煮或电饭锅烹制、无加盐）",
+    "selection_reason": "常见熟主食，验证 cooked 与固定份量",
+    "expected_alias_count": 0,
+    "expected_portion_count": 2,
+    "expected_intake_types": ["carbohydrate"],
+    "expected_preparation_state": "cooked",
+    "translation_status": "ready"
+  },
+  {
+    "external_food_id": "F001463",
+    "name_en": "Bread, from white flour",
+    "name_zh": "白面包",
+    "selection_reason": "常见主食，验证 unspecified 与多选摄入类型",
+    "expected_alias_count": 0,
+    "expected_portion_count": 2,
+    "expected_intake_types": ["carbohydrate", "fiber"],
+    "expected_preparation_state": "unspecified",
+    "translation_status": "ready"
+  },
+  {
+    "external_food_id": "F002594",
+    "name_en": "Chicken, breast, lean flesh, raw",
+    "name_zh": "鸡胸肉（去明显脂肪、生）",
+    "selection_reason": "常见禽肉，验证 raw 与多个份量",
+    "expected_alias_count": 0,
+    "expected_portion_count": 4,
+    "expected_intake_types": ["protein"],
+    "expected_preparation_state": "raw",
+    "translation_status": "ready"
+  },
+  {
+    "external_food_id": "F007827",
+    "name_en": "Salmon, Atlantic, fillet, raw",
+    "name_zh": "大西洋三文鱼柳（生）",
+    "selection_reason": "常见水产，验证 protein 与 fat 多选",
+    "expected_alias_count": 0,
+    "expected_portion_count": 3,
+    "expected_intake_types": ["protein", "fat"],
+    "expected_preparation_state": "raw",
+    "translation_status": "ready"
+  },
+  {
+    "external_food_id": "F003729",
+    "name_en": "Egg, chicken, whole, raw",
+    "name_zh": "全鸡蛋（生）",
+    "selection_reason": "常见蛋类与单一固定份量",
+    "expected_alias_count": 0,
+    "expected_portion_count": 1,
+    "expected_intake_types": ["protein", "fat"],
+    "expected_preparation_state": "raw",
+    "translation_status": "ready"
+  },
+  {
+    "external_food_id": "F005634",
+    "name_en": "Milk, cow, fluid, regular fat (~3.5%)",
+    "name_zh": "全脂牛奶",
+    "selection_reason": "常见乳品，验证空 intake_types 与多个份量",
+    "expected_alias_count": 0,
+    "expected_portion_count": 3,
+    "expected_intake_types": [],
+    "expected_preparation_state": "unspecified",
+    "translation_status": "ready"
+  },
+  {
+    "external_food_id": "F009694",
+    "name_en": "Yoghurt, natural, regular fat (~3%)",
+    "name_zh": "原味全脂酸奶",
+    "selection_reason": "乳品，验证有 alias 但无 portion",
+    "expected_alias_count": 1,
+    "expected_portion_count": 0,
+    "expected_intake_types": ["protein"],
+    "expected_preparation_state": "unspecified",
+    "translation_status": "ready"
+  },
+  {
+    "external_food_id": "F009176",
+    "name_en": "Tofu (soy bean curd), firm, as purchased",
+    "name_zh": "老豆腐",
+    "selection_reason": "常见豆制品",
+    "expected_alias_count": 0,
+    "expected_portion_count": 1,
+    "expected_intake_types": ["protein"],
+    "expected_preparation_state": "unspecified",
+    "translation_status": "ready"
+  },
+  {
+    "external_food_id": "F001905",
+    "name_en": "Broccoli, fresh, raw",
+    "name_zh": "西兰花（新鲜、生）",
+    "selection_reason": "常见蔬菜，验证 alias 与 fiber",
+    "expected_alias_count": 1,
+    "expected_portion_count": 1,
+    "expected_intake_types": ["fiber"],
+    "expected_preparation_state": "raw",
+    "translation_status": "ready"
+  },
+  {
+    "external_food_id": "F000110",
+    "name_en": "Apple, red skin, unpeeled, raw",
+    "name_zh": "红皮苹果（带皮、生）",
+    "selection_reason": "常见水果与多个份量",
+    "expected_alias_count": 0,
+    "expected_portion_count": 4,
+    "expected_intake_types": ["carbohydrate", "fiber"],
+    "expected_preparation_state": "raw",
+    "translation_status": "ready"
+  },
+  {
+    "external_food_id": "F006177",
+    "name_en": "Oil, olive",
+    "name_zh": "橄榄油",
+    "selection_reason": "常见油脂，验证无 alias 与无 portion",
+    "expected_alias_count": 0,
+    "expected_portion_count": 0,
+    "expected_intake_types": ["fat"],
+    "expected_preparation_state": "unspecified",
+    "translation_status": "ready"
+  },
+  {
+    "external_food_id": "F008976",
+    "name_en": "Sugar, white, granulated or lump",
+    "name_zh": "白砂糖",
+    "selection_reason": "常见调味品与多个份量",
+    "expected_alias_count": 0,
+    "expected_portion_count": 3,
+    "expected_intake_types": ["carbohydrate"],
+    "expected_preparation_state": "unspecified",
+    "translation_status": "ready"
+  },
+  {
+    "external_food_id": "F009527",
+    "name_en": "Water, tap",
+    "name_zh": "自来水",
+    "selection_reason": "非酒精饮料，验证空 intake_types 与六个份量",
+    "expected_alias_count": 0,
+    "expected_portion_count": 6,
+    "expected_intake_types": [],
+    "expected_preparation_state": "unspecified",
+    "translation_status": "ready"
+  },
+  {
+    "external_food_id": "F009034",
+    "name_en": "Sweet potato, orange flesh, peeled, fresh, boiled, drained",
+    "name_zh": "橙肉红薯（去皮、水煮、沥干）",
+    "selection_reason": "有多个 aliases 和 portions 的熟制淀粉类代表",
+    "expected_alias_count": 2,
+    "expected_portion_count": 5,
+    "expected_intake_types": ["carbohydrate", "fiber"],
+    "expected_preparation_state": "cooked",
+    "translation_status": "ready"
+  },
+  {
+    "external_food_id": "F009300",
+    "name_en": "Tuna, unflavoured, canned in water, drained",
+    "name_zh": "金枪鱼罐头（水浸、沥干）",
+    "selection_reason": "有 alias 与多个 portions 的 unspecified 水产",
+    "expected_alias_count": 1,
+    "expected_portion_count": 2,
+    "expected_intake_types": ["protein"],
+    "expected_preparation_state": "unspecified",
+    "translation_status": "ready"
+  },
+  {
+    "external_food_id": "F002414",
+    "name_en": "Cheese, cheddar, natural, regular fat",
+    "name_zh": "天然全脂切达奶酪",
+    "selection_reason": "有 alias、多个 portions 和多选 intake_types 的乳品",
+    "expected_alias_count": 1,
+    "expected_portion_count": 2,
+    "expected_intake_types": ["protein", "fat"],
+    "expected_preparation_state": "unspecified",
+    "translation_status": "ready"
+  },
+  {
+    "external_food_id": "F001884",
+    "name_en": "Bream, fillet, raw",
+    "name_zh": "鲷鱼（鱼柳、生）",
+    "selection_reason": "中文名称 needs_review 的 raw 水产",
+    "expected_alias_count": 0,
+    "expected_portion_count": 3,
+    "expected_intake_types": ["protein", "fat"],
+    "expected_preparation_state": "raw",
+    "translation_status": "needs_review"
+  },
+  {
+    "external_food_id": "F004261",
+    "name_en": "Grape, waltham cross, raw",
+    "name_zh": "沃尔瑟姆十字葡萄（生）",
+    "selection_reason": "中文名称 needs_review 且无 portion 的水果",
+    "expected_alias_count": 0,
+    "expected_portion_count": 0,
+    "expected_intake_types": ["carbohydrate", "fiber"],
+    "expected_preparation_state": "raw",
+    "translation_status": "needs_review"
+  },
+  {
+    "external_food_id": "F003200",
+    "name_en": "Corn, fresh on cob, boiled, drained",
+    "name_zh": "玉米（新鲜带芯、水煮、沥干）",
+    "selection_reason": "常见熟制淀粉蔬菜，有 alias 与多个 portions",
+    "expected_alias_count": 1,
+    "expected_portion_count": 3,
+    "expected_intake_types": ["carbohydrate", "fiber"],
+    "expected_preparation_state": "cooked",
+    "translation_status": "ready"
+  },
+  {
+    "external_food_id": "F005177",
+    "name_en": "Lentil, dried, boiled, drained",
+    "name_zh": "扁豆（干制、水煮、沥干）",
+    "selection_reason": "豆类，多选三种 intake_types 且无 portion",
+    "expected_alias_count": 0,
+    "expected_portion_count": 0,
+    "expected_intake_types": ["carbohydrate", "protein", "fiber"],
+    "expected_preparation_state": "cooked",
+    "translation_status": "ready"
+  }
+]

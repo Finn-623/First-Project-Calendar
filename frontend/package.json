@@ -67,6 +67,7 @@
     "build": "craco build",
     "test": "craco test",
     "import:foods": "node scripts/import-foods/cli.mjs",
+    "import:foods:trial:local": "node scripts/import-foods/run-local-trial-import.mjs",
     "test:food-db-local": "node scripts/import-foods/local-supabase-integration.mjs",
     "validate:version": "node scripts/validate-version.js"
   },
