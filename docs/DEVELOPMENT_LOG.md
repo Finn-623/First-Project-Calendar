@@ -1,3 +1,53 @@
+## DEV-20260731-001
+
+- 日期：2026-07-31
+- 状态：已完成
+- 修改类型：Data packaging / v0.2.1 首批公共食品离线导入包
+- 任务目标：处理阶段 6 的 223 条 needs_review 份量，整合并离线验证 400 条 AFCD 首批公共食品导入数据；不连接或写入 Supabase。
+- 实际完成内容：
+	- 新增集中式 portion review 规则与决策文件，逐条记录原始标签、来源 Measure ID、克重、容量、原审核原因、最终决定、最终标签和决定理由。
+	- 223 条 needs_review 最终决策为 approve 180、exclude 3、defer 40；exclude/defer 共 43 条不进入导入包。
+	- 原 321 条 ready 与 180 条 approve 合并为 501 条最终 ready portion；219 个食品有份量、181 个食品无份量，每食品最多 6 条。
+	- 整合严格 400 条 AFCD 候选，保留官方营养值和 `NULL`、候选分类、生熟状态、400 组 intake_types、73 个食品的 100 条既有 aliases。
+	- 24 条专业中文名称 needs_review 全部保留；全部食品保持 `review_status = pending`，等待管理员审核。
+	- 最终 JSON 同时满足 AFCD adapter 的 `food_id`、`portions[{name, grams, is_default}]`、aliases 和统一营养字段，并保留 external ID、来源 Measure ID、标签和审核来源用于审计。
+	- CLI `--dry-run` 使用 `repository = null`，完成纯离线解析和校验，不创建 import run、不调用 RPC、不连接数据库。
+- 主要修改文件或模块：
+	- `frontend/scripts/import-foods/dataset/portion-review-rules.mjs`
+	- `frontend/scripts/import-foods/dataset/portion-review-decisions.json`
+	- `frontend/scripts/import-foods/dataset/generate-final-public-foods.mjs`
+	- `frontend/scripts/import-foods/dataset/verify-final-public-foods.mjs`
+	- `frontend/scripts/import-foods/dataset/public-foods-afcd-initial.json`
+	- `frontend/scripts/import-foods/dataset/public-foods-afcd-initial-audit.json`
+	- `docs/DEVELOPMENT_LOG.md`
+	- `docs/PROJECT_STATUS.md`
+- 执行的测试：
+	- 最终数据生成、验证、portion review 完整覆盖及连续两次 SHA-256 稳定性检查。
+	- category、common foods、translations/aliases、intake_types、AUSNUT portions 全部阶段回归。
+	- `npm run import:foods -- --source AFCD --input scripts/import-foods/dataset/public-foods-afcd-initial.json --dry-run --batch-size 50`
+	- `node --test scripts/import-foods/*.test.mjs`
+	- 全部 migration、归档与 import contract 静态测试。
+	- `npm test -- --runInBand --watchAll=false`
+	- `npm run build`
+- 测试结果：
+	- 最终数据专项及所有数据阶段回归通过。
+	- 离线 dry-run：400 total、400 success、0 skipped、0 failed、completed；无数据库访问。
+	- import-foods 23/23 通过；migration/import/归档静态契约 60/60 通过。
+	- 前端全量 31 个套件、210 个测试通过。
+	- Production Build 成功；既有 Node `fs.F_OK` 弃用警告不阻塞。
+- 输出 SHA-256：
+	- `portion-review-decisions.json`：`55dc0c065b304c99d1797af1cfa738b8903fb97706b20dff3afc72f5262bcc81`
+	- `public-foods-afcd-initial.json`：`4b9b3f342727ff39aafa1fb189496f13a76c3e11d5c125c55b858076c5d4696b`
+	- `public-foods-afcd-initial-audit.json`：`86114c9a2a3dc17ace46a62bd157cfdc78d2cd8fc7cc797ab5fb8e35544d656b`
+- 未完成事项：
+	- 尚未进入阶段 8；未应用 Migration 022/023，未动态验证 RLS/RPC，未写入 Supabase。
+	- 未正式导入、审核、启用公共食品或部署 Production。
+- 风险或注意事项：
+	- 40 条 defer 份量和 24 条专业中文名称仍需管理员/人工复核；3 条 exclude 仅保留在决策审计中。
+	- `docs/ROADMAP.md` 来源未确认修改保持完全不动且未纳入提交。
+- 阶段 7 功能 Commit：93f0af1e66ba59af492e2c3c4a40876d87f671ad
+- Git Commit ID：由本独立文档提交承载，不自引用其自身哈希。
+
 ## DEV-20260730-002
 
 - 日期：2026-07-30

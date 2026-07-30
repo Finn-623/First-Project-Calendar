@@ -14,8 +14,8 @@
 - 当前Phase：Phase 1（完整饮食管理 App）
 - 当前正式版本：v0.1.3 — 基础记录闭环与稳定性收尾，已于 2026-07-28 15:55:36（Australia/Sydney）正式上线。
 - 当前开发版本：v0.2.1 — 公共食品数据库。
-- 当前状态：v0.2.1 已开始开发；食品数据库基础、导入框架及 AFCD 数据准备阶段 2–5 已在本地完成验证，尚未部署或正式导入。
-- 判断结论：Production 仍运行 v0.1.3；v0.2.1 当前完成数据库/导入基础与 400 条候选的分类、中文化和主要摄入类型，不代表正式公共食品数据已导入或 v0.2.1 已上线。
+- 当前状态：v0.2.1 阶段 7 已完成；食品数据库基础、导入框架、400 条 AFCD 数据包及离线导入验证已完成，尚未执行数据库动态验证或正式导入。
+- 判断结论：Production 仍运行 v0.1.3；v0.2.1 已具备待管理员审核的首批公共食品离线包，但尚未写入 Supabase 或上线。
 
 ### 判断原因
 
@@ -46,9 +46,12 @@
 - 验证：阶段 2–5 专项全部通过，import-foods 23/23，前端 31 套件 210 测试，Production build 通过。
 - `已完成（本地数据准备，待人工复核）` AUSNUT 固定份量 exact-key 审计：332 个候选匹配、222 个食品保留 544 条份量，其中 ready 321、needs_review 223；110 个匹配后无份量食品均只有官方 density 换算记录。
 - 阶段 6 不使用名称模糊关联、Volume 推算或 1mL=1g 假设；所有 grams 与 AUSNUT `Gram amount` 逐条一致。功能纠正 Commit：`19f658518e8e11cf0ecc3fa0b7497b1fff038b69`。
-- `未开始` 阶段 7 最终导入 JSON、正式首批公共食品写入及动态数据库验证。
+- `已完成（离线数据包）` 223 条 portion needs_review 已逐条决策：approve 180、exclude 3、defer 40；最终整合 501 条 ready portion，219 个食品有份量。
+- `已完成（离线契约）` 400 条 AFCD 首批公共食品导入 JSON，包含 100 条 aliases、阶段 5 intake_types 和原始 AFCD 营养；24 条中文名称 needs_review 保留，全部食品状态为 pending。
+- `已完成（离线 dry-run）` 400/400 解析和统一模型校验成功，0 failed；没有连接数据库、创建 import run 或调用 RPC。阶段 7 Commit：`93f0af1e66ba59af492e2c3c4a40876d87f671ad`。
+- `未开始` 阶段 8 Migration 022/023 应用、动态 RLS/RPC 验证、正式首批公共食品写入和管理员审核。
 - `未开始` 食品搜索页面与完整 v0.2.1 UI。
-- `未部署` migration 022/023、Vercel Production；未执行正式导入，未 push。
+- `未部署` migration 022/023、Vercel Production；未执行正式导入。
 
 ## 3. 已完成
 
