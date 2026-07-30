@@ -1,0 +1,439 @@
+{
+  "package": "AFCD initial public foods",
+  "review_status": "pending",
+  "food_count": 400,
+  "source_identity_count": 400,
+  "aliases": {
+    "foods_with_aliases": 73,
+    "total": 100
+  },
+  "intake_types": {
+    "carbohydrate": 154,
+    "protein": 173,
+    "fat": 98,
+    "fiber": 167,
+    "empty": 53
+  },
+  "portion_review": {
+    "original_needs_review": 223,
+    "approve": 180,
+    "exclude": 3,
+    "defer": 40,
+    "not_imported": 43
+  },
+  "portions": {
+    "original_ready": 321,
+    "approved": 180,
+    "final_ready": 501,
+    "foods_with_portions": 219,
+    "foods_without_portions": 181
+  },
+  "priority_food_review": {
+    "oats": {
+      "external_food_id": "F006143",
+      "approve": 1,
+      "exclude": 0,
+      "defer": 0,
+      "final_portions": [
+        {
+          "label_zh": "1杯",
+          "grams": 82.5
+        },
+        {
+          "label_zh": "1汤匙",
+          "grams": 6.6
+        },
+        {
+          "label_zh": "1杯或小袋（单人份）",
+          "grams": 40
+        }
+      ]
+    },
+    "corn": {
+      "external_food_id": "F003200",
+      "approve": 2,
+      "exclude": 0,
+      "defer": 0,
+      "final_portions": [
+        {
+          "label_zh": "1根",
+          "grams": 157
+        },
+        {
+          "label_zh": "1段玉米",
+          "grams": 45
+        },
+        {
+          "label_zh": "1根小玉米",
+          "grams": 12
+        }
+      ]
+    },
+    "tuna": {
+      "external_food_id": "F009300",
+      "approve": 0,
+      "exclude": 0,
+      "defer": 1,
+      "final_portions": [
+        {
+          "label_zh": "1罐（小）",
+          "grams": 185
+        },
+        {
+          "label_zh": "1罐（大）",
+          "grams": 425
+        }
+      ]
+    },
+    "prawn": {
+      "external_food_id": "F007433",
+      "approve": 1,
+      "exclude": 0,
+      "defer": 0,
+      "final_portions": [
+        {
+          "label_zh": "1只（中到大）",
+          "grams": 13.4
+        },
+        {
+          "label_zh": "1只虾（大号）",
+          "grams": 19
+        }
+      ]
+    },
+    "yoghurt": {
+      "external_food_id": "F009694",
+      "approve": 0,
+      "exclude": 0,
+      "defer": 12,
+      "final_portions": []
+    },
+    "broccoli": {
+      "external_food_id": "F001905",
+      "approve": 0,
+      "exclude": 0,
+      "defer": 1,
+      "final_portions": [
+        {
+          "label_zh": "1块（中到大）",
+          "grams": 25
+        }
+      ]
+    },
+    "carrot": {
+      "external_food_id": "F002276",
+      "approve": 5,
+      "exclude": 0,
+      "defer": 0,
+      "final_portions": [
+        {
+          "label_zh": "1根",
+          "grams": 16
+        },
+        {
+          "label_zh": "1个（小或迷你）",
+          "grams": 74
+        },
+        {
+          "label_zh": "1个（中等大小）",
+          "grams": 129
+        },
+        {
+          "label_zh": "1个（大）",
+          "grams": 169
+        },
+        {
+          "label_zh": "1个（特大）",
+          "grams": 221
+        },
+        {
+          "label_zh": "1个（迷你零食装）",
+          "grams": 18
+        }
+      ]
+    },
+    "apple": {
+      "external_food_id": "F000110",
+      "approve": 0,
+      "exclude": 0,
+      "defer": 1,
+      "final_portions": [
+        {
+          "label_zh": "1个（小）",
+          "grams": 156.4
+        },
+        {
+          "label_zh": "1个（中等大小）",
+          "grams": 165.6
+        },
+        {
+          "label_zh": "1个（大）",
+          "grams": 239
+        },
+        {
+          "label_zh": "1包（单人份）",
+          "grams": 60
+        }
+      ]
+    },
+    "banana": {
+      "external_food_id": "F000262",
+      "approve": 1,
+      "exclude": 0,
+      "defer": 0,
+      "final_portions": [
+        {
+          "label_zh": "1根（小）",
+          "grams": 71.5
+        },
+        {
+          "label_zh": "1根（中等大小）",
+          "grams": 127.4
+        },
+        {
+          "label_zh": "1根（大）",
+          "grams": 145.6
+        },
+        {
+          "label_zh": "1块（一口大小）",
+          "grams": 11.1
+        },
+        {
+          "label_zh": "1个（小蕉品种）",
+          "grams": 67.6
+        }
+      ]
+    },
+    "orange": {
+      "external_food_id": "F006277",
+      "approve": 3,
+      "exclude": 0,
+      "defer": 0,
+      "final_portions": [
+        {
+          "label_zh": "1个（小到中等）",
+          "grams": 123.2
+        },
+        {
+          "label_zh": "1个（大到特大）",
+          "grams": 163.24
+        },
+        {
+          "label_zh": "1瓣或片",
+          "grams": 18
+        }
+      ]
+    },
+    "berries": {
+      "external_food_id": "F001290",
+      "approve": 1,
+      "exclude": 0,
+      "defer": 0,
+      "final_portions": [
+        {
+          "label_zh": "1颗",
+          "grams": 1.2
+        },
+        {
+          "label_zh": "1盒",
+          "grams": 125
+        }
+      ]
+    },
+    "almonds": {
+      "external_food_id": "F006081",
+      "approve": 0,
+      "exclude": 0,
+      "defer": 1,
+      "final_portions": [
+        {
+          "label_zh": "1颗",
+          "grams": 1.2
+        },
+        {
+          "label_zh": "1把",
+          "grams": 28
+        }
+      ]
+    },
+    "olive_oil": {
+      "external_food_id": "F006177",
+      "approve": 0,
+      "exclude": 0,
+      "defer": 1,
+      "final_portions": []
+    },
+    "sugar": {
+      "external_food_id": "F008976",
+      "approve": 1,
+      "exclude": 0,
+      "defer": 0,
+      "final_portions": [
+        {
+          "label_zh": "1杯",
+          "grams": 210
+        },
+        {
+          "label_zh": "1包（单人份）",
+          "grams": 3
+        },
+        {
+          "label_zh": "1块",
+          "grams": 4.5
+        }
+      ]
+    },
+    "soy_sauce": {
+      "external_food_id": "F008065",
+      "approve": 0,
+      "exclude": 1,
+      "defer": 0,
+      "final_portions": [
+        {
+          "label_zh": "1杯",
+          "grams": 262.5
+        },
+        {
+          "label_zh": "1包（单人份）",
+          "grams": 6
+        }
+      ]
+    }
+  },
+  "translation_needs_review": [
+    {
+      "external_food_id": "F001920",
+      "name_en": "Buffalo, riverine, cube roll, raw",
+      "name_zh": "河水牛眼肉（生）"
+    },
+    {
+      "external_food_id": "F001921",
+      "name_en": "Buffalo, riverine, topside, raw",
+      "name_zh": "河水牛后腿内侧肉（生）"
+    },
+    {
+      "external_food_id": "F001922",
+      "name_en": "Buffalo, swamp, cube roll, raw",
+      "name_zh": "沼泽水牛眼肉（生）"
+    },
+    {
+      "external_food_id": "F001923",
+      "name_en": "Buffalo, swamp, topside, raw",
+      "name_zh": "沼泽水牛后腿内侧肉（生）"
+    },
+    {
+      "external_food_id": "F002205",
+      "name_en": "Camel, cube roll, raw",
+      "name_zh": "骆驼眼肉（生）"
+    },
+    {
+      "external_food_id": "F003776",
+      "name_en": "Emu, fan fillet, raw",
+      "name_zh": "鸸鹋扇形里脊（生）"
+    },
+    {
+      "external_food_id": "F006282",
+      "name_en": "Ostrich, fan fillet, raw",
+      "name_zh": "鸵鸟扇形里脊（生）"
+    },
+    {
+      "external_food_id": "F006283",
+      "name_en": "Ostrich, moon steak, raw",
+      "name_zh": "鸵鸟月牙排（生）"
+    },
+    {
+      "external_food_id": "F001884",
+      "name_en": "Bream, fillet, raw",
+      "name_zh": "鲷鱼（鱼柳、生）"
+    },
+    {
+      "external_food_id": "F001885",
+      "name_en": "Bream, fillet, steamed, no added fat",
+      "name_zh": "鲷鱼（鱼柳、蒸制、无加油脂）"
+    },
+    {
+      "external_food_id": "F003973",
+      "name_en": "Flathead, fillet, raw",
+      "name_zh": "平头鱼（鱼柳、生）"
+    },
+    {
+      "external_food_id": "F003974",
+      "name_en": "Flathead, fillet, steamed, no added fat",
+      "name_zh": "平头鱼（鱼柳、蒸制、无加油脂）"
+    },
+    {
+      "external_food_id": "F004202",
+      "name_en": "Gemfish, fillet, raw",
+      "name_zh": "银鳞鲳鱼（鱼柳、生）"
+    },
+    {
+      "external_food_id": "F004203",
+      "name_en": "Gemfish, fillet, steamed, no added fat",
+      "name_zh": "银鳞鲳鱼（鱼柳、蒸制、无加油脂）"
+    },
+    {
+      "external_food_id": "F005824",
+      "name_en": "Morwong, fillet, raw",
+      "name_zh": "唇指鲈（鱼柳、生）"
+    },
+    {
+      "external_food_id": "F005825",
+      "name_en": "Morwong, fillet, steamed, no added fat",
+      "name_zh": "唇指鲈（鱼柳、蒸制、无加油脂）"
+    },
+    {
+      "external_food_id": "F005930",
+      "name_en": "Mulloway, fillet, raw",
+      "name_zh": "澳洲石首鱼（鱼柳、生）"
+    },
+    {
+      "external_food_id": "F005932",
+      "name_en": "Mulloway, fillet, steamed, no added fat",
+      "name_zh": "澳洲石首鱼（鱼柳、蒸制、无加油脂）"
+    },
+    {
+      "external_food_id": "F008263",
+      "name_en": "Silver perch, aquacultured, raw",
+      "name_zh": "银鲈（养殖、生）"
+    },
+    {
+      "external_food_id": "F008359",
+      "name_en": "Snapper, fillet, raw",
+      "name_zh": "笛鲷（鱼柳、生）"
+    },
+    {
+      "external_food_id": "F009560",
+      "name_en": "Whiting, King George, fillet, raw",
+      "name_zh": "乔治王牙鳕（鱼柳、生）"
+    },
+    {
+      "external_food_id": "F005193",
+      "name_en": "Lettuce, mignonette, raw",
+      "name_zh": "奶油生菜（生）"
+    },
+    {
+      "external_food_id": "F004256",
+      "name_en": "Grape, cornichon, raw",
+      "name_zh": "科尼雄葡萄（生）"
+    },
+    {
+      "external_food_id": "F004261",
+      "name_en": "Grape, waltham cross, raw",
+      "name_zh": "沃尔瑟姆十字葡萄（生）"
+    }
+  ],
+  "input_sha256": {
+    "frontend/scripts/import-foods/dataset/afcd-initial-selection.json": "2232fb8be78f746550536ed09475853e8c66cbe7aa885b9c96d47a9841a020b9",
+    "frontend/scripts/import-foods/dataset/food-name-translations.json": "bafe02957f81dd95e30920ec7cb7b779b9f7af5f619ac9b4da223217155b4bcb",
+    "frontend/scripts/import-foods/dataset/food-public-aliases.json": "0eb970ed8e8a393b9c9c5ef4acbec2587b322bd76e6929a025c29e898ce3f132",
+    "frontend/scripts/import-foods/dataset/food-intake-types.json": "dfe82d27c2138b2a0eb5ffb190ab878f72b19ff04b9870abf34a31299ae23b7f",
+    "frontend/scripts/import-foods/dataset/food-portions.json": "ad6e13412012fe7c81f68f9b21ade2e66af3ef10c858ba205036ab905057af16",
+    "/Users/finn/Downloads/food-data-work/afcd-release-3.normalized.json": "2b6b09991c861dc74bd1bee1bce4ebc83927d9d6d196c90e4376f1334385402a",
+    "/Users/finn/Downloads/AUSNUT 2023 - Food measures.xlsx": "58bee1204610efb72bb831dc7fb65acc23db540b51d056f83c6ac0ce84590475"
+  },
+  "limitations": [
+    "No Supabase write, RPC, migration, or deployment was executed",
+    "All foods remain pending for administrator review",
+    "Excluded and deferred portions are retained only in the decision audit"
+  ]
+}
