@@ -734,6 +734,201 @@ try {
     assertDatabaseError(removal, /referenced foods must be disabled/i);
   });
 
+  await check('user A creates entries from active public and own private foods', async () => {
+    const timeline = await insertOne(userA.client, 'timeline_items', {
+      user_id: userA.id,
+      event_date: '2026-08-01',
+      event_time: '08:00',
+      item_type: 'breakfast',
+      title: `${prefix} active sources`,
+    }, 'id');
+    for (const [source, suffix] of [
+      [approvedPublic, 'active_public'],
+      [await insertOne(userA.client, 'foods', privateFood(userA.id, 'active_entry'), 'id'), 'active_private'],
+    ]) {
+      const entry = await insertOne(userA.client, 'food_entries', {
+        user_id: userA.id,
+        timeline_item_id: timeline.id,
+        source_food_id: source.id,
+        food_name_snapshot: `${prefix} ${suffix}`,
+        quantity: 100,
+        calories_snapshot: 100,
+      }, 'id,source_food_id');
+      assert.equal(entry.source_food_id, source.id);
+    }
+  });
+
+  await check('user A cannot create an entry from disabled public food through REST', async () => {
+    const timeline = await insertOne(userA.client, 'timeline_items', {
+      user_id: userA.id,
+      event_date: '2026-08-01',
+      event_time: '09:00',
+      item_type: 'snack',
+      title: `${prefix} disabled public`,
+    }, 'id');
+    const result = await userA.client.from('food_entries').insert({
+      user_id: userA.id,
+      timeline_item_id: timeline.id,
+      source_food_id: disabledPublic.id,
+      food_name_snapshot: `${prefix} disabled public`,
+      quantity: 100,
+      calories_snapshot: 100,
+    });
+    assertDatabaseError(result, /source food is not available for new entries/i);
+  });
+
+  await check('user A cannot create an entry from disabled private food', async () => {
+    const disabledPrivate = await insertOne(userA.client, 'foods', privateFood(userA.id, 'disabled_entry', {
+      review_status: 'disabled',
+      is_active: false,
+    }), 'id');
+    const timeline = await insertOne(userA.client, 'timeline_items', {
+      user_id: userA.id,
+      event_date: '2026-08-01',
+      event_time: '10:00',
+      item_type: 'snack',
+      title: `${prefix} disabled private`,
+    }, 'id');
+    const result = await userA.client.from('food_entries').insert({
+      user_id: userA.id,
+      timeline_item_id: timeline.id,
+      source_food_id: disabledPrivate.id,
+      food_name_snapshot: `${prefix} disabled private`,
+      quantity: 100,
+      calories_snapshot: 100,
+    });
+    assertDatabaseError(result, /source food is not available for new entries/i);
+  });
+
+  await check('existing entry cannot change its source to a disabled food', async () => {
+    const timeline = await insertOne(userA.client, 'timeline_items', {
+      user_id: userA.id,
+      event_date: '2026-08-01',
+      event_time: '11:00',
+      item_type: 'snack',
+      title: `${prefix} source update`,
+    }, 'id');
+    const entry = await insertOne(userA.client, 'food_entries', {
+      user_id: userA.id,
+      timeline_item_id: timeline.id,
+      source_food_id: approvedPublic.id,
+      food_name_snapshot: `${prefix} source update`,
+      quantity: 100,
+      calories_snapshot: 100,
+    }, 'id');
+    const result = await userA.client.from('food_entries')
+      .update({ source_food_id: disabledPublic.id }).eq('id', entry.id);
+    assertDatabaseError(result, /source food is not available for new entries/i);
+  });
+
+  await check('disabling a used food preserves query and non-source historical edits', async () => {
+    const source = await insertOne(userA.client, 'foods', privateFood(userA.id, 'disable_after_use'), 'id');
+    const timeline = await insertOne(userA.client, 'timeline_items', {
+      user_id: userA.id,
+      event_date: '2026-08-01',
+      event_time: '12:00',
+      item_type: 'lunch',
+      title: `${prefix} disable after use`,
+    }, 'id');
+    const entry = await insertOne(userA.client, 'food_entries', {
+      user_id: userA.id,
+      timeline_item_id: timeline.id,
+      source_food_id: source.id,
+      food_name_snapshot: `${prefix} stable snapshot`,
+      quantity: 100,
+      calories_snapshot: 120,
+    }, 'id');
+    const disable = await userA.client.from('foods').update({ is_active: false })
+      .eq('id', source.id).select('review_status,is_active').single();
+    assert.ifError(disable.error);
+    assert.deepEqual(disable.data, { review_status: 'disabled', is_active: false });
+    const edit = await userA.client.from('food_entries').update({ quantity: 125, notes: 'historical edit' })
+      .eq('id', entry.id).select('food_name_snapshot,calories_snapshot,quantity,notes').single();
+    assert.ifError(edit.error);
+    assert.deepEqual(edit.data, {
+      food_name_snapshot: `${prefix} stable snapshot`,
+      calories_snapshot: 120,
+      quantity: 125,
+      notes: 'historical edit',
+    });
+  });
+
+  await check('administrator cannot create an entry referencing disabled food', async () => {
+    const timeline = await insertOne(admin.client, 'timeline_items', {
+      user_id: admin.id,
+      event_date: '2026-08-01',
+      event_time: '13:00',
+      item_type: 'lunch',
+      title: `${prefix} admin disabled`,
+    }, 'id');
+    const result = await admin.client.from('food_entries').insert({
+      user_id: admin.id,
+      timeline_item_id: timeline.id,
+      source_food_id: disabledPublic.id,
+      food_name_snapshot: `${prefix} admin disabled`,
+      quantity: 100,
+      calories_snapshot: 100,
+    });
+    assertDatabaseError(result, /source food is not available for new entries/i);
+  });
+
+  await check('service role cannot create an entry referencing disabled food', async () => {
+    const timeline = await insertOne(service, 'timeline_items', {
+      user_id: userA.id,
+      event_date: '2026-08-01',
+      event_time: '14:00',
+      item_type: 'snack',
+      title: `${prefix} service disabled`,
+    }, 'id');
+    const result = await service.from('food_entries').insert({
+      user_id: userA.id,
+      timeline_item_id: timeline.id,
+      source_food_id: disabledPublic.id,
+      food_name_snapshot: `${prefix} service disabled`,
+      quantity: 100,
+      calories_snapshot: 100,
+    });
+    assertDatabaseError(result, /source food is not available for new entries/i);
+  });
+
+  await check('re-enabled food can be used for a new entry again', async () => {
+    const source = await insertOne(userA.client, 'foods', privateFood(userA.id, 'reenable', {
+      review_status: 'disabled',
+      is_active: false,
+    }), 'id');
+    const reenable = await userA.client.from('foods').update({ is_active: true })
+      .eq('id', source.id).select('review_status,is_active').single();
+    assert.ifError(reenable.error);
+    assert.deepEqual(reenable.data, { review_status: 'approved', is_active: true });
+    const timeline = await insertOne(userA.client, 'timeline_items', {
+      user_id: userA.id,
+      event_date: '2026-08-01',
+      event_time: '15:00',
+      item_type: 'snack',
+      title: `${prefix} reenabled`,
+    }, 'id');
+    const entry = await insertOne(userA.client, 'food_entries', {
+      user_id: userA.id,
+      timeline_item_id: timeline.id,
+      source_food_id: source.id,
+      food_name_snapshot: `${prefix} reenabled`,
+      quantity: 100,
+      calories_snapshot: 100,
+    }, 'id');
+    assert.ok(entry.id);
+  });
+
+  await check('timeline events without food references remain unaffected', async () => {
+    const event = await insertOne(userA.client, 'timeline_items', {
+      user_id: userA.id,
+      event_date: '2026-08-01',
+      event_time: '16:00',
+      item_type: 'anaerobic_training',
+      title: `${prefix} training`,
+    }, 'id,item_type');
+    assert.equal(event.item_type, 'anaerobic_training');
+  });
+
   await check('disabled public food is hidden from ordinary users but remains admin-readable', async () => {
     const userResult = await userA.client.from('foods').select('id').eq('id', disabledPublic.id);
     assert.ifError(userResult.error);
