@@ -1,0 +1,3202 @@
+{
+  "F007641": {
+    "external_food_id": "F007641",
+    "name_en": "Rice, brown, boiled, no added salt",
+    "name_zh": "糙米饭（水煮、无加盐）",
+    "translation_status": "ready",
+    "translation_note": "保留米种、烹调方式和加盐状态",
+    "translation_source": "manual_override"
+  },
+  "F007661": {
+    "external_food_id": "F007661",
+    "name_en": "Rice, white, boiled or rice cooker, no added salt",
+    "name_zh": "白米饭（水煮或电饭锅烹制、无加盐）",
+    "translation_status": "ready",
+    "translation_note": "保留米种、烹调方式和加盐状态",
+    "translation_source": "manual_override"
+  },
+  "F001463": {
+    "external_food_id": "F001463",
+    "name_en": "Bread, from white flour",
+    "name_zh": "白面包",
+    "translation_status": "ready",
+    "translation_note": "常见基础食品标准名称",
+    "translation_source": "manual_override"
+  },
+  "F006143": {
+    "external_food_id": "F006143",
+    "name_en": "Oats, rolled, uncooked",
+    "name_zh": "燕麦片（未烹调）",
+    "translation_status": "ready",
+    "translation_note": "常见基础食品标准名称",
+    "translation_source": "manual_override"
+  },
+  "F006456": {
+    "external_food_id": "F006456",
+    "name_en": "Pasta, white wheat flour, boiled from dry, no added salt",
+    "name_zh": "白面意大利面（水煮、无加盐）",
+    "translation_status": "ready",
+    "translation_note": "保留原料、烹调方式和加盐状态",
+    "translation_source": "manual_override"
+  },
+  "F006038": {
+    "external_food_id": "F006038",
+    "name_en": "Noodle, rice stick, boiled, drained",
+    "name_zh": "米粉（水煮、沥干）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F006042": {
+    "external_food_id": "F006042",
+    "name_en": "Noodle, soba, boiled, drained",
+    "name_zh": "荞麦面（水煮、沥干）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F006429": {
+    "external_food_id": "F006429",
+    "name_en": "Pasta, gluten free, boiled from dry, no added salt",
+    "name_zh": "意大利面（无麸质、干制后水煮、无加盐）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F009835": {
+    "external_food_id": "F009835",
+    "name_en": "Pasta, legume based, boiled, no added salt",
+    "name_zh": "意大利面（豆类制、水煮、无加盐）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F006444": {
+    "external_food_id": "F006444",
+    "name_en": "Pasta, white wheat flour & egg, boiled from dry, no added salt",
+    "name_zh": "意大利面（白小麦粉和鸡蛋、干制后水煮、无加盐）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F006451": {
+    "external_food_id": "F006451",
+    "name_en": "Pasta, white wheat flour & spinach, boiled from dry, no added salt",
+    "name_zh": "意大利面（白小麦粉和菠菜、干制后水煮、无加盐）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F006464": {
+    "external_food_id": "F006464",
+    "name_en": "Pasta, wholemeal wheat flour, boiled from dry, no added salt",
+    "name_zh": "意大利面（全麦粉、干制后水煮、无加盐）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F006459": {
+    "external_food_id": "F006459",
+    "name_en": "Pasta, white wheat flour, fresh, boiled, no added salt",
+    "name_zh": "意大利面（白小麦粉、新鲜、水煮、无加盐）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F000378": {
+    "external_food_id": "F000378",
+    "name_en": "Barley, pearl, boiled, no added fat or salt",
+    "name_zh": "珍珠大麦（水煮、无加油脂或盐）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F001918": {
+    "external_food_id": "F001918",
+    "name_en": "Buckwheat groats, cooked in water, no added salt",
+    "name_zh": "荞麦粒（水煮、无加盐）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F003227": {
+    "external_food_id": "F003227",
+    "name_en": "Cornmeal (polenta), boiled, no added fat or salt",
+    "name_zh": "玉米糊（水煮、无加油脂或盐）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F003235": {
+    "external_food_id": "F003235",
+    "name_en": "Couscous, boiled, no added fat or salt",
+    "name_zh": "库斯库斯（水煮、无加油脂或盐）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F005690": {
+    "external_food_id": "F005690",
+    "name_en": "Millet, boiled, no added fat or salt",
+    "name_zh": "小米（水煮、无加油脂或盐）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F007596": {
+    "external_food_id": "F007596",
+    "name_en": "Quinoa, cooked in water, no added salt",
+    "name_zh": "藜麦（水煮、无加盐）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F007683": {
+    "external_food_id": "F007683",
+    "name_en": "Rice, wild, boiled, no added salt",
+    "name_zh": "野米饭（水煮、无加盐）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F007728": {
+    "external_food_id": "F007728",
+    "name_en": "Sago, cooked in water, no added salt",
+    "name_zh": "西米（水煮、无加盐）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F008220": {
+    "external_food_id": "F008220",
+    "name_en": "Semolina, boiled, no added fat or salt",
+    "name_zh": "粗粒小麦粉（水煮、无加油脂或盐）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F008744": {
+    "external_food_id": "F008744",
+    "name_en": "Spelt, boiled, no added fat or salt",
+    "name_zh": "斯佩尔特小麦（水煮、无加油脂或盐）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F009089": {
+    "external_food_id": "F009089",
+    "name_en": "Tapioca, pearl or seed style, boiled, no added fat or salt",
+    "name_zh": "木薯珍珠（珍珠或籽粒状、水煮、无加油脂或盐）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F006066": {
+    "external_food_id": "F006066",
+    "name_en": "Noodle, wheat, instant, unflavoured, boiled, drained",
+    "name_zh": "面条（小麦、即食、原味、水煮、沥干）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F006044": {
+    "external_food_id": "F006044",
+    "name_en": "Noodle, wheat with egg, plain, boiled, no added fat",
+    "name_zh": "面条（鸡蛋小麦、原味、水煮、无加油脂）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F001928": {
+    "external_food_id": "F001928",
+    "name_en": "Bulgur, soaked in water, no added fat or salt",
+    "name_zh": "布格麦（水泡、无加油脂或盐）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F003990": {
+    "external_food_id": "F003990",
+    "name_en": "Flour, gluten free, plain",
+    "name_zh": "无麸质面粉（原味）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F004007": {
+    "external_food_id": "F004007",
+    "name_en": "Flour, wheat, white, plain",
+    "name_zh": "白小麦面粉（原味）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F004014": {
+    "external_food_id": "F004014",
+    "name_en": "Flour, wheat, wholemeal, plain",
+    "name_zh": "全麦面粉（原味）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F006460": {
+    "external_food_id": "F006460",
+    "name_en": "Pasta, white wheat flour, fresh, uncooked",
+    "name_zh": "意大利面（白小麦粉、新鲜、未烹调）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F006067": {
+    "external_food_id": "F006067",
+    "name_en": "Noodle, wheat, instant, unflavoured, boiled, undrained",
+    "name_zh": "面条（小麦、即食、原味、水煮、未沥干）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F006048": {
+    "external_food_id": "F006048",
+    "name_en": "Noodle, wheat, fresh, soaked, drained",
+    "name_zh": "面条（小麦、新鲜、浸泡、沥干）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F007678": {
+    "external_food_id": "F007678",
+    "name_en": "Rice, white, purchased as 'instant', microwaved",
+    "name_zh": "白米饭（即食型、微波加热）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F000061": {
+    "external_food_id": "F000061",
+    "name_en": "Amaranth, grain, whole, uncooked",
+    "name_zh": "苋米（整只、未烹调）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F000233": {
+    "external_food_id": "F000233",
+    "name_en": "Bagel, from white flour, commercial",
+    "name_zh": "贝果（白面粉制、市售）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F000379": {
+    "external_food_id": "F000379",
+    "name_en": "Barley, pearl, uncooked",
+    "name_zh": "珍珠大麦（未烹调）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F001353": {
+    "external_food_id": "F001353",
+    "name_en": "Bread roll, from white flour",
+    "name_zh": "面包卷（白面粉制）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F001360": {
+    "external_food_id": "F001360",
+    "name_en": "Bread roll, from wholemeal flour",
+    "name_zh": "面包卷（全麦粉制）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F001365": {
+    "external_food_id": "F001365",
+    "name_en": "Bread roll, mixed grain",
+    "name_zh": "面包卷（杂粮）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F001387": {
+    "external_food_id": "F001387",
+    "name_en": "Bread, damper, from white flour, homemade",
+    "name_zh": "澳式苏打面包（白面粉制、自制）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F001450": {
+    "external_food_id": "F001450",
+    "name_en": "Bread, from rye flour, sour dough",
+    "name_zh": "面包（黑麦粉制、酸面团）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F001468": {
+    "external_food_id": "F001468",
+    "name_en": "Bread, from white flour, added fibre",
+    "name_zh": "面包（白面粉制、添加膳食纤维）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F001528": {
+    "external_food_id": "F001528",
+    "name_en": "Bread, from white flour, Italian-style, commercial",
+    "name_zh": "面包（白面粉制、意式、市售）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F001537": {
+    "external_food_id": "F001537",
+    "name_en": "Bread, from white flour, sour dough, commercial",
+    "name_zh": "面包（白面粉制、酸面团、市售）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F001541": {
+    "external_food_id": "F001541",
+    "name_en": "Bread, from white flour, toasted",
+    "name_zh": "面包（白面粉制、烤制）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F001671": {
+    "external_food_id": "F001671",
+    "name_en": "Bread, from white flour, Turkish",
+    "name_zh": "面包（白面粉制、土耳其式）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F001543": {
+    "external_food_id": "F001543",
+    "name_en": "Bread, from white Jackaroo flour, added fibre and vitamins B1 & folate & Fe",
+    "name_zh": "面包（白杰卡鲁小麦粉制、添加膳食纤维、维生素B1、叶酸和铁）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F001553": {
+    "external_food_id": "F001553",
+    "name_en": "Bread, from wholemeal flour",
+    "name_zh": "面包（全麦粉制）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F007320": {
+    "external_food_id": "F007320",
+    "name_en": "Potato, pale skin, peeled, boiled, drained",
+    "name_zh": "浅皮土豆（去皮、水煮、沥干）",
+    "translation_status": "ready",
+    "translation_note": "保留品种外观、去皮和烹调状态",
+    "translation_source": "manual_override"
+  },
+  "F009034": {
+    "external_food_id": "F009034",
+    "name_en": "Sweet potato, orange flesh, peeled, fresh, boiled, drained",
+    "name_zh": "橙肉红薯（去皮、水煮、沥干）",
+    "translation_status": "ready",
+    "translation_note": "保留肉色、去皮和烹调状态",
+    "translation_source": "manual_override"
+  },
+  "F003200": {
+    "external_food_id": "F003200",
+    "name_en": "Corn, fresh on cob, boiled, drained",
+    "name_zh": "玉米（新鲜带芯、水煮、沥干）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F003209": {
+    "external_food_id": "F003209",
+    "name_en": "Corn, fresh on cob, raw",
+    "name_zh": "玉米（新鲜带芯、生）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F003202": {
+    "external_food_id": "F003202",
+    "name_en": "Corn, kernels, purchased frozen, raw",
+    "name_zh": "玉米（玉米粒、冷冻购入、生）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F007247": {
+    "external_food_id": "F007247",
+    "name_en": "Potato, coliban, peeled, raw",
+    "name_zh": "土豆（科利班品种、去皮、生）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F007254": {
+    "external_food_id": "F007254",
+    "name_en": "Potato, desiree, peeled, raw",
+    "name_zh": "土豆（德西蕾品种、去皮、生）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F007308": {
+    "external_food_id": "F007308",
+    "name_en": "Potato, new, peeled, raw",
+    "name_zh": "土豆（新土豆、去皮、生）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F007325": {
+    "external_food_id": "F007325",
+    "name_en": "Potato, pale skin, peeled, raw",
+    "name_zh": "土豆（浅色皮、去皮、生）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F007361": {
+    "external_food_id": "F007361",
+    "name_en": "Potato, pontiac, peeled, raw",
+    "name_zh": "土豆（庞蒂亚克品种、去皮、生）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F007368": {
+    "external_food_id": "F007368",
+    "name_en": "Potato, red skin, peeled, raw",
+    "name_zh": "土豆（红皮、去皮、生）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F007386": {
+    "external_food_id": "F007386",
+    "name_en": "Potato, sebago, peeled, raw",
+    "name_zh": "土豆（塞巴戈品种、去皮、生）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F003201": {
+    "external_food_id": "F003201",
+    "name_en": "Corn, kernels, purchased frozen, boiled, drained",
+    "name_zh": "玉米（玉米粒、冷冻购入、水煮、沥干）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F007245": {
+    "external_food_id": "F007245",
+    "name_en": "Potato, coliban, peeled, boiled, drained",
+    "name_zh": "土豆（科利班品种、去皮、水煮、沥干）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F007306": {
+    "external_food_id": "F007306",
+    "name_en": "Potato, new, peeled, boiled, drained",
+    "name_zh": "土豆（新土豆、去皮、水煮、沥干）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F007366": {
+    "external_food_id": "F007366",
+    "name_en": "Potato, red skin, peeled, boiled, drained",
+    "name_zh": "土豆（红皮、去皮、水煮、沥干）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F007384": {
+    "external_food_id": "F007384",
+    "name_en": "Potato, sebago, peeled, boiled, drained",
+    "name_zh": "土豆（塞巴戈品种、去皮、水煮、沥干）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F007244": {
+    "external_food_id": "F007244",
+    "name_en": "Potato, coliban, peeled, baked, no added fat",
+    "name_zh": "土豆（科利班品种、去皮、烘烤、无加油脂）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F007250": {
+    "external_food_id": "F007250",
+    "name_en": "Potato, desiree, peeled, baked, no added fat",
+    "name_zh": "土豆（德西蕾品种、去皮、烘烤、无加油脂）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F007252": {
+    "external_food_id": "F007252",
+    "name_en": "Potato, desiree, peeled, boiled, drained",
+    "name_zh": "土豆（德西蕾品种、去皮、水煮、沥干）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F007305": {
+    "external_food_id": "F007305",
+    "name_en": "Potato, new, peeled, baked, no added fat",
+    "name_zh": "土豆（新土豆、去皮、烘烤、无加油脂）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F007314": {
+    "external_food_id": "F007314",
+    "name_en": "Potato, pale skin, peeled, baked, no added fat",
+    "name_zh": "土豆（浅色皮、去皮、烘烤、无加油脂）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F007358": {
+    "external_food_id": "F007358",
+    "name_en": "Potato, pontiac, peeled, baked, no added fat",
+    "name_zh": "土豆（庞蒂亚克品种、去皮、烘烤、无加油脂）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F007359": {
+    "external_food_id": "F007359",
+    "name_en": "Potato, pontiac, peeled, boiled, drained",
+    "name_zh": "土豆（庞蒂亚克品种、去皮、水煮、沥干）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F007364": {
+    "external_food_id": "F007364",
+    "name_en": "Potato, red skin, peeled, baked, no added fat",
+    "name_zh": "土豆（红皮、去皮、烘烤、无加油脂）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F002594": {
+    "external_food_id": "F002594",
+    "name_en": "Chicken, breast, lean flesh, raw",
+    "name_zh": "鸡胸肉（去明显脂肪、生）",
+    "translation_status": "ready",
+    "translation_note": "保留部位、脂肪修整和生熟状态",
+    "translation_source": "manual_override"
+  },
+  "F000561": {
+    "external_food_id": "F000561",
+    "name_en": "Beef, diced, lean, raw ",
+    "name_zh": "牛肉丁（瘦、生）",
+    "translation_status": "ready",
+    "translation_note": "保留切割形态、脂肪和生熟状态",
+    "translation_source": "manual_override"
+  },
+  "F006899": {
+    "external_food_id": "F006899",
+    "name_en": "Pork, fillet, lean, raw",
+    "name_zh": "猪里脊（瘦、生）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F004929": {
+    "external_food_id": "F004929",
+    "name_en": "Lamb, diced, lean, stir-fried, no added fat",
+    "name_zh": "羊肉丁（瘦、炒制、无加油脂）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F000655": {
+    "external_food_id": "F000655",
+    "name_en": "Beef, mince, higher fat, raw ",
+    "name_zh": "牛肉末（较高脂肪、生）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F000666": {
+    "external_food_id": "F000666",
+    "name_en": "Beef, mince, lower fat, raw ",
+    "name_zh": "牛肉末（较低脂肪、生）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F000678": {
+    "external_food_id": "F000678",
+    "name_en": "Beef, mince, regular fat, raw ",
+    "name_zh": "牛肉末（全脂、生）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F000739": {
+    "external_food_id": "F000739",
+    "name_en": "Beef, rump steak, lean, raw",
+    "name_zh": "牛臀排（瘦、生）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F000792": {
+    "external_food_id": "F000792",
+    "name_en": "Beef, silverside roast, lean, raw ",
+    "name_zh": "牛后腿外侧烤肉（瘦、生）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F000810": {
+    "external_food_id": "F000810",
+    "name_en": "Beef, sirloin steak, lean, raw",
+    "name_zh": "牛西冷排（瘦、生）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F000931": {
+    "external_food_id": "F000931",
+    "name_en": "Beef, stir-fry strips, lean, raw ",
+    "name_zh": "牛肉炒条（瘦、生）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F000961": {
+    "external_food_id": "F000961",
+    "name_en": "Beef, topside roast, lean, raw ",
+    "name_zh": "牛后腿内侧烤肉（瘦、生）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F001920": {
+    "external_food_id": "F001920",
+    "name_en": "Buffalo, riverine, cube roll, raw",
+    "name_zh": "河水牛眼肉（生）",
+    "translation_status": "needs_review",
+    "translation_note": "Riverine buffalo cube roll 的标准中文切割名称需要肉类专业复核",
+    "translation_source": "generated"
+  },
+  "F001921": {
+    "external_food_id": "F001921",
+    "name_en": "Buffalo, riverine, topside, raw",
+    "name_zh": "河水牛后腿内侧肉（生）",
+    "translation_status": "needs_review",
+    "translation_note": "Riverine buffalo topside 的标准中文切割名称需要肉类专业复核",
+    "translation_source": "generated"
+  },
+  "F001922": {
+    "external_food_id": "F001922",
+    "name_en": "Buffalo, swamp, cube roll, raw",
+    "name_zh": "沼泽水牛眼肉（生）",
+    "translation_status": "needs_review",
+    "translation_note": "Swamp buffalo cube roll 的标准中文切割名称需要肉类专业复核",
+    "translation_source": "generated"
+  },
+  "F001923": {
+    "external_food_id": "F001923",
+    "name_en": "Buffalo, swamp, topside, raw",
+    "name_zh": "沼泽水牛后腿内侧肉（生）",
+    "translation_status": "needs_review",
+    "translation_note": "Swamp buffalo topside 的标准中文切割名称需要肉类专业复核",
+    "translation_source": "generated"
+  },
+  "F002205": {
+    "external_food_id": "F002205",
+    "name_en": "Camel, cube roll, raw",
+    "name_zh": "骆驼眼肉（生）",
+    "translation_status": "needs_review",
+    "translation_note": "Camel cube roll 的标准中文切割名称需要肉类专业复核",
+    "translation_source": "generated"
+  },
+  "F002206": {
+    "external_food_id": "F002206",
+    "name_en": "Camel, rump, raw",
+    "name_zh": "骆驼臀肉（生）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F009789": {
+    "external_food_id": "F009789",
+    "name_en": "Camel, steak, as purchased, raw",
+    "name_zh": "骆驼排（购入状态、生）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F002647": {
+    "external_food_id": "F002647",
+    "name_en": "Chicken, drumstick, lean flesh, raw",
+    "name_zh": "鸡小腿肉（瘦肉、生）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F002739": {
+    "external_food_id": "F002739",
+    "name_en": "Chicken, mince, raw",
+    "name_zh": "鸡肉末（生）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F002773": {
+    "external_food_id": "F002773",
+    "name_en": "Chicken, skin, composite, raw",
+    "name_zh": "鸡皮（混合样本、生）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F002806": {
+    "external_food_id": "F002806",
+    "name_en": "Chicken, thigh, lean flesh, raw",
+    "name_zh": "鸡腿肉（瘦肉、生）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F002849": {
+    "external_food_id": "F002849",
+    "name_en": "Chicken, wing, lean flesh, raw",
+    "name_zh": "鸡翅肉（瘦肉、生）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F009805": {
+    "external_food_id": "F009805",
+    "name_en": "Duck, breast, lean flesh, raw",
+    "name_zh": "鸭胸肉（瘦肉、生）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F003632": {
+    "external_food_id": "F003632",
+    "name_en": "Duck, lean flesh, raw",
+    "name_zh": "鸭瘦肉（生）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F003641": {
+    "external_food_id": "F003641",
+    "name_en": "Duck, skin & fat, baked, no added fat",
+    "name_zh": "鸭皮和脂肪（烘烤、无加油脂）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F003642": {
+    "external_food_id": "F003642",
+    "name_en": "Duck, skin & fat, raw",
+    "name_zh": "鸭皮和脂肪（生）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F003776": {
+    "external_food_id": "F003776",
+    "name_en": "Emu, fan fillet, raw",
+    "name_zh": "鸸鹋扇形里脊（生）",
+    "translation_status": "needs_review",
+    "translation_note": "Emu fan fillet 的标准中文切割名称需要肉类专业复核",
+    "translation_source": "generated"
+  },
+  "F003779": {
+    "external_food_id": "F003779",
+    "name_en": "Emu, steak, as purchased, raw",
+    "name_zh": "鸸鹋排（购入状态、生）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F004235": {
+    "external_food_id": "F004235",
+    "name_en": "Goat, leg, lean, raw",
+    "name_zh": "山羊腿肉（瘦、生）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F004237": {
+    "external_food_id": "F004237",
+    "name_en": "Goat, loin, lean, raw",
+    "name_zh": "山羊腰肉（瘦、生）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F004928": {
+    "external_food_id": "F004928",
+    "name_en": "Lamb, diced, lean, raw ",
+    "name_zh": "羊肉丁（瘦、生）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F004948": {
+    "external_food_id": "F004948",
+    "name_en": "Lamb, eye of loin, lean, raw",
+    "name_zh": "羊腰眼肉（瘦、生）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F004954": {
+    "external_food_id": "F004954",
+    "name_en": "Lamb, fillet, lean, raw",
+    "name_zh": "羊里脊（瘦、生）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F005013": {
+    "external_food_id": "F005013",
+    "name_en": "Lamb, leg roast, lean, raw ",
+    "name_zh": "羊腿烤肉（瘦、生）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F005027": {
+    "external_food_id": "F005027",
+    "name_en": "Lamb, loin chop, lean, raw ",
+    "name_zh": "羊腰排（瘦、生）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F005049": {
+    "external_food_id": "F005049",
+    "name_en": "Lamb, mince, raw",
+    "name_zh": "羊肉末（生）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F005050": {
+    "external_food_id": "F005050",
+    "name_en": "Lamb, mince, stir-fried, no added fat",
+    "name_zh": "羊肉末（炒制、无加油脂）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F005121": {
+    "external_food_id": "F005121",
+    "name_en": "Lamb, stir-fry strips, lean, raw",
+    "name_zh": "羊肉炒条（瘦、生）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F006282": {
+    "external_food_id": "F006282",
+    "name_en": "Ostrich, fan fillet, raw",
+    "name_zh": "鸵鸟扇形里脊（生）",
+    "translation_status": "needs_review",
+    "translation_note": "Ostrich fan fillet 的标准中文切割名称需要肉类专业复核",
+    "translation_source": "generated"
+  },
+  "F006283": {
+    "external_food_id": "F006283",
+    "name_en": "Ostrich, moon steak, raw",
+    "name_zh": "鸵鸟月牙排（生）",
+    "translation_status": "needs_review",
+    "translation_note": "Ostrich moon steak 的标准中文切割名称需要肉类专业复核",
+    "translation_source": "generated"
+  },
+  "F006698": {
+    "external_food_id": "F006698",
+    "name_en": "Pigeon (squab), whole, raw",
+    "name_zh": "乳鸽（整只、生）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F006862": {
+    "external_food_id": "F006862",
+    "name_en": "Pork, belly, rind removed, raw",
+    "name_zh": "猪五花肉（去皮、生）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F006875": {
+    "external_food_id": "F006875",
+    "name_en": "Pork, butterfly steak, lean, raw",
+    "name_zh": "猪蝴蝶排（瘦、生）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F007019": {
+    "external_food_id": "F007019",
+    "name_en": "Pork, loin chop, lean, raw",
+    "name_zh": "猪腰排（瘦、生）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F007037": {
+    "external_food_id": "F007037",
+    "name_en": "Pork, loin roast, lean, raw",
+    "name_zh": "猪腰肉烤块（瘦、生）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F007049": {
+    "external_food_id": "F007049",
+    "name_en": "Pork, medallion or loin steak, lean, raw",
+    "name_zh": "猪里脊圆排（瘦、生）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F007077": {
+    "external_food_id": "F007077",
+    "name_en": "Pork, round mini roast, lean, raw",
+    "name_zh": "猪后腿小烤肉（瘦、生）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F007085": {
+    "external_food_id": "F007085",
+    "name_en": "Pork, rump steak, lean, raw",
+    "name_zh": "猪臀排（瘦、生）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F007827": {
+    "external_food_id": "F007827",
+    "name_en": "Salmon, Atlantic, fillet, raw",
+    "name_zh": "大西洋三文鱼柳（生）",
+    "translation_status": "ready",
+    "translation_note": "保留鱼种、部位和生熟状态",
+    "translation_source": "manual_override"
+  },
+  "F009300": {
+    "external_food_id": "F009300",
+    "name_en": "Tuna, unflavoured, canned in water, drained",
+    "name_zh": "金枪鱼罐头（水浸、沥干）",
+    "translation_status": "ready",
+    "translation_note": "保留罐装介质和沥干状态",
+    "translation_source": "manual_override"
+  },
+  "F007433": {
+    "external_food_id": "F007433",
+    "name_en": "Prawn, flesh, raw (green)",
+    "name_zh": "虾仁（生）",
+    "translation_status": "ready",
+    "translation_note": "源名称明确为去壳虾肉",
+    "translation_source": "manual_override"
+  },
+  "F000002": {
+    "external_food_id": "F000002",
+    "name_en": "Abalone, black lip, aquacultured, raw",
+    "name_zh": "黑边鲍鱼（养殖、生）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F000003": {
+    "external_food_id": "F000003",
+    "name_en": "Abalone, black lip, wild, raw",
+    "name_zh": "黑边鲍鱼（野生、生）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F000004": {
+    "external_food_id": "F000004",
+    "name_en": "Abalone, brown lip, wild, raw",
+    "name_zh": "棕边鲍鱼（野生、生）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F000005": {
+    "external_food_id": "F000005",
+    "name_en": "Abalone, green lip, aquacultured, raw",
+    "name_zh": "绿边鲍鱼（养殖、生）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F000006": {
+    "external_food_id": "F000006",
+    "name_en": "Abalone, green lip, wild, raw",
+    "name_zh": "绿边鲍鱼（野生、生）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F000386": {
+    "external_food_id": "F000386",
+    "name_en": "Barramundi, aquacultured, fillet, raw",
+    "name_zh": "金目鲈（养殖、鱼柳、生）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F000402": {
+    "external_food_id": "F000402",
+    "name_en": "Bassa (basa), fillet, raw",
+    "name_zh": "巴沙鱼（鱼柳、生）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F001884": {
+    "external_food_id": "F001884",
+    "name_en": "Bream, fillet, raw",
+    "name_zh": "鲷鱼（鱼柳、生）",
+    "translation_status": "needs_review",
+    "translation_note": "Bream 对应多个鲷科商品鱼，中文商品名需要水产专业复核",
+    "translation_source": "generated"
+  },
+  "F001885": {
+    "external_food_id": "F001885",
+    "name_en": "Bream, fillet, steamed, no added fat",
+    "name_zh": "鲷鱼（鱼柳、蒸制、无加油脂）",
+    "translation_status": "needs_review",
+    "translation_note": "Bream 对应多个鲷科商品鱼，中文商品名需要水产专业复核",
+    "translation_source": "generated"
+  },
+  "F003973": {
+    "external_food_id": "F003973",
+    "name_en": "Flathead, fillet, raw",
+    "name_zh": "平头鱼（鱼柳、生）",
+    "translation_status": "needs_review",
+    "translation_note": "Flathead 的中文商品鱼名称需要水产专业复核",
+    "translation_source": "generated"
+  },
+  "F003974": {
+    "external_food_id": "F003974",
+    "name_en": "Flathead, fillet, steamed, no added fat",
+    "name_zh": "平头鱼（鱼柳、蒸制、无加油脂）",
+    "translation_status": "needs_review",
+    "translation_note": "Flathead 的中文商品鱼名称需要水产专业复核",
+    "translation_source": "generated"
+  },
+  "F004202": {
+    "external_food_id": "F004202",
+    "name_en": "Gemfish, fillet, raw",
+    "name_zh": "银鳞鲳鱼（鱼柳、生）",
+    "translation_status": "needs_review",
+    "translation_note": "Gemfish 的中文商品鱼名称需要水产专业复核",
+    "translation_source": "generated"
+  },
+  "F004203": {
+    "external_food_id": "F004203",
+    "name_en": "Gemfish, fillet, steamed, no added fat",
+    "name_zh": "银鳞鲳鱼（鱼柳、蒸制、无加油脂）",
+    "translation_status": "needs_review",
+    "translation_note": "Gemfish 的中文商品鱼名称需要水产专业复核",
+    "translation_source": "generated"
+  },
+  "F005659": {
+    "external_food_id": "F005659",
+    "name_en": "Milkfish, aquacultured, fillet, raw",
+    "name_zh": "虱目鱼（养殖、鱼柳、生）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F005824": {
+    "external_food_id": "F005824",
+    "name_en": "Morwong, fillet, raw",
+    "name_zh": "唇指鲈（鱼柳、生）",
+    "translation_status": "needs_review",
+    "translation_note": "Morwong 的中文商品鱼名称需要水产专业复核",
+    "translation_source": "generated"
+  },
+  "F005825": {
+    "external_food_id": "F005825",
+    "name_en": "Morwong, fillet, steamed, no added fat",
+    "name_zh": "唇指鲈（鱼柳、蒸制、无加油脂）",
+    "translation_status": "needs_review",
+    "translation_note": "Morwong 的中文商品鱼名称需要水产专业复核",
+    "translation_source": "generated"
+  },
+  "F005922": {
+    "external_food_id": "F005922",
+    "name_en": "Mullet, yelloweye, fillet, raw",
+    "name_zh": "黄眼鲻鱼（鱼柳、生）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F005930": {
+    "external_food_id": "F005930",
+    "name_en": "Mulloway, fillet, raw",
+    "name_zh": "澳洲石首鱼（鱼柳、生）",
+    "translation_status": "needs_review",
+    "translation_note": "Mulloway 的中文商品鱼名称需要水产专业复核",
+    "translation_source": "generated"
+  },
+  "F005932": {
+    "external_food_id": "F005932",
+    "name_en": "Mulloway, fillet, steamed, no added fat",
+    "name_zh": "澳洲石首鱼（鱼柳、蒸制、无加油脂）",
+    "translation_status": "needs_review",
+    "translation_note": "Mulloway 的中文商品鱼名称需要水产专业复核",
+    "translation_source": "generated"
+  },
+  "F005968": {
+    "external_food_id": "F005968",
+    "name_en": "Mussel, blue, steamed",
+    "name_zh": "蓝贻贝（蒸制）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F006288": {
+    "external_food_id": "F006288",
+    "name_en": "Oyster, native, aquacultured, raw",
+    "name_zh": "澳洲本地牡蛎（养殖、生）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F006289": {
+    "external_food_id": "F006289",
+    "name_en": "Oyster, Pacific, aquacultured, raw",
+    "name_zh": "太平洋牡蛎（养殖、生）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F006291": {
+    "external_food_id": "F006291",
+    "name_en": "Oyster, Sydney rock, aquacultured, raw",
+    "name_zh": "悉尼岩牡蛎（养殖、生）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F007973": {
+    "external_food_id": "F007973",
+    "name_en": "Sardine, Australian, whole, raw",
+    "name_zh": "澳洲沙丁鱼（整只、生）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F008166": {
+    "external_food_id": "F008166",
+    "name_en": "Scallop, raw",
+    "name_zh": "扇贝（生）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F008237": {
+    "external_food_id": "F008237",
+    "name_en": "Shark, fillet, without skin, raw",
+    "name_zh": "鲨鱼（鱼柳、去皮、生）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F008263": {
+    "external_food_id": "F008263",
+    "name_en": "Silver perch, aquacultured, raw",
+    "name_zh": "银鲈（养殖、生）",
+    "translation_status": "needs_review",
+    "translation_note": "Silver perch 的中文商品鱼名称需要水产专业复核",
+    "translation_source": "generated"
+  },
+  "F008359": {
+    "external_food_id": "F008359",
+    "name_en": "Snapper, fillet, raw",
+    "name_zh": "笛鲷（鱼柳、生）",
+    "translation_status": "needs_review",
+    "translation_note": "Snapper 的中文商品鱼名称需结合澳洲物种定义复核",
+    "translation_source": "generated"
+  },
+  "F008828": {
+    "external_food_id": "F008828",
+    "name_en": "Squid or calamari, raw",
+    "name_zh": "鱿鱼（生）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F009163": {
+    "external_food_id": "F009163",
+    "name_en": "Tilapia, fillet, raw",
+    "name_zh": "罗非鱼（鱼柳、生）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F009271": {
+    "external_food_id": "F009271",
+    "name_en": "Trout, rainbow, aquacultured, raw",
+    "name_zh": "虹鳟鱼（养殖、生）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F009560": {
+    "external_food_id": "F009560",
+    "name_en": "Whiting, King George, fillet, raw",
+    "name_zh": "乔治王牙鳕（鱼柳、生）",
+    "translation_status": "needs_review",
+    "translation_note": "King George whiting 的标准中文商品名需要水产专业复核",
+    "translation_source": "generated"
+  },
+  "F003729": {
+    "external_food_id": "F003729",
+    "name_en": "Egg, chicken, whole, raw",
+    "name_zh": "全鸡蛋（生）",
+    "translation_status": "ready",
+    "translation_note": "保留完整蛋与生熟状态",
+    "translation_source": "manual_override"
+  },
+  "F003705": {
+    "external_food_id": "F003705",
+    "name_en": "Egg, chicken, white (albumen), hard-boiled",
+    "name_zh": "鸡蛋清（水煮熟）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F003706": {
+    "external_food_id": "F003706",
+    "name_en": "Egg, chicken, white (albumen), raw",
+    "name_zh": "鸡蛋清（生）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F003721": {
+    "external_food_id": "F003721",
+    "name_en": "Egg, chicken, whole, hard-boiled",
+    "name_zh": "全鸡蛋（水煮熟）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F003736": {
+    "external_food_id": "F003736",
+    "name_en": "Egg, chicken, yolk, hard-boiled",
+    "name_zh": "鸡蛋黄（水煮熟）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F003737": {
+    "external_food_id": "F003737",
+    "name_en": "Egg, chicken, yolk, raw",
+    "name_zh": "鸡蛋黄（生）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F003724": {
+    "external_food_id": "F003724",
+    "name_en": "Egg, chicken, whole, omega-3 polyunsaturate enriched, raw",
+    "name_zh": "全鸡蛋（强化欧米伽-3多不饱和脂肪、生）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F003723": {
+    "external_food_id": "F003723",
+    "name_en": "Egg, chicken, whole, omega-3 polyunsaturate enriched, boiled",
+    "name_zh": "全鸡蛋（强化欧米伽-3多不饱和脂肪、水煮）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F005634": {
+    "external_food_id": "F005634",
+    "name_en": "Milk, cow, fluid, regular fat (~3.5%)",
+    "name_zh": "全脂牛奶",
+    "translation_status": "ready",
+    "translation_note": "常见基础食品标准名称",
+    "translation_source": "manual_override"
+  },
+  "F009694": {
+    "external_food_id": "F009694",
+    "name_en": "Yoghurt, natural, regular fat (~3%)",
+    "name_zh": "原味全脂酸奶",
+    "translation_status": "ready",
+    "translation_note": "保留原味和脂肪等级",
+    "translation_source": "manual_override"
+  },
+  "F002414": {
+    "external_food_id": "F002414",
+    "name_en": "Cheese, cheddar, natural, regular fat",
+    "name_zh": "天然全脂切达奶酪",
+    "translation_status": "ready",
+    "translation_note": "保留奶酪品种、加工和脂肪等级",
+    "translation_source": "manual_override"
+  },
+  "F002413": {
+    "external_food_id": "F002413",
+    "name_en": "Cheese, cheddar, natural, reduced fat (~25%)",
+    "name_zh": "切达奶酪（原味、低脂(~25%)）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F002444": {
+    "external_food_id": "F002444",
+    "name_en": "Cheese, cream, plain",
+    "name_zh": "奶油奶酪（原味）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F002479": {
+    "external_food_id": "F002479",
+    "name_en": "Cheese, parmesan, fresh, regular fat",
+    "name_zh": "帕玛森奶酪（新鲜、全脂）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F009919": {
+    "external_food_id": "F009919",
+    "name_en": "Yoghurt, natural, sheep's milk",
+    "name_zh": "原味羊奶酸奶",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F002405": {
+    "external_food_id": "F002405",
+    "name_en": "Cheese, blue vein",
+    "name_zh": "蓝纹奶酪",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F002406": {
+    "external_food_id": "F002406",
+    "name_en": "Cheese, bocconcini",
+    "name_zh": "小莫扎里拉奶酪",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F002407": {
+    "external_food_id": "F002407",
+    "name_en": "Cheese, brie",
+    "name_zh": "布里奶酪",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F002408": {
+    "external_food_id": "F002408",
+    "name_en": "Cheese, camembert",
+    "name_zh": "卡芒贝尔奶酪",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F002428": {
+    "external_food_id": "F002428",
+    "name_en": "Cheese, cheddar, processed, regular fat",
+    "name_zh": "切达奶酪（再制、全脂）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F002435": {
+    "external_food_id": "F002435",
+    "name_en": "Cheese, cottage",
+    "name_zh": "茅屋奶酪",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F002452": {
+    "external_food_id": "F002452",
+    "name_en": "Cheese, fetta (feta)",
+    "name_zh": "菲达奶酪",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F002462": {
+    "external_food_id": "F002462",
+    "name_en": "Cheese, goat, firm",
+    "name_zh": "山羊奶酪（硬质）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F002463": {
+    "external_food_id": "F002463",
+    "name_en": "Cheese, goat, soft",
+    "name_zh": "山羊奶酪（软质）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F002466": {
+    "external_food_id": "F002466",
+    "name_en": "Cheese, haloumi (halloumi)",
+    "name_zh": "哈罗米奶酪",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F002478": {
+    "external_food_id": "F002478",
+    "name_en": "Cheese, parmesan, dried, finely grated",
+    "name_zh": "帕玛森奶酪（干制、细磨碎）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F002488": {
+    "external_food_id": "F002488",
+    "name_en": "Cheese, ricotta",
+    "name_zh": "瑞科塔奶酪",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F005614": {
+    "external_food_id": "F005614",
+    "name_en": "Milk, cow, fluid, reduced fat (~1%)",
+    "name_zh": "牛奶（液态、低脂(~1%)）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F005637": {
+    "external_food_id": "F005637",
+    "name_en": "Milk, cow, fluid, skim (~0.15% fat)",
+    "name_zh": "牛奶（液态、脱脂（0.15%脂肪））",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F005652": {
+    "external_food_id": "F005652",
+    "name_en": "Milk, cow, powder, skim",
+    "name_zh": "牛奶（粉末、脱脂）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F002425": {
+    "external_food_id": "F002425",
+    "name_en": "Cheese, cheddar, processed, reduced fat (~15%), added vitamin D",
+    "name_zh": "切达奶酪（再制、低脂(~15%)、添加维生素D）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F005580": {
+    "external_food_id": "F005580",
+    "name_en": "Milk, cow, canned, evaporated, reduced fat (~2%)",
+    "name_zh": "牛奶（淡炼乳罐装、低脂(~2%)）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F005581": {
+    "external_food_id": "F005581",
+    "name_en": "Milk, cow, canned, evaporated, regular",
+    "name_zh": "牛奶（淡炼乳罐装、普通）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F005599": {
+    "external_food_id": "F005599",
+    "name_en": "Milk, cow, fluid, lactose free, regular fat (~3.5%)",
+    "name_zh": "牛奶（液态、无乳糖、全脂(~3.5%)）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F005621": {
+    "external_food_id": "F005621",
+    "name_en": "Milk, cow, fluid, reduced fat (~1.5%), added omega 3 polyunsaturates",
+    "name_zh": "牛奶（液态、低脂(~1.5%)、添加欧米伽-3多不饱和脂肪）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F005635": {
+    "external_food_id": "F005635",
+    "name_en": "Milk, cow, fluid, regular fat (~3.5%), added omega 3 polyunsaturates",
+    "name_zh": "牛奶（液态、全脂(~3.5%)、添加欧米伽-3多不饱和脂肪）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F005650": {
+    "external_food_id": "F005650",
+    "name_en": "Milk, cow, powder, regular fat, unfortified",
+    "name_zh": "牛奶（粉末、全脂、未强化）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F010020": {
+    "external_food_id": "F010020",
+    "name_en": "Cheese, haloumi (halloumi), reduced salt",
+    "name_zh": "哈罗米奶酪（减盐）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F005648": {
+    "external_food_id": "F005648",
+    "name_en": "Milk, cow, powder, regular fat",
+    "name_zh": "牛奶（粉末、全脂）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F005582": {
+    "external_food_id": "F005582",
+    "name_en": "Milk, cow, canned, sweetened, condensed, regular",
+    "name_zh": "牛奶（甜炼乳罐装、普通）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F009176": {
+    "external_food_id": "F009176",
+    "name_en": "Tofu (soy bean curd), firm, as purchased",
+    "name_zh": "老豆腐",
+    "translation_status": "ready",
+    "translation_note": "firm tofu 的常用中文名称",
+    "translation_source": "manual_override"
+  },
+  "F002882": {
+    "external_food_id": "F002882",
+    "name_en": "Chickpea, dried, boiled, drained",
+    "name_zh": "干鹰嘴豆（水煮、沥干）",
+    "translation_status": "ready",
+    "translation_note": "保留干制来源和烹调状态",
+    "translation_source": "manual_override"
+  },
+  "F005177": {
+    "external_food_id": "F005177",
+    "name_en": "Lentil, dried, boiled, drained",
+    "name_zh": "扁豆（干制、水煮、沥干）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F008155": {
+    "external_food_id": "F008155",
+    "name_en": "Sausage, vegetarian style, unfortified, raw",
+    "name_zh": "素香肠（未强化、生）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F000437": {
+    "external_food_id": "F000437",
+    "name_en": "Bean, haricot, dried, boiled, drained",
+    "name_zh": "菜豆（干制、水煮、沥干）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F000442": {
+    "external_food_id": "F000442",
+    "name_en": "Bean, lima, dried, boiled, drained",
+    "name_zh": "利马豆（干制、水煮、沥干）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F000451": {
+    "external_food_id": "F000451",
+    "name_en": "Bean, red kidney, dried, boiled, drained",
+    "name_zh": "红腰豆（干制、水煮、沥干）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F000459": {
+    "external_food_id": "F000459",
+    "name_en": "Bean, soya (soy), dried, boiled, drained",
+    "name_zh": "大豆（干制、水煮、沥干）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F006544": {
+    "external_food_id": "F006544",
+    "name_en": "Pea, split, dried, boiled, drained",
+    "name_zh": "干豌豆瓣（干制、水煮、沥干）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F008151": {
+    "external_food_id": "F008151",
+    "name_en": "Sausage, vegetarian style, added Fe, Zn and vitamin B12, raw",
+    "name_zh": "素香肠（添加铁、锌和维生素B12、生）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F008153": {
+    "external_food_id": "F008153",
+    "name_en": "Sausage, vegetarian style, fried, no added fat",
+    "name_zh": "素香肠（煎制、无加油脂）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F009816": {
+    "external_food_id": "F009816",
+    "name_en": "Meat alternative, legume and/or vegetable base, cooked",
+    "name_zh": "豆类蔬菜肉替代品（熟）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F009821": {
+    "external_food_id": "F009821",
+    "name_en": "Meat alternative, mycoprotein/fungus base, cooked",
+    "name_zh": "真菌蛋白肉替代品（熟）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F009823": {
+    "external_food_id": "F009823",
+    "name_en": "Meat alternative, protein (soy/wheat/pea) base, cooked",
+    "name_zh": "植物蛋白肉替代品（熟）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F000436": {
+    "external_food_id": "F000436",
+    "name_en": "Bean, haricot, dried",
+    "name_zh": "菜豆（干制）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F000441": {
+    "external_food_id": "F000441",
+    "name_en": "Bean, lima, dried",
+    "name_zh": "利马豆（干制）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F000448": {
+    "external_food_id": "F000448",
+    "name_en": "Bean, red kidney, canned, drained",
+    "name_zh": "红腰豆（罐装、沥干）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F000449": {
+    "external_food_id": "F000449",
+    "name_en": "Bean, red kidney, dried",
+    "name_zh": "红腰豆（干制）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F000458": {
+    "external_food_id": "F000458",
+    "name_en": "Bean, soya (soy), dried",
+    "name_zh": "大豆（干制）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F002880": {
+    "external_food_id": "F002880",
+    "name_en": "Chickpea, canned, drained",
+    "name_zh": "鹰嘴豆（罐装、沥干）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F002881": {
+    "external_food_id": "F002881",
+    "name_en": "Chickpea, dried",
+    "name_zh": "鹰嘴豆（干制）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F005178": {
+    "external_food_id": "F005178",
+    "name_en": "Lentil, French, hulled, dry",
+    "name_zh": "法国扁豆（去壳、干制）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F005181": {
+    "external_food_id": "F005181",
+    "name_en": "Lentil, green, hulled, dry",
+    "name_zh": "绿扁豆（去壳、干制）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F005184": {
+    "external_food_id": "F005184",
+    "name_en": "Lentil, red, hulled, dry",
+    "name_zh": "红扁豆（去壳、干制）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F005248": {
+    "external_food_id": "F005248",
+    "name_en": "Lupin, dehulled, flakes, uncooked",
+    "name_zh": "羽扇豆（去壳、片状、未烹调）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F008749": {
+    "external_food_id": "F008749",
+    "name_en": "Spinach, baby, fresh, raw",
+    "name_zh": "嫩菠菜（新鲜、生）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F001905": {
+    "external_food_id": "F001905",
+    "name_en": "Broccoli, fresh, raw",
+    "name_zh": "西兰花（新鲜、生）",
+    "translation_status": "ready",
+    "translation_note": "常见基础食品标准名称",
+    "translation_source": "manual_override"
+  },
+  "F009193": {
+    "external_food_id": "F009193",
+    "name_en": "Tomato, common, raw",
+    "name_zh": "普通番茄（生）",
+    "translation_status": "ready",
+    "translation_note": "常见基础食品标准名称",
+    "translation_source": "manual_override"
+  },
+  "F002276": {
+    "external_food_id": "F002276",
+    "name_en": "Carrot, mature, peeled, fresh, raw",
+    "name_zh": "成熟胡萝卜（去皮、新鲜、生）",
+    "translation_status": "ready",
+    "translation_note": "保留成熟度、去皮和生熟状态",
+    "translation_source": "manual_override"
+  },
+  "F000162": {
+    "external_food_id": "F000162",
+    "name_en": "Avocado, hass, raw",
+    "name_zh": "哈斯牛油果（生）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F010994": {
+    "external_food_id": "F010994",
+    "name_en": "Avocado, shepard, raw",
+    "name_zh": "谢泼德牛油果（生）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F001900": {
+    "external_food_id": "F001900",
+    "name_en": "Broccoli, fresh, boiled, drained",
+    "name_zh": "西兰花（新鲜、水煮、沥干）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F001904": {
+    "external_food_id": "F001904",
+    "name_en": "Broccoli, fresh, microwaved",
+    "name_zh": "西兰花（新鲜、微波加热）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F001909": {
+    "external_food_id": "F001909",
+    "name_en": "Broccolini, fresh, raw",
+    "name_zh": "嫩茎西兰花（新鲜、生）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F002239": {
+    "external_food_id": "F002239",
+    "name_en": "Capsicum, green, fresh, raw",
+    "name_zh": "青彩椒（新鲜、生）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F002247": {
+    "external_food_id": "F002247",
+    "name_en": "Capsicum, red, fresh, raw",
+    "name_zh": "红彩椒（新鲜、生）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F010259": {
+    "external_food_id": "F010259",
+    "name_en": "Capsicum, yellow, fresh, raw",
+    "name_zh": "黄彩椒（新鲜、生）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F002378": {
+    "external_food_id": "F002378",
+    "name_en": "Cauliflower, fresh, raw",
+    "name_zh": "花椰菜（新鲜、生）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F002384": {
+    "external_food_id": "F002384",
+    "name_en": "Celeriac, peeled, raw",
+    "name_zh": "根芹菜（去皮、生）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F002884": {
+    "external_food_id": "F002884",
+    "name_en": "Chicory, raw",
+    "name_zh": "菊苣（生）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F002896": {
+    "external_food_id": "F002896",
+    "name_en": "Chilli (chili), green, raw",
+    "name_zh": "青辣椒（生）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F002901": {
+    "external_food_id": "F002901",
+    "name_en": "Chilli (chili), red, raw",
+    "name_zh": "红辣椒（生）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F002949": {
+    "external_food_id": "F002949",
+    "name_en": "Choko, peeled, fresh, raw",
+    "name_zh": "佛手瓜（去皮、新鲜、生）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F003319": {
+    "external_food_id": "F003319",
+    "name_en": "Cucumber, common, peeled, raw",
+    "name_zh": "普通黄瓜（去皮、生）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F003320": {
+    "external_food_id": "F003320",
+    "name_en": "Cucumber, common, unpeeled, raw",
+    "name_zh": "普通黄瓜（带皮、生）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F010995": {
+    "external_food_id": "F010995",
+    "name_en": "Cucumber, Lebanese, peeled, raw",
+    "name_zh": "黎巴嫩黄瓜（去皮、生）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F003321": {
+    "external_food_id": "F003321",
+    "name_en": "Cucumber, Lebanese, unpeeled, raw",
+    "name_zh": "黎巴嫩黄瓜（带皮、生）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F003324": {
+    "external_food_id": "F003324",
+    "name_en": "Cucumber, telegraph, unpeeled, raw",
+    "name_zh": "长黄瓜（带皮、生）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F003761": {
+    "external_food_id": "F003761",
+    "name_en": "Eggplant, unpeeled, fresh, raw",
+    "name_zh": "茄子（带皮、新鲜、生）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F003784": {
+    "external_food_id": "F003784",
+    "name_en": "Endive, fresh, raw",
+    "name_zh": "苦苣（新鲜、生）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F004193": {
+    "external_food_id": "F004193",
+    "name_en": "Garlic, peeled, fresh, raw",
+    "name_zh": "大蒜（去皮、新鲜、生）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F004213": {
+    "external_food_id": "F004213",
+    "name_en": "Ginger, peeled, fresh, raw",
+    "name_zh": "生姜（去皮、新鲜、生）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F005164": {
+    "external_food_id": "F005164",
+    "name_en": "Leek, fresh, raw",
+    "name_zh": "韭葱（新鲜、生）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F005191": {
+    "external_food_id": "F005191",
+    "name_en": "Lettuce, cos, raw",
+    "name_zh": "罗马生菜（生）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F005192": {
+    "external_food_id": "F005192",
+    "name_en": "Lettuce, iceberg, raw",
+    "name_zh": "冰山生菜（生）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F005193": {
+    "external_food_id": "F005193",
+    "name_en": "Lettuce, mignonette, raw",
+    "name_zh": "奶油生菜（生）",
+    "translation_status": "needs_review",
+    "translation_note": "Mignonette lettuce 的标准中文品种名称需要蔬菜专业复核",
+    "translation_source": "generated"
+  },
+  "F005513": {
+    "external_food_id": "F005513",
+    "name_en": "Melon, bitter, fresh, raw",
+    "name_zh": "苦瓜（新鲜、生）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F005514": {
+    "external_food_id": "F005514",
+    "name_en": "Melon, hairy, fresh, raw",
+    "name_zh": "节瓜（新鲜、生）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F005946": {
+    "external_food_id": "F005946",
+    "name_en": "Mushroom, common, fresh, raw",
+    "name_zh": "蘑菇（普通、新鲜、生）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F006195": {
+    "external_food_id": "F006195",
+    "name_en": "Okra, raw",
+    "name_zh": "秋葵（生）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F009800": {
+    "external_food_id": "F009800",
+    "name_en": "Onion, mature, red skinned, raw",
+    "name_zh": "红洋葱（生）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F006250": {
+    "external_food_id": "F006250",
+    "name_en": "Onion, spring, fresh, raw",
+    "name_zh": "青葱（新鲜、生）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F006328": {
+    "external_food_id": "F006328",
+    "name_en": "Parsnip, peeled, fresh, raw",
+    "name_zh": "欧防风（去皮、新鲜、生）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F007555": {
+    "external_food_id": "F007555",
+    "name_en": "Pumpkin, peeled, fresh, raw",
+    "name_zh": "南瓜（去皮、新鲜、生）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F007606": {
+    "external_food_id": "F007606",
+    "name_en": "Radish, red skinned, unpeeled, raw",
+    "name_zh": "红皮萝卜（带皮、生）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F007608": {
+    "external_food_id": "F007608",
+    "name_en": "Radish, white skinned, peeled, raw",
+    "name_zh": "白萝卜（去皮、生）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F007712": {
+    "external_food_id": "F007712",
+    "name_en": "Rocket, fresh, raw",
+    "name_zh": "芝麻菜（新鲜、生）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F008227": {
+    "external_food_id": "F008227",
+    "name_en": "Shallot, peeled, fresh, raw",
+    "name_zh": "红葱头（去皮、新鲜、生）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F008267": {
+    "external_food_id": "F008267",
+    "name_en": "Silverbeet, fresh, raw",
+    "name_zh": "瑞士甜菜（新鲜、生）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F008761": {
+    "external_food_id": "F008761",
+    "name_en": "Spinach, Mature English, fresh, raw",
+    "name_zh": "成熟英国菠菜（新鲜、生）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F008763": {
+    "external_food_id": "F008763",
+    "name_en": "Spinach, water, fresh, raw",
+    "name_zh": "空心菜（新鲜、生）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F008811": {
+    "external_food_id": "F008811",
+    "name_en": "Squash, button, fresh, raw",
+    "name_zh": "小圆南瓜（新鲜、生）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F008813": {
+    "external_food_id": "F008813",
+    "name_en": "Squash, scallopini, fresh, raw",
+    "name_zh": "飞碟瓜（新鲜、生）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F009021": {
+    "external_food_id": "F009021",
+    "name_en": "Swede, peeled, fresh, raw",
+    "name_zh": "芜菁甘蓝（去皮、新鲜、生）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F010942": {
+    "external_food_id": "F010942",
+    "name_en": "Sweet potato, orange flesh, unpeeled, raw",
+    "name_zh": "红薯（橙肉、带皮、生）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F010943": {
+    "external_food_id": "F010943",
+    "name_en": "Sweet potato, purple flesh, peeled, raw",
+    "name_zh": "红薯（紫肉、去皮、生）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F009039": {
+    "external_food_id": "F009039",
+    "name_en": "Sweet potato, white flesh, peeled, raw",
+    "name_zh": "红薯（白肉、去皮、生）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F009094": {
+    "external_food_id": "F009094",
+    "name_en": "Taro, peeled, fresh, raw",
+    "name_zh": "芋头（去皮、新鲜、生）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F009190": {
+    "external_food_id": "F009190",
+    "name_en": "Tomato, cherry, raw",
+    "name_zh": "樱桃番茄（生）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F009532": {
+    "external_food_id": "F009532",
+    "name_en": "Watercress, raw",
+    "name_zh": "西洋菜（生）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F001015": {
+    "external_food_id": "F001015",
+    "name_en": "Beetroot, fresh, purple, peeled, raw",
+    "name_zh": "甜菜根（新鲜、紫色、去皮、生）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F002266": {
+    "external_food_id": "F002266",
+    "name_en": "Carrot, baby, peeled, fresh, raw",
+    "name_zh": "小胡萝卜（去皮、新鲜、生）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F002288": {
+    "external_food_id": "F002288",
+    "name_en": "Cassava, white flesh, peeled, fresh, raw",
+    "name_zh": "白肉木薯（去皮、新鲜、生）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F002290": {
+    "external_food_id": "F002290",
+    "name_en": "Cassava, yellow flesh, peeled, fresh, raw",
+    "name_zh": "黄肉木薯（去皮、新鲜、生）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F003753": {
+    "external_food_id": "F003753",
+    "name_en": "Eggplant, unpeeled, fresh, roasted, no added fat",
+    "name_zh": "茄子（带皮、新鲜、烤制、无加油脂）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F005945": {
+    "external_food_id": "F005945",
+    "name_en": "Mushroom, common, fresh, fried, no added fat",
+    "name_zh": "蘑菇（普通、新鲜、煎制、无加油脂）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F005949": {
+    "external_food_id": "F005949",
+    "name_en": "Mushroom, common, vitamin D enhanced, fresh, raw",
+    "name_zh": "蘑菇（普通、强化维生素D、新鲜、生）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F006225": {
+    "external_food_id": "F006225",
+    "name_en": "Onion, mature, brown skinned, peeled, raw",
+    "name_zh": "黄洋葱（去皮、生）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F007535": {
+    "external_food_id": "F007535",
+    "name_en": "Pumpkin, butternut, peeled, fresh, raw",
+    "name_zh": "奶油南瓜（去皮、新鲜、生）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F007540": {
+    "external_food_id": "F007540",
+    "name_en": "Pumpkin, golden nugget, peeled, fresh, raw",
+    "name_zh": "金块南瓜（去皮、新鲜、生）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F000110": {
+    "external_food_id": "F000110",
+    "name_en": "Apple, red skin, unpeeled, raw",
+    "name_zh": "红皮苹果（带皮、生）",
+    "translation_status": "ready",
+    "translation_note": "保留果皮和生熟状态",
+    "translation_source": "manual_override"
+  },
+  "F000262": {
+    "external_food_id": "F000262",
+    "name_en": "Banana, cavendish, peeled, raw",
+    "name_zh": "卡文迪什香蕉（去皮、生）",
+    "translation_status": "ready",
+    "translation_note": "保留明确品种和生熟状态",
+    "translation_source": "manual_override"
+  },
+  "F006277": {
+    "external_food_id": "F006277",
+    "name_en": "Orange, peeled, raw",
+    "name_zh": "橙子（去皮、生）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F001290": {
+    "external_food_id": "F001290",
+    "name_en": "Blueberry, raw",
+    "name_zh": "蓝莓（生）",
+    "translation_status": "ready",
+    "translation_note": "常见基础食品标准名称",
+    "translation_source": "manual_override"
+  },
+  "F000086": {
+    "external_food_id": "F000086",
+    "name_en": "Apple, bonza, unpeeled, raw",
+    "name_zh": "邦扎苹果（带皮、生）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F000091": {
+    "external_food_id": "F000091",
+    "name_en": "Apple, fuji, unpeeled, raw",
+    "name_zh": "富士苹果（带皮、生）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F000092": {
+    "external_food_id": "F000092",
+    "name_en": "Apple, golden delicious, unpeeled, raw",
+    "name_zh": "金冠苹果（带皮、生）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F000095": {
+    "external_food_id": "F000095",
+    "name_en": "Apple, granny-smith, unpeeled, raw",
+    "name_zh": "青苹（带皮、生）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F000099": {
+    "external_food_id": "F000099",
+    "name_en": "Apple, jonathan, unpeeled, raw",
+    "name_zh": "红玉苹果（带皮、生）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F000105": {
+    "external_food_id": "F000105",
+    "name_en": "Apple, pink lady, unpeeled, raw",
+    "name_zh": "粉红佳人苹果（带皮、生）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F000107": {
+    "external_food_id": "F000107",
+    "name_en": "Apple, red delicious, unpeeled, raw",
+    "name_zh": "红蛇果（带皮、生）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F000108": {
+    "external_food_id": "F000108",
+    "name_en": "Apple, red skin, peeled, raw",
+    "name_zh": "红皮苹果（去皮、生）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F000111": {
+    "external_food_id": "F000111",
+    "name_en": "Apple, royal gala, unpeeled, raw",
+    "name_zh": "皇家嘎啦苹果（带皮、生）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F000267": {
+    "external_food_id": "F000267",
+    "name_en": "Banana, lady finger or sugar, peeled, raw",
+    "name_zh": "小米蕉（去皮、生）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F001267": {
+    "external_food_id": "F001267",
+    "name_en": "Blackberry, raw",
+    "name_zh": "黑莓（生）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F003423": {
+    "external_food_id": "F003423",
+    "name_en": "Custard apple, African pride, peeled, raw",
+    "name_zh": "番荔枝（非洲骄傲品种、去皮、生）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F003834": {
+    "external_food_id": "F003834",
+    "name_en": "Fig, fresh, unpeeled, raw",
+    "name_zh": "无花果（新鲜、带皮、生）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F004253": {
+    "external_food_id": "F004253",
+    "name_en": "Grape, black muscatel (muscat), raw",
+    "name_zh": "黑麝香葡萄（生）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F004254": {
+    "external_food_id": "F004254",
+    "name_en": "Grape, black sultana, raw",
+    "name_zh": "黑无核葡萄（生）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F004256": {
+    "external_food_id": "F004256",
+    "name_en": "Grape, cornichon, raw",
+    "name_zh": "科尼雄葡萄（生）",
+    "translation_status": "needs_review",
+    "translation_note": "Cornichon 葡萄品种的标准中文译名需要品种专业复核",
+    "translation_source": "generated"
+  },
+  "F004260": {
+    "external_food_id": "F004260",
+    "name_en": "Grape, green, raw",
+    "name_zh": "青葡萄（生）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F004259": {
+    "external_food_id": "F004259",
+    "name_en": "Grape, red globe, raw",
+    "name_zh": "红地球葡萄（生）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F004261": {
+    "external_food_id": "F004261",
+    "name_en": "Grape, waltham cross, raw",
+    "name_zh": "沃尔瑟姆十字葡萄（生）",
+    "translation_status": "needs_review",
+    "translation_note": "Waltham Cross 葡萄品种的标准中文译名需要品种专业复核",
+    "translation_source": "generated"
+  },
+  "F004286": {
+    "external_food_id": "F004286",
+    "name_en": "Guava, Hawaiian, raw",
+    "name_zh": "番石榴（夏威夷品种、生）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F004594": {
+    "external_food_id": "F004594",
+    "name_en": "Jackfruit, peeled, raw",
+    "name_zh": "菠萝蜜（去皮、生）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F004815": {
+    "external_food_id": "F004815",
+    "name_en": "Kiwifruit, gold, peeled, raw",
+    "name_zh": "黄金奇异果（去皮、生）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F004816": {
+    "external_food_id": "F004816",
+    "name_en": "Kiwifruit, green (hayward), peeled, raw",
+    "name_zh": "海沃德绿奇异果（去皮、生）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F005174": {
+    "external_food_id": "F005174",
+    "name_en": "Lemon, peeled, raw",
+    "name_zh": "柠檬（去皮、生）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F005199": {
+    "external_food_id": "F005199",
+    "name_en": "Lime, peeled, raw",
+    "name_zh": "青柠（去皮、生）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F005244": {
+    "external_food_id": "F005244",
+    "name_en": "Loquat, peeled, raw",
+    "name_zh": "枇杷（去皮、生）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F005255": {
+    "external_food_id": "F005255",
+    "name_en": "Lychee, peeled, raw",
+    "name_zh": "荔枝（去皮、生）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F005299": {
+    "external_food_id": "F005299",
+    "name_en": "Mango, peeled, raw",
+    "name_zh": "芒果（去皮、生）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F005515": {
+    "external_food_id": "F005515",
+    "name_en": "Melon, honey dew, peeled, raw",
+    "name_zh": "蜜瓜（去皮、生）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F005519": {
+    "external_food_id": "F005519",
+    "name_en": "Melon, rockmelon, peeled, raw",
+    "name_zh": "哈密瓜（去皮、生）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F005520": {
+    "external_food_id": "F005520",
+    "name_en": "Melon, watermelon, peeled, raw",
+    "name_zh": "西瓜（去皮、生）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F005916": {
+    "external_food_id": "F005916",
+    "name_en": "Mulberry, raw",
+    "name_zh": "桑葚（生）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F009882": {
+    "external_food_id": "F009882",
+    "name_en": "Nectarine, white, unpeeled, raw",
+    "name_zh": "白肉油桃（带皮、生）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F006021": {
+    "external_food_id": "F006021",
+    "name_en": "Nectarine, yellow, unpeeled, raw",
+    "name_zh": "黄肉油桃（带皮、生）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F006276": {
+    "external_food_id": "F006276",
+    "name_en": "Orange, navel, peeled, raw",
+    "name_zh": "脐橙（去皮、生）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F006279": {
+    "external_food_id": "F006279",
+    "name_en": "Orange, valencia, peeled, raw",
+    "name_zh": "瓦伦西亚橙（去皮、生）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F011001": {
+    "external_food_id": "F011001",
+    "name_en": "Papaya, red, peeled, raw",
+    "name_zh": "红肉木瓜（去皮、生）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F011000": {
+    "external_food_id": "F011000",
+    "name_en": "Papaya, yellow, peeled, raw",
+    "name_zh": "黄肉木瓜（去皮、生）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F006333": {
+    "external_food_id": "F006333",
+    "name_en": "Passionfruit, raw",
+    "name_zh": "百香果（生）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F006528": {
+    "external_food_id": "F006528",
+    "name_en": "Pawpaw (papaya), peeled, raw",
+    "name_zh": "木瓜（去皮、生）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F006571": {
+    "external_food_id": "F006571",
+    "name_en": "Peach, white, unpeeled, raw",
+    "name_zh": "白肉桃（带皮、生）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F006573": {
+    "external_food_id": "F006573",
+    "name_en": "Peach, yellow, unpeeled, raw",
+    "name_zh": "黄肉桃（带皮、生）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F006585": {
+    "external_food_id": "F006585",
+    "name_en": "Pear, brown skin, unpeeled, raw",
+    "name_zh": "褐皮梨（带皮、生）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F006601": {
+    "external_food_id": "F006601",
+    "name_en": "Pear, green skin, unpeeled, raw",
+    "name_zh": "青皮梨（带皮、生）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F006604": {
+    "external_food_id": "F006604",
+    "name_en": "Pear, nashi, unpeeled, raw",
+    "name_zh": "亚洲梨（带皮、生）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F006606": {
+    "external_food_id": "F006606",
+    "name_en": "Pear, Packham's triumph, unpeeled, raw",
+    "name_zh": "帕克汉姆梨（带皮、生）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F006081": {
+    "external_food_id": "F006081",
+    "name_en": "Nut, almond, with skin, raw, unsalted",
+    "name_zh": "杏仁（带皮、生、无盐）",
+    "translation_status": "ready",
+    "translation_note": "保留果皮、生熟和加盐状态",
+    "translation_source": "manual_override"
+  },
+  "F006107": {
+    "external_food_id": "F006107",
+    "name_en": "Nut, peanut, with skin, raw, unsalted",
+    "name_zh": "花生（带皮、生、无盐）",
+    "translation_status": "ready",
+    "translation_note": "保留果皮、生熟和加盐状态",
+    "translation_source": "manual_override"
+  },
+  "F006087": {
+    "external_food_id": "F006087",
+    "name_en": "Nut, brazil, raw or blanched, unsalted",
+    "name_zh": "巴西坚果（生或焯水、无盐）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F006088": {
+    "external_food_id": "F006088",
+    "name_en": "Nut, cashew, raw, unsalted",
+    "name_zh": "腰果（生、无盐）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F006092": {
+    "external_food_id": "F006092",
+    "name_en": "Nut, cashew, roasted, unsalted",
+    "name_zh": "腰果（烤制、无盐）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F006095": {
+    "external_food_id": "F006095",
+    "name_en": "Nut, chestnut, raw, unsalted",
+    "name_zh": "栗子（生、无盐）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F006096": {
+    "external_food_id": "F006096",
+    "name_en": "Nut, chestnut, roasted, unsalted",
+    "name_zh": "栗子（烤制、无盐）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F006098": {
+    "external_food_id": "F006098",
+    "name_en": "Nut, hazelnut, raw, unsalted",
+    "name_zh": "榛子（生、无盐）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F006099": {
+    "external_food_id": "F006099",
+    "name_en": "Nut, macadamia, raw, unsalted",
+    "name_zh": "夏威夷果（生、无盐）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F006111": {
+    "external_food_id": "F006111",
+    "name_en": "Nut, pecan, raw, unsalted",
+    "name_zh": "碧根果（生、无盐）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F006112": {
+    "external_food_id": "F006112",
+    "name_en": "Nut, pine, raw, unsalted",
+    "name_zh": "松子（生、无盐）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F006113": {
+    "external_food_id": "F006113",
+    "name_en": "Nut, pistachio, raw, unsalted",
+    "name_zh": "开心果（生、无盐）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F006116": {
+    "external_food_id": "F006116",
+    "name_en": "Nut, walnut, raw, unsalted",
+    "name_zh": "核桃（生、无盐）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F006082": {
+    "external_food_id": "F006082",
+    "name_en": "Nut, almond, with skin, roasted, unsalted",
+    "name_zh": "杏仁（带皮、烤制、无盐）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F008214": {
+    "external_food_id": "F008214",
+    "name_en": "Seed, sesame, unsalted",
+    "name_zh": "芝麻（无盐）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F006110": {
+    "external_food_id": "F006110",
+    "name_en": "Nut, peanut, without skin, roasted, with oil, unsalted",
+    "name_zh": "花生（去皮、烤制、用油、无盐）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F006090": {
+    "external_food_id": "F006090",
+    "name_en": "Nut, cashew, roasted, salted",
+    "name_zh": "腰果（烤制、加盐）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F006108": {
+    "external_food_id": "F006108",
+    "name_en": "Nut, peanut, with skin, roasted, with oil, salted",
+    "name_zh": "花生（带皮、烤制、用油、加盐）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F006109": {
+    "external_food_id": "F006109",
+    "name_en": "Nut, peanut, without skin, roasted, with oil, salted",
+    "name_zh": "花生（去皮、烤制、用油、加盐）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F006577": {
+    "external_food_id": "F006577",
+    "name_en": "Peanut butter, smooth & crunchy, added sugar & salt",
+    "name_zh": "花生酱（顺滑或颗粒型、加糖加盐）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F006177": {
+    "external_food_id": "F006177",
+    "name_en": "Oil, olive",
+    "name_zh": "橄榄油",
+    "translation_status": "ready",
+    "translation_note": "常见基础食品标准名称",
+    "translation_source": "manual_override"
+  },
+  "F001971": {
+    "external_food_id": "F001971",
+    "name_en": "Butter, plain, no added salt",
+    "name_zh": "黄油（无盐）",
+    "translation_status": "ready",
+    "translation_note": "保留加盐状态",
+    "translation_source": "manual_override"
+  },
+  "F001973": {
+    "external_food_id": "F001973",
+    "name_en": "Butter, plain, salted",
+    "name_zh": "黄油（原味、加盐）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F001972": {
+    "external_food_id": "F001972",
+    "name_en": "Butter, plain, reduced salt",
+    "name_zh": "黄油（原味、减盐）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F003817": {
+    "external_food_id": "F003817",
+    "name_en": "Fat, solid, vegetable oil based",
+    "name_zh": "植物油固体脂肪",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F004205": {
+    "external_food_id": "F004205",
+    "name_en": "Ghee, clarified butter",
+    "name_zh": "酥油（澄清黄油）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F006155": {
+    "external_food_id": "F006155",
+    "name_en": "Oil, blend of monounsaturated vegetable oils",
+    "name_zh": "单不饱和植物调和油",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F006156": {
+    "external_food_id": "F006156",
+    "name_en": "Oil, blend of polyunsaturated vegetable oils",
+    "name_zh": "多不饱和植物调和油",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F006159": {
+    "external_food_id": "F006159",
+    "name_en": "Oil, canola",
+    "name_zh": "菜籽油",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F006165": {
+    "external_food_id": "F006165",
+    "name_en": "Oil, copha",
+    "name_zh": "椰油起酥油",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F006167": {
+    "external_food_id": "F006167",
+    "name_en": "Oil, grapeseed",
+    "name_zh": "葡萄籽油",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F006170": {
+    "external_food_id": "F006170",
+    "name_en": "Oil, maize",
+    "name_zh": "玉米油",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F006183": {
+    "external_food_id": "F006183",
+    "name_en": "Oil, peanut",
+    "name_zh": "花生油",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F006185": {
+    "external_food_id": "F006185",
+    "name_en": "Oil, rice bran",
+    "name_zh": "米糠油",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F006186": {
+    "external_food_id": "F006186",
+    "name_en": "Oil, safflower",
+    "name_zh": "红花籽油",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F007879": {
+    "external_food_id": "F007879",
+    "name_en": "Salt, table, non-iodised",
+    "name_zh": "食盐（未加碘）",
+    "translation_status": "ready",
+    "translation_note": "保留加碘状态",
+    "translation_source": "manual_override"
+  },
+  "F008976": {
+    "external_food_id": "F008976",
+    "name_en": "Sugar, white, granulated or lump",
+    "name_zh": "白砂糖",
+    "translation_status": "ready",
+    "translation_note": "常见基础食品标准名称",
+    "translation_source": "manual_override"
+  },
+  "F008065": {
+    "external_food_id": "F008065",
+    "name_en": "Sauce, soy, commercial",
+    "name_zh": "酱油",
+    "translation_status": "ready",
+    "translation_note": "常见基础食品标准名称",
+    "translation_source": "manual_override"
+  },
+  "F008973": {
+    "external_food_id": "F008973",
+    "name_en": "Sugar, raw",
+    "name_zh": "原糖",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F003607": {
+    "external_food_id": "F003607",
+    "name_en": "Dressing, French or Italian, regular fat, commercial",
+    "name_zh": "法式或意式沙拉酱（全脂、市售）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F003612": {
+    "external_food_id": "F003612",
+    "name_en": "Dressing, thousand island, regular fat, commercial",
+    "name_zh": "千岛酱（全脂、市售）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F004263": {
+    "external_food_id": "F004263",
+    "name_en": "Gravy powder, dry mix",
+    "name_zh": "肉汁粉（干粉）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F005441": {
+    "external_food_id": "F005441",
+    "name_en": "Mayonnaise, traditional (>65% fat), commercial",
+    "name_zh": "蛋黄酱（传统型（脂肪高于65%）、市售）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F005973": {
+    "external_food_id": "F005973",
+    "name_en": "Mustard, cream style",
+    "name_zh": "芥末酱（乳脂状）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F006469": {
+    "external_food_id": "F006469",
+    "name_en": "Paste, green curry, commercial",
+    "name_zh": "绿咖喱酱（市售）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F006471": {
+    "external_food_id": "F006471",
+    "name_en": "Paste, Indian style curry, commercial",
+    "name_zh": "印度咖喱酱（市售）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F006830": {
+    "external_food_id": "F006830",
+    "name_en": "Plum, salted",
+    "name_zh": "盐渍李子",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F007878": {
+    "external_food_id": "F007878",
+    "name_en": "Salt, table, iodised",
+    "name_zh": "食盐（加碘）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F007987": {
+    "external_food_id": "F007987",
+    "name_en": "Sauce, barbecue, commercial",
+    "name_zh": "烧烤酱（市售）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F007992": {
+    "external_food_id": "F007992",
+    "name_en": "Sauce, butter chicken, commercial",
+    "name_zh": "黄油鸡酱（市售）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F008004": {
+    "external_food_id": "F008004",
+    "name_en": "Sauce, fish, commercial",
+    "name_zh": "鱼露（市售）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F008008": {
+    "external_food_id": "F008008",
+    "name_en": "Sauce, hoi sin (hoisin), commercial",
+    "name_zh": "海鲜酱（市售）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F008026": {
+    "external_food_id": "F008026",
+    "name_en": "Sauce, oyster, commercial",
+    "name_zh": "蚝油（市售）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F009527": {
+    "external_food_id": "F009527",
+    "name_en": "Water, tap",
+    "name_zh": "自来水",
+    "translation_status": "ready",
+    "translation_note": "常见基础食品标准名称",
+    "translation_source": "manual_override"
+  },
+  "F003017": {
+    "external_food_id": "F003017",
+    "name_en": "Coffee, black, from instant coffee powder",
+    "name_zh": "速溶黑咖啡",
+    "translation_status": "ready",
+    "translation_note": "保留速溶和不加奶状态",
+    "translation_source": "manual_override"
+  },
+  "F009125": {
+    "external_food_id": "F009125",
+    "name_en": "Tea, regular, black, brewed from leaf or teabags, without milk",
+    "name_zh": "红茶（茶叶或茶包冲泡、不加奶）",
+    "translation_status": "ready",
+    "translation_note": "保留茶类、冲泡和加奶状态",
+    "translation_source": "manual_override"
+  },
+  "F005696": {
+    "external_food_id": "F005696",
+    "name_en": "Mineral water, natural, unflavoured",
+    "name_zh": "矿泉水（原味、原味）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F009117": {
+    "external_food_id": "F009117",
+    "name_en": "Tea, green, plain, without milk",
+    "name_zh": "绿茶（原味、不加奶）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F003041": {
+    "external_food_id": "F003041",
+    "name_en": "Coffee, espresso, from ground coffee beans",
+    "name_zh": "意式浓缩咖啡（咖啡豆研磨冲泡）",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F004099": {
+    "external_food_id": "F004099",
+    "name_en": "Fruit drink, apple juice",
+    "name_zh": "苹果汁饮料",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  },
+  "F004114": {
+    "external_food_id": "F004114",
+    "name_en": "Fruit drink, orange juice",
+    "name_zh": "橙汁饮料",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
+    "translation_source": "generated"
+  }
+}
