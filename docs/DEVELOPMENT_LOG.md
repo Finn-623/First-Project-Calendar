@@ -1,3 +1,49 @@
+## DEV-20260730-001
+
+- 日期：2026-07-30
+- 状态：已完成
+- 修改类型：Data preparation / v0.2.1 AFCD 候选、中文化与主要摄入类型
+- 任务目标：恢复并固化阶段 2–4 的真实数据准备成果，完成阶段 5 `intake_types` 的规则修复、逐项审计和确定性验证；不进入 AUSNUT 份量或最终导入阶段。
+- 实际完成内容：
+	- 阶段 2–4：建立 14 类食品分类与 AFCD Classification 映射，从 1,588 条标准化记录中确定性筛选 400 条候选，加入 25 条 food-level override、常见食品覆盖和重复组控制。
+	- 阶段 2–4：候选分类为 49/25/50/35/8/32/25/65/50/20/15/18/8/0，生熟状态为 raw 213、cooked 77、unspecified 110；Classification 映射 375 条、food-level override 25 条。
+	- 阶段 2–4：完成 400/400 中文名称，376 条 ready、24 条 needs_review；73 个食品配置 100 个公共别名，无中文重名或 alias 语义冲突。
+	- 阶段 5：修复生成器错误读取标准化源中不存在的 `category_primary`，改为使用候选文件的分类，使分类条件阈值实际生效；缺失营养继续保留 `null` 语义，不转换为 0。
+	- 阶段 5：最终含 carbohydrate 154、protein 173、fat 98、fiber 167；53 条空数组均逐条归为 42 条 threshold_boundary 或 11 条 expected_empty，suspicious_empty 为 0。
+	- 阶段 5：类型数量分布为 empty 53、single 160、double 133、triple 50、quadruple 4，合计 400；四类型为 1 条干大豆和 3 条腰果，四项营养均达到规则阈值，审核结论均为合理。
+	- 阶段 5：规则修正后不存在需要语义例外的食品，override 保持 0；常见主食、薯类、肉鱼蛋、油脂、糖及水/盐/无糖咖啡/无糖茶均有专项断言。
+	- 输入文件前后 SHA-256 保持一致：候选 `2232fb8b...020b9`、翻译 `bafe0295...b4bcb`、别名 `0eb970e...f132`、AFCD 标准化源 `2b6b0999...5402a`。
+- 主要修改文件或模块：
+	- `frontend/scripts/import-foods/dataset/` 阶段 2–5 数据、规则、生成器与验证脚本
+	- `docs/DEVELOPMENT_LOG.md`
+	- `docs/PROJECT_STATUS.md`
+- 遇到的问题：
+	- 原阶段 5 报告将单一组合数量误当作 carbohydrate 总包含数，且生成器从错误对象读取分类，造成条件阈值失效、115 条空数组和不准确统计。
+- 解决方式：
+	- 所有最终统计直接由 `food-intake-types.json` 和候选分类生成；增加 400 ID 一致性、固定顺序、空项原因、四类型结论、14 类分布、常见食品、重复生成及输入哈希不变验证。
+- 执行的测试：
+	- 分类映射、常见食品、中文翻译/别名、intake type 生成与验证脚本。
+	- `cd frontend && node --test scripts/import-foods/adapters.test.mjs scripts/import-foods/cli.test.mjs scripts/import-foods/importer.test.mjs scripts/import-foods/model.test.mjs`
+	- `cd frontend && npm test -- --runInBand --watchAll=false`
+	- `cd frontend && npm run build`
+	- `git diff --check`
+- 测试结果：
+	- 阶段 2–5 专项验证全部通过；候选与翻译重复生成 SHA-256 稳定。
+	- 现有 import-foods 测试 23/23 通过。
+	- 前端全量 31 个套件、210 个测试通过。
+	- Production build 成功（Compiled successfully）。
+- 未完成事项：
+	- 未处理 AUSNUT 固定份量，未生成最终导入 JSON，未写入 Supabase。
+	- 未执行 022/023 的动态 Migration、RLS 或 RPC 验证，未部署 Production。
+- 风险或注意事项：
+	- 24 条中文名称仍明确标记 needs_review，应在正式导入前完成人工复核。
+	- Build 输出既有 Node `fs.F_OK` 弃用警告，不阻塞构建。
+	- `docs/ROADMAP.md` 的来源未确认修改保持不动且未纳入提交。
+- 当前分支：supabase-v1
+- 阶段 2–4 Commit ID：a365b3804bec34bfb10d8cdbbcfc94866a9b2d3e
+- 阶段 5 Commit ID：9cbe947cc328fc307a0a4f12a03b02563aea7304
+- Git Commit ID：由本独立文档提交承载，不自引用其自身哈希。
+
 ## DEV-20260729-002
 
 - 日期：2026-07-29

@@ -14,8 +14,8 @@
 - 当前Phase：Phase 1（完整饮食管理 App）
 - 当前正式版本：v0.1.3 — 基础记录闭环与稳定性收尾，已于 2026-07-28 15:55:36（Australia/Sydney）正式上线。
 - 当前开发版本：v0.2.1 — 公共食品数据库。
-- 当前状态：v0.2.1 已开始开发；食品数据库基础 022 与公共食品导入审计/RPC 023 已在本地建立并通过静态契约，尚未部署。
-- 判断结论：Production 仍运行 v0.1.3；v0.2.1 当前完成前两个独立需求的本地基础，不代表正式公共食品数据已导入或 v0.2.1 已上线。
+- 当前状态：v0.2.1 已开始开发；食品数据库基础、导入框架及 AFCD 数据准备阶段 2–5 已在本地完成验证，尚未部署或正式导入。
+- 判断结论：Production 仍运行 v0.1.3；v0.2.1 当前完成数据库/导入基础与 400 条候选的分类、中文化和主要摄入类型，不代表正式公共食品数据已导入或 v0.2.1 已上线。
 
 ### 判断原因
 
@@ -39,7 +39,12 @@
   - dry-run：`cd frontend && npm run import:foods -- --source AFCD --input <file.json> --dry-run --batch-size 50`
   - 正式运行：由受控服务端环境提供 `SUPABASE_URL` 与 `SUPABASE_SERVICE_ROLE_KEY` 后移除 `--dry-run`；不得在前端或命令记录中写入密钥。
 - 验证：导入与 023 专项 29/29、全部 migration/归档/导入 Node 契约 60/60、前端 31 套件 210 测试、Production build 通过。
-- `未开始` 正式 300–500 种公共食品数据准备与首批导入。
+- `已完成（本地数据准备）` AFCD 14 类 Classification 映射与 400 条确定性候选筛选；分类数量为 49/25/50/35/8/32/25/65/50/20/15/18/8/0，raw/cooked/unspecified 为 213/77/110。
+- `已完成（本地数据准备）` 400/400 中文名称（376 ready、24 needs_review）及公共别名（73 个食品、100 条 alias），无中文重名或 alias 语义冲突。
+- `已完成（本地数据准备）` 400 条 `intake_types`：carbohydrate 154、protein 173、fat 98、fiber 167；53 条空数组均有明确审计分类，suspicious_empty 为 0；规则无需 override。
+- 阶段 2–4 Commit：`a365b3804bec34bfb10d8cdbbcfc94866a9b2d3e`；阶段 5 Commit：`9cbe947cc328fc307a0a4f12a03b02563aea7304`。
+- 验证：阶段 2–5 专项全部通过，import-foods 23/23，前端 31 套件 210 测试，Production build 通过。
+- `未开始` AUSNUT 固定份量关联、最终导入 JSON、正式首批公共食品写入及动态数据库验证。
 - `未开始` 食品搜索页面与完整 v0.2.1 UI。
 - `未部署` migration 022/023、Vercel Production；未执行正式导入，未 push。
 
