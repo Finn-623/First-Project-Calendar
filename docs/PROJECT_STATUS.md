@@ -14,8 +14,8 @@
 - 当前Phase：Phase 1（完整饮食管理 App）
 - 当前正式版本：v0.1.3 — 基础记录闭环与稳定性收尾，已于 2026-07-28 15:55:36（Australia/Sydney）正式上线。
 - 当前开发版本：v0.2.1 — 公共食品数据库。
-- 当前状态：v0.2.1 阶段 7 已完成；食品数据库基础、导入框架、400 条 AFCD 数据包及离线导入验证已完成，尚未执行数据库动态验证或正式导入。
-- 判断结论：Production 仍运行 v0.1.3；v0.2.1 已具备待管理员审核的首批公共食品离线包，但尚未写入 Supabase 或上线。
+- 当前状态：v0.2.1 阶段 8A 已完成；食品数据库基础、导入框架、400 条 AFCD 数据包、离线验证及本地 Supabase 动态权限/RPC 验证已完成，尚未执行小批量试导入或正式导入。
+- 判断结论：Production 仍运行 v0.1.3；v0.2.1 的完整迁移链已在隔离本地环境通过动态验证，但 Migration 022–024 尚未应用到任何远程环境。
 
 ### 判断原因
 
@@ -26,15 +26,15 @@
 
 ### v0.2.1 食品数据库基础进度
 
-- `已完成（本地，待部署验证）` 基于既有 `foods` 增量建立公共/个人食品身份、来源公共食品、审核状态、分类、摄入类型和扩展营养字段。
-- `已完成（本地，待部署验证）` 建立固定份量、公共别名和个人别名表及其唯一性约束。
-- `已完成（本地，待部署验证）` 建立 approved 公共读取、个人数据隔离、管理员公共管理、份量跟随食品及别名隔离 RLS。
-- `已完成（契约验证）` 食品引用硬删除保护与既有 `food_entries` / `daily_archives` 历史快照兼容检查。
-- Migration：`022_food_database_foundation.sql`，未执行本地或 Production migration。
-- 验证：022 契约 13/13、全部 migration/归档契约 31/31、前端 31 套件 210 测试通过，Production build 通过。
+- `已完成（本地动态验证）` 基于既有 `foods` 增量建立公共/个人食品身份、来源公共食品、审核状态、分类、摄入类型和扩展营养字段。
+- `已完成（本地动态验证）` 建立固定份量、公共别名和个人别名表及其唯一性约束。
+- `已完成（本地动态验证）` 建立 approved 公共读取、个人数据双向隔离、管理员公共管理、份量跟随食品及别名隔离 RLS。
+- `已完成（本地动态验证）` 食品引用硬删除保护、`food_entries` 历史快照保持和公共食品个人副本隔离。
+- Migration：`022_food_database_foundation.sql`、`023_public_food_import_audit.sql`、`024_food_database_runtime_permissions.sql`；仅在隔离本地 Supabase 应用，均未部署 Production。
+- 验证：本地 reset 完整应用 Migration 001–024；动态权限/RPC 34/34、静态契约 41/41、import-foods 23/23、前端 31 套件 210 测试通过，Production build 通过。
 - 兼容策略：旧四项营养安全回填；无法推断的纤维和扩展营养保持 `NULL`；五项核心营养完整性待现有编辑器和存量数据补齐后通过后续 migration 收紧。
-- `已完成（本地框架，待动态验证）` 公共食品导入标准模型、AFCD/USDA JSON 适配器、校验、来源 ID 去重、失败隔离、dry-run 与 service-role CLI。
-- `已完成（本地框架，待动态验证）` migration 023 导入运行/错误审计及单食品、份量、公共别名原子写入 RPC；正式食品固定写为 pending。
+- `已完成（本地动态验证）` 公共食品导入标准模型、AFCD/USDA JSON 适配器、校验、来源 ID 去重、失败隔离、dry-run 与 service-role CLI。
+- `已完成（本地动态验证）` migration 023 导入运行/错误审计及单食品、份量、公共别名原子写入 RPC；正常写入、三类失败回滚、幂等 skip、批次失败隔离与计数闭合均通过。
 - 导入命令：
   - dry-run：`cd frontend && npm run import:foods -- --source AFCD --input <file.json> --dry-run --batch-size 50`
   - 正式运行：由受控服务端环境提供 `SUPABASE_URL` 与 `SUPABASE_SERVICE_ROLE_KEY` 后移除 `--dry-run`；不得在前端或命令记录中写入密钥。
@@ -49,9 +49,10 @@
 - `已完成（离线数据包）` 223 条 portion needs_review 已逐条决策：approve 180、exclude 3、defer 40；最终整合 501 条 ready portion，219 个食品有份量。
 - `已完成（离线契约）` 400 条 AFCD 首批公共食品导入 JSON，包含 100 条 aliases、阶段 5 intake_types 和原始 AFCD 营养；24 条中文名称 needs_review 保留，全部食品状态为 pending。
 - `已完成（离线 dry-run）` 400/400 解析和统一模型校验成功，0 failed；没有连接数据库、创建 import run 或调用 RPC。阶段 7 Commit：`93f0af1e66ba59af492e2c3c4a40876d87f671ad`。
-- `未开始` 阶段 8 Migration 022/023 应用、动态 RLS/RPC 验证、正式首批公共食品写入和管理员审核。
+- `已完成（仅本地）` 阶段 8A Migration 022–024 应用与动态 RLS/RPC 验证；功能 Commit：`0393e60311809e3603493cfeecd8798a76b1f1f5`。
+- `未开始` 阶段 8B 隔离环境小批量试导入；正式首批公共食品写入和管理员审核仍未执行。
 - `未开始` 食品搜索页面与完整 v0.2.1 UI。
-- `未部署` migration 022/023、Vercel Production；未执行正式导入。
+- `未部署` migration 022/023/024、Vercel Production；未执行远程或正式导入。
 
 ## 3. 已完成
 

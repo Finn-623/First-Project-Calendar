@@ -1,3 +1,52 @@
+## DEV-20260731-002
+
+- 日期：2026-07-31
+- 状态：已完成
+- 修改类型：Database integration validation / v0.2.1 食品权限与导入
+- 任务目标：在完全隔离的本地 Supabase 中重放完整 Migration 链，并动态验证食品 RLS、管理员与 service role 权限、导入 RPC 原子性、幂等、失败隔离、审计权限和历史兼容；不连接远程环境、不执行正式导入。
+- 实际完成内容：
+	- 使用 Supabase CLI 2.110.0 对本地数据库执行干净 reset，Migration 001–024 全部应用成功，022、023、024 均经过真实 PostgreSQL 编译和 PostgREST 运行验证。
+	- 新增单命令 `npm run test:food-db-local`，运行时仅从本地 CLI 读取临时连接信息，自动创建用户 A、用户 B、管理员和真实本地 JWT，并在结束时清理测试用户、公共食品和审计运行。
+	- 动态覆盖 approved/pending/disabled 公共读取、个人食品双向隔离、公共/个人 aliases、portions、管理员审核与停用、service role、受限 RPC、审计表权限、自提权防护和公共食品个人副本隔离。
+	- 验证 `import_public_food_item` 正常原子写入、alias/portion/food 三类失败整体回滚、来源外部 ID 幂等 skip、不同来源独立身份，以及三条批次中单条失败不影响两条合法食品。
+	- 验证被引用食品无法普通硬删除，食品改名、营养修改或停用不改变 `food_entries` 名称及四项营养快照；停用公共食品对普通查询不可见。
+- 发现并修复的问题：
+	- 全新本地迁移链缺少食品相关表与 service role 的显式运行权限，RLS policy 无法通过 PostgREST 到达；新增 Migration 024 补充最小用途 GRANT，行级访问仍由既有 RLS 决定。
+	- 普通用户可通过既有 profile owner UPDATE 尝试修改自己的 `role`；024 新增 trigger，仅允许 service role 分配或改变管理员角色。
+	- 不可见目标食品在 alias 关系 trigger 中形成空记录，SQL 三值逻辑未拒绝该关系；024 覆盖函数并显式拒绝不可见/不存在的目标食品。
+- 主要修改文件或模块：
+	- `.gitignore`
+	- `frontend/package.json`
+	- `frontend/scripts/import-foods/local-supabase-integration.mjs`
+	- `supabase/migrations/024_food_database_runtime_permissions.sql`
+	- `supabase/migrations/024_food_database_runtime_permissions.test.mjs`
+	- `docs/DEVELOPMENT_LOG.md`
+	- `docs/PROJECT_STATUS.md`
+	- `docs/DATABASE_CHANGES.md`
+- 执行的测试：
+	- `npx --no-install supabase db reset`
+	- `cd frontend && npm run test:food-db-local`（连续运行两次）
+	- Migration、归档与运行权限静态契约测试
+	- `cd frontend && node --test scripts/import-foods/*.test.mjs`
+	- 阶段 3–7 五个 dataset focused 验证脚本
+	- `cd frontend && npm test -- --runInBand --watchAll=false`
+	- `cd frontend && npm run build`
+- 测试结果：
+	- 本地动态集成测试连续两次 34/34 通过。
+	- Migration/归档/运行权限静态契约 41/41 通过；import-foods 23/23 通过；阶段 3–7 focused 验证全部通过。
+	- 前端全量 31 个套件、210 个测试通过；Production Build 成功。
+	- 非阻塞输出为既有测试环境缺少前端 Supabase 变量日志、模拟 session 错误日志和 Node `fs.F_OK` 弃用警告。
+- 未完成事项：
+	- 尚未进入阶段 8B；未执行隔离环境小批量试导入。
+	- 未执行远程/Production Migration 022–024，未正式导入 400 条食品，未部署 Production。
+	- “停用食品不能用于新增记录”当前由可见食品查询与应用流程限制；本阶段未新增针对任意直连 `food_entries` 写入的数据库触发约束。
+- 风险或注意事项：
+	- Migration 024 必须与 022、023 一起在后续隔离环境验证后再进入 Production。
+	- 24 条中文名称和 40 条延期份量仍保留既有人工复核状态。
+	- `docs/ROADMAP.md` 的用户既有修改保持完全不动且未纳入提交。
+- 阶段 8A 功能 Commit：`0393e60311809e3603493cfeecd8798a76b1f1f5`
+- Git Commit ID：由本独立文档提交承载，不自引用其自身哈希。
+
 ## DEV-20260731-001
 
 - 日期：2026-07-31

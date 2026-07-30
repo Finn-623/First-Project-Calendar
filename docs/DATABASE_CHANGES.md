@@ -1,3 +1,42 @@
+## DB-20260731-001
+
+- 日期：2026-07-31
+- 修改原因：干净本地 Migration 重放与真实 PostgREST 测试发现，食品 RLS 缺少可到达策略的基础表 GRANT、service role 无法访问必要对象、普通用户可尝试自改 profile 管理员角色，且 alias 关系触发器未显式拒绝因 RLS 不可见的目标食品。
+- 实际修改内容：
+  - 新增 Migration 024，对 `foods`、份量、公共/个人 alias、profiles、timeline items 和 food entries 设置与现有 RLS 相匹配的显式运行权限；anon/authenticated 仍受行级策略限制，service role 用于受控导入与测试设置。
+  - 新增 `prevent_profile_role_escalation()` 与 trigger，普通 authenticated 用户不能在 profile INSERT/UPDATE 中分配或改变管理员角色，service role 保留受控管理员设置能力。
+  - 覆盖 `enforce_food_alias_relationship()`，当关联食品不存在或被 RLS 隐藏时立即拒绝，避免 SQL `NULL` 三值逻辑接受越权 alias 关系。
+  - 不修改 Migration 022/023，不改变公共食品 pending 导入、审核显示、来源去重或历史快照语义。
+- 涉及的表和对象：
+  - `public.foods`
+  - `public.food_portions`
+  - `public.food_public_aliases`
+  - `public.food_private_aliases`
+  - `public.profiles`
+  - `public.timeline_items`
+  - `public.food_entries`
+  - `public.prevent_profile_role_escalation()`
+  - `public.enforce_food_alias_relationship()`
+- Migration 文件路径：`supabase/migrations/024_food_database_runtime_permissions.sql`
+- 对现有数据的影响：
+  - 只调整角色权限与触发器函数，不更新、删除或导入业务数据。
+  - 现有 owner-only RLS、公共食品审核状态、个人食品隔离、食品引用和快照数据保持。
+- 风险：
+  - 024 当前仅在本地 Supabase 验证，尚未应用任何远程环境。
+  - 停用食品的新增记录限制目前依赖可见食品查询和应用流程；未增加对任意直连 `food_entries` 写入的数据库触发约束。
+- 回滚方式：
+  - Production 应通过后续反向 migration 撤销 024 的显式 GRANT/REVOKE、删除 profile role trigger，并恢复上一版 alias 关系函数；不得修改已应用 migration 文件。
+- 测试内容：
+  - 本地 `supabase db reset` 完整重放 Migration 001–024。
+  - 三身份真实 JWT、anon、管理员与 service role 的 34 项动态 RLS/RPC 集成测试，连续运行两次。
+  - Migration/归档/运行权限静态契约、import-foods、数据集、前端全量测试与 Production Build。
+- 测试结果：
+  - Migration 001–024 全部应用成功，022/023/024 通过真实 PostgreSQL 与 PostgREST 验证。
+  - 动态集成 34/34、静态契约 41/41、import-foods 23/23、前端 31 套件 210 测试通过；Build 成功。
+  - 未执行远程 Migration、正式食品导入或部署。
+- 相关 DEV 编号：`DEV-20260731-002`
+- 相关 Commit ID：`0393e60311809e3603493cfeecd8798a76b1f1f5`
+
 ## DB-20260729-002
 
 - 日期：2026-07-29
