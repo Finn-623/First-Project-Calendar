@@ -44,7 +44,9 @@
 - `已完成（本地数据准备）` 400 条 `intake_types`：carbohydrate 154、protein 173、fat 98、fiber 167；53 条空数组均有明确审计分类，suspicious_empty 为 0；规则无需 override。
 - 阶段 2–4 Commit：`a365b3804bec34bfb10d8cdbbcfc94866a9b2d3e`；阶段 5 Commit：`9cbe947cc328fc307a0a4f12a03b02563aea7304`。
 - 验证：阶段 2–5 专项全部通过，import-foods 23/23，前端 31 套件 210 测试，Production build 通过。
-- `未开始` AUSNUT 固定份量关联、最终导入 JSON、正式首批公共食品写入及动态数据库验证。
+- `已完成（本地数据准备，待人工复核）` AUSNUT 固定份量 exact-key 审计：332 个候选匹配、222 个食品保留 544 条份量，其中 ready 321、needs_review 223；110 个匹配后无份量食品均只有官方 density 换算记录。
+- 阶段 6 不使用名称模糊关联、Volume 推算或 1mL=1g 假设；所有 grams 与 AUSNUT `Gram amount` 逐条一致。功能纠正 Commit：`19f658518e8e11cf0ecc3fa0b7497b1fff038b69`。
+- `未开始` 阶段 7 最终导入 JSON、正式首批公共食品写入及动态数据库验证。
 - `未开始` 食品搜索页面与完整 v0.2.1 UI。
 - `未部署` migration 022/023、Vercel Production；未执行正式导入，未 push。
 
@@ -713,6 +715,7 @@ P2：
 - Mapping rules established and validated for AFCD Excel sources.
 - Pending: USDA converter, Chinese name translation, intake types, portion/alias association, and database dynamic validation.
 ## v0.2.1 Status Update (2026-07-30)
-- AUSNUT 2023 food portions added and validated (551 portions for 222 candidate foods).
-- Portion label translation rules established.
-- Pending: Final intake type validation and import database integration.
+- AUSNUT 2023 fixed portions corrected and fully audited: 9,816 source rows, 332 exact-key candidate matches, 544 retained portions across 222 foods.
+- Final review split is 321 ready and 223 needs_review; 110 exact-matched foods have no retained portion because their only source rows are explicitly marked density records.
+- Original commits `05b20f00c7837f0188c007d5952686b33eed53bc` and `6b215ba45190e8d2b5310a79b43399c1ffcc1531` remain unchanged; correction commit is `19f658518e8e11cf0ecc3fa0b7497b1fff038b69`.
+- Pending: stage 7 final import JSON, manual review resolution, database integration, and dynamic database validation.

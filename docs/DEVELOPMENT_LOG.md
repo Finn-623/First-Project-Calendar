@@ -1,3 +1,55 @@
+## DEV-20260730-002
+
+- 日期：2026-07-30
+- 状态：已完成
+- 修改类型：Data quality correction / v0.2.1 AUSNUT 固定份量
+- 任务目标：纠正阶段 6 原有统计、标签、审核状态和验证缺口，建立可追溯的 AUSNUT exact-key 份量审计；不进入阶段 7 或数据库写入。
+- 实际完成内容：
+	- 从 `AUSNUT 2023` 工作表实时读取 9,816 条数据行，9,816 条均有 Public food key；400 条候选中 332 条有 exact-key match，68 条完全 unmatched，共命中 905 条原始 measure。
+	- 明确 density 规则只排除 Descriptor 1 等于 `density` 的 354 条官方换算记录；不计算 density、不用 Volume 推导 grams、不假设 1mL=1g。
+	- 另外排除 6 条通用 grams/millilitres 记录和 1 条超过每食品 6 条 ready 上限的低优先级记录；去重前有效 545 条，最终保留 544 条。
+	- 最终 321 条 ready、223 条 needs_review，覆盖 222 个食品；110 个 exact match 但无最终份量的食品均只有 density 记录，连同 68 个 unmatched 食品构成 178 个无份量食品。
+	- needs_review 逐条带具体原因：207 条翻译不确定、11 条翻译不确定且同标签克重冲突、4 条同标签克重冲突、1 条低于 0.5g 的异常克重。
+	- 建立集中 `portion_type`、自然中文标签、重要规格保留、确定性优先级和 ready 最多 6 条规则；Descriptor 4 调查品牌只保留为来源证据，不进入用户标签。
+	- 完全重复与语义近似重复扫描均未发现可安全合并的组；审计保留 103 个相似份量组的“不合并”证据，避免合并 small/medium/large、容器容量或不同重量。
+	- 新增 `ausnut-portions-audit.json`，记录分区闭合、过滤原因、110 个匹配后空食品逐条原因、常见食品全部来源 measure、保留/排除决策和相似组审计。
+- 主要修改文件或模块：
+	- `frontend/scripts/import-foods/dataset/generate-ausnut-portions.mjs`
+	- `frontend/scripts/import-foods/dataset/portion-label-rules.mjs`
+	- `frontend/scripts/import-foods/dataset/food-portions.json`
+	- `frontend/scripts/import-foods/dataset/ausnut-portions-audit.json`
+	- `frontend/scripts/import-foods/dataset/verify-ausnut-portions.mjs`
+	- `docs/DEVELOPMENT_LOG.md`
+	- `docs/PROJECT_STATUS.md`
+- 遇到的问题：
+	- 原实现把全部非 density 记录直接保留为 ready，仅输出食品数和份量数；没有来源 Measure ID、完整标签、portion_type、异常/冲突审核、算术闭合或输入不变验证。
+	- 原 `portion_name` 只拼接 Quantity 与 Descriptor 1，造成信息丢失和机械翻译；原报告中的 551 实际只是 905 减去 354 条 density 记录。
+- 解决方式：
+	- 所有 grams 必须逐条等于 AUSNUT `Gram amount`；Volume 仅保留来源值，不参与计算。
+	- 将不确定翻译、冲突与异常改为 needs_review，不再为了得到零审核而标记 ready；通过明确优先级限制 ready 数量。
+- 执行的测试：
+	- AUSNUT 生成、验证及连续两次 SHA-256 稳定性检查。
+	- category mapping、common foods、translations/aliases、intake_types 回归验证。
+	- `cd frontend && node --test scripts/import-foods/*.test.mjs`
+	- `cd frontend && npm test -- --runInBand --watchAll=false`
+	- `cd frontend && npm run build`
+	- 六个输入文件执行前后完整 SHA-256 比对；`git diff --check`。
+- 测试结果：
+	- 阶段 6 focused 验证与全部数据阶段回归通过；`food-portions.json` 连续生成 SHA-256 均为 `ad6e13412012fe7c81f68f9b21ade2e66af3ef10c858ba205036ab905057af16`。
+	- import-foods 测试 23/23 通过。
+	- 前端全量 31 个套件、210 个测试通过。
+	- Production Build 成功；仅有既有 Node `fs.F_OK` 弃用警告。
+- 未完成事项：
+	- 尚未进入阶段 7，未生成最终导入 JSON，未写入 Supabase。
+	- 未执行 Migration、RLS、RPC 动态验证或 Production 部署。
+- 风险或注意事项：
+	- 223 条 needs_review 必须在最终导入前按审计文件人工确认或排除，尤其是调查专用描述、翻译不确定和同标签不同克重。
+	- `docs/ROADMAP.md` 来源未确认的修改保持不动且未纳入提交。
+- 原阶段 6 功能 Commit：05b20f00c7837f0188c007d5952686b33eed53bc
+- 原阶段 6 文档 Commit：6b215ba45190e8d2b5310a79b43399c1ffcc1531
+- 阶段 6 纠正功能 Commit：19f658518e8e11cf0ecc3fa0b7497b1fff038b69
+- Git Commit ID：由本独立文档提交承载，不自引用其自身哈希。
+
 ## DEV-20260730-001
 
 - 日期：2026-07-30
