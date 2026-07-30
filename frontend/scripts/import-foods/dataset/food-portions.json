@@ -1,0 +1,4303 @@
+{
+  "F007641": [
+    {
+      "external_food_id": "F007641",
+      "portion_name": "1 汤匙",
+      "grams": 13.4,
+      "is_default": true,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F007641",
+      "portion_name": "1 杯",
+      "grams": 167.5,
+      "is_default": false,
+      "review_status": "ready"
+    }
+  ],
+  "F007661": [
+    {
+      "external_food_id": "F007661",
+      "portion_name": "1 汤匙",
+      "grams": 15.2,
+      "is_default": true,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F007661",
+      "portion_name": "1 杯",
+      "grams": 190,
+      "is_default": false,
+      "review_status": "ready"
+    }
+  ],
+  "F001463": [
+    {
+      "external_food_id": "F001463",
+      "portion_name": "1 片",
+      "grams": 33,
+      "is_default": true,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F001463",
+      "portion_name": "1 片",
+      "grams": 45,
+      "is_default": false,
+      "review_status": "ready"
+    }
+  ],
+  "F006143": [
+    {
+      "external_food_id": "F006143",
+      "portion_name": "1 汤匙",
+      "grams": 6.6,
+      "is_default": true,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F006143",
+      "portion_name": "1 杯",
+      "grams": 82.5,
+      "is_default": false,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F006143",
+      "portion_name": "1 杯 or sachet",
+      "grams": 40,
+      "is_default": false,
+      "review_status": "ready"
+    }
+  ],
+  "F000378": [
+    {
+      "external_food_id": "F000378",
+      "portion_name": "1 汤匙",
+      "grams": 15.2,
+      "is_default": true,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F000378",
+      "portion_name": "1 杯",
+      "grams": 190,
+      "is_default": false,
+      "review_status": "ready"
+    }
+  ],
+  "F001918": [
+    {
+      "external_food_id": "F001918",
+      "portion_name": "1 汤匙",
+      "grams": 14.2,
+      "is_default": true,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F001918",
+      "portion_name": "1 杯",
+      "grams": 177.5,
+      "is_default": false,
+      "review_status": "ready"
+    }
+  ],
+  "F003227": [
+    {
+      "external_food_id": "F003227",
+      "portion_name": "1 chip",
+      "grams": 25,
+      "is_default": true,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F003227",
+      "portion_name": "1 汤匙",
+      "grams": 20.4,
+      "is_default": false,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F003227",
+      "portion_name": "1 杯",
+      "grams": 255,
+      "is_default": false,
+      "review_status": "ready"
+    }
+  ],
+  "F003235": [
+    {
+      "external_food_id": "F003235",
+      "portion_name": "1 汤匙",
+      "grams": 12.6,
+      "is_default": true,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F003235",
+      "portion_name": "1 杯",
+      "grams": 157.5,
+      "is_default": false,
+      "review_status": "ready"
+    }
+  ],
+  "F005690": [
+    {
+      "external_food_id": "F005690",
+      "portion_name": "1 汤匙",
+      "grams": 14,
+      "is_default": true,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F005690",
+      "portion_name": "1 杯",
+      "grams": 175,
+      "is_default": false,
+      "review_status": "ready"
+    }
+  ],
+  "F007596": [
+    {
+      "external_food_id": "F007596",
+      "portion_name": "1 汤匙",
+      "grams": 15.4,
+      "is_default": true,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F007596",
+      "portion_name": "1 杯",
+      "grams": 192.5,
+      "is_default": false,
+      "review_status": "ready"
+    }
+  ],
+  "F007683": [
+    {
+      "external_food_id": "F007683",
+      "portion_name": "1 汤匙",
+      "grams": 11,
+      "is_default": true,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F007683",
+      "portion_name": "1 杯",
+      "grams": 137.5,
+      "is_default": false,
+      "review_status": "ready"
+    }
+  ],
+  "F007728": [
+    {
+      "external_food_id": "F007728",
+      "portion_name": "1 汤匙",
+      "grams": 21.2,
+      "is_default": true,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F007728",
+      "portion_name": "1 杯",
+      "grams": 265,
+      "is_default": false,
+      "review_status": "ready"
+    }
+  ],
+  "F008220": [
+    {
+      "external_food_id": "F008220",
+      "portion_name": "1 汤匙",
+      "grams": 19.6,
+      "is_default": true,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F008220",
+      "portion_name": "1 杯",
+      "grams": 245,
+      "is_default": false,
+      "review_status": "ready"
+    }
+  ],
+  "F009089": [
+    {
+      "external_food_id": "F009089",
+      "portion_name": "1 汤匙",
+      "grams": 21.2,
+      "is_default": true,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F009089",
+      "portion_name": "1 杯",
+      "grams": 265,
+      "is_default": false,
+      "review_status": "ready"
+    }
+  ],
+  "F006066": [
+    {
+      "external_food_id": "F006066",
+      "portion_name": "1 bowl, 杯 or sachet",
+      "grams": 145,
+      "is_default": true,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F006066",
+      "portion_name": "1 bowl, 杯 or sachet",
+      "grams": 195,
+      "is_default": false,
+      "review_status": "ready"
+    }
+  ],
+  "F001928": [
+    {
+      "external_food_id": "F001928",
+      "portion_name": "1 汤匙",
+      "grams": 21.2,
+      "is_default": true,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F001928",
+      "portion_name": "1 杯",
+      "grams": 265,
+      "is_default": false,
+      "review_status": "ready"
+    }
+  ],
+  "F003990": [
+    {
+      "external_food_id": "F003990",
+      "portion_name": "1 汤匙",
+      "grams": 12,
+      "is_default": true,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F003990",
+      "portion_name": "1 杯",
+      "grams": 150,
+      "is_default": false,
+      "review_status": "ready"
+    }
+  ],
+  "F004007": [
+    {
+      "external_food_id": "F004007",
+      "portion_name": "1 汤匙",
+      "grams": 10.8,
+      "is_default": true,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F004007",
+      "portion_name": "1 杯",
+      "grams": 135,
+      "is_default": false,
+      "review_status": "ready"
+    }
+  ],
+  "F004014": [
+    {
+      "external_food_id": "F004014",
+      "portion_name": "1 汤匙",
+      "grams": 11.2,
+      "is_default": true,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F004014",
+      "portion_name": "1 杯",
+      "grams": 140,
+      "is_default": false,
+      "review_status": "ready"
+    }
+  ],
+  "F006067": [
+    {
+      "external_food_id": "F006067",
+      "portion_name": "1 bowl, 杯 or sachet",
+      "grams": 195,
+      "is_default": true,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F006067",
+      "portion_name": "1 bowl, 杯 or sachet",
+      "grams": 380,
+      "is_default": false,
+      "review_status": "ready"
+    }
+  ],
+  "F006048": [
+    {
+      "external_food_id": "F006048",
+      "portion_name": "1 box",
+      "grams": 350,
+      "is_default": true,
+      "review_status": "ready"
+    }
+  ],
+  "F007678": [
+    {
+      "external_food_id": "F007678",
+      "portion_name": "1 microwavable bag",
+      "grams": 250,
+      "is_default": true,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F007678",
+      "portion_name": "1 microwavable bag",
+      "grams": 450,
+      "is_default": false,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F007678",
+      "portion_name": "1 microwavable 杯",
+      "grams": 125,
+      "is_default": false,
+      "review_status": "ready"
+    }
+  ],
+  "F000233": [
+    {
+      "external_food_id": "F000233",
+      "portion_name": "1 bagel",
+      "grams": 30,
+      "is_default": true,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F000233",
+      "portion_name": "1 bagel",
+      "grams": 120,
+      "is_default": false,
+      "review_status": "ready"
+    }
+  ],
+  "F001353": [
+    {
+      "external_food_id": "F001353",
+      "portion_name": "1 bun or roll",
+      "grams": 34,
+      "is_default": true,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F001353",
+      "portion_name": "1 bun or roll",
+      "grams": 70,
+      "is_default": false,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F001353",
+      "portion_name": "1 bun or roll",
+      "grams": 134,
+      "is_default": false,
+      "review_status": "ready"
+    }
+  ],
+  "F001360": [
+    {
+      "external_food_id": "F001360",
+      "portion_name": "1 bun or roll",
+      "grams": 142,
+      "is_default": true,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F001360",
+      "portion_name": "1 bun or roll",
+      "grams": 35,
+      "is_default": false,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F001360",
+      "portion_name": "1 bun or roll",
+      "grams": 70,
+      "is_default": false,
+      "review_status": "ready"
+    }
+  ],
+  "F001365": [
+    {
+      "external_food_id": "F001365",
+      "portion_name": "1 bun or roll",
+      "grams": 138,
+      "is_default": true,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F001365",
+      "portion_name": "1 bun or roll",
+      "grams": 35,
+      "is_default": false,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F001365",
+      "portion_name": "1 bun or roll",
+      "grams": 70,
+      "is_default": false,
+      "review_status": "ready"
+    }
+  ],
+  "F001387": [
+    {
+      "external_food_id": "F001387",
+      "portion_name": "1 cob",
+      "grams": 26,
+      "is_default": true,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F001387",
+      "portion_name": "1 cob",
+      "grams": 106.4,
+      "is_default": false,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F001387",
+      "portion_name": "1 cob",
+      "grams": 217.1,
+      "is_default": false,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F001387",
+      "portion_name": "1 turkish bread",
+      "grams": 27,
+      "is_default": false,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F001387",
+      "portion_name": "1 turkish bread",
+      "grams": 113,
+      "is_default": false,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F001387",
+      "portion_name": "1 turkish bread",
+      "grams": 216.6,
+      "is_default": false,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F001387",
+      "portion_name": "1 roll",
+      "grams": 62.1,
+      "is_default": false,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F001387",
+      "portion_name": "1 roll",
+      "grams": 44,
+      "is_default": false,
+      "review_status": "ready"
+    }
+  ],
+  "F001468": [
+    {
+      "external_food_id": "F001468",
+      "portion_name": "1 片",
+      "grams": 36,
+      "is_default": true,
+      "review_status": "ready"
+    }
+  ],
+  "F001528": [
+    {
+      "external_food_id": "F001528",
+      "portion_name": "1 bun or roll",
+      "grams": 95,
+      "is_default": true,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F001528",
+      "portion_name": "1 baguette",
+      "grams": 11,
+      "is_default": false,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F001528",
+      "portion_name": "1 baguette",
+      "grams": 24,
+      "is_default": false,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F001528",
+      "portion_name": "1 baguette",
+      "grams": 63,
+      "is_default": false,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F001528",
+      "portion_name": "1 ciabatta",
+      "grams": 26,
+      "is_default": false,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F001528",
+      "portion_name": "1 sourdough",
+      "grams": 46,
+      "is_default": false,
+      "review_status": "ready"
+    }
+  ],
+  "F001537": [
+    {
+      "external_food_id": "F001537",
+      "portion_name": "1 bun or roll",
+      "grams": 120,
+      "is_default": true,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F001537",
+      "portion_name": "1 baguette",
+      "grams": 11,
+      "is_default": false,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F001537",
+      "portion_name": "1 baguette",
+      "grams": 24,
+      "is_default": false,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F001537",
+      "portion_name": "1 baguette",
+      "grams": 63,
+      "is_default": false,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F001537",
+      "portion_name": "1 ciabatta",
+      "grams": 26,
+      "is_default": false,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F001537",
+      "portion_name": "1 sourdough",
+      "grams": 46,
+      "is_default": false,
+      "review_status": "ready"
+    }
+  ],
+  "F001541": [
+    {
+      "external_food_id": "F001541",
+      "portion_name": "1 片",
+      "grams": 27,
+      "is_default": true,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F001541",
+      "portion_name": "1 片",
+      "grams": 38,
+      "is_default": false,
+      "review_status": "ready"
+    }
+  ],
+  "F001671": [
+    {
+      "external_food_id": "F001671",
+      "portion_name": "1 bun or roll",
+      "grams": 80,
+      "is_default": true,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F001671",
+      "portion_name": "1 bun or roll",
+      "grams": 120,
+      "is_default": false,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F001671",
+      "portion_name": "1 cob",
+      "grams": 26,
+      "is_default": false,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F001671",
+      "portion_name": "1 cob",
+      "grams": 106.4,
+      "is_default": false,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F001671",
+      "portion_name": "1 cob",
+      "grams": 217.1,
+      "is_default": false,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F001671",
+      "portion_name": "1 turkish bread",
+      "grams": 27,
+      "is_default": false,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F001671",
+      "portion_name": "1 turkish bread",
+      "grams": 113,
+      "is_default": false,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F001671",
+      "portion_name": "1 turkish bread",
+      "grams": 216.6,
+      "is_default": false,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F001671",
+      "portion_name": "1 roll",
+      "grams": 62.1,
+      "is_default": false,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F001671",
+      "portion_name": "1 roll",
+      "grams": 44,
+      "is_default": false,
+      "review_status": "ready"
+    }
+  ],
+  "F001543": [
+    {
+      "external_food_id": "F001543",
+      "portion_name": "1 片",
+      "grams": 35,
+      "is_default": true,
+      "review_status": "ready"
+    }
+  ],
+  "F001553": [
+    {
+      "external_food_id": "F001553",
+      "portion_name": "1 片",
+      "grams": 45,
+      "is_default": true,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F001553",
+      "portion_name": "1 片",
+      "grams": 32,
+      "is_default": false,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F001553",
+      "portion_name": "1 sandwich thin",
+      "grams": 40,
+      "is_default": false,
+      "review_status": "ready"
+    }
+  ],
+  "F009034": [
+    {
+      "external_food_id": "F009034",
+      "portion_name": "1 个",
+      "grams": 94,
+      "is_default": true,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F009034",
+      "portion_name": "1 个",
+      "grams": 22,
+      "is_default": false,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F009034",
+      "portion_name": "1 sweet potato",
+      "grams": 693,
+      "is_default": false,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F009034",
+      "portion_name": "1 sweet potato",
+      "grams": 390,
+      "is_default": false,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F009034",
+      "portion_name": "1 sweet potato",
+      "grams": 183,
+      "is_default": false,
+      "review_status": "ready"
+    }
+  ],
+  "F003200": [
+    {
+      "external_food_id": "F003200",
+      "portion_name": "1 cob",
+      "grams": 157,
+      "is_default": true,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F003200",
+      "portion_name": "1 baby corn",
+      "grams": 12,
+      "is_default": false,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F003200",
+      "portion_name": "1 cobbette",
+      "grams": 45,
+      "is_default": false,
+      "review_status": "ready"
+    }
+  ],
+  "F003209": [
+    {
+      "external_food_id": "F003209",
+      "portion_name": "1 baby corn",
+      "grams": 12.5,
+      "is_default": true,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F003209",
+      "portion_name": "1 cob",
+      "grams": 164,
+      "is_default": false,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F003209",
+      "portion_name": "1 cobbette",
+      "grams": 47,
+      "is_default": false,
+      "review_status": "ready"
+    }
+  ],
+  "F007325": [
+    {
+      "external_food_id": "F007325",
+      "portion_name": "1 potato",
+      "grams": 34.85,
+      "is_default": true,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F007325",
+      "portion_name": "1 potato",
+      "grams": 99.45,
+      "is_default": false,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F007325",
+      "portion_name": "1 potato",
+      "grams": 226.1,
+      "is_default": false,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F007325",
+      "portion_name": "1 potato",
+      "grams": 246.5,
+      "is_default": false,
+      "review_status": "ready"
+    }
+  ],
+  "F007368": [
+    {
+      "external_food_id": "F007368",
+      "portion_name": "1 potato",
+      "grams": 34.85,
+      "is_default": true,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F007368",
+      "portion_name": "1 potato",
+      "grams": 99.45,
+      "is_default": false,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F007368",
+      "portion_name": "1 potato",
+      "grams": 226.1,
+      "is_default": false,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F007368",
+      "portion_name": "1 potato",
+      "grams": 246.5,
+      "is_default": false,
+      "review_status": "ready"
+    }
+  ],
+  "F002594": [
+    {
+      "external_food_id": "F002594",
+      "portion_name": "1 tenderloin",
+      "grams": 51.25,
+      "is_default": true,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F002594",
+      "portion_name": "1 breast",
+      "grams": 166.25,
+      "is_default": false,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F002594",
+      "portion_name": "1 breast",
+      "grams": 280,
+      "is_default": false,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F002594",
+      "portion_name": "1 breast",
+      "grams": 367.5,
+      "is_default": false,
+      "review_status": "ready"
+    }
+  ],
+  "F002647": [
+    {
+      "external_food_id": "F002647",
+      "portion_name": "1 drumstick",
+      "grams": 83,
+      "is_default": true,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F002647",
+      "portion_name": "1 drumstick",
+      "grams": 126,
+      "is_default": false,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F002647",
+      "portion_name": "1 drumstick",
+      "grams": 101,
+      "is_default": false,
+      "review_status": "ready"
+    }
+  ],
+  "F002806": [
+    {
+      "external_food_id": "F002806",
+      "portion_name": "1 thigh",
+      "grams": 174,
+      "is_default": true,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F002806",
+      "portion_name": "1 thigh",
+      "grams": 148,
+      "is_default": false,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F002806",
+      "portion_name": "1 thigh",
+      "grams": 126,
+      "is_default": false,
+      "review_status": "ready"
+    }
+  ],
+  "F002849": [
+    {
+      "external_food_id": "F002849",
+      "portion_name": "1 wing",
+      "grams": 46,
+      "is_default": true,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F002849",
+      "portion_name": "1 wing",
+      "grams": 27,
+      "is_default": false,
+      "review_status": "ready"
+    }
+  ],
+  "F003632": [
+    {
+      "external_food_id": "F003632",
+      "portion_name": "1 wing",
+      "grams": 64,
+      "is_default": true,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F003632",
+      "portion_name": "1 breast",
+      "grams": 137,
+      "is_default": false,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F003632",
+      "portion_name": "1 drumstick",
+      "grams": 124,
+      "is_default": false,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F003632",
+      "portion_name": "1 thigh",
+      "grams": 162,
+      "is_default": false,
+      "review_status": "ready"
+    }
+  ],
+  "F004948": [
+    {
+      "external_food_id": "F004948",
+      "portion_name": "1 chop",
+      "grams": 51.23,
+      "is_default": true,
+      "review_status": "ready"
+    }
+  ],
+  "F004954": [
+    {
+      "external_food_id": "F004954",
+      "portion_name": "1 fillet",
+      "grams": 155,
+      "is_default": true,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F004954",
+      "portion_name": "1 steak",
+      "grams": 84.96,
+      "is_default": false,
+      "review_status": "ready"
+    }
+  ],
+  "F005050": [
+    {
+      "external_food_id": "F005050",
+      "portion_name": "1 patty or rissole",
+      "grams": 66,
+      "is_default": true,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F005050",
+      "portion_name": "1 meatball",
+      "grams": 25,
+      "is_default": false,
+      "review_status": "ready"
+    }
+  ],
+  "F007827": [
+    {
+      "external_food_id": "F007827",
+      "portion_name": "1 fillet",
+      "grams": 150,
+      "is_default": true,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F007827",
+      "portion_name": "1 fillet",
+      "grams": 180,
+      "is_default": false,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F007827",
+      "portion_name": "1 fillet",
+      "grams": 110,
+      "is_default": false,
+      "review_status": "ready"
+    }
+  ],
+  "F009300": [
+    {
+      "external_food_id": "F009300",
+      "portion_name": "1 罐",
+      "grams": 95,
+      "is_default": true,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F009300",
+      "portion_name": "1 罐",
+      "grams": 185,
+      "is_default": false,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F009300",
+      "portion_name": "1 罐",
+      "grams": 425,
+      "is_default": false,
+      "review_status": "ready"
+    }
+  ],
+  "F007433": [
+    {
+      "external_food_id": "F007433",
+      "portion_name": "1 prawn/shrimp",
+      "grams": 13.4,
+      "is_default": true,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F007433",
+      "portion_name": "1 prawn/shrimp",
+      "grams": 19,
+      "is_default": false,
+      "review_status": "ready"
+    }
+  ],
+  "F000005": [
+    {
+      "external_food_id": "F000005",
+      "portion_name": "1 abalone",
+      "grams": 85,
+      "is_default": true,
+      "review_status": "ready"
+    }
+  ],
+  "F000386": [
+    {
+      "external_food_id": "F000386",
+      "portion_name": "1 fillet",
+      "grams": 175,
+      "is_default": true,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F000386",
+      "portion_name": "1 fillet",
+      "grams": 125,
+      "is_default": false,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F000386",
+      "portion_name": "1 fillet",
+      "grams": 90,
+      "is_default": false,
+      "review_status": "ready"
+    }
+  ],
+  "F000402": [
+    {
+      "external_food_id": "F000402",
+      "portion_name": "1 fillet",
+      "grams": 150,
+      "is_default": true,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F000402",
+      "portion_name": "1 fillet",
+      "grams": 170,
+      "is_default": false,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F000402",
+      "portion_name": "1 fillet",
+      "grams": 100,
+      "is_default": false,
+      "review_status": "ready"
+    }
+  ],
+  "F001884": [
+    {
+      "external_food_id": "F001884",
+      "portion_name": "1 fillet",
+      "grams": 150,
+      "is_default": true,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F001884",
+      "portion_name": "1 fillet",
+      "grams": 82,
+      "is_default": false,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F001884",
+      "portion_name": "1 fillet",
+      "grams": 170,
+      "is_default": false,
+      "review_status": "ready"
+    }
+  ],
+  "F003973": [
+    {
+      "external_food_id": "F003973",
+      "portion_name": "1 fillet",
+      "grams": 80,
+      "is_default": true,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F003973",
+      "portion_name": "1 fillet",
+      "grams": 165,
+      "is_default": false,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F003973",
+      "portion_name": "1 fillet",
+      "grams": 125,
+      "is_default": false,
+      "review_status": "ready"
+    }
+  ],
+  "F005922": [
+    {
+      "external_food_id": "F005922",
+      "portion_name": "1 fillet",
+      "grams": 150,
+      "is_default": true,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F005922",
+      "portion_name": "1 fillet",
+      "grams": 82,
+      "is_default": false,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F005922",
+      "portion_name": "1 fillet",
+      "grams": 170,
+      "is_default": false,
+      "review_status": "ready"
+    }
+  ],
+  "F005968": [
+    {
+      "external_food_id": "F005968",
+      "portion_name": "1 mussel",
+      "grams": 12,
+      "is_default": true,
+      "review_status": "ready"
+    }
+  ],
+  "F007973": [
+    {
+      "external_food_id": "F007973",
+      "portion_name": "1 fillet",
+      "grams": 18,
+      "is_default": true,
+      "review_status": "ready"
+    }
+  ],
+  "F008166": [
+    {
+      "external_food_id": "F008166",
+      "portion_name": "1 scallop",
+      "grams": 13,
+      "is_default": true,
+      "review_status": "ready"
+    }
+  ],
+  "F008237": [
+    {
+      "external_food_id": "F008237",
+      "portion_name": "1 fillet",
+      "grams": 150,
+      "is_default": true,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F008237",
+      "portion_name": "1 fillet",
+      "grams": 82,
+      "is_default": false,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F008237",
+      "portion_name": "1 fillet",
+      "grams": 170,
+      "is_default": false,
+      "review_status": "ready"
+    }
+  ],
+  "F008263": [
+    {
+      "external_food_id": "F008263",
+      "portion_name": "1 fillet",
+      "grams": 150,
+      "is_default": true,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F008263",
+      "portion_name": "1 fillet",
+      "grams": 82,
+      "is_default": false,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F008263",
+      "portion_name": "1 fillet",
+      "grams": 170,
+      "is_default": false,
+      "review_status": "ready"
+    }
+  ],
+  "F008359": [
+    {
+      "external_food_id": "F008359",
+      "portion_name": "1 fillet",
+      "grams": 150,
+      "is_default": true,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F008359",
+      "portion_name": "1 fillet",
+      "grams": 82,
+      "is_default": false,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F008359",
+      "portion_name": "1 fillet",
+      "grams": 170,
+      "is_default": false,
+      "review_status": "ready"
+    }
+  ],
+  "F008828": [
+    {
+      "external_food_id": "F008828",
+      "portion_name": "1 calamari ring",
+      "grams": 22,
+      "is_default": true,
+      "review_status": "ready"
+    }
+  ],
+  "F009271": [
+    {
+      "external_food_id": "F009271",
+      "portion_name": "1 fillet",
+      "grams": 126,
+      "is_default": true,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F009271",
+      "portion_name": "1 fillet",
+      "grams": 180,
+      "is_default": false,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F009271",
+      "portion_name": "1 fillet",
+      "grams": 140,
+      "is_default": false,
+      "review_status": "ready"
+    }
+  ],
+  "F009560": [
+    {
+      "external_food_id": "F009560",
+      "portion_name": "1 fillet",
+      "grams": 150,
+      "is_default": true,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F009560",
+      "portion_name": "1 fillet",
+      "grams": 82,
+      "is_default": false,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F009560",
+      "portion_name": "1 fillet",
+      "grams": 170,
+      "is_default": false,
+      "review_status": "ready"
+    }
+  ],
+  "F003729": [
+    {
+      "external_food_id": "F003729",
+      "portion_name": "1 egg",
+      "grams": 51,
+      "is_default": true,
+      "review_status": "ready"
+    }
+  ],
+  "F003705": [
+    {
+      "external_food_id": "F003705",
+      "portion_name": "1 egg",
+      "grams": 31,
+      "is_default": true,
+      "review_status": "ready"
+    }
+  ],
+  "F003706": [
+    {
+      "external_food_id": "F003706",
+      "portion_name": "1 egg",
+      "grams": 35,
+      "is_default": true,
+      "review_status": "ready"
+    }
+  ],
+  "F003721": [
+    {
+      "external_food_id": "F003721",
+      "portion_name": "1 egg",
+      "grams": 47,
+      "is_default": true,
+      "review_status": "ready"
+    }
+  ],
+  "F003736": [
+    {
+      "external_food_id": "F003736",
+      "portion_name": "1 egg yolk",
+      "grams": 14,
+      "is_default": true,
+      "review_status": "ready"
+    }
+  ],
+  "F003737": [
+    {
+      "external_food_id": "F003737",
+      "portion_name": "1 egg",
+      "grams": 16,
+      "is_default": true,
+      "review_status": "ready"
+    }
+  ],
+  "F005634": [
+    {
+      "external_food_id": "F005634",
+      "portion_name": "1 瓶",
+      "grams": 309,
+      "is_default": true,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F005634",
+      "portion_name": "1 carton",
+      "grams": 154.5,
+      "is_default": false,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F005634",
+      "portion_name": "1 杯",
+      "grams": 257.5,
+      "is_default": false,
+      "review_status": "ready"
+    }
+  ],
+  "F009694": [
+    {
+      "external_food_id": "F009694",
+      "portion_name": "1 pouch",
+      "grams": 70,
+      "is_default": true,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F009694",
+      "portion_name": "1 pouch",
+      "grams": 110,
+      "is_default": false,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F009694",
+      "portion_name": "1 pouch",
+      "grams": 140,
+      "is_default": false,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F009694",
+      "portion_name": "1 pouch",
+      "grams": 150,
+      "is_default": false,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F009694",
+      "portion_name": "1 tub or container",
+      "grams": 110,
+      "is_default": false,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F009694",
+      "portion_name": "1 tub or container",
+      "grams": 150,
+      "is_default": false,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F009694",
+      "portion_name": "1 tub or container",
+      "grams": 160,
+      "is_default": false,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F009694",
+      "portion_name": "1 tub or container",
+      "grams": 115,
+      "is_default": false,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F009694",
+      "portion_name": "1 tub or container",
+      "grams": 170,
+      "is_default": false,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F009694",
+      "portion_name": "1 tub or container",
+      "grams": 500,
+      "is_default": false,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F009694",
+      "portion_name": "1 tub or container",
+      "grams": 700,
+      "is_default": false,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F009694",
+      "portion_name": "1 包",
+      "grams": 37,
+      "is_default": false,
+      "review_status": "ready"
+    }
+  ],
+  "F002414": [
+    {
+      "external_food_id": "F002414",
+      "portion_name": "1 片",
+      "grams": 7,
+      "is_default": true,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F002414",
+      "portion_name": "1 片",
+      "grams": 21,
+      "is_default": false,
+      "review_status": "ready"
+    }
+  ],
+  "F002413": [
+    {
+      "external_food_id": "F002413",
+      "portion_name": "1 片",
+      "grams": 21,
+      "is_default": true,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F002413",
+      "portion_name": "1 片",
+      "grams": 7,
+      "is_default": false,
+      "review_status": "ready"
+    }
+  ],
+  "F002444": [
+    {
+      "external_food_id": "F002444",
+      "portion_name": "1 汤匙",
+      "grams": 20.2,
+      "is_default": true,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F002444",
+      "portion_name": "1 杯",
+      "grams": 252.5,
+      "is_default": false,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F002444",
+      "portion_name": "1 tub",
+      "grams": 34,
+      "is_default": false,
+      "review_status": "ready"
+    }
+  ],
+  "F002479": [
+    {
+      "external_food_id": "F002479",
+      "portion_name": "1 汤匙",
+      "grams": 10,
+      "is_default": true,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F002479",
+      "portion_name": "1 片",
+      "grams": 7,
+      "is_default": false,
+      "review_status": "ready"
+    }
+  ],
+  "F002405": [
+    {
+      "external_food_id": "F002405",
+      "portion_name": "1 片",
+      "grams": 5,
+      "is_default": true,
+      "review_status": "ready"
+    }
+  ],
+  "F002406": [
+    {
+      "external_food_id": "F002406",
+      "portion_name": "1 bocconcini",
+      "grams": 20,
+      "is_default": true,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F002406",
+      "portion_name": "1 bocconcini",
+      "grams": 44,
+      "is_default": false,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F002406",
+      "portion_name": "1 bocconcini",
+      "grams": 32,
+      "is_default": false,
+      "review_status": "ready"
+    }
+  ],
+  "F002407": [
+    {
+      "external_food_id": "F002407",
+      "portion_name": "1 片",
+      "grams": 5,
+      "is_default": true,
+      "review_status": "ready"
+    }
+  ],
+  "F002408": [
+    {
+      "external_food_id": "F002408",
+      "portion_name": "1 片",
+      "grams": 5,
+      "is_default": true,
+      "review_status": "ready"
+    }
+  ],
+  "F002428": [
+    {
+      "external_food_id": "F002428",
+      "portion_name": "1 片",
+      "grams": 21,
+      "is_default": true,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F002428",
+      "portion_name": "1 片",
+      "grams": 6,
+      "is_default": false,
+      "review_status": "ready"
+    }
+  ],
+  "F002435": [
+    {
+      "external_food_id": "F002435",
+      "portion_name": "1 汤匙",
+      "grams": 20.2,
+      "is_default": true,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F002435",
+      "portion_name": "1 杯",
+      "grams": 252.5,
+      "is_default": false,
+      "review_status": "ready"
+    }
+  ],
+  "F002452": [
+    {
+      "external_food_id": "F002452",
+      "portion_name": "1 cube",
+      "grams": 5,
+      "is_default": true,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F002452",
+      "portion_name": "1 汤匙",
+      "grams": 12.6,
+      "is_default": false,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F002452",
+      "portion_name": "1 杯",
+      "grams": 157.5,
+      "is_default": false,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F002452",
+      "portion_name": "1 片",
+      "grams": 7,
+      "is_default": false,
+      "review_status": "ready"
+    }
+  ],
+  "F002463": [
+    {
+      "external_food_id": "F002463",
+      "portion_name": "1 片",
+      "grams": 7,
+      "is_default": true,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F002463",
+      "portion_name": "1 汤匙",
+      "grams": 12.6,
+      "is_default": false,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F002463",
+      "portion_name": "1 杯",
+      "grams": 157.5,
+      "is_default": false,
+      "review_status": "ready"
+    }
+  ],
+  "F002466": [
+    {
+      "external_food_id": "F002466",
+      "portion_name": "1 片",
+      "grams": 30,
+      "is_default": true,
+      "review_status": "ready"
+    }
+  ],
+  "F002478": [
+    {
+      "external_food_id": "F002478",
+      "portion_name": "1 汤匙",
+      "grams": 10,
+      "is_default": true,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F002478",
+      "portion_name": "1 杯",
+      "grams": 125,
+      "is_default": false,
+      "review_status": "ready"
+    }
+  ],
+  "F002488": [
+    {
+      "external_food_id": "F002488",
+      "portion_name": "1 汤匙",
+      "grams": 20.8,
+      "is_default": true,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F002488",
+      "portion_name": "1 杯",
+      "grams": 260,
+      "is_default": false,
+      "review_status": "ready"
+    }
+  ],
+  "F005614": [
+    {
+      "external_food_id": "F005614",
+      "portion_name": "1 carton",
+      "grams": 260,
+      "is_default": true,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F005614",
+      "portion_name": "1 杯",
+      "grams": 260,
+      "is_default": false,
+      "review_status": "ready"
+    }
+  ],
+  "F005637": [
+    {
+      "external_food_id": "F005637",
+      "portion_name": "1 carton",
+      "grams": 260,
+      "is_default": true,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F005637",
+      "portion_name": "1 杯",
+      "grams": 260,
+      "is_default": false,
+      "review_status": "ready"
+    }
+  ],
+  "F005652": [
+    {
+      "external_food_id": "F005652",
+      "portion_name": "1 杯",
+      "grams": 130,
+      "is_default": true,
+      "review_status": "ready"
+    }
+  ],
+  "F005580": [
+    {
+      "external_food_id": "F005580",
+      "portion_name": "1 杯",
+      "grams": 270,
+      "is_default": true,
+      "review_status": "ready"
+    }
+  ],
+  "F005581": [
+    {
+      "external_food_id": "F005581",
+      "portion_name": "1 杯",
+      "grams": 270,
+      "is_default": true,
+      "review_status": "ready"
+    }
+  ],
+  "F005599": [
+    {
+      "external_food_id": "F005599",
+      "portion_name": "1 杯",
+      "grams": 257.5,
+      "is_default": true,
+      "review_status": "ready"
+    }
+  ],
+  "F010020": [
+    {
+      "external_food_id": "F010020",
+      "portion_name": "1 片",
+      "grams": 30,
+      "is_default": true,
+      "review_status": "ready"
+    }
+  ],
+  "F005648": [
+    {
+      "external_food_id": "F005648",
+      "portion_name": "1 杯",
+      "grams": 130,
+      "is_default": true,
+      "review_status": "ready"
+    }
+  ],
+  "F005582": [
+    {
+      "external_food_id": "F005582",
+      "portion_name": "1 杯",
+      "grams": 322.5,
+      "is_default": true,
+      "review_status": "ready"
+    }
+  ],
+  "F009176": [
+    {
+      "external_food_id": "F009176",
+      "portion_name": "1 片",
+      "grams": 35,
+      "is_default": true,
+      "review_status": "ready"
+    }
+  ],
+  "F008155": [
+    {
+      "external_food_id": "F008155",
+      "portion_name": "1 sausage",
+      "grams": 72,
+      "is_default": true,
+      "review_status": "ready"
+    }
+  ],
+  "F008151": [
+    {
+      "external_food_id": "F008151",
+      "portion_name": "1 sausage",
+      "grams": 71,
+      "is_default": true,
+      "review_status": "ready"
+    }
+  ],
+  "F008153": [
+    {
+      "external_food_id": "F008153",
+      "portion_name": "1 sausage",
+      "grams": 72,
+      "is_default": true,
+      "review_status": "ready"
+    }
+  ],
+  "F009816": [
+    {
+      "external_food_id": "F009816",
+      "portion_name": "1 patty or rissole",
+      "grams": 125,
+      "is_default": true,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F009816",
+      "portion_name": "1 bite",
+      "grams": 25,
+      "is_default": false,
+      "review_status": "ready"
+    }
+  ],
+  "F009821": [
+    {
+      "external_food_id": "F009821",
+      "portion_name": "1 fillet",
+      "grams": 63,
+      "is_default": true,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F009821",
+      "portion_name": "1 片",
+      "grams": 20,
+      "is_default": false,
+      "review_status": "ready"
+    }
+  ],
+  "F009823": [
+    {
+      "external_food_id": "F009823",
+      "portion_name": "1 fillet",
+      "grams": 63,
+      "is_default": true,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F009823",
+      "portion_name": "1 patty or rissole",
+      "grams": 113,
+      "is_default": false,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F009823",
+      "portion_name": "1 strip",
+      "grams": 20,
+      "is_default": false,
+      "review_status": "ready"
+    }
+  ],
+  "F000448": [
+    {
+      "external_food_id": "F000448",
+      "portion_name": "1 罐",
+      "grams": 125,
+      "is_default": true,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F000448",
+      "portion_name": "1 罐",
+      "grams": 420,
+      "is_default": false,
+      "review_status": "ready"
+    }
+  ],
+  "F002880": [
+    {
+      "external_food_id": "F002880",
+      "portion_name": "1 罐",
+      "grams": 125,
+      "is_default": true,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F002880",
+      "portion_name": "1 罐",
+      "grams": 420,
+      "is_default": false,
+      "review_status": "ready"
+    }
+  ],
+  "F008749": [
+    {
+      "external_food_id": "F008749",
+      "portion_name": "1 leaf",
+      "grams": 1,
+      "is_default": true,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F008749",
+      "portion_name": "1 包",
+      "grams": 60,
+      "is_default": false,
+      "review_status": "ready"
+    }
+  ],
+  "F001905": [
+    {
+      "external_food_id": "F001905",
+      "portion_name": "1 个",
+      "grams": 25,
+      "is_default": true,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F001905",
+      "portion_name": "1 个",
+      "grams": 12,
+      "is_default": false,
+      "review_status": "ready"
+    }
+  ],
+  "F002276": [
+    {
+      "external_food_id": "F002276",
+      "portion_name": "1 carrot",
+      "grams": 221,
+      "is_default": true,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F002276",
+      "portion_name": "1 carrot",
+      "grams": 169,
+      "is_default": false,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F002276",
+      "portion_name": "1 carrot",
+      "grams": 129,
+      "is_default": false,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F002276",
+      "portion_name": "1 carrot",
+      "grams": 18,
+      "is_default": false,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F002276",
+      "portion_name": "1 carrot",
+      "grams": 74,
+      "is_default": false,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F002276",
+      "portion_name": "1 stick",
+      "grams": 16,
+      "is_default": false,
+      "review_status": "ready"
+    }
+  ],
+  "F000162": [
+    {
+      "external_food_id": "F000162",
+      "portion_name": "1 avocado",
+      "grams": 216,
+      "is_default": true,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F000162",
+      "portion_name": "1 avocado",
+      "grams": 159,
+      "is_default": false,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F000162",
+      "portion_name": "1 avocado",
+      "grams": 101,
+      "is_default": false,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F000162",
+      "portion_name": "1 片",
+      "grams": 20,
+      "is_default": false,
+      "review_status": "ready"
+    }
+  ],
+  "F001900": [
+    {
+      "external_food_id": "F001900",
+      "portion_name": "1 个",
+      "grams": 24,
+      "is_default": true,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F001900",
+      "portion_name": "1 个",
+      "grams": 11.5,
+      "is_default": false,
+      "review_status": "ready"
+    }
+  ],
+  "F001909": [
+    {
+      "external_food_id": "F001909",
+      "portion_name": "1 bunch",
+      "grams": 180,
+      "is_default": true,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F001909",
+      "portion_name": "1 stalk",
+      "grams": 29,
+      "is_default": false,
+      "review_status": "ready"
+    }
+  ],
+  "F002239": [
+    {
+      "external_food_id": "F002239",
+      "portion_name": "1 capsicum",
+      "grams": 328,
+      "is_default": true,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F002239",
+      "portion_name": "1 capsicum",
+      "grams": 278,
+      "is_default": false,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F002239",
+      "portion_name": "1 capsicum",
+      "grams": 201,
+      "is_default": false,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F002239",
+      "portion_name": "1 capsicum",
+      "grams": 25,
+      "is_default": false,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F002239",
+      "portion_name": "1 片",
+      "grams": 16,
+      "is_default": false,
+      "review_status": "ready"
+    }
+  ],
+  "F002247": [
+    {
+      "external_food_id": "F002247",
+      "portion_name": "1 capsicum",
+      "grams": 328,
+      "is_default": true,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F002247",
+      "portion_name": "1 capsicum",
+      "grams": 271,
+      "is_default": false,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F002247",
+      "portion_name": "1 capsicum",
+      "grams": 25,
+      "is_default": false,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F002247",
+      "portion_name": "1 capsicum",
+      "grams": 224,
+      "is_default": false,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F002247",
+      "portion_name": "1 片",
+      "grams": 16,
+      "is_default": false,
+      "review_status": "ready"
+    }
+  ],
+  "F010259": [
+    {
+      "external_food_id": "F010259",
+      "portion_name": "1 capsicum",
+      "grams": 190,
+      "is_default": true,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F010259",
+      "portion_name": "1 capsicum",
+      "grams": 285,
+      "is_default": false,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F010259",
+      "portion_name": "1 capsicum",
+      "grams": 126,
+      "is_default": false,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F010259",
+      "portion_name": "1 capsicum",
+      "grams": 25,
+      "is_default": false,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F010259",
+      "portion_name": "1 片",
+      "grams": 15,
+      "is_default": false,
+      "review_status": "ready"
+    }
+  ],
+  "F002378": [
+    {
+      "external_food_id": "F002378",
+      "portion_name": "1 个",
+      "grams": 46,
+      "is_default": true,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F002378",
+      "portion_name": "1 个",
+      "grams": 14,
+      "is_default": false,
+      "review_status": "ready"
+    }
+  ],
+  "F002384": [
+    {
+      "external_food_id": "F002384",
+      "portion_name": "1 celeriac",
+      "grams": 254,
+      "is_default": true,
+      "review_status": "ready"
+    }
+  ],
+  "F002896": [
+    {
+      "external_food_id": "F002896",
+      "portion_name": "1 chilli",
+      "grams": 12.25,
+      "is_default": true,
+      "review_status": "ready"
+    }
+  ],
+  "F002901": [
+    {
+      "external_food_id": "F002901",
+      "portion_name": "1 chilli",
+      "grams": 12.25,
+      "is_default": true,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F002901",
+      "portion_name": "1 个",
+      "grams": 2,
+      "is_default": false,
+      "review_status": "ready"
+    }
+  ],
+  "F002949": [
+    {
+      "external_food_id": "F002949",
+      "portion_name": "1 choko",
+      "grams": 168,
+      "is_default": true,
+      "review_status": "ready"
+    }
+  ],
+  "F003761": [
+    {
+      "external_food_id": "F003761",
+      "portion_name": "1 eggplant",
+      "grams": 376,
+      "is_default": true,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F003761",
+      "portion_name": "1 eggplant",
+      "grams": 600,
+      "is_default": false,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F003761",
+      "portion_name": "1 eggplant",
+      "grams": 93,
+      "is_default": false,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F003761",
+      "portion_name": "1 eggplant",
+      "grams": 318,
+      "is_default": false,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F003761",
+      "portion_name": "1 eggplant",
+      "grams": 29,
+      "is_default": false,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F003761",
+      "portion_name": "1 片",
+      "grams": 45.9,
+      "is_default": false,
+      "review_status": "ready"
+    }
+  ],
+  "F003784": [
+    {
+      "external_food_id": "F003784",
+      "portion_name": "1 endive",
+      "grams": 390,
+      "is_default": true,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F003784",
+      "portion_name": "1 leaf",
+      "grams": 4,
+      "is_default": false,
+      "review_status": "ready"
+    }
+  ],
+  "F004193": [
+    {
+      "external_food_id": "F004193",
+      "portion_name": "1 clove",
+      "grams": 3,
+      "is_default": true,
+      "review_status": "ready"
+    }
+  ],
+  "F005164": [
+    {
+      "external_food_id": "F005164",
+      "portion_name": "1 leek",
+      "grams": 112,
+      "is_default": true,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F005164",
+      "portion_name": "1 leek",
+      "grams": 194,
+      "is_default": false,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F005164",
+      "portion_name": "1 leek",
+      "grams": 153,
+      "is_default": false,
+      "review_status": "ready"
+    }
+  ],
+  "F005191": [
+    {
+      "external_food_id": "F005191",
+      "portion_name": "1 leaf",
+      "grams": 12.5,
+      "is_default": true,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F005191",
+      "portion_name": "1 leaf",
+      "grams": 4,
+      "is_default": false,
+      "review_status": "ready"
+    }
+  ],
+  "F005192": [
+    {
+      "external_food_id": "F005192",
+      "portion_name": "1 leaf",
+      "grams": 5,
+      "is_default": true,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F005192",
+      "portion_name": "1 lettuce",
+      "grams": 772,
+      "is_default": false,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F005192",
+      "portion_name": "1 lettuce",
+      "grams": 570,
+      "is_default": false,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F005192",
+      "portion_name": "1 lettuce",
+      "grams": 417,
+      "is_default": false,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F005192",
+      "portion_name": "1 leaf",
+      "grams": 15,
+      "is_default": false,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F005192",
+      "portion_name": "1 leaf",
+      "grams": 8,
+      "is_default": false,
+      "review_status": "ready"
+    }
+  ],
+  "F005193": [
+    {
+      "external_food_id": "F005193",
+      "portion_name": "1 leaf",
+      "grams": 4,
+      "is_default": true,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F005193",
+      "portion_name": "1 lettuce",
+      "grams": 230,
+      "is_default": false,
+      "review_status": "ready"
+    }
+  ],
+  "F005513": [
+    {
+      "external_food_id": "F005513",
+      "portion_name": "1 melon",
+      "grams": 125,
+      "is_default": true,
+      "review_status": "ready"
+    }
+  ],
+  "F005514": [
+    {
+      "external_food_id": "F005514",
+      "portion_name": "1 melon",
+      "grams": 112,
+      "is_default": true,
+      "review_status": "ready"
+    }
+  ],
+  "F005946": [
+    {
+      "external_food_id": "F005946",
+      "portion_name": "1 mushroom",
+      "grams": 165,
+      "is_default": true,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F005946",
+      "portion_name": "1 mushroom",
+      "grams": 75,
+      "is_default": false,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F005946",
+      "portion_name": "1 mushroom",
+      "grams": 35,
+      "is_default": false,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F005946",
+      "portion_name": "1 mushroom",
+      "grams": 20,
+      "is_default": false,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F005946",
+      "portion_name": "1 mushroom",
+      "grams": 12,
+      "is_default": false,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F005946",
+      "portion_name": "1 片",
+      "grams": 5.8,
+      "is_default": false,
+      "review_status": "ready"
+    }
+  ],
+  "F006195": [
+    {
+      "external_food_id": "F006195",
+      "portion_name": "1 okra",
+      "grams": 12,
+      "is_default": true,
+      "review_status": "ready"
+    }
+  ],
+  "F006250": [
+    {
+      "external_food_id": "F006250",
+      "portion_name": "1 spring onion",
+      "grams": 15,
+      "is_default": true,
+      "review_status": "ready"
+    }
+  ],
+  "F006328": [
+    {
+      "external_food_id": "F006328",
+      "portion_name": "1 parsnip",
+      "grams": 72,
+      "is_default": true,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F006328",
+      "portion_name": "1 个",
+      "grams": 8.4,
+      "is_default": false,
+      "review_status": "ready"
+    }
+  ],
+  "F007606": [
+    {
+      "external_food_id": "F007606",
+      "portion_name": "1 片",
+      "grams": 3,
+      "is_default": true,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F007606",
+      "portion_name": "1 radish",
+      "grams": 20,
+      "is_default": false,
+      "review_status": "ready"
+    }
+  ],
+  "F007712": [
+    {
+      "external_food_id": "F007712",
+      "portion_name": "1 leaf",
+      "grams": 1,
+      "is_default": true,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F007712",
+      "portion_name": "1 包",
+      "grams": 60,
+      "is_default": false,
+      "review_status": "ready"
+    }
+  ],
+  "F008227": [
+    {
+      "external_food_id": "F008227",
+      "portion_name": "1 shallot",
+      "grams": 5.5,
+      "is_default": true,
+      "review_status": "ready"
+    }
+  ],
+  "F008267": [
+    {
+      "external_food_id": "F008267",
+      "portion_name": "1 leaf",
+      "grams": 42,
+      "is_default": true,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F008267",
+      "portion_name": "1 bunch",
+      "grams": 340,
+      "is_default": false,
+      "review_status": "ready"
+    }
+  ],
+  "F008761": [
+    {
+      "external_food_id": "F008761",
+      "portion_name": "1 bunch",
+      "grams": 340,
+      "is_default": true,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F008761",
+      "portion_name": "1 leaf",
+      "grams": 10,
+      "is_default": false,
+      "review_status": "ready"
+    }
+  ],
+  "F008811": [
+    {
+      "external_food_id": "F008811",
+      "portion_name": "1 squash",
+      "grams": 57,
+      "is_default": true,
+      "review_status": "ready"
+    }
+  ],
+  "F009021": [
+    {
+      "external_food_id": "F009021",
+      "portion_name": "1 swede",
+      "grams": 359,
+      "is_default": true,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F009021",
+      "portion_name": "1 swede",
+      "grams": 194,
+      "is_default": false,
+      "review_status": "ready"
+    }
+  ],
+  "F010942": [
+    {
+      "external_food_id": "F010942",
+      "portion_name": "1 sweet potato",
+      "grams": 748.44,
+      "is_default": true,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F010942",
+      "portion_name": "1 sweet potato",
+      "grams": 421.2,
+      "is_default": false,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F010942",
+      "portion_name": "1 sweet potato",
+      "grams": 197.64,
+      "is_default": false,
+      "review_status": "ready"
+    }
+  ],
+  "F010943": [
+    {
+      "external_food_id": "F010943",
+      "portion_name": "1 sweet potato",
+      "grams": 745,
+      "is_default": true,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F010943",
+      "portion_name": "1 sweet potato",
+      "grams": 420,
+      "is_default": false,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F010943",
+      "portion_name": "1 sweet potato",
+      "grams": 197,
+      "is_default": false,
+      "review_status": "ready"
+    }
+  ],
+  "F009039": [
+    {
+      "external_food_id": "F009039",
+      "portion_name": "1 sweet potato",
+      "grams": 745,
+      "is_default": true,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F009039",
+      "portion_name": "1 sweet potato",
+      "grams": 420,
+      "is_default": false,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F009039",
+      "portion_name": "1 sweet potato",
+      "grams": 197,
+      "is_default": false,
+      "review_status": "ready"
+    }
+  ],
+  "F009094": [
+    {
+      "external_food_id": "F009094",
+      "portion_name": "1 taro",
+      "grams": 309,
+      "is_default": true,
+      "review_status": "ready"
+    }
+  ],
+  "F009190": [
+    {
+      "external_food_id": "F009190",
+      "portion_name": "1 tomato",
+      "grams": 10,
+      "is_default": true,
+      "review_status": "ready"
+    }
+  ],
+  "F001015": [
+    {
+      "external_food_id": "F001015",
+      "portion_name": "1 beetroot",
+      "grams": 143,
+      "is_default": true,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F001015",
+      "portion_name": "1 beetroot",
+      "grams": 82,
+      "is_default": false,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F001015",
+      "portion_name": "1 个",
+      "grams": 10.3,
+      "is_default": false,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F001015",
+      "portion_name": "1 片",
+      "grams": 19,
+      "is_default": false,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F001015",
+      "portion_name": "1 beetroot",
+      "grams": 33,
+      "is_default": false,
+      "review_status": "ready"
+    }
+  ],
+  "F003753": [
+    {
+      "external_food_id": "F003753",
+      "portion_name": "1 片",
+      "grams": 33,
+      "is_default": true,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F003753",
+      "portion_name": "1 eggplant",
+      "grams": 432,
+      "is_default": false,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F003753",
+      "portion_name": "1 eggplant",
+      "grams": 271,
+      "is_default": false,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F003753",
+      "portion_name": "1 eggplant",
+      "grams": 229,
+      "is_default": false,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F003753",
+      "portion_name": "1 eggplant",
+      "grams": 20,
+      "is_default": false,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F003753",
+      "portion_name": "1 eggplant",
+      "grams": 65,
+      "is_default": false,
+      "review_status": "ready"
+    }
+  ],
+  "F005945": [
+    {
+      "external_food_id": "F005945",
+      "portion_name": "1 mushroom",
+      "grams": 87,
+      "is_default": true,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F005945",
+      "portion_name": "1 mushroom",
+      "grams": 41,
+      "is_default": false,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F005945",
+      "portion_name": "1 mushroom",
+      "grams": 18.6,
+      "is_default": false,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F005945",
+      "portion_name": "1 mushroom",
+      "grams": 10.6,
+      "is_default": false,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F005945",
+      "portion_name": "1 mushroom",
+      "grams": 6.4,
+      "is_default": false,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F005945",
+      "portion_name": "1 片",
+      "grams": 3.1,
+      "is_default": false,
+      "review_status": "ready"
+    }
+  ],
+  "F006225": [
+    {
+      "external_food_id": "F006225",
+      "portion_name": "1 onion",
+      "grams": 164,
+      "is_default": true,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F006225",
+      "portion_name": "1 onion",
+      "grams": 142,
+      "is_default": false,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F006225",
+      "portion_name": "1 onion",
+      "grams": 100,
+      "is_default": false,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F006225",
+      "portion_name": "1 片 or ring",
+      "grams": 12.4,
+      "is_default": false,
+      "review_status": "ready"
+    }
+  ],
+  "F000110": [
+    {
+      "external_food_id": "F000110",
+      "portion_name": "1 apple",
+      "grams": 239,
+      "is_default": true,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F000110",
+      "portion_name": "1 apple",
+      "grams": 165.6,
+      "is_default": false,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F000110",
+      "portion_name": "1 apple",
+      "grams": 156.4,
+      "is_default": false,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F000110",
+      "portion_name": "1 apple",
+      "grams": 73.6,
+      "is_default": false,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F000110",
+      "portion_name": "1 包",
+      "grams": 60,
+      "is_default": false,
+      "review_status": "ready"
+    }
+  ],
+  "F000262": [
+    {
+      "external_food_id": "F000262",
+      "portion_name": "1 banana",
+      "grams": 145.6,
+      "is_default": true,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F000262",
+      "portion_name": "1 banana",
+      "grams": 127.4,
+      "is_default": false,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F000262",
+      "portion_name": "1 banana",
+      "grams": 71.5,
+      "is_default": false,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F000262",
+      "portion_name": "1 banana",
+      "grams": 67.6,
+      "is_default": false,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F000262",
+      "portion_name": "1 个",
+      "grams": 11.1,
+      "is_default": false,
+      "review_status": "ready"
+    }
+  ],
+  "F006277": [
+    {
+      "external_food_id": "F006277",
+      "portion_name": "1 fruit",
+      "grams": 123.2,
+      "is_default": true,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F006277",
+      "portion_name": "1 fruit",
+      "grams": 163.24,
+      "is_default": false,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F006277",
+      "portion_name": "1 片 or segment",
+      "grams": 18,
+      "is_default": false,
+      "review_status": "ready"
+    }
+  ],
+  "F001290": [
+    {
+      "external_food_id": "F001290",
+      "portion_name": "1 berry",
+      "grams": 1.2,
+      "is_default": true,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F001290",
+      "portion_name": "1 punnet",
+      "grams": 125,
+      "is_default": false,
+      "review_status": "ready"
+    }
+  ],
+  "F000108": [
+    {
+      "external_food_id": "F000108",
+      "portion_name": "1 apple",
+      "grams": 208,
+      "is_default": true,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F000108",
+      "portion_name": "1 apple",
+      "grams": 144,
+      "is_default": false,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F000108",
+      "portion_name": "1 apple",
+      "grams": 136,
+      "is_default": false,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F000108",
+      "portion_name": "1 apple",
+      "grams": 64,
+      "is_default": false,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F000108",
+      "portion_name": "1 包",
+      "grams": 60,
+      "is_default": false,
+      "review_status": "ready"
+    }
+  ],
+  "F000267": [
+    {
+      "external_food_id": "F000267",
+      "portion_name": "1 banana",
+      "grams": 67.6,
+      "is_default": true,
+      "review_status": "ready"
+    }
+  ],
+  "F001267": [
+    {
+      "external_food_id": "F001267",
+      "portion_name": "1 berry",
+      "grams": 5,
+      "is_default": true,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F001267",
+      "portion_name": "1 punnet",
+      "grams": 125,
+      "is_default": false,
+      "review_status": "ready"
+    }
+  ],
+  "F003423": [
+    {
+      "external_food_id": "F003423",
+      "portion_name": "1 custard apple",
+      "grams": 162,
+      "is_default": true,
+      "review_status": "ready"
+    }
+  ],
+  "F003834": [
+    {
+      "external_food_id": "F003834",
+      "portion_name": "1 fig",
+      "grams": 50,
+      "is_default": true,
+      "review_status": "ready"
+    }
+  ],
+  "F004253": [
+    {
+      "external_food_id": "F004253",
+      "portion_name": "1 grape",
+      "grams": 3.9,
+      "is_default": true,
+      "review_status": "ready"
+    }
+  ],
+  "F004260": [
+    {
+      "external_food_id": "F004260",
+      "portion_name": "1 container",
+      "grams": 75,
+      "is_default": true,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F004260",
+      "portion_name": "1 grape",
+      "grams": 5,
+      "is_default": false,
+      "review_status": "ready"
+    }
+  ],
+  "F004259": [
+    {
+      "external_food_id": "F004259",
+      "portion_name": "1 container",
+      "grams": 75,
+      "is_default": true,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F004259",
+      "portion_name": "1 grape",
+      "grams": 4.4,
+      "is_default": false,
+      "review_status": "ready"
+    }
+  ],
+  "F004286": [
+    {
+      "external_food_id": "F004286",
+      "portion_name": "1 guava",
+      "grams": 90,
+      "is_default": true,
+      "review_status": "ready"
+    }
+  ],
+  "F004594": [
+    {
+      "external_food_id": "F004594",
+      "portion_name": "1 jackfruit",
+      "grams": 805,
+      "is_default": true,
+      "review_status": "ready"
+    }
+  ],
+  "F004815": [
+    {
+      "external_food_id": "F004815",
+      "portion_name": "1 kiwifruit",
+      "grams": 78,
+      "is_default": true,
+      "review_status": "ready"
+    }
+  ],
+  "F004816": [
+    {
+      "external_food_id": "F004816",
+      "portion_name": "1 kiwifruit",
+      "grams": 78,
+      "is_default": true,
+      "review_status": "ready"
+    }
+  ],
+  "F005174": [
+    {
+      "external_food_id": "F005174",
+      "portion_name": "1 lemon",
+      "grams": 99,
+      "is_default": true,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F005174",
+      "portion_name": "1 片 or segment",
+      "grams": 16.5,
+      "is_default": false,
+      "review_status": "ready"
+    }
+  ],
+  "F005199": [
+    {
+      "external_food_id": "F005199",
+      "portion_name": "1 片 or segment",
+      "grams": 8.2,
+      "is_default": true,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F005199",
+      "portion_name": "1 lime",
+      "grams": 71,
+      "is_default": false,
+      "review_status": "ready"
+    }
+  ],
+  "F005244": [
+    {
+      "external_food_id": "F005244",
+      "portion_name": "1 loquat",
+      "grams": 13,
+      "is_default": true,
+      "review_status": "ready"
+    }
+  ],
+  "F005255": [
+    {
+      "external_food_id": "F005255",
+      "portion_name": "1 lychee",
+      "grams": 10,
+      "is_default": true,
+      "review_status": "ready"
+    }
+  ],
+  "F005299": [
+    {
+      "external_food_id": "F005299",
+      "portion_name": "1 mango",
+      "grams": 367,
+      "is_default": true,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F005299",
+      "portion_name": "1 mango",
+      "grams": 294,
+      "is_default": false,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F005299",
+      "portion_name": "1 mango",
+      "grams": 221,
+      "is_default": false,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F005299",
+      "portion_name": "1 个",
+      "grams": 10,
+      "is_default": false,
+      "review_status": "ready"
+    }
+  ],
+  "F005515": [
+    {
+      "external_food_id": "F005515",
+      "portion_name": "1 melon",
+      "grams": 835,
+      "is_default": true,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F005515",
+      "portion_name": "1 个",
+      "grams": 9,
+      "is_default": false,
+      "review_status": "ready"
+    }
+  ],
+  "F005519": [
+    {
+      "external_food_id": "F005519",
+      "portion_name": "1 tub",
+      "grams": 75,
+      "is_default": true,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F005519",
+      "portion_name": "1 melon",
+      "grams": 835,
+      "is_default": false,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F005519",
+      "portion_name": "1 个",
+      "grams": 9,
+      "is_default": false,
+      "review_status": "ready"
+    }
+  ],
+  "F005520": [
+    {
+      "external_food_id": "F005520",
+      "portion_name": "1 个",
+      "grams": 9,
+      "is_default": true,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F005520",
+      "portion_name": "1 tub",
+      "grams": 75,
+      "is_default": false,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F005520",
+      "portion_name": "1 melon",
+      "grams": 1345,
+      "is_default": false,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F005520",
+      "portion_name": "1 quarter melon",
+      "grams": 336,
+      "is_default": false,
+      "review_status": "ready"
+    }
+  ],
+  "F005916": [
+    {
+      "external_food_id": "F005916",
+      "portion_name": "1 berry",
+      "grams": 5,
+      "is_default": true,
+      "review_status": "ready"
+    }
+  ],
+  "F009882": [
+    {
+      "external_food_id": "F009882",
+      "portion_name": "1 nectarine",
+      "grams": 82,
+      "is_default": true,
+      "review_status": "ready"
+    }
+  ],
+  "F006021": [
+    {
+      "external_food_id": "F006021",
+      "portion_name": "1 nectarine",
+      "grams": 82,
+      "is_default": true,
+      "review_status": "ready"
+    }
+  ],
+  "F006333": [
+    {
+      "external_food_id": "F006333",
+      "portion_name": "1 passionfruit",
+      "grams": 18,
+      "is_default": true,
+      "review_status": "ready"
+    }
+  ],
+  "F006528": [
+    {
+      "external_food_id": "F006528",
+      "portion_name": "1 pawpaw",
+      "grams": 816,
+      "is_default": true,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F006528",
+      "portion_name": "1 个",
+      "grams": 9,
+      "is_default": false,
+      "review_status": "ready"
+    }
+  ],
+  "F006571": [
+    {
+      "external_food_id": "F006571",
+      "portion_name": "1 peach",
+      "grams": 201,
+      "is_default": true,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F006571",
+      "portion_name": "1 peach",
+      "grams": 134,
+      "is_default": false,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F006571",
+      "portion_name": "1 片",
+      "grams": 18,
+      "is_default": false,
+      "review_status": "ready"
+    }
+  ],
+  "F006573": [
+    {
+      "external_food_id": "F006573",
+      "portion_name": "1 peach",
+      "grams": 179,
+      "is_default": true,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F006573",
+      "portion_name": "1 peach",
+      "grams": 119,
+      "is_default": false,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F006573",
+      "portion_name": "1 片",
+      "grams": 18,
+      "is_default": false,
+      "review_status": "ready"
+    }
+  ],
+  "F006604": [
+    {
+      "external_food_id": "F006604",
+      "portion_name": "1 pear",
+      "grams": 190,
+      "is_default": true,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F006604",
+      "portion_name": "1 pear",
+      "grams": 126,
+      "is_default": false,
+      "review_status": "ready"
+    }
+  ],
+  "F006081": [
+    {
+      "external_food_id": "F006081",
+      "portion_name": "1 handful",
+      "grams": 28,
+      "is_default": true,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F006081",
+      "portion_name": "1 nut",
+      "grams": 1.2,
+      "is_default": false,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F006081",
+      "portion_name": "1 box",
+      "grams": 30,
+      "is_default": false,
+      "review_status": "ready"
+    }
+  ],
+  "F006087": [
+    {
+      "external_food_id": "F006087",
+      "portion_name": "1 handful",
+      "grams": 36,
+      "is_default": true,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F006087",
+      "portion_name": "1 nut",
+      "grams": 3.3,
+      "is_default": false,
+      "review_status": "ready"
+    }
+  ],
+  "F006088": [
+    {
+      "external_food_id": "F006088",
+      "portion_name": "1 box",
+      "grams": 30,
+      "is_default": true,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F006088",
+      "portion_name": "1 handful",
+      "grams": 36,
+      "is_default": false,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F006088",
+      "portion_name": "1 nut",
+      "grams": 1.3,
+      "is_default": false,
+      "review_status": "ready"
+    }
+  ],
+  "F006092": [
+    {
+      "external_food_id": "F006092",
+      "portion_name": "1 nut",
+      "grams": 1.3,
+      "is_default": true,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F006092",
+      "portion_name": "1 handful",
+      "grams": 36,
+      "is_default": false,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F006092",
+      "portion_name": "1 box",
+      "grams": 30,
+      "is_default": false,
+      "review_status": "ready"
+    }
+  ],
+  "F006095": [
+    {
+      "external_food_id": "F006095",
+      "portion_name": "1 nut",
+      "grams": 8.4,
+      "is_default": true,
+      "review_status": "ready"
+    }
+  ],
+  "F006096": [
+    {
+      "external_food_id": "F006096",
+      "portion_name": "1 nut",
+      "grams": 8.4,
+      "is_default": true,
+      "review_status": "ready"
+    }
+  ],
+  "F006098": [
+    {
+      "external_food_id": "F006098",
+      "portion_name": "1 box",
+      "grams": 30,
+      "is_default": true,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F006098",
+      "portion_name": "1 handful",
+      "grams": 36,
+      "is_default": false,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F006098",
+      "portion_name": "1 nut",
+      "grams": 0.8,
+      "is_default": false,
+      "review_status": "ready"
+    }
+  ],
+  "F006099": [
+    {
+      "external_food_id": "F006099",
+      "portion_name": "1 handful",
+      "grams": 36,
+      "is_default": true,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F006099",
+      "portion_name": "1 nut",
+      "grams": 2,
+      "is_default": false,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F006099",
+      "portion_name": "1 box",
+      "grams": 30,
+      "is_default": false,
+      "review_status": "ready"
+    }
+  ],
+  "F006111": [
+    {
+      "external_food_id": "F006111",
+      "portion_name": "1 handful",
+      "grams": 30,
+      "is_default": true,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F006111",
+      "portion_name": "1 nut",
+      "grams": 2.2,
+      "is_default": false,
+      "review_status": "ready"
+    }
+  ],
+  "F006112": [
+    {
+      "external_food_id": "F006112",
+      "portion_name": "1 handful",
+      "grams": 36,
+      "is_default": true,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F006112",
+      "portion_name": "1 nut",
+      "grams": 0.14,
+      "is_default": false,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F006112",
+      "portion_name": "1 box",
+      "grams": 25,
+      "is_default": false,
+      "review_status": "ready"
+    }
+  ],
+  "F006113": [
+    {
+      "external_food_id": "F006113",
+      "portion_name": "1 handful",
+      "grams": 20,
+      "is_default": true,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F006113",
+      "portion_name": "1 nut",
+      "grams": 0.8,
+      "is_default": false,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F006113",
+      "portion_name": "1 box",
+      "grams": 30,
+      "is_default": false,
+      "review_status": "ready"
+    }
+  ],
+  "F006116": [
+    {
+      "external_food_id": "F006116",
+      "portion_name": "1 nut",
+      "grams": 2.2,
+      "is_default": true,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F006116",
+      "portion_name": "1 handful",
+      "grams": 30,
+      "is_default": false,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F006116",
+      "portion_name": "1 box",
+      "grams": 30,
+      "is_default": false,
+      "review_status": "ready"
+    }
+  ],
+  "F006110": [
+    {
+      "external_food_id": "F006110",
+      "portion_name": "1 handful",
+      "grams": 27,
+      "is_default": true,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F006110",
+      "portion_name": "1 nut",
+      "grams": 0.9,
+      "is_default": false,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F006110",
+      "portion_name": "1 snack pot",
+      "grams": 80,
+      "is_default": false,
+      "review_status": "ready"
+    }
+  ],
+  "F006090": [
+    {
+      "external_food_id": "F006090",
+      "portion_name": "1 box",
+      "grams": 30,
+      "is_default": true,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F006090",
+      "portion_name": "1 handful",
+      "grams": 36,
+      "is_default": false,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F006090",
+      "portion_name": "1 nut",
+      "grams": 1.3,
+      "is_default": false,
+      "review_status": "ready"
+    }
+  ],
+  "F006109": [
+    {
+      "external_food_id": "F006109",
+      "portion_name": "1 handful",
+      "grams": 27,
+      "is_default": true,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F006109",
+      "portion_name": "1 nut",
+      "grams": 0.9,
+      "is_default": false,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F006109",
+      "portion_name": "1 snack pot",
+      "grams": 80,
+      "is_default": false,
+      "review_status": "ready"
+    }
+  ],
+  "F006577": [
+    {
+      "external_food_id": "F006577",
+      "portion_name": "1 汤匙",
+      "grams": 24,
+      "is_default": true,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F006577",
+      "portion_name": "1 包",
+      "grams": 10,
+      "is_default": false,
+      "review_status": "ready"
+    }
+  ],
+  "F006177": [
+    {
+      "external_food_id": "F006177",
+      "portion_name": "1 spray",
+      "grams": 5,
+      "is_default": true,
+      "review_status": "ready"
+    }
+  ],
+  "F001971": [
+    {
+      "external_food_id": "F001971",
+      "portion_name": "1 汤匙",
+      "grams": 19.2,
+      "is_default": true,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F001971",
+      "portion_name": "1 包",
+      "grams": 7,
+      "is_default": false,
+      "review_status": "ready"
+    }
+  ],
+  "F001973": [
+    {
+      "external_food_id": "F001973",
+      "portion_name": "1 汤匙",
+      "grams": 19.2,
+      "is_default": true,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F001973",
+      "portion_name": "1 包",
+      "grams": 7,
+      "is_default": false,
+      "review_status": "ready"
+    }
+  ],
+  "F001972": [
+    {
+      "external_food_id": "F001972",
+      "portion_name": "1 汤匙",
+      "grams": 19.2,
+      "is_default": true,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F001972",
+      "portion_name": "1 包",
+      "grams": 7,
+      "is_default": false,
+      "review_status": "ready"
+    }
+  ],
+  "F004205": [
+    {
+      "external_food_id": "F004205",
+      "portion_name": "1 汤匙",
+      "grams": 17,
+      "is_default": true,
+      "review_status": "ready"
+    }
+  ],
+  "F007879": [
+    {
+      "external_food_id": "F007879",
+      "portion_name": "1 茶匙",
+      "grams": 6,
+      "is_default": true,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F007879",
+      "portion_name": "1 包",
+      "grams": 6,
+      "is_default": false,
+      "review_status": "ready"
+    }
+  ],
+  "F008976": [
+    {
+      "external_food_id": "F008976",
+      "portion_name": "1 杯",
+      "grams": 210,
+      "is_default": true,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F008976",
+      "portion_name": "1 cube or lump",
+      "grams": 4.5,
+      "is_default": false,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F008976",
+      "portion_name": "1 包",
+      "grams": 3,
+      "is_default": false,
+      "review_status": "ready"
+    }
+  ],
+  "F008065": [
+    {
+      "external_food_id": "F008065",
+      "portion_name": "1 杯",
+      "grams": 262.5,
+      "is_default": true,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F008065",
+      "portion_name": "1 fish",
+      "grams": 3,
+      "is_default": false,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F008065",
+      "portion_name": "1 包",
+      "grams": 6,
+      "is_default": false,
+      "review_status": "ready"
+    }
+  ],
+  "F008973": [
+    {
+      "external_food_id": "F008973",
+      "portion_name": "1 杯",
+      "grams": 207.5,
+      "is_default": true,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F008973",
+      "portion_name": "1 包",
+      "grams": 3,
+      "is_default": false,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F008973",
+      "portion_name": "1 cube or lump",
+      "grams": 4.5,
+      "is_default": false,
+      "review_status": "ready"
+    }
+  ],
+  "F003607": [
+    {
+      "external_food_id": "F003607",
+      "portion_name": "1 包",
+      "grams": 37,
+      "is_default": true,
+      "review_status": "ready"
+    }
+  ],
+  "F003612": [
+    {
+      "external_food_id": "F003612",
+      "portion_name": "1 包",
+      "grams": 37,
+      "is_default": true,
+      "review_status": "ready"
+    }
+  ],
+  "F004263": [
+    {
+      "external_food_id": "F004263",
+      "portion_name": "1 包",
+      "grams": 29,
+      "is_default": true,
+      "review_status": "ready"
+    }
+  ],
+  "F005441": [
+    {
+      "external_food_id": "F005441",
+      "portion_name": "1 汤匙",
+      "grams": 19.8,
+      "is_default": true,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F005441",
+      "portion_name": "1 包",
+      "grams": 12,
+      "is_default": false,
+      "review_status": "ready"
+    }
+  ],
+  "F005973": [
+    {
+      "external_food_id": "F005973",
+      "portion_name": "1 汤匙",
+      "grams": 21,
+      "is_default": true,
+      "review_status": "ready"
+    }
+  ],
+  "F006830": [
+    {
+      "external_food_id": "F006830",
+      "portion_name": "1 plum",
+      "grams": 1.6,
+      "is_default": true,
+      "review_status": "ready"
+    }
+  ],
+  "F007878": [
+    {
+      "external_food_id": "F007878",
+      "portion_name": "1 茶匙",
+      "grams": 6,
+      "is_default": true,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F007878",
+      "portion_name": "1 包",
+      "grams": 6,
+      "is_default": false,
+      "review_status": "ready"
+    }
+  ],
+  "F007987": [
+    {
+      "external_food_id": "F007987",
+      "portion_name": "1 杯",
+      "grams": 282.5,
+      "is_default": true,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F007987",
+      "portion_name": "1 包",
+      "grams": 10,
+      "is_default": false,
+      "review_status": "ready"
+    }
+  ],
+  "F008004": [
+    {
+      "external_food_id": "F008004",
+      "portion_name": "1 杯",
+      "grams": 305,
+      "is_default": true,
+      "review_status": "ready"
+    }
+  ],
+  "F008008": [
+    {
+      "external_food_id": "F008008",
+      "portion_name": "1 杯",
+      "grams": 270,
+      "is_default": true,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F008008",
+      "portion_name": "1 包",
+      "grams": 10,
+      "is_default": false,
+      "review_status": "ready"
+    }
+  ],
+  "F008026": [
+    {
+      "external_food_id": "F008026",
+      "portion_name": "1 杯",
+      "grams": 305,
+      "is_default": true,
+      "review_status": "ready"
+    }
+  ],
+  "F009527": [
+    {
+      "external_food_id": "F009527",
+      "portion_name": "1 drink 瓶",
+      "grams": 437,
+      "is_default": true,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F009527",
+      "portion_name": "1 drink 瓶",
+      "grams": 550,
+      "is_default": false,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F009527",
+      "portion_name": "1 drink 瓶",
+      "grams": 600,
+      "is_default": false,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F009527",
+      "portion_name": "1 drink 瓶",
+      "grams": 750,
+      "is_default": false,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F009527",
+      "portion_name": "1 drink 瓶",
+      "grams": 1000,
+      "is_default": false,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F009527",
+      "portion_name": "1 drink 瓶",
+      "grams": 2200,
+      "is_default": false,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F009527",
+      "portion_name": "1 millilitres",
+      "grams": 100,
+      "is_default": false,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F009527",
+      "portion_name": "1 millilitres",
+      "grams": 500,
+      "is_default": false,
+      "review_status": "ready"
+    }
+  ],
+  "F005696": [
+    {
+      "external_food_id": "F005696",
+      "portion_name": "1 瓶",
+      "grams": 250,
+      "is_default": true,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F005696",
+      "portion_name": "1 罐",
+      "grams": 375,
+      "is_default": false,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F005696",
+      "portion_name": "1 瓶",
+      "grams": 275,
+      "is_default": false,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F005696",
+      "portion_name": "1 瓶",
+      "grams": 450,
+      "is_default": false,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F005696",
+      "portion_name": "1 瓶",
+      "grams": 600,
+      "is_default": false,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F005696",
+      "portion_name": "1 瓶",
+      "grams": 750,
+      "is_default": false,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F005696",
+      "portion_name": "1 瓶",
+      "grams": 1000,
+      "is_default": false,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F005696",
+      "portion_name": "1 瓶",
+      "grams": 1500,
+      "is_default": false,
+      "review_status": "ready"
+    }
+  ],
+  "F003041": [
+    {
+      "external_food_id": "F003041",
+      "portion_name": "1 espresso 杯",
+      "grams": 80,
+      "is_default": true,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F003041",
+      "portion_name": "1 espresso 杯",
+      "grams": 50,
+      "is_default": false,
+      "review_status": "ready"
+    }
+  ],
+  "F004099": [
+    {
+      "external_food_id": "F004099",
+      "portion_name": "1 瓶",
+      "grams": 260,
+      "is_default": true,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F004099",
+      "portion_name": "1 carton",
+      "grams": 260,
+      "is_default": false,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F004099",
+      "portion_name": "1 瓶",
+      "grams": 364,
+      "is_default": false,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F004099",
+      "portion_name": "1 瓶",
+      "grams": 416,
+      "is_default": false,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F004099",
+      "portion_name": "1 瓶",
+      "grams": 520,
+      "is_default": false,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F004099",
+      "portion_name": "1 瓶",
+      "grams": 624,
+      "is_default": false,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F004099",
+      "portion_name": "1 carton",
+      "grams": 1040,
+      "is_default": false,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F004099",
+      "portion_name": "1 millilitres",
+      "grams": 520,
+      "is_default": false,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F004099",
+      "portion_name": "1 millilitres",
+      "grams": 104,
+      "is_default": false,
+      "review_status": "ready"
+    }
+  ],
+  "F004114": [
+    {
+      "external_food_id": "F004114",
+      "portion_name": "1 瓶",
+      "grams": 260,
+      "is_default": true,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F004114",
+      "portion_name": "1 carton",
+      "grams": 260,
+      "is_default": false,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F004114",
+      "portion_name": "1 瓶",
+      "grams": 364,
+      "is_default": false,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F004114",
+      "portion_name": "1 瓶",
+      "grams": 416,
+      "is_default": false,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F004114",
+      "portion_name": "1 瓶",
+      "grams": 520,
+      "is_default": false,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F004114",
+      "portion_name": "1 瓶",
+      "grams": 624,
+      "is_default": false,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F004114",
+      "portion_name": "1 carton",
+      "grams": 1040,
+      "is_default": false,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F004114",
+      "portion_name": "1 millilitres",
+      "grams": 520,
+      "is_default": false,
+      "review_status": "ready"
+    },
+    {
+      "external_food_id": "F004114",
+      "portion_name": "1 millilitres",
+      "grams": 104,
+      "is_default": false,
+      "review_status": "ready"
+    }
+  ]
+}
