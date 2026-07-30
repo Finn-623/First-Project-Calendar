@@ -61,6 +61,7 @@ chainlit.md
 # Deployment
 .vercel
 supabase/.temp/
+supabase/.branches/
 package-lock.json
 !frontend/package-lock.json
 
