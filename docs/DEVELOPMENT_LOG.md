@@ -4694,3 +4694,9 @@
 - Dry-run: Processed 1,588 records successfully; 0 nulls for core nutrients.
 - Testing: Passed full frontend test suite and build.
 - Commit ID: b307f2ac91db6fba3c4e7055ecf266d96238b498
+## 2026-07-30: Added AUSNUT Food Portions (v0.2.1)
+- Implemented generate-ausnut-portions.mjs using XLSX to parse AUSNUT 2023.
+- Exact join on 'Public food key' (external_food_id) with 400 candidate foods.
+- Filtered 551 portions (grams > 0, density excluded) for 222 candidate foods.
+- Established portion-label-rules.mjs for consistent Chinese translation.
+- Commit ID: 05b20f00c7837f0188c007d5952686b33eed53bc

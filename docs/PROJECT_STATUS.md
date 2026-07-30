@@ -712,3 +712,7 @@ P2：
 - Official data files for AFCD (Release 3) and USDA Foundation Foods identified.
 - Mapping rules established and validated for AFCD Excel sources.
 - Pending: USDA converter, Chinese name translation, intake types, portion/alias association, and database dynamic validation.
+## v0.2.1 Status Update (2026-07-30)
+- AUSNUT 2023 food portions added and validated (551 portions for 222 candidate foods).
+- Portion label translation rules established.
+- Pending: Final intake type validation and import database integration.
