@@ -68,6 +68,9 @@
     "test": "craco test",
     "import:foods": "node scripts/import-foods/cli.mjs",
     "import:foods:trial:local": "node scripts/import-foods/run-local-trial-import.mjs",
+    "import:foods:trial:remote": "node scripts/import-foods/run-remote-trial-import.mjs",
+    "import:foods:trial:remote:execute": "node scripts/import-foods/run-remote-trial-import.mjs --execute",
+    "import:foods:trial:remote:verify": "node scripts/import-foods/verify-remote-trial-import.mjs",
     "test:food-db-local": "node scripts/import-foods/local-supabase-integration.mjs",
     "validate:version": "node scripts/validate-version.js"
   },
