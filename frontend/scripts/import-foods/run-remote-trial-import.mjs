@@ -28,13 +28,32 @@ const manifestPath = resolve(
 );
 const linkedProjectRefPath = resolve(repoRoot, 'supabase/.temp/project-ref');
 
+export function parseLinkedMigrationHistory(output) {
+  return output
+    .split('\n')
+    .map((line) =>
+      line
+        .split('|')
+        .map((value) => value.trim().replaceAll('`', ''))
+    )
+    .filter(
+      ([local, remote]) =>
+        /^\d+$/.test(local || '') || /^\d+$/.test(remote || '')
+    )
+    .map(([local, remote]) => ({
+      local: /^\d+$/.test(local || '') ? local : null,
+      remote: /^\d+$/.test(remote || '') ? remote : null,
+    }));
+}
+
 export function readLinkedMigrationHistory() {
   const output = execFileSync(
     'npx',
     ['--no-install', 'supabase', 'migration', 'list', '--linked'],
     { cwd: repoRoot, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] }
   );
-  return JSON.parse(output).migrations;
+
+  return parseLinkedMigrationHistory(output);
 }
 
 async function temporarySelection(selected) {

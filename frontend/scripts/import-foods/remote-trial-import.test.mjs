@@ -11,7 +11,10 @@ import {
   safeRemoteTrialSummary,
   validateRemoteTrialAssets,
 } from './remote-trial-guard.mjs';
-import { runRemoteTrial } from './run-remote-trial-import.mjs';
+import {
+  parseLinkedMigrationHistory,
+  runRemoteTrial,
+} from './run-remote-trial-import.mjs';
 import { verifyRemoteTrial } from './verify-remote-trial-import.mjs';
 
 const packageUrl = new URL(
@@ -30,6 +33,20 @@ const guardedEnv = {
   CONFIRM_REMOTE_TRIAL_IMPORT: REMOTE_TRIAL_PROJECT_REF,
   SUPABASE_URL: `https://${REMOTE_TRIAL_PROJECT_REF}.supabase.co`,
 };
+
+test('Supabase CLI migration table output is parsed correctly', () => {
+  const output = `
+   Local | Remote | Time (UTC)
+  -------|--------|------------
+   \`001\` | \`001\` | \`001\`
+   \`026\` | \`026\` | \`026\`
+  `;
+
+  assert.deepEqual(parseLinkedMigrationHistory(output), [
+    { local: '001', remote: '001' },
+    { local: '026', remote: '026' },
+  ]);
+});
 
 test('missing explicit confirmation is rejected', () => {
   assert.throws(
