@@ -5072,3 +5072,8 @@
 - Filtered 551 portions (grams > 0, density excluded) for 222 candidate foods.
 - Established portion-label-rules.mjs for consistent Chinese translation.
 - Commit ID: 05b20f00c7837f0188c007d5952686b33eed53bc
+## 2026-07-31: Public Food Review Preparation (v0.2.1)
+- Executed Stage 8C-3B3B1: Manual review preparation for 'eggs' category.
+- Reviewed 8 foods; status: 8 approve, 0 disable, 0 hold.
+- Created review list: docs/food-review/8C-3B3B1-eggs.md.
+- Commit ID: [PENDING]

@@ -740,3 +740,6 @@ P2：
 - Final review split is 321 ready and 223 needs_review; 110 exact-matched foods have no retained portion because their only source rows are explicitly marked density records.
 - Original commits `05b20f00c7837f0188c007d5952686b33eed53bc` and `6b215ba45190e8d2b5310a79b43399c1ffcc1531` remain unchanged; correction commit is `19f658518e8e11cf0ecc3fa0b7497b1fff038b69`.
 - Pending: stage 7 final import JSON, manual review resolution, database integration, and dynamic database validation.
+## v0.2.1 Status Update (2026-07-31)
+- Manual review preparation completed for category 'eggs' (8 foods reviewed).
+- Review checklist stored in docs/food-review/8C-3B3B1-eggs.md.
