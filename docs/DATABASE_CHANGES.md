@@ -1,3 +1,48 @@
+## DB-20260731-003
+
+- 日期：2026-07-31
+- 修改原因：v0.2.1 食品数据库基础、导入审计、运行权限、停用食品引用保护和营养精度已完成本地动态验证，需要部署到正式远程数据库，为后续分阶段食品试导入建立 schema 基线。
+- 实际修改内容：
+  - 正式远程项目成功应用 Migration 022–026。
+  - 增量扩展既有 `foods`，新增 `food_portions`、`food_public_aliases`、`food_private_aliases`、`food_import_runs` 和 `food_import_errors`。
+  - 部署公共食品导入 RPC、profile角色防提权、alias关系、食品引用删除保护和停用食品新增引用保护。
+  - 14 个规范营养字段最终为 `NUMERIC(14,4)`。
+- 正式项目：
+  - Project ref：`ragxhkzvaaoembqudnux`
+  - 名称：`Calendar`
+  - 区域：`ap-northeast-1`
+- Migration 文件路径：
+  - `supabase/migrations/022_food_database_foundation.sql`
+  - `supabase/migrations/023_public_food_import_audit.sql`
+  - `supabase/migrations/024_food_database_runtime_permissions.sql`
+  - `supabase/migrations/025_block_disabled_food_entries.sql`
+  - `supabase/migrations/026_preserve_food_nutrient_precision.sql`
+- 备份与回滚准备：
+  - Free 方案无 Dashboard 可恢复备份，迁移前在仓库外生成并校验 `schema.sql`、`data.sql`、`roles.sql` 和 `SHA256SUMS`。
+  - 备份目录：`~/Documents/First-Project-Calendar-backups/2026-07-31-pre-v021`。
+  - 三个 SQL 文件 SHA-256 分别为：
+    - schema：`db26f5b0412051a53c8da53c2cf0c9ec9164e29ad0baa6df5f9988d074a4b0e5`
+    - data：`6b92badf7787bb77dff2fd99190c7923a973e339efc3731cd53848a59a1880c7`
+    - roles：`25873cec56a2cc6514e204f420231777f85c03da818caa7090cdcdfa89776ecd`
+  - 独立临时数据库恢复成功后已删除；如需回滚，应基于已验证逻辑备份和新的反向 Migration处理，不修改已应用Migration历史。
+- 对现有数据的影响：
+  - 迁移前 foods 为2条；Migration 022完成规范字段兼容回填。
+  - 部署后原有public业务表行数不变，foods仍为2条，新食品及所有新附属/审计表行数为0。
+  - 旧foods共同字段只有`updated_at`因回填更新；名称、营养、归属、可见性等原字段未改变。
+  - 旧字段与规范营养字段数值一致，来源字段仍为空，基础字段回填完整，没有营养约束违规。
+- 验证内容：
+  - 备份恢复：12张public表、47条RLS policy、9个业务触发器、13个public函数、外键、管理员与用户关系及行数。
+  - Production备份副本依次预演Migration 022–026，最终兼容性审计12/12。
+  - 正式部署后检查Migration history、5张食品扩展表、导入RPC、4个关键触发器、14个规范营养字段及存量数据。
+- 验证结果：
+  - 备份校验与恢复全部通过。
+  - Migration预演和正式远程部署均成功。
+  - Local/Remote Migration 001、003–026一致；未发现旧业务数据变化或新食品数据写入。
+- 未完成事项：
+  - 未执行阶段8C-3远程20条trial导入、正式400条导入、管理员批量审核或Production前端部署。
+- 相关DEV编号：`DEV-20260731-004`
+- 相关Commit ID：由本独立文档提交承载，不自引用其自身哈希。
+
 ## DB-20260731-002
 
 - 日期：2026-07-31

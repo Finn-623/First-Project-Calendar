@@ -1,3 +1,49 @@
+## DEV-20260731-004
+
+- 日期：2026-07-31
+- 状态：已完成
+- 修改类型：Production database migration / v0.2.1 食品数据库
+- 任务目标：记录阶段 8C-2 正式远程食品数据库 Migration 部署、仓库外逻辑备份、隔离恢复预演和部署后只读验证结果；本记录任务不再次执行远程写入。
+- 实际完成内容：
+	- 正式迁移前在仓库外完成 `schema.sql`、`data.sql`、`roles.sql` 和 `SHA256SUMS` 手动逻辑备份。
+	- 在独立本地临时数据库完成备份恢复验证：12 张 public 表、47 条 RLS policy、9 个业务触发器、13 个 public 函数、全部外键、管理员及用户关系和原始行数均验证通过；临时恢复数据库已删除。
+	- 使用 Production 备份副本预演 Migration 022–026，5 个 Migration 均成功，旧 foods 2 条完成兼容回填，最终兼容性审计 12/12 通过；临时预演数据库已删除。
+	- 已对正式 `Calendar` 项目执行 `npx supabase db push --linked`，成功应用 Migration 022–026。
+	- 部署后确认 Local/Remote Migration 001、003–026 一致；食品扩展表、导入 RPC、关键触发器和 14 个 `NUMERIC(14,4)` 规范营养字段均存在。
+	- 原有 public 业务表行数不变，foods 仍为 2 条；新公共食品、aliases、portions、import runs 和 import errors 均为 0。
+	- 旧 foods 除 `updated_at` 因回填更新外，名称、营养、归属、可见性等原字段未改变；规范营养与旧字段一致，来源字段保持空值，基础回填完整且不存在营养约束违规。
+- 正式项目：
+	- Project ref：`ragxhkzvaaoembqudnux`
+	- 名称：`Calendar`
+	- 区域：`ap-northeast-1`
+- 备份与恢复验证：
+	- 仓库外目录：`~/Documents/First-Project-Calendar-backups/2026-07-31-pre-v021`
+	- `schema.sql` SHA-256：`db26f5b0412051a53c8da53c2cf0c9ec9164e29ad0baa6df5f9988d074a4b0e5`
+	- `data.sql` SHA-256：`6b92badf7787bb77dff2fd99190c7923a973e339efc3731cd53848a59a1880c7`
+	- `roles.sql` SHA-256：`25873cec56a2cc6514e204f420231777f85c03da818caa7090cdcdfa89776ecd`
+	- 原始备份校验全部通过，恢复后的表行数与备份一致。
+- 主要涉及文件或模块：
+	- `supabase/migrations/022_food_database_foundation.sql`
+	- `supabase/migrations/023_public_food_import_audit.sql`
+	- `supabase/migrations/024_food_database_runtime_permissions.sql`
+	- `supabase/migrations/025_block_disabled_food_entries.sql`
+	- `supabase/migrations/026_preserve_food_nutrient_precision.sql`
+	- `docs/DEVELOPMENT_LOG.md`
+	- `docs/PROJECT_STATUS.md`
+	- `docs/DATABASE_CHANGES.md`
+- 执行与验证结果：
+	- 备份恢复验证通过，Production 备份副本迁移预演 022–026 全部成功，兼容性审计 12/12 通过。
+	- 正式远程 Migration 022–026 部署成功；部署后 schema、触发器、RPC、精度、旧数据和 Migration history 验证通过。
+	- 本次文档记录未重新运行测试或 Build，未再次执行远程数据库命令。
+- 未完成事项：
+	- 尚未进入阶段 8C-3，未执行远程 20 条 trial 导入。
+	- 未正式导入 400 条公共食品，未进行管理员批量审核，未部署 Production 前端。
+- 风险或注意事项：
+	- Free 方案无 Dashboard 可恢复备份，本次依赖已校验的仓库外逻辑备份。
+	- 后续远程食品导入必须继续分阶段执行，并保持 pending 审核、RLS、幂等和审计边界。
+	- `docs/ROADMAP.md` 的用户既有修改保持完全不动且不纳入提交。
+- Git Commit ID：由本独立文档提交承载，不自引用其自身哈希。
+
 ## DEV-20260731-003
 
 - 日期：2026-07-31
