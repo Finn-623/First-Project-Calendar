@@ -71,6 +71,9 @@
     "import:foods:trial:remote": "node scripts/import-foods/run-remote-trial-import.mjs",
     "import:foods:trial:remote:execute": "node scripts/import-foods/run-remote-trial-import.mjs --execute",
     "import:foods:trial:remote:verify": "node scripts/import-foods/verify-remote-trial-import.mjs",
+    "import:foods:batch:remote": "node scripts/import-foods/run-remote-batch-import.mjs",
+    "import:foods:batch:remote:execute": "node scripts/import-foods/run-remote-batch-import.mjs --execute",
+    "import:foods:batch:remote:verify": "node scripts/import-foods/verify-remote-batch-import.mjs",
     "test:food-db-local": "node scripts/import-foods/local-supabase-integration.mjs",
     "validate:version": "node scripts/validate-version.js"
   },

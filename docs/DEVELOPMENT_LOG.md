@@ -1,3 +1,57 @@
+## DEV-20260731-006
+
+- 日期：2026-07-31
+- 状态：已完成
+- 修改类型：Production data import / v0.2.1 公共食品导入
+- 任务目标：完成阶段 8C-3B2，将已审计的400条AFCD首批公共食品包导入正式远程`Calendar`项目，并验证首次运行、幂等复跑、审计、数据完整性和权限边界。
+- 实际完成内容：
+	- 新增只允许固定项目、固定400条数据包和显式确认值的正式批次门禁；锁定数据包SHA-256为`4b9b3f342727ff39aafa1fb189496f13a76c3e11d5c125c55b858076c5d4696b`，拒绝任意输入替换、错误项目、错误Migration链和缺失服务端权限。
+	- 复用正式应用的`username-login` Edge Function获取普通测试用户session，确认该账号不是管理员；未猜测邮箱、创建用户或修改密码。
+	- 导入前确认远程基线为22条foods：20条AFCD trial、2条legacy；私有食品基线为1。trial的20条external ID全部包含在正式400条包中。
+	- 第一次正式运行：total 400、success 380、skipped 20、failed 0、status`completed`；新增380条foods，trial 20条按来源身份安全跳过。
+	- 第一次运行后正式AFCD数据为400条foods、100条公共aliases、501条portions；全部为pending且active，approved和disabled均为0。
+	- 第二次相同数据包幂等复跑：total 400、success 0、skipped 400、failed 0、status`completed`；未新增任何foods、aliases或portions。
+	- 最终正式foods总数为402，其中400条AFCD和2条legacy；私有食品仍为1，原有数据未被修改。
+	- 最终重复foods、重复aliases、重复portions、孤立aliases和孤立portions均为0；营养非负及糖类关系检查无违规。
+	- 匿名和普通用户读取pending AFCD foods、aliases、portions均为0，读取import audit均被拒绝；服务端可读取两次completed审计且统计与实际数据库结果一致。
+- 主要修改文件或模块：
+	- `frontend/scripts/import-foods/remote-batch-guard.mjs`
+	- `frontend/scripts/import-foods/run-remote-batch-import.mjs`
+	- `frontend/scripts/import-foods/verify-remote-batch-import.mjs`
+	- `frontend/scripts/import-foods/remote-batch-import.test.mjs`
+	- `frontend/package.json`
+	- `docs/DEVELOPMENT_LOG.md`
+	- `docs/PROJECT_STATUS.md`
+	- `docs/FOOD_DATA_SOURCES.md`
+- 遇到的问题：
+	- 正式批次首次执行前发现Supabase CLI迁移列表为JSON格式，原批次解析器只支持表格格式；门禁在创建审计前停止，未产生远程写入。
+	- 首次导入后的400个food ID被一次放入REST查询时触发`fetch failed`；只读验收未完成前未执行幂等复跑。
+	- 验收工具最初使用不存在的`food_import_runs.created_at`，与Migration 023真实字段不一致。
+- 解决方式：
+	- 支持Supabase CLI迁移JSON和表格双格式并增加回归测试。
+	- aliases与portions按50个food ID分批只读查询，避免过长REST URL。
+	- 按真实schema使用`started_at`定位两次正式批次审计。
+- 执行的测试：
+	- `node --test frontend/scripts/import-foods/*.test.mjs supabase/migrations/*.test.mjs supabase/functions/auto-archive-records/migration.test.mjs supabase/functions/auto-archive-records/handler.test.mjs`
+	- 五个`frontend/scripts/import-foods/dataset/verify-*.mjs`数据集验证脚本。
+	- 正式批次dry-run、首次导入后验证、幂等复跑后验证。
+	- `cd frontend && CI=true npm test -- --runInBand --watchAll=false`
+	- `cd frontend && npm run build`
+- 测试结果：
+	- 导入、Migration/RLS、归档及正式批次门禁共99项Node测试全部通过。
+	- AFCD筛选、中文翻译、摄入类型、AUSNUT份量和最终400条数据包验证全部通过。
+	- 前端31个套件、210个测试全部通过。
+	- Production Build成功；仅有既有Node `fs.F_OK`弃用警告。
+- 未完成事项：
+	- 400条AFCD食品仍为pending，尚未执行管理员审核或向普通用户开放。
+	- 尚未开发或部署v0.2.1公共食品搜索与前端展示。
+	- 旧Legacy API Keys仍待完成后台依赖检查后安全停用。
+- 风险或注意事项：
+	- 本阶段未修改RLS、Migration或前端食品展示逻辑。
+	- 文档不记录密钥、JWT、密码、用户名、完整import run ID或连接字符串。
+	- `docs/ROADMAP.md`用户既有未提交修改保持不动，不纳入本提交。
+- Git Commit ID：由本独立提交承载，不自引用其自身哈希；最终完整ID以Git历史及任务汇报为准。
+
 ## DEV-20260731-005
 
 - 日期：2026-07-31

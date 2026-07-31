@@ -14,8 +14,8 @@
 - 当前Phase：Phase 1（完整饮食管理 App）
 - 当前正式版本：v0.1.3 — 基础记录闭环与稳定性收尾，已于 2026-07-28 15:55:36（Australia/Sydney）正式上线。
 - 当前开发版本：v0.2.1 — 公共食品数据库。
-- 当前状态：v0.2.1 阶段8C-3B1已完成；正式远程项目已导入并验证20条pending AFCD trial食品，尚未执行幂等重跑、管理员批准或剩余380条导入。
-- 判断结论：正式数据库已有22条foods，其中2条legacy、20条AFCD trial；前端线上运行正常，但完整400条公共食品库尚未导入。
+- 当前状态：v0.2.1 阶段8C-3B2已完成；正式远程项目已有400条pending AFCD首批公共食品，首次导入和幂等复跑均已验收，尚未执行管理员审核或前端公开展示。
+- 判断结论：正式数据库已有402条foods，其中2条legacy、400条AFCD；公共食品导入数据与权限闭环已完成，但400条AFCD食品仍不可供普通用户读取。
 
 ### 判断原因
 
@@ -56,11 +56,15 @@
 - `已确认（部署后）` 原有public业务表行数不变，foods仍为2条，新食品、aliases、portions和import审计均为0；旧foods除`updated_at`回填外原字段未改变。
 - `已完成（正式远程数据）` 阶段8C-3B1单次trial：20/20 AFCD食品导入成功，新增7条公共aliases和45条portions；全部保持pending，approved为0，重复及孤立记录均为0。
 - `已确认（正式权限）` 匿名用户读取本批pending食品、aliases和portions均为0，import audit读取被拒绝；服务端读取本次completed run及20/20/0/0统计成功。
-- `已确认（正式数据）` foods总数为22，原有2条legacy食品仍存在；最终数据包SHA-256保持`4b9b3f342727ff39aafa1fb189496f13a76c3e11d5c125c55b858076c5d4696b`。
-- `未执行` 第二次execute、远程幂等重跑、管理员批准、剩余380条导入、cleanup或db push；尚未进入阶段8C-3B2。
+- `已完成（正式远程数据）` 阶段8C-3B2首次整包运行：400 total、380 success、20 skipped、0 failed；trial 20条保留，新增其余380条。
+- `已完成（正式幂等验证）` 同包第二次运行：400 total、0 success、400 skipped、0 failed；未新增重复foods、aliases或portions。
+- `已确认（正式数据）` 400条AFCD食品、100条公共aliases、501条portions全部存在；pending/approved/disabled为400/0/0，重复及孤立记录、营养约束违规均为0。
+- `已确认（正式兼容）` foods总数为402，原有2条legacy和1条private食品基线保持；最终数据包SHA-256保持`4b9b3f342727ff39aafa1fb189496f13a76c3e11d5c125c55b858076c5d4696b`。
+- `已确认（正式权限）` 普通测试用户通过现有username-login取得session且非管理员；匿名和普通用户均无法读取pending AFCD foods、aliases、portions及import audit，服务端审计可读。
+- `未执行` 管理员批准、前端公开展示、cleanup、db push或Production前端部署。
 - `待处理（安全）` 旧Legacy API Keys尚未停用，必须先完成后台依赖检查；当前服务端与前端已切换至新凭据，正式核心页面验证正常。
 - `未开始` 食品搜索页面与完整 v0.2.1 UI。
-- `已部署` 正式远程Migration 022–026；`未部署` v0.2.1 Production前端，未执行远程食品导入。
+- `已部署` 正式远程Migration 022–026及400条pending AFCD首批食品；`未部署` v0.2.1 Production前端。
 
 ## 3. 已完成
 
