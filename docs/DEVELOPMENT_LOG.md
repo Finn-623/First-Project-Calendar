@@ -5085,4 +5085,4 @@
   - 最终候选400条，14类合计400，ID全一致，无酒精饮品。
   - preparation_state: raw 213, cooked 77, unspecified 110 (合计400).
   - 常见基础食品41项通过覆盖验证。
-- Commit ID: 4fd3c7a9429e1dc50914f16f49d99157ba1be6af
+- Commit ID: 54e4151c4e5c36c54d7718dafd7ffd65c5bc839e
