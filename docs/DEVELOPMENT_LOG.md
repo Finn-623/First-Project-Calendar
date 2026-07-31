@@ -5076,4 +5076,13 @@
 - Executed Stage 8C-3B3B1: Manual review preparation for 'eggs' category.
 - Reviewed 8 foods; status: 8 approve, 0 disable, 0 hold.
 - Created review list: docs/food-review/8C-3B3B1-eggs.md.
-- Commit ID: [PENDING]
+- Commit ID: 98c182c0c4d48545c1ebc03568eec0e814e2f492
+## 2026-07-31: Finalize AFCD Dataset (v0.2.1)
+- 阶段3/4/5 统计核对与闭合：
+  - Classification codes (277总计): mapped 75, needs review 199, excluded 3.
+  - 食品记录层 (1588总计): mapped 831, needs review 738, excluded 19.
+  - 排除原因合计: 1188 (Alcohol: 28, Category Quota: 311, Uncommon: 41, Duplicate Variant: 75, Too Specific: 144, Complex Recipe: 32, Needs Manual Review: 557).
+  - 最终候选400条，14类合计400，ID全一致，无酒精饮品。
+  - preparation_state: raw 213, cooked 77, unspecified 110 (合计400).
+  - 常见基础食品41项通过覆盖验证。
+- Commit ID: 4fd3c7a9429e1dc50914f16f49d99157ba1be6af
