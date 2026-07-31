@@ -1,3 +1,48 @@
+## DEV-20260731-005
+
+- 日期：2026-07-31
+- 状态：已完成
+- 修改类型：Production data trial / v0.2.1 公共食品导入
+- 任务目标：记录阶段 8C-3B1 在正式远程 `Calendar` 项目完成的单次20条AFCD食品trial导入、数据完整性与权限验证；本记录任务不再次执行远程写入。
+- 实际完成内容：
+	- 使用受保护的正式远程trial runner执行一次`remote-trial-20.json`导入；结果为total 20、success 20、failed 0、skipped 0，状态`completed`，创建1条import run并调用20次原子导入RPC。
+	- import run仅记录安全缩写`0a84d27b…`，未记录完整标识或任何认证凭据。
+	- 正式数据库新增20条AFCD public食品、7条公共aliases和45条portions；20条均为pending、0条approved。
+	- 20条来源身份均唯一；duplicate foods、orphan aliases和orphan portions均为0。
+	- 正式foods总数从2增至22；原有2条legacy食品继续存在。
+	- 匿名访问20条pending食品、aliases和portions均为0；匿名读取import audit被拒绝，未发生审计信息泄露。
+	- 新服务端凭据能够读取本次import run，统计与正式执行结果一致。
+	- 最终400条数据包SHA-256保持`4b9b3f342727ff39aafa1fb189496f13a76c3e11d5c125c55b858076c5d4696b`。
+- 正式项目：
+	- Project ref：`ragxhkzvaaoembqudnux`
+	- Source：`AFCD`
+	- Input：`remote-trial-20.json`
+- 权限与数据完整性结果：
+	- pending食品及其附属aliases/portions未向匿名访问者泄露。
+	- service端审计可读，import run状态与total/success/failed/skipped统计闭合。
+	- 本批20条食品、7条aliases、45条portions、来源身份、重复和孤立关系检查通过。
+- 凭据安全：
+	- 文档未记录完整服务端密钥、前端可发布密钥、JWT、Authorization header、用户标识或认证信息。
+	- 已知旧Legacy service-role凭据曾暴露；当前已改用新服务端凭据。
+	- Vercel前端已切换到新前端可发布凭据并重新部署，正式登录、首页、食物库和设置页验证正常。
+	- 旧Legacy API Keys尚未停用；必须在完成后台依赖检查后再安全停用。
+- 执行的测试：
+	- Remote trial专项测试。
+	- Import-foods全部测试。
+	- Migration契约测试。
+	- 前端全量测试。
+	- Production Build。
+- 测试结果：
+	- Remote trial专项20/20、import-foods 46/46、Migration契约31/31通过。
+	- 前端31个套件、210个测试全部通过。
+	- Production Build成功；仅有既有Node `fs.F_OK`弃用警告。
+- 未完成事项：
+	- 未执行第二次execute或远程幂等重跑。
+	- 未批准任何trial食品，未导入剩余380条，未执行cleanup或db push。
+	- 尚未进入阶段8C-3B2；旧Legacy API Keys仍待依赖检查后安全停用。
+- 相关代码Commit：`a2c2ad0ff659df906c5d093afb459eabb0ddc1ce`
+- Git Commit ID：由本独立文档提交承载，不自引用其自身哈希。
+
 ## DEV-20260731-004
 
 - 日期：2026-07-31
