@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Search, Plus, Pencil, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { showSuccess } from '../lib/notifications';
@@ -119,6 +120,7 @@ const PublicFoodCard = ({ food, onEdit, onToggleActive, submitting }) => (
 );
 
 export const FoodLibraryPage = () => {
+  const navigate = useNavigate();
   const {
     foods,
     publicFoods,
@@ -155,9 +157,10 @@ export const FoodLibraryPage = () => {
 
   const adminPublicList = useMemo(() => {
     return (publicFoods || []).filter((f) => {
+      if (f.review_status === 'pending') return false;
       const matchQ = [f.name, f.brand, f.notes].filter(Boolean).some((value) => normalizeText(value).includes(normalizeText(query)));
       return matchQ;
-    });
+    }).slice(0, 20);
   }, [publicFoods, query]);
 
   useEffect(() => {
@@ -528,6 +531,13 @@ export const FoodLibraryPage = () => {
                 新增公共食品
               </Button>
             </div>
+            <Button
+              variant="outline"
+              className="mt-3 min-h-11"
+              onClick={() => navigate('/library/review')}
+            >
+              公共食品审核
+            </Button>
 
             <div className="mt-4 space-y-2" data-testid="admin-public-food-list">
               {adminPublicList.map((food) => (

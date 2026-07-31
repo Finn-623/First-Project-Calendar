@@ -110,6 +110,59 @@ export const foodService = {
     }
   },
 
+  async loadPublicFoodReviewQueue({
+    status = 'pending',
+    category = '',
+    query = '',
+    page = 0,
+    pageSize = 20,
+  } = {}) {
+    if (!supabase) {
+      return { data: [], count: 0, error: new Error('Supabase 尚未配置') };
+    }
+    try {
+      let request = supabase
+        .from('foods')
+        .select(
+          '*,food_public_aliases(count),food_portions(count)',
+          { count: 'exact' }
+        )
+        .eq('visibility', 'public')
+        .eq('review_status', status)
+        .order('created_at', { ascending: false })
+        .range(page * pageSize, (page + 1) * pageSize - 1);
+      if (category) request = request.eq('primary_category', category);
+      const cleanedQuery = String(query || '').trim();
+      if (cleanedQuery) {
+        const escaped = cleanedQuery.replaceAll(',', '\\,');
+        request = request.or(
+          `name.ilike.%${escaped}%,name_en.ilike.%${escaped}%,external_food_id.ilike.%${escaped}%`
+        );
+      }
+      const { data, count, error } = await request;
+      return { data: data || [], count: count || 0, error };
+    } catch (error) {
+      return { data: [], count: 0, error };
+    }
+  },
+
+  async reviewPublicFoods(foodIds, targetStatus, reviewNote = null) {
+    if (!supabase) return { data: null, error: new Error('Supabase 尚未配置') };
+    if (!Array.isArray(foodIds) || foodIds.length < 1 || foodIds.length > 50) {
+      return { data: null, error: new Error('每次请选择1至50条食品') };
+    }
+    try {
+      const { data, error } = await supabase.rpc('review_public_foods', {
+        p_food_ids: foodIds,
+        p_target_status: targetStatus,
+        p_review_note: String(reviewNote || '').trim() || null,
+      });
+      return { data, error };
+    } catch (error) {
+      return { data: null, error };
+    }
+  },
+
   /**
    * Search foods by name
    * @param {string} userId

@@ -46,6 +46,7 @@ jest.mock('./pages/TodayPage', () => ({ TodayPage: () => <div>受保护首页</d
 jest.mock('./pages/HistoryPage', () => ({ HistoryPage: () => <div>历史</div> }));
 jest.mock('./pages/HistoryDetailPage', () => ({ HistoryDetailPage: () => <div>历史详情</div> }));
 jest.mock('./pages/FoodLibraryPage', () => ({ FoodLibraryPage: () => <div>食物库</div> }));
+jest.mock('./pages/PublicFoodReviewPage', () => ({ PublicFoodReviewPage: () => <div>公共食品审核</div> }));
 jest.mock('./pages/PlanPage', () => ({ PlanPage: () => <div>计划</div> }));
 jest.mock('./pages/SettingsPage', () => ({ SettingsPage: () => <div>设置</div> }));
 jest.mock('./pages/AccountInfoPage', () => ({ AccountInfoPage: () => <div>账户</div> }));

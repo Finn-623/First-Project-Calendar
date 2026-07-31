@@ -1,3 +1,16 @@
+## DB-20260731-004
+
+- 日期：2026-07-31
+- 修改原因：400条AFCD公共食品已导入为pending，需要管理员专用、可审计且限制批量范围的审核发布入口。
+- 实际修改内容：Migration 027为foods新增`reviewed_by`、`reviewed_at`、`review_note`；新增`food_review_events`不可变转换审计及管理员只读RLS；新增`review_public_foods(UUID[], TEXT, TEXT)`管理员RPC，批次上限50。
+- Migration文件：`supabase/migrations/027_public_food_review_workflow.sql`。
+- 权限：RPC只授予authenticated并在函数内以`auth.uid()`和`is_app_admin`复核；anon、普通用户与service role调用均被拒绝；只处理公共食品。
+- 数据影响：Migration本身不改食品状态、来源、营养、个人食品或历史快照。正式验证产生9条审计事件，最终AFCD状态为394 pending、5 approved、1 disabled。
+- 回滚方式：以新Migration撤销RPC、policy、审计表和审核字段；执行前必须先保留审核事件，禁止修改已应用Migration 027。
+- 测试：专项契约6/6；远程管理员/普通用户/匿名/service权限、50条上限、非法状态、个人食品、幂等及状态转换验证通过；全部Node契约105/105、前端32套件219测试和Build通过。
+- 相关DEV编号：`DEV-20260731-007`。
+- 相关Commit ID：由本独立提交承载，不自引用其自身哈希。
+
 ## DB-20260731-003
 
 - 日期：2026-07-31

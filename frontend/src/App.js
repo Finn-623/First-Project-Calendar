@@ -7,6 +7,7 @@ import { TodayPage } from './pages/TodayPage';
 import { HistoryPage } from './pages/HistoryPage';
 import { HistoryDetailPage } from './pages/HistoryDetailPage';
 import { FoodLibraryPage } from './pages/FoodLibraryPage';
+import { PublicFoodReviewPage } from './pages/PublicFoodReviewPage';
 import { PlanPage } from './pages/PlanPage';
 import { SettingsPage } from './pages/SettingsPage';
 import { AccountInfoPage } from './pages/AccountInfoPage';
@@ -278,6 +279,7 @@ function App() {
     ['HistoryPage', HistoryPage],
     ['HistoryDetailPage', HistoryDetailPage],
     ['FoodLibraryPage', FoodLibraryPage],
+    ['PublicFoodReviewPage', PublicFoodReviewPage],
     ['PlanPage', PlanPage],
     ['SettingsPage', SettingsPage],
     ['AccountInfoPage', AccountInfoPage],
@@ -356,6 +358,7 @@ function App() {
                 <Route path="/history" element={<HistoryPage />} />
                 <Route path="/history/:dateStr" element={<HistoryDetailPage />} />
                 <Route path="/library" element={<FoodLibraryPage />} />
+                <Route path="/library/review" element={<PublicFoodReviewPage />} />
                 <Route path="/settings" element={<SettingsPage />} />
                 <Route path="/settings/account" element={<AccountInfoPage />} />
                 <Route path="/settings/personal-info" element={<ProfileInfoPage />} />

@@ -14,8 +14,8 @@
 - 当前Phase：Phase 1（完整饮食管理 App）
 - 当前正式版本：v0.1.3 — 基础记录闭环与稳定性收尾，已于 2026-07-28 15:55:36（Australia/Sydney）正式上线。
 - 当前开发版本：v0.2.1 — 公共食品数据库。
-- 当前状态：v0.2.1 阶段8C-3B2已完成；正式远程项目已有400条pending AFCD首批公共食品，首次导入和幂等复跑均已验收，尚未执行管理员审核或前端公开展示。
-- 判断结论：正式数据库已有402条foods，其中2条legacy、400条AFCD；公共食品导入数据与权限闭环已完成，但400条AFCD食品仍不可供普通用户读取。
+- 当前状态：v0.2.1 阶段8C-3B3A已完成；管理员审核机制和Migration 027已部署，正式验证后AFCD为pending 394、approved 5、disabled 1。
+- 判断结论：正式数据库仍为402条foods；5条跨分类AFCD食品已受控发布，其余394条尚待人工审核，审核前端尚未部署Production。
 
 ### 判断原因
 
@@ -61,10 +61,15 @@
 - `已确认（正式数据）` 400条AFCD食品、100条公共aliases、501条portions全部存在；pending/approved/disabled为400/0/0，重复及孤立记录、营养约束违规均为0。
 - `已确认（正式兼容）` foods总数为402，原有2条legacy和1条private食品基线保持；最终数据包SHA-256保持`4b9b3f342727ff39aafa1fb189496f13a76c3e11d5c125c55b858076c5d4696b`。
 - `已确认（正式权限）` 普通测试用户通过现有username-login取得session且非管理员；匿名和普通用户均无法读取pending AFCD foods、aliases、portions及import audit，服务端审计可读。
-- `未执行` 管理员批准、前端公开展示、cleanup、db push或Production前端部署。
+- `未执行` 剩余394条人工审核、审核前端Production部署或cleanup。
+- `已完成（审核机制）` Migration 027新增审核归属、审核时间、备注、状态转换审计和管理员专用`review_public_foods` RPC；显式批次上限50。
+- `已完成（管理员页面）` `/library/review`支持pending默认视图、状态/分类/关键词筛选、20条分页、详情、单条/小批量批准或停用、确认和防重复。
+- `已完成（正式验证）` 跨谷物、肉类、水产、奶制品、蔬菜、水果批准6条后停用西兰花；最终pending/approved/disabled为394/5/1，审核事件9条。
+- `已确认（发布权限）` 普通用户批准前不可见、批准后可见、停用后不可见；aliases和portions跟随本体，历史快照未改变。
+- `未完成` 剩余394条人工审核和审核前端Production部署。
 - `待处理（安全）` 旧Legacy API Keys尚未停用，必须先完成后台依赖检查；当前服务端与前端已切换至新凭据，正式核心页面验证正常。
 - `未开始` 食品搜索页面与完整 v0.2.1 UI。
-- `已部署` 正式远程Migration 022–026及400条pending AFCD首批食品；`未部署` v0.2.1 Production前端。
+- `已部署` 正式远程Migration 022–027及400条AFCD首批食品；`未部署` v0.2.1审核前端。
 
 ## 3. 已完成
 

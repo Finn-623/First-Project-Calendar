@@ -1,3 +1,30 @@
+## DEV-20260731-007
+
+- 日期：2026-07-31
+- 状态：已完成
+- 修改类型：Production review workflow / v0.2.1 公共食品
+- 任务目标：完成阶段8C-3B3A，建立管理员专用、可审计、显式小批量的公共食品审核与受控发布机制，并以6条跨分类食品完成正式远程验证。
+- 实际完成内容：
+	- 新增Migration 027：为foods增加`reviewed_by`、`reviewed_at`、`review_note`，新增不可变`food_review_events`状态转换审计。
+	- 新增`review_public_foods` SECURITY DEFINER RPC；只信任`auth.uid()`与服务端`is_app_admin`，仅允许公共食品和pending/approved/disabled状态，每次最多50个显式ID。
+	- RPC对重复ID、已在目标状态、无效ID和个人食品分别返回success/failed/skipped明细；不允许前端传入角色、用户ID、source或external ID。
+	- 新增`/library/review`管理员审核页：默认pending、20条分页、状态/一级分类筛选、中文名/英文名/external ID搜索、详情、单条和小批量批准/停用、确认交互及重复提交保护。
+	- pending食品不再在旧管理员公共食品列表一次性渲染；旧列表最多显示20条非pending食品。
+	- Migration 027已部署至正式`Calendar`项目，Local/Remote Migration 001、003–027一致。
+	- 正式验证批准6条：白米饭、鸡胸肉、大西洋三文鱼、全脂牛奶、西兰花、香蕉；随后停用西兰花，最终5 approved、1 disabled、394 pending。
+	- 普通用户在批准前看不到6条，批准后可见6条，西兰花停用后仅可见其余5条；alias和portion随食品本体权限隔离。
+	- 重复批准安全skipped；另验证disabled→pending→disabled，最终状态不变。9条审核事件均包含管理员与时间。
+	- 审核前后相关`food_entries`快照完全一致。
+- 主要修改文件：Migration 027及契约测试、`PublicFoodReviewPage`及测试、App路由、FoodLibrary管理员入口、foodService审核查询/RPC、三份阶段文档及数据库变更记录。
+- 测试结果：
+	- Migration 027专项6/6、审核页专项5/5通过。
+	- 导入、Migration/RLS、归档契约105/105通过。
+	- 前端32个套件、219个测试全部通过；审核页覆盖320×568、375×667、390×844、430×932。
+	- Production Build成功；仅有既有Node `fs.F_OK`弃用警告。
+- 未完成事项：其余394条仍为pending，尚未完成人工审核；审核前端代码尚未部署Production；旧Legacy API Keys仍待安全停用。
+- 风险或注意事项：本阶段只发布5条食品，未提供无筛选全量批准入口；`docs/ROADMAP.md`用户既有修改未触碰且不纳入提交。
+- Git Commit ID：由本独立提交承载，不自引用其自身哈希；最终完整ID以Git历史及任务汇报为准。
+
 ## DEV-20260731-006
 
 - 日期：2026-07-31
