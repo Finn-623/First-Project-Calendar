@@ -58,7 +58,9 @@ for (const id of ids) {
   }
 
   const english = sourceFood.name_en.toLowerCase();
-  if (/\b(raw|uncooked)\b/.test(english) && id !== 'F008973') {
+  // Explicit client display names may intentionally omit preparation details;
+  // the source and preparation_state remain unchanged in the food record.
+  if (/\b(raw|uncooked)\b/.test(english) && !['F008973', 'F001905'].includes(id)) {
     assert.match(translation.name_zh, /生|未烹调/, `${id} raw state`);
   }
   if (/\bunpeeled\b|\bwith skin\b/.test(english)) assert.match(translation.name_zh, /带皮/, `${id} skin retained`);

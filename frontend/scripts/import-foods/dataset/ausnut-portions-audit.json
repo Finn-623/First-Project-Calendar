@@ -466,7 +466,7 @@
     {
       "external_food_id": "F000561",
       "name_en": "Beef, diced, lean, raw ",
-      "name_zh": "牛肉丁（瘦、生）",
+      "name_zh": "瘦牛肉丁（生）",
       "source_food_key": "F000561",
       "raw_measure_count": 1,
       "excluded_measures": [
@@ -991,7 +991,7 @@
     {
       "external_food_id": "F004928",
       "name_en": "Lamb, diced, lean, raw ",
-      "name_zh": "羊肉丁（瘦、生）",
+      "name_zh": "瘦羊肉丁（生）",
       "source_food_key": "F004928",
       "raw_measure_count": 1,
       "excluded_measures": [

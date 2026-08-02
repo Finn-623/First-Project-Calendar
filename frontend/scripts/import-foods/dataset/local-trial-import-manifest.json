@@ -90,7 +90,7 @@
   {
     "external_food_id": "F001905",
     "name_en": "Broccoli, fresh, raw",
-    "name_zh": "西兰花（新鲜、生）",
+    "name_zh": "西兰花",
     "selection_reason": "常见蔬菜，验证 alias 与 fiber",
     "expected_alias_count": 1,
     "expected_portion_count": 1,

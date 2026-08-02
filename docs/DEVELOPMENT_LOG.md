@@ -1,3 +1,25 @@
+## DEV-20260802-004
+
+- 日期：2026-08-02
+- 状态：已完成
+- 修改类型：Production data review / AFCD 客户端人工发布决定实施
+- 任务目标：以400条客户端人工审核文件为唯一业务决定来源，实施263条停用、F001905恢复和5条最终中文名，并完成远程权限、审计、完整性、测试与Build验收。
+- 实际完成内容：
+	- 将5条用户确认名称写入external ID显式翻译override并重新生成正式包；逐字段比较确认仅`name_zh`变化，分类、营养、intake_types、aliases和501条portions不变，新包SHA-256为`30c36b5e97e45068202be829b7e1e731f638b58eb666b39772cc4c657c3fbb1d`。
+	- 新增默认只读的受控实施及最终验收脚本；固定目标项目、真实username-login、服务端管理员判断、人工actions集合、初始/最终状态和每批最多50条门禁。
+	- 写入前确认AFCD为approved 395、pending 3、disabled 2，审核事件400；分组严格为approved→disabled 260、pending→disabled 3、disabled→approved 1、保持approved 135、保持disabled 1。
+	- 通过真实管理员session串行执行6批停用，批次为50、50、50、50、50、13，全部success、0 skipped、0 failed；随后恢复F001905，success 1、0 skipped、0 failed。
+	- 更新5条当前显示名称：F001905西兰花、F005599无乳糖全脂牛奶（约3.5%）、F005614低脂牛奶（约1%）、F000561瘦牛肉丁（生）、F004928瘦羊肉丁（生）；其余395条名称未改变。
+	- 最终AFCD为approved 136、pending 0、disabled 264，审核事件664；匿名和普通用户仅见136条食品、28条aliases和203条portions，管理员可见全部400条。
+	- 远程总量保持402 foods、100 aliases、501 portions；2条legacy、1条private、43条Held portions边界及历史食品/归档快照保持不变；重复、孤立、负数营养和糖类约束违规均为0。
+- 遇到的问题：首次验证发现翻译规则仍要求西兰花客户端名称包含生熟状态，且正式包名称变化导致AUSNUT审计快照、trial manifest和包SHA门禁仍引用旧名称/旧哈希。
+- 解决方式：仅为F001905增加明确客户端显示名称例外，同步确定性审计快照、trial manifest和三个既有包哈希门禁；未改变原始英文名、preparation_state或食品数据质量判定。
+- 执行的测试：五项数据集/正式包验证；import-foods及Migration/RLS/RPC契约；远程多角色权限、审计、名称、历史快照与完整性验收；前端全量测试；Production Build；`git diff --check`。
+- 测试结果：数据集验证全部通过；契约测试首次78/90（12项均为旧包哈希/manifest），修正后90/90；前端32套件219测试全部通过；Production Build成功。仅有既有Node `fs.F_OK`弃用警告及测试环境缺少Supabase前端变量的预期console输出。
+- 未完成事项：本阶段代码和数据源尚未push或部署前端；旧Legacy API Keys仍待后台依赖检查后安全停用。
+- 风险或注意事项：人工`publish/disable`决定独立于数据质量release readiness；不得使用旧发布准备结果自动恢复264条人工停用食品。
+- Git Commit ID：由本独立提交承载，不自引用其自身哈希；最终完整ID以Git历史及任务汇报为准。
+
 ## DEV-20260802-003
 
 - 日期：2026-08-02

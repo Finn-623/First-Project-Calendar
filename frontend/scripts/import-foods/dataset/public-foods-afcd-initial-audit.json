@@ -319,7 +319,7 @@
   ],
   "input_sha256": {
     "frontend/scripts/import-foods/dataset/afcd-initial-selection.json": "2232fb8be78f746550536ed09475853e8c66cbe7aa885b9c96d47a9841a020b9",
-    "frontend/scripts/import-foods/dataset/food-name-translations.json": "3f0bd4f7ee7bc67e6ed667eef935ede95492c0189145fc7d40b6f11adabdccdc",
+    "frontend/scripts/import-foods/dataset/food-name-translations.json": "5ad1be9218447fe78a09e40f76f6bc1efd256c4d9233606251efc6d53480724d",
     "frontend/scripts/import-foods/dataset/food-public-aliases.json": "0eb970ed8e8a393b9c9c5ef4acbec2587b322bd76e6929a025c29e898ce3f132",
     "frontend/scripts/import-foods/dataset/food-intake-types.json": "10ec7e369b3d48fbedd7adcd0a01dbf2a72e08f2a5faf2770a216c8ac8d9ff68",
     "frontend/scripts/import-foods/dataset/food-portions.json": "ad6e13412012fe7c81f68f9b21ade2e66af3ef10c858ba205036ab905057af16",

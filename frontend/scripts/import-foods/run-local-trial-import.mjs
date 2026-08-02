@@ -33,7 +33,7 @@ const allowedModes = new Set([
   'cleanup',
 ]);
 const expectedPackageHash =
-  '21f03786d34b0525f3cf57234f79b60a1d9bbdc3fc96cd48642e1124b8bd15d6';
+  '30c36b5e97e45068202be829b7e1e731f638b58eb666b39772cc4c657c3fbb1d';
 const approvedIds = ['F009034', 'F005634'];
 
 function parseLocalStatus(output) {

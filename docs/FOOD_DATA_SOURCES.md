@@ -4,7 +4,7 @@
 
 - 当前来源：Australian Food Composition Database（AFCD）。
 - 最终候选包：400条食品，导入状态统一为`pending`。
-- 当前数据包SHA-256：`21f03786d34b0525f3cf57234f79b60a1d9bbdc3fc96cd48642e1124b8bd15d6`（同步阶段8C-1最终翻译状态后重新生成；正式导入时原包哈希保留在对应历史记录中）。
+- 当前数据包SHA-256：`30c36b5e97e45068202be829b7e1e731f638b58eb666b39772cc4c657c3fbb1d`（同步客户端人工确认的5条最终显示名称后重新生成；此前各阶段包哈希保留在对应历史记录中）。
 - 关联数据：100条公共aliases、501条ready portions。
 - USDA数据尚未合并进本批AFCD数据包。
 
@@ -63,6 +63,18 @@
 - 数据边界：远程100条aliases、501条portions保持，43条Held portion未进入远程；总foods 402，2条legacy、1条个人食品及历史快照未改变。
 - 完整性：重复foods/aliases/portions、孤立aliases/portions、负数营养和糖类关系违规均为0。
 - 测试：数据集验证全部通过；import-foods 53/53、Migration 027专项6/6、完整契约105/105、前端32套件219测试通过；Production Build成功，仅保留既有`fs.F_OK`弃用警告。
+
+## AFCD 400条客户端人工审核正式实施
+
+- 日期：2026-08-02。
+- 人工决定：publish 136、disable 264；rename_publish、hold、restore均为0。名称变更与发布决定作为独立维度处理。
+- 状态实施：260条approved→disabled、3条pending→disabled、F001905由disabled→approved；135条保持approved、F004256保持disabled。
+- 停用批次：50、50、50、50、50、13，合计263 success、0 skipped、0 failed；F001905恢复为1 success、0 skipped、0 failed。
+- 最终状态：approved 136、pending 0、disabled 264；审核事件由400增至664。
+- 最终名称：F001905西兰花、F005599无乳糖全脂牛奶（约3.5%）、F005614低脂牛奶（约1%）、F000561瘦牛肉丁（生）、F004928瘦羊肉丁（生）。旧名称未删除alias；本阶段未新增alias。
+- 权限与附属数据：匿名和普通用户可见136 foods、28 aliases、203 portions；管理员可见400 foods及664审核事件。远程总量保持100 aliases、501 portions，43条Held portions仍未导入。
+- 完整性：总foods 402、AFCD 400、legacy 2、private 1；重复与孤立数据、负数营养和糖类约束违规均为0，历史食品及归档快照哈希不变。
+- 验证：正式包、发布准备、翻译、摄入类型、AUSNUT份量验证通过；契约测试90/90、前端32套件219测试通过，Production Build成功。仅保留既有`fs.F_OK`弃用警告。
 
 
 ## 阶段 7/8 综合质量验证

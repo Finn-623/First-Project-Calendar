@@ -602,9 +602,9 @@
   "F000561": {
     "external_food_id": "F000561",
     "name_en": "Beef, diced, lean, raw ",
-    "name_zh": "牛肉丁（瘦、生）",
+    "name_zh": "瘦牛肉丁（生）",
     "translation_status": "ready",
-    "translation_note": "保留切割形态、脂肪和生熟状态",
+    "translation_note": "客户端人工审核确认的最终显示名称",
     "translation_source": "manual_override"
   },
   "F006899": {
@@ -850,10 +850,10 @@
   "F004928": {
     "external_food_id": "F004928",
     "name_en": "Lamb, diced, lean, raw ",
-    "name_zh": "羊肉丁（瘦、生）",
+    "name_zh": "瘦羊肉丁（生）",
     "translation_status": "ready",
-    "translation_note": "由集中食品主体词典和状态限定词规则生成",
-    "translation_source": "generated"
+    "translation_note": "客户端人工审核确认的最终显示名称",
+    "translation_source": "manual_override"
   },
   "F004948": {
     "external_food_id": "F004948",
@@ -1490,10 +1490,10 @@
   "F005614": {
     "external_food_id": "F005614",
     "name_en": "Milk, cow, fluid, reduced fat (~1%)",
-    "name_zh": "牛奶（液态、低脂(~1%)）",
+    "name_zh": "低脂牛奶（约1%）",
     "translation_status": "ready",
-    "translation_note": "由集中食品主体词典和状态限定词规则生成",
-    "translation_source": "generated"
+    "translation_note": "客户端人工审核确认的最终显示名称",
+    "translation_source": "manual_override"
   },
   "F005637": {
     "external_food_id": "F005637",
@@ -1538,10 +1538,10 @@
   "F005599": {
     "external_food_id": "F005599",
     "name_en": "Milk, cow, fluid, lactose free, regular fat (~3.5%)",
-    "name_zh": "牛奶（液态、无乳糖、全脂(~3.5%)）",
+    "name_zh": "无乳糖全脂牛奶（约3.5%）",
     "translation_status": "ready",
-    "translation_note": "由集中食品主体词典和状态限定词规则生成",
-    "translation_source": "generated"
+    "translation_note": "客户端人工审核确认的最终显示名称",
+    "translation_source": "manual_override"
   },
   "F005621": {
     "external_food_id": "F005621",
@@ -1802,9 +1802,9 @@
   "F001905": {
     "external_food_id": "F001905",
     "name_en": "Broccoli, fresh, raw",
-    "name_zh": "西兰花（新鲜、生）",
+    "name_zh": "西兰花",
     "translation_status": "ready",
-    "translation_note": "常见基础食品标准名称",
+    "translation_note": "客户端人工审核确认的最终显示名称",
     "translation_source": "manual_override"
   },
   "F009193": {
