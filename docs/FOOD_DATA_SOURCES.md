@@ -38,14 +38,13 @@
 - 权限结果：匿名和通过正式username-login登录的非管理员普通用户均无法读取pending foods、aliases、portions和import audit；服务端可读取两次completed审计且计数与实际数据一致。
 - 测试结果：导入/Migration/RLS/归档/批次门禁99项Node测试、五项数据集验证、前端31套件210测试全部通过；Production Build成功，仅保留既有`fs.F_OK`弃用警告。
 
-## 当前边界
 
-- 正式400条AFCD首批食品及幂等复跑已经完成。
-- 阶段8C-3B3A已受控审核6条：`F007661`、`F002594`、`F007827`、`F005634`、`F001905`、`F000262`，覆盖谷物、肉类、水产、奶制品、蔬菜和水果。
-- 最终保留approved 5条；`F001905`西兰花完成批准、停用及恢复转换验证后保持disabled；其余394条保持pending。
-- Migration 027审核审计已部署，9条真实状态转换审计完整；重复批准安全跳过。
-- 普通用户只能读取5条approved食品；停用的西兰花及其alias/portion不可见，相关历史快照未改变。
-- 尚未开发或部署公共食品搜索和正式前端展示。
-- 尚未执行cleanup或新的数据库Migration。
-- 旧Legacy API Keys仍需在后台依赖检查完成后安全停用。
-- 本文档不记录密钥、JWT、Authorization header、用户标识或完整import run标识。
+## 阶段 7/8 综合质量验证
+
+- 日期：2026-08-02
+- 范围：400条AFCD公共食品。
+- 状态分布：release_ready 21, release_ready_without_portion 22, needs_name_review 357, needs_portion_review 0, needs_data_review 0, exclude_candidate 0（合计 400）。
+- 结果：43 条食品符合进入阶段8的资格，Ready portions 321, Held portions 223。
+- 验证：确认数据一致性、可重复性及源数据稳定性。
+- 权限：仅为本地验证，未执行远程写入、状态修改或审核变更。
+

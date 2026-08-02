@@ -1,0 +1,6730 @@
+[
+  {
+    "external_id": "F000002",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F000003",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F000004",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F000005",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 1,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F000006",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F000061",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F000086",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F000091",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F000092",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F000095",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F000099",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F000105",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F000107",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F000108",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 4,
+    "held_portion_count": 1,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F000110",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 4,
+    "held_portion_count": 1,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F000111",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F000162",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 1,
+    "held_portion_count": 3,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F000233",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 2,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F000262",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 4,
+    "held_portion_count": 1,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F000267",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 1,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F000378",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 2,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F000379",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F000386",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 3,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F000402",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 3,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F000436",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F000437",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F000441",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F000442",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F000448",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 2,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F000449",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F000451",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F000458",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F000459",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F000561",
+    "final_status": "release_ready_without_portion",
+    "blocking_reasons": [],
+    "warning_reasons": [],
+    "name_status": "ok",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 0,
+    "proposed_action": "approve",
+    "notes": ""
+  },
+  {
+    "external_id": "F000655",
+    "final_status": "release_ready_without_portion",
+    "blocking_reasons": [],
+    "warning_reasons": [],
+    "name_status": "ok",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 0,
+    "proposed_action": "approve",
+    "notes": ""
+  },
+  {
+    "external_id": "F000666",
+    "final_status": "release_ready_without_portion",
+    "blocking_reasons": [],
+    "warning_reasons": [],
+    "name_status": "ok",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 0,
+    "proposed_action": "approve",
+    "notes": ""
+  },
+  {
+    "external_id": "F000678",
+    "final_status": "release_ready_without_portion",
+    "blocking_reasons": [],
+    "warning_reasons": [],
+    "name_status": "ok",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 0,
+    "proposed_action": "approve",
+    "notes": ""
+  },
+  {
+    "external_id": "F000739",
+    "final_status": "release_ready_without_portion",
+    "blocking_reasons": [],
+    "warning_reasons": [],
+    "name_status": "ok",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 0,
+    "proposed_action": "approve",
+    "notes": ""
+  },
+  {
+    "external_id": "F000792",
+    "final_status": "release_ready_without_portion",
+    "blocking_reasons": [],
+    "warning_reasons": [],
+    "name_status": "ok",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 0,
+    "proposed_action": "approve",
+    "notes": ""
+  },
+  {
+    "external_id": "F000810",
+    "final_status": "release_ready_without_portion",
+    "blocking_reasons": [],
+    "warning_reasons": [],
+    "name_status": "ok",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 0,
+    "proposed_action": "approve",
+    "notes": ""
+  },
+  {
+    "external_id": "F000931",
+    "final_status": "release_ready_without_portion",
+    "blocking_reasons": [],
+    "warning_reasons": [],
+    "name_status": "ok",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 0,
+    "proposed_action": "approve",
+    "notes": ""
+  },
+  {
+    "external_id": "F000961",
+    "final_status": "release_ready_without_portion",
+    "blocking_reasons": [],
+    "warning_reasons": [],
+    "name_status": "ok",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 0,
+    "proposed_action": "approve",
+    "notes": ""
+  },
+  {
+    "external_id": "F001015",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 2,
+    "held_portion_count": 3,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F001267",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 1,
+    "held_portion_count": 1,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F001290",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 1,
+    "held_portion_count": 1,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F001353",
+    "final_status": "release_ready",
+    "blocking_reasons": [],
+    "warning_reasons": [],
+    "name_status": "ok",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 2,
+    "held_portion_count": 1,
+    "proposed_action": "approve",
+    "notes": ""
+  },
+  {
+    "external_id": "F001360",
+    "final_status": "release_ready",
+    "blocking_reasons": [],
+    "warning_reasons": [],
+    "name_status": "ok",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 2,
+    "held_portion_count": 1,
+    "proposed_action": "approve",
+    "notes": ""
+  },
+  {
+    "external_id": "F001365",
+    "final_status": "release_ready",
+    "blocking_reasons": [],
+    "warning_reasons": [],
+    "name_status": "ok",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 2,
+    "held_portion_count": 1,
+    "proposed_action": "approve",
+    "notes": ""
+  },
+  {
+    "external_id": "F001387",
+    "final_status": "release_ready",
+    "blocking_reasons": [],
+    "warning_reasons": [],
+    "name_status": "ok",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 1,
+    "held_portion_count": 7,
+    "proposed_action": "approve",
+    "notes": ""
+  },
+  {
+    "external_id": "F001450",
+    "final_status": "release_ready_without_portion",
+    "blocking_reasons": [],
+    "warning_reasons": [],
+    "name_status": "ok",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 0,
+    "proposed_action": "approve",
+    "notes": ""
+  },
+  {
+    "external_id": "F001463",
+    "final_status": "release_ready",
+    "blocking_reasons": [],
+    "warning_reasons": [],
+    "name_status": "ok",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 2,
+    "held_portion_count": 0,
+    "proposed_action": "approve",
+    "notes": ""
+  },
+  {
+    "external_id": "F001468",
+    "final_status": "release_ready",
+    "blocking_reasons": [],
+    "warning_reasons": [],
+    "name_status": "ok",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 1,
+    "held_portion_count": 0,
+    "proposed_action": "approve",
+    "notes": ""
+  },
+  {
+    "external_id": "F001528",
+    "final_status": "release_ready",
+    "blocking_reasons": [],
+    "warning_reasons": [],
+    "name_status": "ok",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 1,
+    "held_portion_count": 5,
+    "proposed_action": "approve",
+    "notes": ""
+  },
+  {
+    "external_id": "F001537",
+    "final_status": "release_ready",
+    "blocking_reasons": [],
+    "warning_reasons": [],
+    "name_status": "ok",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 1,
+    "held_portion_count": 5,
+    "proposed_action": "approve",
+    "notes": ""
+  },
+  {
+    "external_id": "F001541",
+    "final_status": "release_ready",
+    "blocking_reasons": [],
+    "warning_reasons": [],
+    "name_status": "ok",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 2,
+    "held_portion_count": 0,
+    "proposed_action": "approve",
+    "notes": ""
+  },
+  {
+    "external_id": "F001543",
+    "final_status": "release_ready",
+    "blocking_reasons": [],
+    "warning_reasons": [],
+    "name_status": "ok",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 1,
+    "held_portion_count": 0,
+    "proposed_action": "approve",
+    "notes": ""
+  },
+  {
+    "external_id": "F001553",
+    "final_status": "release_ready",
+    "blocking_reasons": [],
+    "warning_reasons": [],
+    "name_status": "ok",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 2,
+    "held_portion_count": 1,
+    "proposed_action": "approve",
+    "notes": ""
+  },
+  {
+    "external_id": "F001671",
+    "final_status": "release_ready",
+    "blocking_reasons": [],
+    "warning_reasons": [],
+    "name_status": "ok",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 2,
+    "held_portion_count": 8,
+    "proposed_action": "approve",
+    "notes": ""
+  },
+  {
+    "external_id": "F001884",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 3,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F001885",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F001900",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 1,
+    "held_portion_count": 1,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F001904",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F001905",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 1,
+    "held_portion_count": 1,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F001909",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 1,
+    "held_portion_count": 1,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F001918",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 2,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F001920",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F001921",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F001922",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F001923",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F001928",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 2,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F001971",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 2,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F001972",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 2,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F001973",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 2,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F002205",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F002206",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F002239",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 1,
+    "held_portion_count": 4,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F002247",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 1,
+    "held_portion_count": 4,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F002266",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F002276",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 1,
+    "held_portion_count": 5,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F002288",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F002290",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F002378",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 2,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F002384",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 1,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F002405",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 1,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F002406",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 3,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F002407",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 1,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F002408",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 1,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F002413",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 2,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F002414",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 2,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F002425",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F002428",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 2,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F002435",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 2,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F002444",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 2,
+    "held_portion_count": 1,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F002452",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 3,
+    "held_portion_count": 1,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F002462",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F002463",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 3,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F002466",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 1,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F002478",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 2,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F002479",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 2,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F002488",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 2,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F002594",
+    "final_status": "release_ready",
+    "blocking_reasons": [],
+    "warning_reasons": [],
+    "name_status": "ok",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 4,
+    "held_portion_count": 0,
+    "proposed_action": "approve",
+    "notes": ""
+  },
+  {
+    "external_id": "F002647",
+    "final_status": "release_ready_without_portion",
+    "blocking_reasons": [],
+    "warning_reasons": [],
+    "name_status": "ok",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 3,
+    "proposed_action": "approve",
+    "notes": ""
+  },
+  {
+    "external_id": "F002739",
+    "final_status": "release_ready_without_portion",
+    "blocking_reasons": [],
+    "warning_reasons": [],
+    "name_status": "ok",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 0,
+    "proposed_action": "approve",
+    "notes": ""
+  },
+  {
+    "external_id": "F002773",
+    "final_status": "release_ready_without_portion",
+    "blocking_reasons": [],
+    "warning_reasons": [],
+    "name_status": "ok",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 0,
+    "proposed_action": "approve",
+    "notes": ""
+  },
+  {
+    "external_id": "F002806",
+    "final_status": "release_ready_without_portion",
+    "blocking_reasons": [],
+    "warning_reasons": [],
+    "name_status": "ok",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 3,
+    "proposed_action": "approve",
+    "notes": ""
+  },
+  {
+    "external_id": "F002849",
+    "final_status": "release_ready_without_portion",
+    "blocking_reasons": [],
+    "warning_reasons": [],
+    "name_status": "ok",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 2,
+    "proposed_action": "approve",
+    "notes": ""
+  },
+  {
+    "external_id": "F002880",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 2,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F002881",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F002882",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F002884",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F002896",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 1,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F002901",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 1,
+    "held_portion_count": 1,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F002949",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 1,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F003017",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F003041",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 2,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F003200",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 1,
+    "held_portion_count": 2,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F003201",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F003202",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F003209",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 1,
+    "held_portion_count": 2,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F003227",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 2,
+    "held_portion_count": 1,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F003235",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 2,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F003319",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F003320",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F003321",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F003324",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F003423",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 1,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F003607",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 1,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F003612",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 1,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F003632",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 1,
+    "held_portion_count": 3,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F003641",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F003642",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F003705",
+    "final_status": "release_ready",
+    "blocking_reasons": [],
+    "warning_reasons": [],
+    "name_status": "ok",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 1,
+    "held_portion_count": 0,
+    "proposed_action": "approve",
+    "notes": ""
+  },
+  {
+    "external_id": "F003706",
+    "final_status": "release_ready",
+    "blocking_reasons": [],
+    "warning_reasons": [],
+    "name_status": "ok",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 1,
+    "held_portion_count": 0,
+    "proposed_action": "approve",
+    "notes": ""
+  },
+  {
+    "external_id": "F003721",
+    "final_status": "release_ready",
+    "blocking_reasons": [],
+    "warning_reasons": [],
+    "name_status": "ok",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 1,
+    "held_portion_count": 0,
+    "proposed_action": "approve",
+    "notes": ""
+  },
+  {
+    "external_id": "F003723",
+    "final_status": "release_ready_without_portion",
+    "blocking_reasons": [],
+    "warning_reasons": [],
+    "name_status": "ok",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 0,
+    "proposed_action": "approve",
+    "notes": ""
+  },
+  {
+    "external_id": "F003724",
+    "final_status": "release_ready_without_portion",
+    "blocking_reasons": [],
+    "warning_reasons": [],
+    "name_status": "ok",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 0,
+    "proposed_action": "approve",
+    "notes": ""
+  },
+  {
+    "external_id": "F003729",
+    "final_status": "release_ready",
+    "blocking_reasons": [],
+    "warning_reasons": [],
+    "name_status": "ok",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 1,
+    "held_portion_count": 0,
+    "proposed_action": "approve",
+    "notes": ""
+  },
+  {
+    "external_id": "F003736",
+    "final_status": "release_ready_without_portion",
+    "blocking_reasons": [],
+    "warning_reasons": [],
+    "name_status": "ok",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 1,
+    "proposed_action": "approve",
+    "notes": ""
+  },
+  {
+    "external_id": "F003737",
+    "final_status": "release_ready",
+    "blocking_reasons": [],
+    "warning_reasons": [],
+    "name_status": "ok",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 1,
+    "held_portion_count": 0,
+    "proposed_action": "approve",
+    "notes": ""
+  },
+  {
+    "external_id": "F003753",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 1,
+    "held_portion_count": 5,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F003761",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 1,
+    "held_portion_count": 5,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F003776",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F003779",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F003784",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 1,
+    "held_portion_count": 1,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F003817",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F003834",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 1,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F003973",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 3,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F003974",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F003990",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 2,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F004007",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 2,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F004014",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 2,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F004099",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 5,
+    "held_portion_count": 2,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F004114",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 5,
+    "held_portion_count": 2,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F004193",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 1,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F004202",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F004203",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F004205",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 1,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F004213",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F004235",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F004237",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F004253",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 1,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F004254",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F004256",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F004259",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 2,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F004260",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 2,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F004261",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F004263",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 1,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F004286",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 1,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F004594",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 1,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F004815",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 1,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F004816",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 1,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F004928",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F004929",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F004948",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 1,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F004954",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 2,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F005013",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F005027",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F005049",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F005050",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 1,
+    "held_portion_count": 1,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F005121",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F005164",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 3,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F005174",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 2,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F005177",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F005178",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F005181",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F005184",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F005191",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 1,
+    "held_portion_count": 1,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F005192",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 3,
+    "held_portion_count": 3,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F005193",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 1,
+    "held_portion_count": 1,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F005199",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 2,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F005244",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 1,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F005248",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F005255",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 1,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F005299",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 1,
+    "held_portion_count": 3,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F005441",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 2,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F005513",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 1,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F005514",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 1,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F005515",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 1,
+    "held_portion_count": 1,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F005519",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 2,
+    "held_portion_count": 1,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F005520",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 2,
+    "held_portion_count": 2,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F005580",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 1,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F005581",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 1,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F005582",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 1,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F005599",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [
+      "Empty intake types for nutrient-dense food"
+    ],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "potentially_incomplete",
+    "alias_status": "ok",
+    "ready_portion_count": 1,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F005614",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 2,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F005621",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [
+      "Empty intake types for nutrient-dense food"
+    ],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "potentially_incomplete",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F005634",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [
+      "Empty intake types for nutrient-dense food"
+    ],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "potentially_incomplete",
+    "alias_status": "ok",
+    "ready_portion_count": 3,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F005635",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [
+      "Empty intake types for nutrient-dense food"
+    ],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "potentially_incomplete",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F005637",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 2,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F005648",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 1,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F005650",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F005652",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 1,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F005659",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F005690",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 2,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F005696",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 6,
+    "held_portion_count": 1,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F005824",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F005825",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F005916",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 1,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F005922",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 3,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F005930",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F005932",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F005945",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 1,
+    "held_portion_count": 5,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F005946",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 1,
+    "held_portion_count": 5,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F005949",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F005968",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 1,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F005973",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 1,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F006021",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 1,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F006038",
+    "final_status": "release_ready_without_portion",
+    "blocking_reasons": [],
+    "warning_reasons": [],
+    "name_status": "ok",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 0,
+    "proposed_action": "approve",
+    "notes": ""
+  },
+  {
+    "external_id": "F006042",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F006044",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F006048",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 1,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F006066",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 2,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F006067",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [
+      "Empty intake types for nutrient-dense food"
+    ],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "potentially_incomplete",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 2,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F006081",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 2,
+    "held_portion_count": 1,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F006082",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F006087",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 2,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F006088",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 2,
+    "held_portion_count": 1,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F006090",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 2,
+    "held_portion_count": 1,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F006092",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 2,
+    "held_portion_count": 1,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F006095",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 1,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F006096",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 1,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F006098",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 2,
+    "held_portion_count": 1,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F006099",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 2,
+    "held_portion_count": 1,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F006107",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F006108",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F006109",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 2,
+    "held_portion_count": 1,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F006110",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 2,
+    "held_portion_count": 1,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F006111",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 2,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F006112",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 1,
+    "held_portion_count": 2,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F006113",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 2,
+    "held_portion_count": 1,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F006116",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 2,
+    "held_portion_count": 1,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F006143",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 2,
+    "held_portion_count": 1,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F006155",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F006156",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F006159",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F006165",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F006167",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F006170",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F006177",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 1,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F006183",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F006185",
+    "final_status": "release_ready_without_portion",
+    "blocking_reasons": [],
+    "warning_reasons": [],
+    "name_status": "ok",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 0,
+    "proposed_action": "approve",
+    "notes": ""
+  },
+  {
+    "external_id": "F006186",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F006195",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 1,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F006225",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 4,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F006250",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 1,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F006276",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F006277",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 3,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F006279",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F006282",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F006283",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F006288",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F006289",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F006291",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F006328",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 1,
+    "held_portion_count": 1,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F006333",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 1,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F006429",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F006444",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F006451",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F006456",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F006459",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F006460",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F006464",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F006469",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F006471",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F006528",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 1,
+    "held_portion_count": 1,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F006544",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F006571",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 1,
+    "held_portion_count": 2,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F006573",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 1,
+    "held_portion_count": 2,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F006577",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 2,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F006585",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F006601",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F006604",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 2,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F006606",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F006698",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F006830",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 1,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F006862",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F006875",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F006899",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F007019",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F007037",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F007049",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F007077",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F007085",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F007244",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F007245",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F007247",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F007250",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F007252",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F007254",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F007305",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F007306",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F007308",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F007314",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F007320",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F007325",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 3,
+    "held_portion_count": 1,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F007358",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F007359",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F007361",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F007364",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F007366",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F007368",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 3,
+    "held_portion_count": 1,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F007384",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F007386",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F007433",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 1,
+    "held_portion_count": 1,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F007535",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F007540",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F007555",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F007596",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 2,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F007606",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 1,
+    "held_portion_count": 1,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F007608",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F007641",
+    "final_status": "release_ready",
+    "blocking_reasons": [],
+    "warning_reasons": [],
+    "name_status": "ok",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 2,
+    "held_portion_count": 0,
+    "proposed_action": "approve",
+    "notes": ""
+  },
+  {
+    "external_id": "F007661",
+    "final_status": "release_ready",
+    "blocking_reasons": [],
+    "warning_reasons": [],
+    "name_status": "ok",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 2,
+    "held_portion_count": 0,
+    "proposed_action": "approve",
+    "notes": ""
+  },
+  {
+    "external_id": "F007678",
+    "final_status": "release_ready_without_portion",
+    "blocking_reasons": [],
+    "warning_reasons": [],
+    "name_status": "ok",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 3,
+    "proposed_action": "approve",
+    "notes": ""
+  },
+  {
+    "external_id": "F007683",
+    "final_status": "release_ready",
+    "blocking_reasons": [],
+    "warning_reasons": [],
+    "name_status": "ok",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 2,
+    "held_portion_count": 0,
+    "proposed_action": "approve",
+    "notes": ""
+  },
+  {
+    "external_id": "F007712",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 2,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F007728",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 2,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F007827",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 3,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F007878",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 2,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F007879",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 2,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F007973",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 1,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F007987",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 2,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F007992",
+    "final_status": "release_ready_without_portion",
+    "blocking_reasons": [],
+    "warning_reasons": [],
+    "name_status": "ok",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 0,
+    "proposed_action": "approve",
+    "notes": ""
+  },
+  {
+    "external_id": "F008004",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [
+      "Empty intake types for nutrient-dense food"
+    ],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "potentially_incomplete",
+    "alias_status": "ok",
+    "ready_portion_count": 1,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F008008",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 2,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F008026",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 1,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F008065",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [
+      "Empty intake types for nutrient-dense food"
+    ],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "potentially_incomplete",
+    "alias_status": "ok",
+    "ready_portion_count": 2,
+    "held_portion_count": 1,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F008151",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 1,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F008153",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 1,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F008155",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 1,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F008166",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 1,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F008214",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F008220",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 2,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F008227",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 1,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F008237",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 3,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F008263",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 3,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F008267",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 2,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F008359",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 3,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F008744",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F008749",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 2,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F008761",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 2,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F008763",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F008811",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 1,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F008813",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F008828",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 1,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F008973",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 2,
+    "held_portion_count": 1,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F008976",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 2,
+    "held_portion_count": 1,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F009021",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 2,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F009034",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 5,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F009039",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 3,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F009089",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 2,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F009094",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 1,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F009117",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F009125",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F009163",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F009176",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 1,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F009190",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 1,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F009193",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F009271",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 3,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F009300",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 2,
+    "held_portion_count": 1,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F009527",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 6,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F009532",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F009560",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 3,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F009694",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 12,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F009789",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F009800",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F009805",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F009816",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 1,
+    "held_portion_count": 1,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F009821",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 2,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F009823",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 2,
+    "held_portion_count": 1,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F009835",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F009882",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 1,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F009919",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F010020",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 1,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F010259",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 1,
+    "held_portion_count": 4,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F010942",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 3,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F010943",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 3,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F010994",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F010995",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F011000",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  },
+  {
+    "external_id": "F011001",
+    "final_status": "needs_name_review",
+    "blocking_reasons": [
+      "Name needs manual review (Stage 4 constraint)"
+    ],
+    "warning_reasons": [],
+    "name_status": "needs_review",
+    "nutrition_status": "ok",
+    "classification_status": "ok",
+    "intake_type_status": "ok",
+    "alias_status": "ok",
+    "ready_portion_count": 0,
+    "held_portion_count": 0,
+    "proposed_action": "hold",
+    "notes": ""
+  }
+]

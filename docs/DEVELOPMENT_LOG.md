@@ -5072,11 +5072,20 @@
 - Filtered 551 portions (grams > 0, density excluded) for 222 candidate foods.
 - Established portion-label-rules.mjs for consistent Chinese translation.
 - Commit ID: 05b20f00c7837f0188c007d5952686b33eed53bc
-## 2026-07-31: Public Food Review Preparation (v0.2.1)
-- Executed Stage 8C-3B3B1: Manual review preparation for 'eggs' category.
-- Reviewed 8 foods; status: 8 approve, 0 disable, 0 hold.
-- Created review list: docs/food-review/8C-3B3B1-eggs.md.
-- Commit ID: 98c182c0c4d48545c1ebc03568eec0e814e2f492
+## 2026-08-02: Stage 7/8 Comprehensive Food Quality Validation (v0.2.1)
+- 状态：已完成
+- 任务目标：完成阶段 7/8，对400条AFCD公共食品进行综合质量验证。
+- 实际完成内容：
+    - 完成了阶段7所有四个关键文件的完整性验证，确认JSON、Markdown、统计一致性，无敏感信息。
+    - 验证生成脚本`generate-food-release-readiness.mjs`可重复性，SHA-256一致。
+    - 验证阶段3–6五个源文件哈希值未变化。
+    - 运行全套验证脚本，全部通过。
+- 验证结果：
+    - 状态分布：release_ready 21, release_ready_without_portion 22, needs_name_review 357, needs_portion_review 0, needs_data_review 0, exclude_candidate 0（合计 400）。
+    - 可进入阶段8候选 43 条。
+    - Portion统计：Ready 321, Held 223。
+- 本阶段Commit ID：ba10d44e176c2a9454b65bd102a6fabeae13768a
+
 ## 2026-07-31: Finalize AFCD Dataset (v0.2.1)
 - 阶段3/4/5 统计核对与闭合：
   - Classification codes (277总计): mapped 75, needs review 199, excluded 3.

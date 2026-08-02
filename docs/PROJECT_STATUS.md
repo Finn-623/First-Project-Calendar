@@ -740,6 +740,11 @@ P2：
 - Final review split is 321 ready and 223 needs_review; 110 exact-matched foods have no retained portion because their only source rows are explicitly marked density records.
 - Original commits `05b20f00c7837f0188c007d5952686b33eed53bc` and `6b215ba45190e8d2b5310a79b43399c1ffcc1531` remain unchanged; correction commit is `19f658518e8e11cf0ecc3fa0b7497b1fff038b69`.
 - Pending: stage 7 final import JSON, manual review resolution, database integration, and dynamic database validation.
-## v0.2.1 Status Update (2026-07-31)
-- Manual review preparation completed for category 'eggs' (8 foods reviewed).
-- Review checklist stored in docs/food-review/8C-3B3B1-eggs.md.
+
+## v0.2.1 Status Update (2026-08-02)
+- 阶段 7/8 完成：400条AFCD公共食品综合质量验证。
+- 状态分布：release_ready 21, release_ready_without_portion 22, needs_name_review 357, needs_portion_review 0, needs_data_review 0, exclude_candidate 0（合计 400）。
+- Ready portions 321, Held portions 223。
+- 43 条 Ready 状态食品符合进入阶段8的资格。
+- 确认数据一致性、可重复性及源数据稳定性；仅为本地验证，未执行远程写入或审核变更。
+
