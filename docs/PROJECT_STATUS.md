@@ -14,8 +14,8 @@
 - 当前Phase：Phase 1（完整饮食管理 App）
 - 当前正式版本：v0.1.3 — 基础记录闭环与稳定性收尾，已于 2026-07-28 15:55:36（Australia/Sydney）正式上线。
 - 当前开发版本：v0.2.1 — 公共食品数据库。
-- 当前状态：v0.2.1 阶段8/8B已完成；正式食品包生成链已与最新阶段3–7源文件统一，管理员审核机制和Migration 027已部署，370条无阻断候选已按8个受控批次批准。
-- 判断结论：正式数据库仍为402条foods；400条AFCD最终为pending 24、approved 375、disabled 1。24条专业名称继续阻断发布，西兰花F001905保持disabled，审核前端尚未部署Production。
+- 当前状态：v0.2.1 阶段8/8C-2已完成；正式食品包已同步阶段8C-1最终翻译状态，20条新增候选获批，F004256受控停用。
+- 判断结论：正式数据库仍为402条foods；400条AFCD最终为approved 395、pending 3、disabled 2。三条专业名称继续阻断发布，F001905与F004256保持disabled，审核前端尚未部署Production。
 
 ### 判断原因
 
@@ -73,7 +73,12 @@
 - `已确认（正式状态）` 400条AFCD最终为pending 24、approved 375、disabled 1；24条needs_name_review未误批准，F001905未恢复。
 - `已确认（正式可见性）` 匿名及普通用户仅能读取375条approved active食品及其99条aliases、483条portions；隐藏食品附属数据和审核事件不泄露。管理员可读取全部400条及379条审核事件，service role不能调用审核RPC冒充管理员。
 - `已确认（正式完整性）` 100条aliases、501条portions、总foods 402保持；重复、孤立、营养及糖约束违规均为0，2条legacy、1条个人食品与历史快照未改变，43条Held portion保持包外。
-- `未完成` 24条专业名称人工审核和审核前端Production部署。
+- `已完成（最终名称复核）` 阶段8C-1将20条显式复核为Ready，3条保持needs_name_review，F004256标记exclude_candidate；发布准备为217/179/3/0/0/1，可发布候选396。
+- `已完成（最终状态发布）` 阶段8/8C-2批准20条并停用F004256，均0 skipped、0 failed；新增21条审核事件，最终审核事件400。
+- `已确认（最终远程状态）` AFCD为approved 395、pending 3、disabled 2；pending仅F001884、F001885、F008359，disabled仅F001905、F004256。
+- `已确认（最终权限与完整性）` 匿名及普通用户仅可见395条approved active食品、99条aliases和494条portions；管理员可见400条AFCD和400条审核事件，service role不能冒充管理员审核。总foods 402、100 aliases、501 portions、历史快照、legacy与个人食品均保持。
+- `已完成（正式包门禁修正）` 正式包已按阶段8C-1源重新生成，SHA-256为`21f03786d34b0525f3cf57234f79b60a1d9bbdc3fc96cd48642e1124b8bd15d6`；最终包、trial及batch安全门禁已同步。
+- `未完成` 3条专业名称人工审核和审核前端Production部署。
 - `待处理（安全）` 旧Legacy API Keys尚未停用，必须先完成后台依赖检查；当前服务端与前端已切换至新凭据，正式核心页面验证正常。
 - `未开始` 食品搜索页面与完整 v0.2.1 UI。
 - `已部署` 正式远程Migration 022–027及400条AFCD首批食品；`未部署` v0.2.1审核前端。
@@ -754,4 +759,3 @@ P2：
 - 状态分布：release_ready 217, release_ready_without_portion 179, needs_name_review 3, exclude_candidate 1（合计 400）。
 - 可批准候选：396 条。
 - 确认数据一致性及人工复核结论的机器准确性；仅为本地验证，未执行远程写入或审核变更。
-

@@ -196,9 +196,9 @@ async function verify() {
 
   assert.equal(
     foods.filter((food) => food.translation_status === 'needs_review').length,
-    24
+    3
   );
-  assert.equal(audit.translation_needs_review.length, 24);
+  assert.equal(audit.translation_needs_review.length, 3);
   assert.equal(audit.food_count, 400);
   assert.equal(audit.source_identity_count, 400);
   assert.deepEqual(audit.aliases, { foods_with_aliases: 73, total: 100 });

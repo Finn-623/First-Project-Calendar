@@ -3,7 +3,7 @@ import { createHash } from 'node:crypto';
 
 export const REMOTE_BATCH_PROJECT_REF = 'ragxhkzvaaoembqudnux';
 export const REMOTE_BATCH_PACKAGE_HASH =
-  '4b9b3f342727ff39aafa1fb189496f13a76c3e11d5c125c55b858076c5d4696b';
+  '21f03786d34b0525f3cf57234f79b60a1d9bbdc3fc96cd48642e1124b8bd15d6';
 export const REMOTE_BATCH_MIGRATIONS = [
   '001', '003', '004', '005', '006', '007', '008', '009', '010', '011',
   '012', '013', '014', '015', '016', '017', '018', '019', '020', '021',

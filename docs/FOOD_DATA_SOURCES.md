@@ -4,7 +4,7 @@
 
 - 当前来源：Australian Food Composition Database（AFCD）。
 - 最终候选包：400条食品，导入状态统一为`pending`。
-- 数据包SHA-256：`4b9b3f342727ff39aafa1fb189496f13a76c3e11d5c125c55b858076c5d4696b`。
+- 当前数据包SHA-256：`21f03786d34b0525f3cf57234f79b60a1d9bbdc3fc96cd48642e1124b8bd15d6`（同步阶段8C-1最终翻译状态后重新生成；正式导入时原包哈希保留在对应历史记录中）。
 - 关联数据：100条公共aliases、501条ready portions。
 - USDA数据尚未合并进本批AFCD数据包。
 
@@ -50,6 +50,19 @@
 - 权限验收：匿名与普通账号仅能读取375条approved active食品，不能读取审核事件或调用审核RPC；管理员可读取全部400条及审核事件并执行RPC；service role仅受控读取且不能冒充管理员审核。
 - 完整性：重复foods/aliases/portions、孤立aliases/portions、负数营养和糖类关系违规均为0；总foods保持402，2条legacy、1条个人食品和历史食品快照未改变。
 - 测试结果：Migration 027专项6/6、导入/Migration/RLS/归档契约105/105、前端32套件219测试、最终数据包与四项数据集验证全部通过；Production Build成功，仅保留既有`fs.F_OK`弃用警告。
+
+## 阶段8/8C-2最终远程审核状态
+
+- 日期：2026-08-02。
+- 正式包门禁：按阶段8C-1最新翻译状态重新生成400条正式包，needs_name_review为3、exclude_candidate为F004256；当前SHA-256为`21f03786d34b0525f3cf57234f79b60a1d9bbdc3fc96cd48642e1124b8bd15d6`。
+- 写入前状态：approved 375、pending 24、disabled 1；实际闭合为20条待批准、F004256待停用、3条保持pending、F001905保持disabled。
+- 批准结果：20 success、0 skipped、0 failed，新增20条审核事件；中间状态为approved 395、pending 4、disabled 1。
+- 停用结果：F004256为1 success、0 skipped、0 failed，新增1条审核事件。
+- 最终状态：approved 395、pending 3、disabled 2；审核事件总数400。pending仅F001884、F001885、F008359；disabled仅F001905、F004256。
+- 权限：匿名与普通用户仅可读取395条approved active食品及其99条aliases、494条portions；管理员可读取全部400条与400条审核事件；service role不能调用审核RPC冒充管理员。
+- 数据边界：远程100条aliases、501条portions保持，43条Held portion未进入远程；总foods 402，2条legacy、1条个人食品及历史快照未改变。
+- 完整性：重复foods/aliases/portions、孤立aliases/portions、负数营养和糖类关系违规均为0。
+- 测试：数据集验证全部通过；import-foods 53/53、Migration 027专项6/6、完整契约105/105、前端32套件219测试通过；Production Build成功，仅保留既有`fs.F_OK`弃用警告。
 
 
 ## 阶段 7/8 综合质量验证

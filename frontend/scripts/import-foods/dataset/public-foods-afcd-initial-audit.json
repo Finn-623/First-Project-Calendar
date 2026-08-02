@@ -302,46 +302,6 @@
   },
   "translation_needs_review": [
     {
-      "external_food_id": "F001920",
-      "name_en": "Buffalo, riverine, cube roll, raw",
-      "name_zh": "河水牛眼肉（生）"
-    },
-    {
-      "external_food_id": "F001921",
-      "name_en": "Buffalo, riverine, topside, raw",
-      "name_zh": "河水牛后腿内侧肉（生）"
-    },
-    {
-      "external_food_id": "F001922",
-      "name_en": "Buffalo, swamp, cube roll, raw",
-      "name_zh": "沼泽水牛眼肉（生）"
-    },
-    {
-      "external_food_id": "F001923",
-      "name_en": "Buffalo, swamp, topside, raw",
-      "name_zh": "沼泽水牛后腿内侧肉（生）"
-    },
-    {
-      "external_food_id": "F002205",
-      "name_en": "Camel, cube roll, raw",
-      "name_zh": "骆驼眼肉（生）"
-    },
-    {
-      "external_food_id": "F003776",
-      "name_en": "Emu, fan fillet, raw",
-      "name_zh": "鸸鹋扇形里脊（生）"
-    },
-    {
-      "external_food_id": "F006282",
-      "name_en": "Ostrich, fan fillet, raw",
-      "name_zh": "鸵鸟扇形里脊（生）"
-    },
-    {
-      "external_food_id": "F006283",
-      "name_en": "Ostrich, moon steak, raw",
-      "name_zh": "鸵鸟月牙排（生）"
-    },
-    {
       "external_food_id": "F001884",
       "name_en": "Bream, fillet, raw",
       "name_zh": "鲷鱼（鱼柳、生）"
@@ -352,79 +312,14 @@
       "name_zh": "鲷鱼（鱼柳、蒸制、无加油脂）"
     },
     {
-      "external_food_id": "F003973",
-      "name_en": "Flathead, fillet, raw",
-      "name_zh": "平头鱼（鱼柳、生）"
-    },
-    {
-      "external_food_id": "F003974",
-      "name_en": "Flathead, fillet, steamed, no added fat",
-      "name_zh": "平头鱼（鱼柳、蒸制、无加油脂）"
-    },
-    {
-      "external_food_id": "F004202",
-      "name_en": "Gemfish, fillet, raw",
-      "name_zh": "银鳞鲳鱼（鱼柳、生）"
-    },
-    {
-      "external_food_id": "F004203",
-      "name_en": "Gemfish, fillet, steamed, no added fat",
-      "name_zh": "银鳞鲳鱼（鱼柳、蒸制、无加油脂）"
-    },
-    {
-      "external_food_id": "F005824",
-      "name_en": "Morwong, fillet, raw",
-      "name_zh": "唇指鲈（鱼柳、生）"
-    },
-    {
-      "external_food_id": "F005825",
-      "name_en": "Morwong, fillet, steamed, no added fat",
-      "name_zh": "唇指鲈（鱼柳、蒸制、无加油脂）"
-    },
-    {
-      "external_food_id": "F005930",
-      "name_en": "Mulloway, fillet, raw",
-      "name_zh": "澳洲石首鱼（鱼柳、生）"
-    },
-    {
-      "external_food_id": "F005932",
-      "name_en": "Mulloway, fillet, steamed, no added fat",
-      "name_zh": "澳洲石首鱼（鱼柳、蒸制、无加油脂）"
-    },
-    {
-      "external_food_id": "F008263",
-      "name_en": "Silver perch, aquacultured, raw",
-      "name_zh": "银鲈（养殖、生）"
-    },
-    {
       "external_food_id": "F008359",
       "name_en": "Snapper, fillet, raw",
       "name_zh": "笛鲷（鱼柳、生）"
-    },
-    {
-      "external_food_id": "F009560",
-      "name_en": "Whiting, King George, fillet, raw",
-      "name_zh": "乔治王牙鳕（鱼柳、生）"
-    },
-    {
-      "external_food_id": "F005193",
-      "name_en": "Lettuce, mignonette, raw",
-      "name_zh": "奶油生菜（生）"
-    },
-    {
-      "external_food_id": "F004256",
-      "name_en": "Grape, cornichon, raw",
-      "name_zh": "科尼雄葡萄（生）"
-    },
-    {
-      "external_food_id": "F004261",
-      "name_en": "Grape, waltham cross, raw",
-      "name_zh": "沃尔瑟姆十字葡萄（生）"
     }
   ],
   "input_sha256": {
     "frontend/scripts/import-foods/dataset/afcd-initial-selection.json": "2232fb8be78f746550536ed09475853e8c66cbe7aa885b9c96d47a9841a020b9",
-    "frontend/scripts/import-foods/dataset/food-name-translations.json": "bafe02957f81dd95e30920ec7cb7b779b9f7af5f619ac9b4da223217155b4bcb",
+    "frontend/scripts/import-foods/dataset/food-name-translations.json": "3f0bd4f7ee7bc67e6ed667eef935ede95492c0189145fc7d40b6f11adabdccdc",
     "frontend/scripts/import-foods/dataset/food-public-aliases.json": "0eb970ed8e8a393b9c9c5ef4acbec2587b322bd76e6929a025c29e898ce3f132",
     "frontend/scripts/import-foods/dataset/food-intake-types.json": "10ec7e369b3d48fbedd7adcd0a01dbf2a72e08f2a5faf2770a216c8ac8d9ff68",
     "frontend/scripts/import-foods/dataset/food-portions.json": "ad6e13412012fe7c81f68f9b21ade2e66af3ef10c858ba205036ab905057af16",

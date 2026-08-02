@@ -190,12 +190,12 @@
     "external_food_id": "F004261",
     "name_en": "Grape, waltham cross, raw",
     "name_zh": "沃尔瑟姆十字葡萄（生）",
-    "selection_reason": "中文名称 needs_review 且无 portion 的水果",
+    "selection_reason": "中文名称已人工复核且无 portion 的水果",
     "expected_alias_count": 0,
     "expected_portion_count": 0,
     "expected_intake_types": ["carbohydrate", "fiber"],
     "expected_preparation_state": "raw",
-    "translation_status": "needs_review"
+    "translation_status": "ready"
   },
   {
     "external_food_id": "F003200",

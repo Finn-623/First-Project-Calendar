@@ -1,3 +1,27 @@
+## DEV-20260802-003
+
+- 日期：2026-08-02
+- 状态：已完成
+- 修改类型：Production data review / v0.2.1 公共食品最终审核状态
+- 任务目标：完成阶段8/8C-2，按纠正后的远程闭合结果批准20条发布候选、停用F004256，并完成正式包门禁、权限、审计、完整性、全量测试与Build验收。
+- 实际完成内容：
+	- 修复阶段8C-1更新翻译状态后未同步重新生成正式包的问题；重新生成400条正式包及审计，名称待审从24更新为3，包SHA-256更新为`21f03786d34b0525f3cf57234f79b60a1d9bbdc3fc96cd48642e1124b8bd15d6`。
+	- 将最终包契约从旧的24条名称待审调整为真实3条，并同步remote trial、remote batch、本地trial哈希门禁及F004261 trial翻译状态元数据；食品身份、名称、分类、营养、aliases和portions未被门禁修复改写。
+	- 写入前确认发布准备为release_ready 217、release_ready_without_portion 179、needs_name_review 3、exclude_candidate 1，可发布候选396；远程基线为approved 375、pending 24、disabled 1。
+	- 使用真实管理员session批准20条，结果success 20、skipped 0、failed 0；中间状态为approved 395、pending 4、disabled 1，新增20条审核事件。
+	- 中间验收通过后仅停用F004256，结果success 1、skipped 0、failed 0；新增1条审核事件。
+	- 最终AFCD为approved 395、pending 3、disabled 2，审核事件400；pending仅F001884、F001885、F008359，disabled仅F001905、F004256。
+	- 匿名与普通用户仅能读取395条approved active AFCD食品；管理员可读取全部400条与400条审核事件；service role可受控读取但不能冒充管理员审核。
+	- 远程100条aliases、501条portions保持；匿名和普通用户可见99条aliases、494条portions，43条Held portion继续保持包外。
+	- 总foods保持402；2条legacy、1条个人食品及历史快照哈希不变；重复、孤立、负数营养与糖类关系违规均为0。
+- 遇到的问题：完整契约测试发现重新生成后的正式包哈希已变化，而trial/batch安全门禁仍锁定旧包；F004261 trial manifest仍记录旧的needs_review状态。
+- 解决方式：仅同步更新现有确定性哈希门禁和F004261已审核元数据，保留项目、迁移、显式确认及数据范围限制；随后重跑全部测试通过。
+- 执行的测试：最终包、发布准备、翻译、摄入类型和AUSNUT份量验证；import-foods完整测试；Migration 027专项；导入/Migration/RLS/归档/审核RPC完整契约；前端全量测试；Production Build；远程权限、审计、完整性及历史快照验收；`git diff --check`。
+- 测试结果：数据集验证通过；import-foods 53/53、Migration 027专项6/6、完整契约105/105、前端32套件219测试全部通过；Production Build成功。仅保留既有Node `fs.F_OK`弃用警告。
+- 未完成事项：F001884、F001885、F008359仍需专业名称复核；审核前端尚未部署Production；旧Legacy API Keys仍待后台依赖检查后安全停用。
+- 风险或注意事项：F001905与F004256均保持disabled，不得自动恢复；当前395条approved公共食品已开放读取。`docs/ROADMAP.md`用户既有修改未触碰且不纳入提交。
+- Git Commit ID：由本独立提交承载，不自引用其自身哈希；最终完整ID以Git历史及任务汇报为准。
+
 ## DEV-20260802-002
 
 - 日期：2026-08-02

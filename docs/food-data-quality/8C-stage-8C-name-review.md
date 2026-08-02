@@ -46,4 +46,13 @@
 - 20 条食品完成名称确认，成功转为 ready。
 - 3 条食品因物种模糊，仍需进一步专业复核，保持 needs_name_review。
 - 1 条食品因定义不明确，建议排除。
-- 本阶段仅为本地数据复核与记录，未修改远程数据库，未执行任何审核状态变更或 RPC。
+- 阶段8C-1仅为本地数据复核与记录；后续阶段8/8C-2已按该结论批准20条并受控停用F004256。
+
+## 5. 阶段8/8C-2远程落实结果
+
+- 20条`translation_ready_override`对应的pending食品全部通过管理员审核RPC批准：20 success、0 skipped、0 failed。
+- F004256通过管理员审核RPC从pending转为disabled：1 success、0 skipped、0 failed。
+- F001884、F001885、F008359继续保持pending；F001905继续保持disabled。
+- 最终AFCD状态为approved 395、pending 3、disabled 2；审核事件由379增至400。
+- 正式包已同步本报告结论并重新生成；当前包SHA-256为`21f03786d34b0525f3cf57234f79b60a1d9bbdc3fc96cd48642e1124b8bd15d6`。
+- 多角色权限、aliases/portions隔离、历史快照和数据完整性验收全部通过。
