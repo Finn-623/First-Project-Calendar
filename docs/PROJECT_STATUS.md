@@ -748,9 +748,10 @@ P2：
 - Original commits `05b20f00c7837f0188c007d5952686b33eed53bc` and `6b215ba45190e8d2b5310a79b43399c1ffcc1531` remain unchanged; correction commit is `19f658518e8e11cf0ecc3fa0b7497b1fff038b69`.
 - Pending: stage 7 final import JSON, manual review resolution, database integration, and dynamic database validation.
 
+
 ## v0.2.1 Status Update (2026-08-02)
-- 阶段8/8A-1完成：修复翻译生成器未加载集中规则与override造成的发布源分叉。
-- 状态分布：release_ready 213、release_ready_without_portion 163、needs_name_review 24、needs_portion_review 0、needs_data_review 0、exclude_candidate 0（合计400）。
-- 阶段7最终发布边界为501条Ready portions；3条exclude与40条defer共43条Held portions未进入正式包。
-- 376条食品符合进入阶段8的资格；远程只读对账为370 pending、5 approved、1 disabled，24条名称待审全部保持pending。
-- 正式数据包SHA-256及内容未变化；仅修复生成源与审计哈希。本阶段未执行远程写入或审核变更。
+- 阶段 8/8C-1 完成：完成剩余24条needs_name_review食品复核。
+- 状态分布：release_ready 217, release_ready_without_portion 179, needs_name_review 3, exclude_candidate 1（合计 400）。
+- 可批准候选：396 条。
+- 确认数据一致性及人工复核结论的机器准确性；仅为本地验证，未执行远程写入或审核变更。
+

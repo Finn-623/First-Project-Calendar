@@ -27,22 +27,23 @@
 
 | 状态 | 数量 | 占比 | 说明 |
 | :--- | :--- | :--- | :--- |
-| **release_ready** | 213 | 53.25% | 食品本体合格，含至少一个最终可发布份量 |
-| **release_ready_without_portion** | 163 | 40.75% | 食品本体合格，可按克记录 |
-| **needs_name_review** | 24 | 6.00% | 中文名称仍需专业复核 |
+| **release_ready** | 217 | 54.25% | 食品本体合格，含至少一个最终可发布份量 |
+| **release_ready_without_portion** | 179 | 44.75% | 食品本体合格，可按克记录 |
+| **needs_name_review** | 3 | 0.75% | 中文名称仍需专业复核 |
 | **needs_portion_review** | 0 | 0.00% | 无阻断性份量风险 |
 | **needs_data_review** | 0 | 0.00% | 基础宏量营养逻辑通过 |
-| **exclude_candidate** | 0 | 0.00% | 无需剔除项 |
+| **exclude_candidate** | 1 | 0.25% | 已标记排除项 |
 | **合计** | **400** | **100%** | |
 
 ### 关键发现：
-- **可进入阶段 8 的食品总数**：**376 条**（94.00%）。
-- **Ready 名称状态**：376条`ready`名称食品全部通过营养、分类和最终份量边界交叉验证。
-- **Needs Review 名称状态**：24条涉及专业物种、品种或肉类切割名称的食品继续被阻断。
+- **可进入阶段 8 的食品总数**：**396 条**（99.00%）。
+- **Ready 名称状态**：396条`ready`名称食品全部通过营养、分类和最终份量边界交叉验证。
+- **Needs Review 名称状态**：3条涉及专业物种、品种或肉类切割名称的食品继续被阻断。
+- **Exclude Candidate 名称状态**：1条明确定义不清的食品被排除。
 - **Portion 统计**：
-  - 最终可发布 Portions：**501**（原始Ready 321 + 阶段7明确批准180）
-  - 包外 Held Portions：**43**（exclude 3 + defer 40）
-  - 163条`release_ready_without_portion`食品仍可直接按克记录。
+  - 最终可发布 Portions：**501**
+  - 包外 Held Portions：**43**
+  - 179条`release_ready_without_portion`食品仍可直接按克记录。
 
 ## 5. 跨维度检查结论
 

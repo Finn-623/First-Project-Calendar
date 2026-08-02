@@ -98,7 +98,12 @@ async function generate() {
 
     // Determine Final Status
     let final_status = 'release_ready';
-    if (blocking_reasons.length > 0) {
+    
+    // Explicitly exclude
+    if (id === 'F004256') {
+      final_status = 'exclude_candidate';
+      blocking_reasons.push('Explicitly excluded as per Stage 8/8C-1 review');
+    } else if (blocking_reasons.length > 0) {
       if (nutrition_status !== 'ok' || classification_status !== 'ok') {
         final_status = 'needs_data_review';
       } else if (name_status !== 'ok') {
@@ -124,7 +129,7 @@ async function generate() {
       alias_status,
       ready_portion_count,
       held_portion_count,
-      proposed_action: final_status === 'release_ready' || final_status === 'release_ready_without_portion' ? 'approve' : 'hold',
+      proposed_action: (final_status === 'release_ready' || final_status === 'release_ready_without_portion') ? 'approve' : 'hold',
       notes: ''
     });
   }

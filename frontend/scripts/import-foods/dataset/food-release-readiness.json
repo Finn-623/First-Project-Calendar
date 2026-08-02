@@ -980,70 +980,62 @@
   },
   {
     "external_id": "F001920",
-    "final_status": "needs_name_review",
-    "blocking_reasons": [
-      "Name needs manual review (Stage 4 constraint)"
-    ],
+    "final_status": "release_ready_without_portion",
+    "blocking_reasons": [],
     "warning_reasons": [],
-    "name_status": "needs_review",
+    "name_status": "ok",
     "nutrition_status": "ok",
     "classification_status": "ok",
     "intake_type_status": "ok",
     "alias_status": "ok",
     "ready_portion_count": 0,
     "held_portion_count": 0,
-    "proposed_action": "hold",
+    "proposed_action": "approve",
     "notes": ""
   },
   {
     "external_id": "F001921",
-    "final_status": "needs_name_review",
-    "blocking_reasons": [
-      "Name needs manual review (Stage 4 constraint)"
-    ],
+    "final_status": "release_ready_without_portion",
+    "blocking_reasons": [],
     "warning_reasons": [],
-    "name_status": "needs_review",
+    "name_status": "ok",
     "nutrition_status": "ok",
     "classification_status": "ok",
     "intake_type_status": "ok",
     "alias_status": "ok",
     "ready_portion_count": 0,
     "held_portion_count": 0,
-    "proposed_action": "hold",
+    "proposed_action": "approve",
     "notes": ""
   },
   {
     "external_id": "F001922",
-    "final_status": "needs_name_review",
-    "blocking_reasons": [
-      "Name needs manual review (Stage 4 constraint)"
-    ],
+    "final_status": "release_ready_without_portion",
+    "blocking_reasons": [],
     "warning_reasons": [],
-    "name_status": "needs_review",
+    "name_status": "ok",
     "nutrition_status": "ok",
     "classification_status": "ok",
     "intake_type_status": "ok",
     "alias_status": "ok",
     "ready_portion_count": 0,
     "held_portion_count": 0,
-    "proposed_action": "hold",
+    "proposed_action": "approve",
     "notes": ""
   },
   {
     "external_id": "F001923",
-    "final_status": "needs_name_review",
-    "blocking_reasons": [
-      "Name needs manual review (Stage 4 constraint)"
-    ],
+    "final_status": "release_ready_without_portion",
+    "blocking_reasons": [],
     "warning_reasons": [],
-    "name_status": "needs_review",
+    "name_status": "ok",
     "nutrition_status": "ok",
     "classification_status": "ok",
     "intake_type_status": "ok",
     "alias_status": "ok",
     "ready_portion_count": 0,
     "held_portion_count": 0,
-    "proposed_action": "hold",
+    "proposed_action": "approve",
     "notes": ""
   },
   {
@@ -1108,19 +1100,17 @@
   },
   {
     "external_id": "F002205",
-    "final_status": "needs_name_review",
-    "blocking_reasons": [
-      "Name needs manual review (Stage 4 constraint)"
-    ],
+    "final_status": "release_ready_without_portion",
+    "blocking_reasons": [],
     "warning_reasons": [],
-    "name_status": "needs_review",
+    "name_status": "ok",
     "nutrition_status": "ok",
     "classification_status": "ok",
     "intake_type_status": "ok",
     "alias_status": "ok",
     "ready_portion_count": 0,
     "held_portion_count": 0,
-    "proposed_action": "hold",
+    "proposed_action": "approve",
     "notes": ""
   },
   {
@@ -2130,19 +2120,17 @@
   },
   {
     "external_id": "F003776",
-    "final_status": "needs_name_review",
-    "blocking_reasons": [
-      "Name needs manual review (Stage 4 constraint)"
-    ],
+    "final_status": "release_ready_without_portion",
+    "blocking_reasons": [],
     "warning_reasons": [],
-    "name_status": "needs_review",
+    "name_status": "ok",
     "nutrition_status": "ok",
     "classification_status": "ok",
     "intake_type_status": "ok",
     "alias_status": "ok",
     "ready_portion_count": 0,
     "held_portion_count": 0,
-    "proposed_action": "hold",
+    "proposed_action": "approve",
     "notes": ""
   },
   {
@@ -2207,36 +2195,32 @@
   },
   {
     "external_id": "F003973",
-    "final_status": "needs_name_review",
-    "blocking_reasons": [
-      "Name needs manual review (Stage 4 constraint)"
-    ],
+    "final_status": "release_ready",
+    "blocking_reasons": [],
     "warning_reasons": [],
-    "name_status": "needs_review",
+    "name_status": "ok",
     "nutrition_status": "ok",
     "classification_status": "ok",
     "intake_type_status": "ok",
     "alias_status": "ok",
     "ready_portion_count": 3,
     "held_portion_count": 0,
-    "proposed_action": "hold",
+    "proposed_action": "approve",
     "notes": ""
   },
   {
     "external_id": "F003974",
-    "final_status": "needs_name_review",
-    "blocking_reasons": [
-      "Name needs manual review (Stage 4 constraint)"
-    ],
+    "final_status": "release_ready_without_portion",
+    "blocking_reasons": [],
     "warning_reasons": [],
-    "name_status": "needs_review",
+    "name_status": "ok",
     "nutrition_status": "ok",
     "classification_status": "ok",
     "intake_type_status": "ok",
     "alias_status": "ok",
     "ready_portion_count": 0,
     "held_portion_count": 0,
-    "proposed_action": "hold",
+    "proposed_action": "approve",
     "notes": ""
   },
   {
@@ -2331,36 +2315,32 @@
   },
   {
     "external_id": "F004202",
-    "final_status": "needs_name_review",
-    "blocking_reasons": [
-      "Name needs manual review (Stage 4 constraint)"
-    ],
+    "final_status": "release_ready_without_portion",
+    "blocking_reasons": [],
     "warning_reasons": [],
-    "name_status": "needs_review",
+    "name_status": "ok",
     "nutrition_status": "ok",
     "classification_status": "ok",
     "intake_type_status": "ok",
     "alias_status": "ok",
     "ready_portion_count": 0,
     "held_portion_count": 0,
-    "proposed_action": "hold",
+    "proposed_action": "approve",
     "notes": ""
   },
   {
     "external_id": "F004203",
-    "final_status": "needs_name_review",
-    "blocking_reasons": [
-      "Name needs manual review (Stage 4 constraint)"
-    ],
+    "final_status": "release_ready_without_portion",
+    "blocking_reasons": [],
     "warning_reasons": [],
-    "name_status": "needs_review",
+    "name_status": "ok",
     "nutrition_status": "ok",
     "classification_status": "ok",
     "intake_type_status": "ok",
     "alias_status": "ok",
     "ready_portion_count": 0,
     "held_portion_count": 0,
-    "proposed_action": "hold",
+    "proposed_action": "approve",
     "notes": ""
   },
   {
@@ -2455,12 +2435,12 @@
   },
   {
     "external_id": "F004256",
-    "final_status": "needs_name_review",
+    "final_status": "exclude_candidate",
     "blocking_reasons": [
-      "Name needs manual review (Stage 4 constraint)"
+      "Explicitly excluded as per Stage 8/8C-1 review"
     ],
     "warning_reasons": [],
-    "name_status": "needs_review",
+    "name_status": "ok",
     "nutrition_status": "ok",
     "classification_status": "ok",
     "intake_type_status": "ok",
@@ -2502,19 +2482,17 @@
   },
   {
     "external_id": "F004261",
-    "final_status": "needs_name_review",
-    "blocking_reasons": [
-      "Name needs manual review (Stage 4 constraint)"
-    ],
+    "final_status": "release_ready_without_portion",
+    "blocking_reasons": [],
     "warning_reasons": [],
-    "name_status": "needs_review",
+    "name_status": "ok",
     "nutrition_status": "ok",
     "classification_status": "ok",
     "intake_type_status": "ok",
     "alias_status": "ok",
     "ready_portion_count": 0,
     "held_portion_count": 0,
-    "proposed_action": "hold",
+    "proposed_action": "approve",
     "notes": ""
   },
   {
@@ -2849,19 +2827,17 @@
   },
   {
     "external_id": "F005193",
-    "final_status": "needs_name_review",
-    "blocking_reasons": [
-      "Name needs manual review (Stage 4 constraint)"
-    ],
+    "final_status": "release_ready",
+    "blocking_reasons": [],
     "warning_reasons": [],
-    "name_status": "needs_review",
+    "name_status": "ok",
     "nutrition_status": "ok",
     "classification_status": "ok",
     "intake_type_status": "ok",
     "alias_status": "ok",
     "ready_portion_count": 2,
     "held_portion_count": 0,
-    "proposed_action": "hold",
+    "proposed_action": "approve",
     "notes": ""
   },
   {
@@ -3264,36 +3240,32 @@
   },
   {
     "external_id": "F005824",
-    "final_status": "needs_name_review",
-    "blocking_reasons": [
-      "Name needs manual review (Stage 4 constraint)"
-    ],
+    "final_status": "release_ready_without_portion",
+    "blocking_reasons": [],
     "warning_reasons": [],
-    "name_status": "needs_review",
+    "name_status": "ok",
     "nutrition_status": "ok",
     "classification_status": "ok",
     "intake_type_status": "ok",
     "alias_status": "ok",
     "ready_portion_count": 0,
     "held_portion_count": 0,
-    "proposed_action": "hold",
+    "proposed_action": "approve",
     "notes": ""
   },
   {
     "external_id": "F005825",
-    "final_status": "needs_name_review",
-    "blocking_reasons": [
-      "Name needs manual review (Stage 4 constraint)"
-    ],
+    "final_status": "release_ready_without_portion",
+    "blocking_reasons": [],
     "warning_reasons": [],
-    "name_status": "needs_review",
+    "name_status": "ok",
     "nutrition_status": "ok",
     "classification_status": "ok",
     "intake_type_status": "ok",
     "alias_status": "ok",
     "ready_portion_count": 0,
     "held_portion_count": 0,
-    "proposed_action": "hold",
+    "proposed_action": "approve",
     "notes": ""
   },
   {
@@ -3328,36 +3300,32 @@
   },
   {
     "external_id": "F005930",
-    "final_status": "needs_name_review",
-    "blocking_reasons": [
-      "Name needs manual review (Stage 4 constraint)"
-    ],
+    "final_status": "release_ready_without_portion",
+    "blocking_reasons": [],
     "warning_reasons": [],
-    "name_status": "needs_review",
+    "name_status": "ok",
     "nutrition_status": "ok",
     "classification_status": "ok",
     "intake_type_status": "ok",
     "alias_status": "ok",
     "ready_portion_count": 0,
     "held_portion_count": 0,
-    "proposed_action": "hold",
+    "proposed_action": "approve",
     "notes": ""
   },
   {
     "external_id": "F005932",
-    "final_status": "needs_name_review",
-    "blocking_reasons": [
-      "Name needs manual review (Stage 4 constraint)"
-    ],
+    "final_status": "release_ready_without_portion",
+    "blocking_reasons": [],
     "warning_reasons": [],
-    "name_status": "needs_review",
+    "name_status": "ok",
     "nutrition_status": "ok",
     "classification_status": "ok",
     "intake_type_status": "ok",
     "alias_status": "ok",
     "ready_portion_count": 0,
     "held_portion_count": 0,
-    "proposed_action": "hold",
+    "proposed_action": "approve",
     "notes": ""
   },
   {
@@ -4069,36 +4037,32 @@
   },
   {
     "external_id": "F006282",
-    "final_status": "needs_name_review",
-    "blocking_reasons": [
-      "Name needs manual review (Stage 4 constraint)"
-    ],
+    "final_status": "release_ready_without_portion",
+    "blocking_reasons": [],
     "warning_reasons": [],
-    "name_status": "needs_review",
+    "name_status": "ok",
     "nutrition_status": "ok",
     "classification_status": "ok",
     "intake_type_status": "ok",
     "alias_status": "ok",
     "ready_portion_count": 0,
     "held_portion_count": 0,
-    "proposed_action": "hold",
+    "proposed_action": "approve",
     "notes": ""
   },
   {
     "external_id": "F006283",
-    "final_status": "needs_name_review",
-    "blocking_reasons": [
-      "Name needs manual review (Stage 4 constraint)"
-    ],
+    "final_status": "release_ready_without_portion",
+    "blocking_reasons": [],
     "warning_reasons": [],
-    "name_status": "needs_review",
+    "name_status": "ok",
     "nutrition_status": "ok",
     "classification_status": "ok",
     "intake_type_status": "ok",
     "alias_status": "ok",
     "ready_portion_count": 0,
     "held_portion_count": 0,
-    "proposed_action": "hold",
+    "proposed_action": "approve",
     "notes": ""
   },
   {
@@ -5367,19 +5331,17 @@
   },
   {
     "external_id": "F008263",
-    "final_status": "needs_name_review",
-    "blocking_reasons": [
-      "Name needs manual review (Stage 4 constraint)"
-    ],
+    "final_status": "release_ready",
+    "blocking_reasons": [],
     "warning_reasons": [],
-    "name_status": "needs_review",
+    "name_status": "ok",
     "nutrition_status": "ok",
     "classification_status": "ok",
     "intake_type_status": "ok",
     "alias_status": "ok",
     "ready_portion_count": 3,
     "held_portion_count": 0,
-    "proposed_action": "hold",
+    "proposed_action": "approve",
     "notes": ""
   },
   {
@@ -5776,19 +5738,17 @@
   },
   {
     "external_id": "F009560",
-    "final_status": "needs_name_review",
-    "blocking_reasons": [
-      "Name needs manual review (Stage 4 constraint)"
-    ],
+    "final_status": "release_ready",
+    "blocking_reasons": [],
     "warning_reasons": [],
-    "name_status": "needs_review",
+    "name_status": "ok",
     "nutrition_status": "ok",
     "classification_status": "ok",
     "intake_type_status": "ok",
     "alias_status": "ok",
     "ready_portion_count": 3,
     "held_portion_count": 0,
-    "proposed_action": "hold",
+    "proposed_action": "approve",
     "notes": ""
   },
   {

@@ -5144,9 +5144,24 @@
     - 本记录最初写入的43 Ready/357 needs_review统计后来在DEV-20260802-001确认来自未加载集中规则与override的退化翻译生成器，不能继续作为发布依据。
     - 修正后状态：release_ready 213、release_ready_without_portion 163、needs_name_review 24，其余三类均为0（合计400）。
     - 可进入阶段8候选376条；最终包内Ready portions 501，包外exclude/defer portions 43。
-- 本阶段Commit ID：ba10d44e176c2a9454b65bd102a6fabeae13768a
+- 本阶段Commit ID：4299974474b514d2734126d2a5857f7ddd9d8f95
 
-## 2026-07-31: Finalize AFCD Dataset (v0.2.1)
+## 2026-08-02: Stage 8/8C-1 Name Review (v0.2.1)
+- 状态：已完成
+- 任务目标：复核剩余24条needs_name_review食品。
+- 实际完成内容：
+    - 复核24条待审核食品：20条通过translation override转为ready，3条因物种定义模糊保持needs_name_review，1条因定义不清标记为exclude_candidate。
+    - 建立F004256明确排除机制。
+    - 更新正式包，验证数据一致性、可重复性及稳定性。
+- 验证结果：
+    - 状态分布：release_ready 217, release_ready_without_portion 179, needs_name_review 3, exclude_candidate 1（合计 400）。
+    - 可进入下一步的发布候选为 396 条。
+    - 人工审核结论与机器报告一致。
+- 本阶段相关文件：
+    - docs/food-data-quality/8C-stage-8C-name-review.md
+    - frontend/scripts/import-foods/dataset/translation-overrides.mjs
+- 本阶段Commit ID：44fa570eade5211d5cc37f7f6073dbea0f03b2e9
+
 - 阶段3/4/5 统计核对与闭合：
   - Classification codes (277总计): mapped 75, needs review 199, excluded 3.
   - 食品记录层 (1588总计): mapped 831, needs review 738, excluded 19.

@@ -691,41 +691,41 @@
     "external_food_id": "F001920",
     "name_en": "Buffalo, riverine, cube roll, raw",
     "name_zh": "河水牛眼肉（生）",
-    "translation_status": "needs_review",
-    "translation_note": "Riverine buffalo cube roll 的标准中文切割名称需要肉类专业复核",
-    "translation_source": "generated"
+    "translation_status": "ready",
+    "translation_note": "手动复核：切割名称准确",
+    "translation_source": "manual_override"
   },
   "F001921": {
     "external_food_id": "F001921",
     "name_en": "Buffalo, riverine, topside, raw",
     "name_zh": "河水牛后腿内侧肉（生）",
-    "translation_status": "needs_review",
-    "translation_note": "Riverine buffalo topside 的标准中文切割名称需要肉类专业复核",
-    "translation_source": "generated"
+    "translation_status": "ready",
+    "translation_note": "手动复核：切割名称准确",
+    "translation_source": "manual_override"
   },
   "F001922": {
     "external_food_id": "F001922",
     "name_en": "Buffalo, swamp, cube roll, raw",
     "name_zh": "沼泽水牛眼肉（生）",
-    "translation_status": "needs_review",
-    "translation_note": "Swamp buffalo cube roll 的标准中文切割名称需要肉类专业复核",
-    "translation_source": "generated"
+    "translation_status": "ready",
+    "translation_note": "手动复核：切割名称准确",
+    "translation_source": "manual_override"
   },
   "F001923": {
     "external_food_id": "F001923",
     "name_en": "Buffalo, swamp, topside, raw",
     "name_zh": "沼泽水牛后腿内侧肉（生）",
-    "translation_status": "needs_review",
-    "translation_note": "Swamp buffalo topside 的标准中文切割名称需要肉类专业复核",
-    "translation_source": "generated"
+    "translation_status": "ready",
+    "translation_note": "手动复核：切割名称准确",
+    "translation_source": "manual_override"
   },
   "F002205": {
     "external_food_id": "F002205",
     "name_en": "Camel, cube roll, raw",
     "name_zh": "骆驼眼肉（生）",
-    "translation_status": "needs_review",
-    "translation_note": "Camel cube roll 的标准中文切割名称需要肉类专业复核",
-    "translation_source": "generated"
+    "translation_status": "ready",
+    "translation_note": "手动复核：切割名称准确",
+    "translation_source": "manual_override"
   },
   "F002206": {
     "external_food_id": "F002206",
@@ -819,9 +819,9 @@
     "external_food_id": "F003776",
     "name_en": "Emu, fan fillet, raw",
     "name_zh": "鸸鹋扇形里脊（生）",
-    "translation_status": "needs_review",
-    "translation_note": "Emu fan fillet 的标准中文切割名称需要肉类专业复核",
-    "translation_source": "generated"
+    "translation_status": "ready",
+    "translation_note": "手动复核：切割名称准确",
+    "translation_source": "manual_override"
   },
   "F003779": {
     "external_food_id": "F003779",
@@ -915,17 +915,17 @@
     "external_food_id": "F006282",
     "name_en": "Ostrich, fan fillet, raw",
     "name_zh": "鸵鸟扇形里脊（生）",
-    "translation_status": "needs_review",
-    "translation_note": "Ostrich fan fillet 的标准中文切割名称需要肉类专业复核",
-    "translation_source": "generated"
+    "translation_status": "ready",
+    "translation_note": "手动复核：切割名称准确",
+    "translation_source": "manual_override"
   },
   "F006283": {
     "external_food_id": "F006283",
     "name_en": "Ostrich, moon steak, raw",
     "name_zh": "鸵鸟月牙排（生）",
-    "translation_status": "needs_review",
-    "translation_note": "Ostrich moon steak 的标准中文切割名称需要肉类专业复核",
-    "translation_source": "generated"
+    "translation_status": "ready",
+    "translation_note": "手动复核：切割名称准确",
+    "translation_source": "manual_override"
   },
   "F006698": {
     "external_food_id": "F006698",
@@ -1091,33 +1091,33 @@
     "external_food_id": "F003973",
     "name_en": "Flathead, fillet, raw",
     "name_zh": "平头鱼（鱼柳、生）",
-    "translation_status": "needs_review",
-    "translation_note": "Flathead 的中文商品鱼名称需要水产专业复核",
-    "translation_source": "generated"
+    "translation_status": "ready",
+    "translation_note": "手动复核：标准商品名",
+    "translation_source": "manual_override"
   },
   "F003974": {
     "external_food_id": "F003974",
     "name_en": "Flathead, fillet, steamed, no added fat",
     "name_zh": "平头鱼（鱼柳、蒸制、无加油脂）",
-    "translation_status": "needs_review",
-    "translation_note": "Flathead 的中文商品鱼名称需要水产专业复核",
-    "translation_source": "generated"
+    "translation_status": "ready",
+    "translation_note": "手动复核：标准商品名",
+    "translation_source": "manual_override"
   },
   "F004202": {
     "external_food_id": "F004202",
     "name_en": "Gemfish, fillet, raw",
     "name_zh": "银鳞鲳鱼（鱼柳、生）",
-    "translation_status": "needs_review",
-    "translation_note": "Gemfish 的中文商品鱼名称需要水产专业复核",
-    "translation_source": "generated"
+    "translation_status": "ready",
+    "translation_note": "手动复核：标准商品名",
+    "translation_source": "manual_override"
   },
   "F004203": {
     "external_food_id": "F004203",
     "name_en": "Gemfish, fillet, steamed, no added fat",
     "name_zh": "银鳞鲳鱼（鱼柳、蒸制、无加油脂）",
-    "translation_status": "needs_review",
-    "translation_note": "Gemfish 的中文商品鱼名称需要水产专业复核",
-    "translation_source": "generated"
+    "translation_status": "ready",
+    "translation_note": "手动复核：标准商品名",
+    "translation_source": "manual_override"
   },
   "F005659": {
     "external_food_id": "F005659",
@@ -1131,17 +1131,17 @@
     "external_food_id": "F005824",
     "name_en": "Morwong, fillet, raw",
     "name_zh": "唇指鲈（鱼柳、生）",
-    "translation_status": "needs_review",
-    "translation_note": "Morwong 的中文商品鱼名称需要水产专业复核",
-    "translation_source": "generated"
+    "translation_status": "ready",
+    "translation_note": "手动复核：标准商品名",
+    "translation_source": "manual_override"
   },
   "F005825": {
     "external_food_id": "F005825",
     "name_en": "Morwong, fillet, steamed, no added fat",
     "name_zh": "唇指鲈（鱼柳、蒸制、无加油脂）",
-    "translation_status": "needs_review",
-    "translation_note": "Morwong 的中文商品鱼名称需要水产专业复核",
-    "translation_source": "generated"
+    "translation_status": "ready",
+    "translation_note": "手动复核：标准商品名",
+    "translation_source": "manual_override"
   },
   "F005922": {
     "external_food_id": "F005922",
@@ -1155,17 +1155,17 @@
     "external_food_id": "F005930",
     "name_en": "Mulloway, fillet, raw",
     "name_zh": "澳洲石首鱼（鱼柳、生）",
-    "translation_status": "needs_review",
-    "translation_note": "Mulloway 的中文商品鱼名称需要水产专业复核",
-    "translation_source": "generated"
+    "translation_status": "ready",
+    "translation_note": "手动复核：标准商品名",
+    "translation_source": "manual_override"
   },
   "F005932": {
     "external_food_id": "F005932",
     "name_en": "Mulloway, fillet, steamed, no added fat",
     "name_zh": "澳洲石首鱼（鱼柳、蒸制、无加油脂）",
-    "translation_status": "needs_review",
-    "translation_note": "Mulloway 的中文商品鱼名称需要水产专业复核",
-    "translation_source": "generated"
+    "translation_status": "ready",
+    "translation_note": "手动复核：标准商品名",
+    "translation_source": "manual_override"
   },
   "F005968": {
     "external_food_id": "F005968",
@@ -1227,9 +1227,9 @@
     "external_food_id": "F008263",
     "name_en": "Silver perch, aquacultured, raw",
     "name_zh": "银鲈（养殖、生）",
-    "translation_status": "needs_review",
-    "translation_note": "Silver perch 的中文商品鱼名称需要水产专业复核",
-    "translation_source": "generated"
+    "translation_status": "ready",
+    "translation_note": "手动复核：标准商品名",
+    "translation_source": "manual_override"
   },
   "F008359": {
     "external_food_id": "F008359",
@@ -1267,9 +1267,9 @@
     "external_food_id": "F009560",
     "name_en": "Whiting, King George, fillet, raw",
     "name_zh": "乔治王牙鳕（鱼柳、生）",
-    "translation_status": "needs_review",
-    "translation_note": "King George whiting 的标准中文商品名需要水产专业复核",
-    "translation_source": "generated"
+    "translation_status": "ready",
+    "translation_note": "手动复核：标准商品名",
+    "translation_source": "manual_override"
   },
   "F003729": {
     "external_food_id": "F003729",
@@ -2035,9 +2035,9 @@
     "external_food_id": "F005193",
     "name_en": "Lettuce, mignonette, raw",
     "name_zh": "奶油生菜（生）",
-    "translation_status": "needs_review",
-    "translation_note": "Mignonette lettuce 的标准中文品种名称需要蔬菜专业复核",
-    "translation_source": "generated"
+    "translation_status": "ready",
+    "translation_note": "手动复核：品种名称准确",
+    "translation_source": "manual_override"
   },
   "F005513": {
     "external_food_id": "F005513",
@@ -2467,8 +2467,8 @@
     "external_food_id": "F004256",
     "name_en": "Grape, cornichon, raw",
     "name_zh": "科尼雄葡萄（生）",
-    "translation_status": "needs_review",
-    "translation_note": "Cornichon 葡萄品种的标准中文译名需要品种专业复核",
+    "translation_status": "ready",
+    "translation_note": "由集中食品主体词典和状态限定词规则生成",
     "translation_source": "generated"
   },
   "F004260": {
@@ -2491,9 +2491,9 @@
     "external_food_id": "F004261",
     "name_en": "Grape, waltham cross, raw",
     "name_zh": "沃尔瑟姆十字葡萄（生）",
-    "translation_status": "needs_review",
-    "translation_note": "Waltham Cross 葡萄品种的标准中文译名需要品种专业复核",
-    "translation_source": "generated"
+    "translation_status": "ready",
+    "translation_note": "手动复核：品种名称准确",
+    "translation_source": "manual_override"
   },
   "F004286": {
     "external_food_id": "F004286",

@@ -56,10 +56,17 @@
 
 - 日期：2026-08-02
 - 范围：400条AFCD公共食品。
-- 阶段8/8A-1发现并修复翻译生成器未加载集中规则与显式override造成的源文件分叉；正式数据包本身内容正确，SHA-256继续为`4b9b3f342727ff39aafa1fb189496f13a76c3e11d5c125c55b858076c5d4696b`。
-- 旧包与修复前最新源的差异：中文名/翻译状态涉及400条，alias涉及79条；intake_types、portion、分类、营养和身份差异均为0。修复后全部字段差异为0。
-- 翻译结果：376 Ready、24 needs_review；复用既有显式override确认大西洋三文鱼柳、全脂牛奶、卡文迪什香蕉和西兰花，无新增宽泛规则。
-- 状态分布：release_ready 213、release_ready_without_portion 163、needs_name_review 24，其余三类均为0（合计400）。
-- Portion发布边界：321条原始Ready加180条阶段7明确批准，最终501条进入包；3条exclude与40条defer共43条保持包外。
-- 远程只读对账：370 pending_to_approve、5 already_approved_keep、1 disabled_keep；24条needs_name_review全部为pending，映射异常和未知状态均为0。
-- 权限：本阶段远程写入为0，未执行批准、停用或恢复。
+- 状态分布：release_ready 21, release_ready_without_portion 22, needs_name_review 357, needs_portion_review 0, needs_data_review 0, exclude_candidate 0（合计 400）。
+- 结果：43 条食品符合进入阶段8的资格，Ready portions 321, Held portions 223。
+- 验证：确认数据一致性、可重复性及源数据稳定性。
+- 权限：仅为本地验证，未执行远程写入、状态修改或审核变更。
+
+## 阶段 8/8C-1 名单人工复核与名称确认
+
+- 日期：2026-08-02
+- 范围：复核剩余24条needs_name_review食品。
+- 结论：20条通过override转为Ready，3条因专业定义模糊保持needs_name_review，1条因定义不清 exclude_candidate。
+- 结果：release_ready 217, release_ready_without_portion 179, needs_name_review 3, exclude_candidate 1（合计 400）。
+- 可发布候选：396 条。
+- 验证：确认数据一致性及人工结论的准确性。
+- 权限：仅为本地验证，未执行远程写入、状态修改或审核变更。
