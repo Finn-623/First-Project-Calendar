@@ -38,6 +38,19 @@
 - 权限结果：匿名和通过正式username-login登录的非管理员普通用户均无法读取pending foods、aliases、portions和import audit；服务端可读取两次completed审计且计数与实际数据一致。
 - 测试结果：导入/Migration/RLS/归档/批次门禁99项Node测试、五项数据集验证、前端31套件210测试全部通过；Production Build成功，仅保留既有`fs.F_OK`弃用警告。
 
+## 阶段8/8B正式远程受控发布
+
+- 日期：2026-08-02。
+- 写入前分组：370条pending_to_approve、5条already_approved_keep、1条disabled_keep、24条needs_name_review pending；异常映射和未知状态均为0。
+- 固定批次：按external_id升序拆为8批，数量为50、50、50、50、50、50、50、20；所有UUID唯一。
+- 审核结果：8批合计370 success、0 skipped、0 failed；新增370条pending→approved审核事件，审核事件总数379。
+- 最终状态：AFCD pending 24、approved 375、disabled 1；24条名称待审均未发布，F001905西兰花保持disabled。
+- Portion边界：远程继续包含501条最终Ready portion；阶段7的3条exclude和40条defer共43条Held portion保持包外。普通用户可读取已批准食品关联的483条portion；无portion食品仍可按克记录。
+- Alias边界：远程100条公共alias保持不变；普通用户可读取已批准食品关联的99条，隐藏食品alias不反向泄露。
+- 权限验收：匿名与普通账号仅能读取375条approved active食品，不能读取审核事件或调用审核RPC；管理员可读取全部400条及审核事件并执行RPC；service role仅受控读取且不能冒充管理员审核。
+- 完整性：重复foods/aliases/portions、孤立aliases/portions、负数营养和糖类关系违规均为0；总foods保持402，2条legacy、1条个人食品和历史食品快照未改变。
+- 测试结果：Migration 027专项6/6、导入/Migration/RLS/归档契约105/105、前端32套件219测试、最终数据包与四项数据集验证全部通过；Production Build成功，仅保留既有`fs.F_OK`弃用警告。
+
 
 ## 阶段 7/8 综合质量验证
 

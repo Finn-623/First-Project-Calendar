@@ -1,3 +1,33 @@
+## DEV-20260802-002
+
+- 日期：2026-08-02
+- 状态：已完成
+- 修改类型：Production data release / v0.2.1 公共食品受控发布
+- 任务目标：完成阶段 8/8B，使用真实管理员 session 和 `review_public_foods` RPC，将370条无阻断发布候选按固定小批次批准，并完成远程权限、审计、完整性、测试与构建验收。
+- 实际完成内容：
+	- 写入前重跑发布准备、翻译、摄入类型、AUSNUT份量及最终400条数据包验证；结果保持release_ready 213、release_ready_without_portion 163、needs_name_review 24，Ready/Held portion为501/43。
+	- 远程只读门禁确认AFCD为pending 394、approved 5、disabled 1；目标分组为370 pending_to_approve、5 already_approved_keep、1 disabled_keep，映射异常与未知状态为0。管理员角色由服务端确认为admin，普通账号非admin；匿名、普通账号及service role均不能调用审核RPC。
+	- 将370条目标按external_id升序固定拆分为8批，前7批各50条、第8批20条；每批UUID唯一且不包含24条needs_name_review、既有5条approved或disabled西兰花F001905。
+	- 使用真实管理员session严格串行调用`review_public_foods`；8批结果依次为50/50/0/0、50/50/0/0、50/50/0/0、50/50/0/0、50/50/0/0、50/50/0/0、50/50/0/0、20/20/0/0（requested/success/skipped/failed）。
+	- 新增370条pending→approved审核事件，全部记录真实管理员、审核时间和统一备注；最终审核事件总数379。
+	- 最终AFCD状态为pending 24、approved 375、disabled 1；24条名称待审全部保持pending，F001905保持disabled。
+	- 匿名与普通用户各只能读取375条approved且active的AFCD食品，隐藏食品对应alias和portion均不可见，审核事件读取被拒绝；管理员可读取400条AFCD及379条审核事件，service role可受控读取但不能冒充管理员调用审核RPC。
+	- 远程100条aliases与501条portions保持不变；普通用户可见99条aliases与483条portions，43条包外Held portion仍未进入数据库；无portion候选继续支持按克记录。
+	- 重复foods/aliases/portions、孤立aliases/portions、负数营养及糖类约束违规均为0；总foods保持402，2条legacy、1条个人食品和历史食品快照哈希均未变化。
+- 遇到的问题：长时远程执行的终端输出在第4批后暂时中断显示，但执行进程继续完成了剩余批次。
+- 解决方式：未重跑任何已完成批次；先通过只读查询确认最终状态与379条审计，再从执行结果文件核对8批逐批统计，并独立重跑最终权限、快照和完整性验收。
+- 执行的测试：
+	- Migration 027专项：`node --test supabase/migrations/027_public_food_review_workflow.test.mjs`。
+	- 导入、Migration/RLS、归档契约：`node --test frontend/scripts/import-foods/*.test.mjs supabase/migrations/*.test.mjs supabase/functions/auto-archive-records/migration.test.mjs supabase/functions/auto-archive-records/handler.test.mjs`。
+	- 最终数据包、发布准备、翻译、摄入类型及AUSNUT份量验证脚本。
+	- `cd frontend && CI=true npm test -- --runInBand --watchAll=false`。
+	- `cd frontend && npm run build`。
+	- 远程逐批及最终多角色权限、审计、数据完整性与历史快照只读验收；`git diff --check`。
+- 测试结果：Migration 027专项6/6、完整契约105/105、前端32套件219测试全部通过；全部数据集验证通过；Production Build成功。仅保留既有Supabase依赖使用Node `fs.F_OK`的弃用警告。
+- 未完成事项：24条专业名称仍需人工复核，审核前端尚未部署Production；旧Legacy API Keys仍待后台依赖检查后安全停用。
+- 风险或注意事项：375条已批准食品现已对匿名和普通用户开放读取；本阶段没有恢复disabled食品、没有批准名称待审食品，也没有修改食品内容。`docs/ROADMAP.md`用户既有修改未触碰且不纳入提交。
+- Git Commit ID：由本独立提交承载，不自引用其自身哈希；最终完整ID以Git历史及任务汇报为准。
+
 ## DEV-20260802-001
 
 - 日期：2026-08-02

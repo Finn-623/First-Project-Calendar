@@ -86,9 +86,16 @@
 ## 7. 当前限制与风险
 - **翻译阻断**：24条专业名称仍需人工复核，不得进入发布批次。
 - **份量暂缓**：43条exclude/defer portion不在正式包内；用户只能使用501条最终可发布份量或直接输入克数。
-- **远程状态**：阶段8/8A-1只读对账为370 pending、5 approved、1 disabled；本报告修正未执行任何远程状态写入。
+- **远程状态**：阶段8/8B已将370条无阻断pending候选按8批（50×7+20）批准；最终为375 approved、24 pending、1 disabled。24条名称待审未发布，F001905保持disabled。
+
+### 阶段8/8B远程发布验收
+
+- 8批审核均为全量成功、0 skipped、0 failed，新增370条pending→approved审核事件。
+- 匿名与普通用户仅能读取375条approved active食品；隐藏食品及其alias、portion和审核事件均不泄露。
+- 远程501条最终Ready portion与正式包完全一致；43条Held portion仍未进入数据库。
+- 重复foods/aliases/portions、孤立aliases/portions、非法营养和糖约束违规均为0；历史快照、legacy食品与个人食品保持不变。
 
 ## 8. 安全与合规性声明
 - 本报告及对应 JSON 文件中不包含任何密钥、JWT、密码或个人用户信息。
-- 本阶段所有操作均为本地只读验证及静态生成，未修改远程数据库，未执行 commit 或 push。
+- 阶段8/8B只通过管理员专用审核RPC修改370条候选的审核状态并写入对应审计；未修改食品内容、未恢复disabled食品、未批准needs_name_review食品。
 - `docs/ROADMAP.md` 保持原有状态，未做任何修改。
