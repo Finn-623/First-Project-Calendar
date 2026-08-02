@@ -14,8 +14,8 @@
 - 当前Phase：Phase 1（完整饮食管理 App）
 - 当前正式版本：v0.1.3 — 基础记录闭环与稳定性收尾，已于 2026-07-28 15:55:36（Australia/Sydney）正式上线。
 - 当前开发版本：v0.2.1 — 公共食品数据库。
-- 当前状态：v0.2.1 阶段8C-3B3A已完成；管理员审核机制和Migration 027已部署，正式验证后AFCD为pending 394、approved 5、disabled 1。
-- 判断结论：正式数据库仍为402条foods；5条跨分类AFCD食品已受控发布，其余394条尚待人工审核，审核前端尚未部署Production。
+- 当前状态：v0.2.1 阶段8/8A-1已完成；正式食品包生成链已与最新阶段3–7源文件统一，管理员审核机制和Migration 027已部署，远程AFCD仍为pending 394、approved 5、disabled 1。
+- 判断结论：正式数据库仍为402条foods；统一发布准备结果为376条候选和24条名称待审，远程现有5条approved与1条disabled均已解释并属于候选，尚未执行新增批准，审核前端尚未部署Production。
 
 ### 判断原因
 
@@ -66,6 +66,9 @@
 - `已完成（管理员页面）` `/library/review`支持pending默认视图、状态/分类/关键词筛选、20条分页、详情、单条/小批量批准或停用、确认和防重复。
 - `已完成（正式验证）` 跨谷物、肉类、水产、奶制品、蔬菜、水果批准6条后停用西兰花；最终pending/approved/disabled为394/5/1，审核事件9条。
 - `已确认（发布权限）` 普通用户批准前不可见、批准后可见、停用后不可见；aliases和portions跟随本体，历史快照未改变。
+- `已完成（发布源一致性）` 阶段8/8A-1恢复确定性翻译生成器并复用集中规则与显式override；400条翻译为376 Ready、24 needs_review，正式包仍保持原SHA-256，和远程400条数据逐字段一致。
+- `已完成（发布准备重算）` release_ready 213、release_ready_without_portion 163、needs_name_review 24，其余状态均为0；阶段7最终包包含501条可发布portion，43条exclude/defer份量保持包外。
+- `已确认（远程只读对账）` 376条候选分为370 pending、5 approved、1 disabled；24条needs_name_review全部为remote pending，不再存在未解释的remote approved或disabled。本阶段远程写入为0。
 - `未完成` 剩余394条人工审核和审核前端Production部署。
 - `待处理（安全）` 旧Legacy API Keys尚未停用，必须先完成后台依赖检查；当前服务端与前端已切换至新凭据，正式核心页面验证正常。
 - `未开始` 食品搜索页面与完整 v0.2.1 UI。
@@ -742,9 +745,8 @@ P2：
 - Pending: stage 7 final import JSON, manual review resolution, database integration, and dynamic database validation.
 
 ## v0.2.1 Status Update (2026-08-02)
-- 阶段 7/8 完成：400条AFCD公共食品综合质量验证。
-- 状态分布：release_ready 21, release_ready_without_portion 22, needs_name_review 357, needs_portion_review 0, needs_data_review 0, exclude_candidate 0（合计 400）。
-- Ready portions 321, Held portions 223。
-- 43 条 Ready 状态食品符合进入阶段8的资格。
-- 确认数据一致性、可重复性及源数据稳定性；仅为本地验证，未执行远程写入或审核变更。
-
+- 阶段8/8A-1完成：修复翻译生成器未加载集中规则与override造成的发布源分叉。
+- 状态分布：release_ready 213、release_ready_without_portion 163、needs_name_review 24、needs_portion_review 0、needs_data_review 0、exclude_candidate 0（合计400）。
+- 阶段7最终发布边界为501条Ready portions；3条exclude与40条defer共43条Held portions未进入正式包。
+- 376条食品符合进入阶段8的资格；远程只读对账为370 pending、5 approved、1 disabled，24条名称待审全部保持pending。
+- 正式数据包SHA-256及内容未变化；仅修复生成源与审计哈希。本阶段未执行远程写入或审核变更。

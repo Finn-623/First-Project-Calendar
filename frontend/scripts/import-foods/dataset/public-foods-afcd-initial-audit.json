@@ -426,7 +426,7 @@
     "frontend/scripts/import-foods/dataset/afcd-initial-selection.json": "2232fb8be78f746550536ed09475853e8c66cbe7aa885b9c96d47a9841a020b9",
     "frontend/scripts/import-foods/dataset/food-name-translations.json": "bafe02957f81dd95e30920ec7cb7b779b9f7af5f619ac9b4da223217155b4bcb",
     "frontend/scripts/import-foods/dataset/food-public-aliases.json": "0eb970ed8e8a393b9c9c5ef4acbec2587b322bd76e6929a025c29e898ce3f132",
-    "frontend/scripts/import-foods/dataset/food-intake-types.json": "dfe82d27c2138b2a0eb5ffb190ab878f72b19ff04b9870abf34a31299ae23b7f",
+    "frontend/scripts/import-foods/dataset/food-intake-types.json": "10ec7e369b3d48fbedd7adcd0a01dbf2a72e08f2a5faf2770a216c8ac8d9ff68",
     "frontend/scripts/import-foods/dataset/food-portions.json": "ad6e13412012fe7c81f68f9b21ade2e66af3ef10c858ba205036ab905057af16",
     "/Users/finn/Downloads/food-data-work/afcd-release-3.normalized.json": "2b6b09991c861dc74bd1bee1bce4ebc83927d9d6d196c90e4376f1334385402a",
     "/Users/finn/Downloads/AUSNUT 2023 - Food measures.xlsx": "58bee1204610efb72bb831dc7fb65acc23db540b51d056f83c6ac0ce84590475"

@@ -1,3 +1,33 @@
+## DEV-20260802-001
+
+- 日期：2026-08-02
+- 状态：已完成
+- 修改类型：v0.2.1 公共食品发布数据源一致性修复
+- 任务目标：完成阶段 8/8A-1，恢复单一、确定性的正式食品包生成链，逐条复核4条既有审核食品，并重新完成远程只读发布对账；不执行远程状态写入。
+- 实际完成内容：
+	- 查明 `public-foods-afcd-initial.json` 由 `generate-final-public-foods.mjs` 生成；输入为候选选择、中文翻译、公共别名、摄入类型、AUSNUT份量、AFCD标准化源文件和阶段7份量裁决规则。
+	- 定位到 `e179c6e` 中的简化翻译生成器没有加载既有 `translation-rules.mjs` 与 `TRANSLATION_OVERRIDES`，导致最新翻译源退化为43 Ready/357 needs_review，而正式导入包仍保留此前正确的376 Ready/24 needs_review。
+	- 修复生成器并恢复严格翻译验证；重新生成400条翻译与别名后为376 Ready、24 needs_review、100条aliases，全部中文名称不包含未处理英文占位。
+	- 复用既有显式override逐条确认 F007827 大西洋三文鱼柳、F005634 全脂牛奶、F000262 卡文迪什香蕉、F001905 西兰花，四条均为 `translation_ready_override`，名称与AFCD英文原名、状态限定和远程现状一致。
+	- 重新生成正式数据包两次，食品包SHA-256仍为`4b9b3f342727ff39aafa1fb189496f13a76c3e11d5c125c55b858076c5d4696b`；新旧包逐食品的名称、aliases、intake_types、portions、分类、营养和身份差异均为0，仅审计文件中的输入哈希随已修复源文件更新。
+	- 发布准备改为读取阶段7最终包边界：501条已确认可发布portion计为Ready，3条exclude及40条defer共43条保持包外Held；不再把已裁决的223条原始needs_review全部当成未解决风险。
+	- 新发布准备统计为release_ready 213、release_ready_without_portion 163、needs_name_review 24，其余三类均为0；可进入阶段8候选共376条。
+	- 远程只读对账确认pending_to_approve 370、already_approved_keep 5、disabled_keep 1、映射异常和未知状态均为0；24条needs_name_review全部为remote pending，remote approved/disabled均为0。
+	- 远程400条AFCD与统一包逐字段一致；100 aliases、501 portions、9条审核事件、重复及孤立关系均保持不变。普通用户与匿名用户只读取5条approved食品，pending/disabled及其附属数据未泄露。
+- 遇到的问题：首次重跑AUSNUT契约验证时，审计快照仍嵌入退化翻译名称，确定性比较失败。
+- 解决方式：使用相同阶段3–6源文件重新生成AUSNUT审计；确认 `food-portions.json` 内容与SHA-256完全不变，再重跑验证通过。
+- 执行的测试：
+	- `verify-translations.mjs`、`verify-intake-types.mjs`、`verify-ausnut-portions.mjs`。
+	- `verify-final-public-foods.mjs`、`generate-food-release-readiness.mjs`、`verify-food-release-readiness.mjs`。
+	- 正式数据包连续生成两次SHA-256一致性检查。
+	- `node --test frontend/scripts/import-foods/*.test.mjs`。
+	- 正式远程食品、aliases、portions、审核事件、RLS与审核RPC零写入只读对账。
+	- `git diff --check`。
+- 测试结果：翻译、摄入类型、AUSNUT份量、最终400条数据包和发布准备验证全部通过；import-foods 53/53通过；远程只读对账与权限门禁通过。未修改应用运行代码，因此未运行前端全量测试或Build。
+- 未完成事项：尚未批准370条pending候选；24条名称待审食品继续保持pending；未部署前端或执行其他远程变更。
+- 风险或注意事项：西兰花保持disabled，不得自动恢复；后续批准需按审核RPC每批最多50条执行。`docs/ROADMAP.md`用户既有修改未触碰且不纳入提交。
+- Git Commit ID：由本独立提交承载，不自引用其自身哈希；最终完整ID以Git历史及任务汇报为准。
+
 ## DEV-20260731-007
 
 - 日期：2026-07-31
@@ -5081,9 +5111,9 @@
     - 验证阶段3–6五个源文件哈希值未变化。
     - 运行全套验证脚本，全部通过。
 - 验证结果：
-    - 状态分布：release_ready 21, release_ready_without_portion 22, needs_name_review 357, needs_portion_review 0, needs_data_review 0, exclude_candidate 0（合计 400）。
-    - 可进入阶段8候选 43 条。
-    - Portion统计：Ready 321, Held 223。
+    - 本记录最初写入的43 Ready/357 needs_review统计后来在DEV-20260802-001确认来自未加载集中规则与override的退化翻译生成器，不能继续作为发布依据。
+    - 修正后状态：release_ready 213、release_ready_without_portion 163、needs_name_review 24，其余三类均为0（合计400）。
+    - 可进入阶段8候选376条；最终包内Ready portions 501，包外exclude/defer portions 43。
 - 本阶段Commit ID：ba10d44e176c2a9454b65bd102a6fabeae13768a
 
 ## 2026-07-31: Finalize AFCD Dataset (v0.2.1)

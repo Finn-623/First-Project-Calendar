@@ -5,8 +5,10 @@ async function verify() {
   const selection = JSON.parse(await readFile('frontend/scripts/import-foods/dataset/afcd-initial-selection.json', 'utf8')).selection;
   const translations = JSON.parse(await readFile('frontend/scripts/import-foods/dataset/food-name-translations.json', 'utf8'));
   const intakeTypes = JSON.parse(await readFile('frontend/scripts/import-foods/dataset/food-intake-types.json', 'utf8'));
-  const portionsData = JSON.parse(await readFile('frontend/scripts/import-foods/dataset/food-portions.json', 'utf8'));
+  const finalFoods = JSON.parse(await readFile('frontend/scripts/import-foods/dataset/public-foods-afcd-initial.json', 'utf8'));
+  const portionDecisions = JSON.parse(await readFile('frontend/scripts/import-foods/dataset/portion-review-decisions.json', 'utf8'));
   const readiness = JSON.parse(await readFile('frontend/scripts/import-foods/dataset/food-release-readiness.json', 'utf8'));
+  const finalFoodMap = new Map(finalFoods.map((food) => [food.external_food_id, food]));
 
   // 1. Total count
   assert.equal(readiness.length, 400, 'Total foods should be 400');
@@ -41,9 +43,10 @@ async function verify() {
     }
 
     // 10. Portion counts
-    const expectedPortions = portionsData[item.external_id] || [];
-    const expectedReady = expectedPortions.filter(p => p.review_status === 'ready').length;
-    const expectedHeld = expectedPortions.length - expectedReady;
+    const expectedReady = finalFoodMap.get(item.external_id)?.portions.length || 0;
+    const expectedHeld = portionDecisions.filter(
+      (decision) => decision.external_food_id === item.external_id && decision.decision !== 'approve'
+    ).length;
     assert.equal(item.ready_portion_count, expectedReady, `Ready portion mismatch for ${item.external_id}`);
     assert.equal(item.held_portion_count, expectedHeld, `Held portion mismatch for ${item.external_id}`);
 
@@ -75,7 +78,7 @@ async function verify() {
   // 5. Total 400
   assert.equal(Object.values(stats).reduce((a, b) => a + b, 0), 400, 'Sum of stats should be 400');
 
-  // 8. 43 Ready name foods check
+  // 8. Every Ready name must be a release candidate.
   const readyNameIds = Object.entries(translations)
     .filter(([id, t]) => t.translation_status === 'ready')
     .map(([id, t]) => id);
@@ -86,7 +89,7 @@ async function verify() {
       `Ready name food ${id} should be in release candidate, but is ${item.final_status}`);
   }
 
-  // 9. 357 Needs review blocked
+  // 9. Every name still awaiting review remains blocked.
   const needsReviewIds = Object.entries(translations)
     .filter(([id, t]) => t.translation_status === 'needs_review')
     .map(([id, t]) => id);
@@ -101,8 +104,12 @@ async function verify() {
   // 11/12. Global portion stats
   const totalReadyPortions = readiness.reduce((a, b) => a + b.ready_portion_count, 0);
   const totalHeldPortions = readiness.reduce((a, b) => a + b.held_portion_count, 0);
-  assert.equal(totalReadyPortions, 321, 'Total ready portions mismatch');
-  assert.equal(totalHeldPortions, 223, 'Total held portions mismatch');
+  assert.equal(totalReadyPortions, 501, 'Total publishable portions mismatch');
+  assert.equal(totalHeldPortions, 43, 'Total held portions mismatch');
+
+  for (const id of ['F007827', 'F005634', 'F000262', 'F001905']) {
+    assert.equal(readinessMap.get(id).proposed_action, 'approve', `${id} reviewed name should be ready`);
+  }
 
   console.log('--- Verification Stats ---');
   console.log(stats);

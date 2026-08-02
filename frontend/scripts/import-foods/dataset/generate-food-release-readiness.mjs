@@ -1,13 +1,11 @@
 import { readFile, writeFile } from 'node:fs/promises';
-import { createHash } from 'node:crypto';
 
 async function generate() {
   const selection = JSON.parse(await readFile('frontend/scripts/import-foods/dataset/afcd-initial-selection.json', 'utf8')).selection;
   const translations = JSON.parse(await readFile('frontend/scripts/import-foods/dataset/food-name-translations.json', 'utf8'));
   const intakeTypes = JSON.parse(await readFile('frontend/scripts/import-foods/dataset/food-intake-types.json', 'utf8'));
-  const aliases = JSON.parse(await readFile('frontend/scripts/import-foods/dataset/food-public-aliases.json', 'utf8'));
-  const portionsData = JSON.parse(await readFile('frontend/scripts/import-foods/dataset/food-portions.json', 'utf8'));
   const consolidatedFoods = JSON.parse(await readFile('frontend/scripts/import-foods/dataset/public-foods-afcd-initial.json', 'utf8'));
+  const portionDecisions = JSON.parse(await readFile('frontend/scripts/import-foods/dataset/portion-review-decisions.json', 'utf8'));
 
   const foodsMap = new Map(consolidatedFoods.map(f => [f.external_food_id, f]));
   const results = [];
@@ -18,8 +16,10 @@ async function generate() {
     const food = foodsMap.get(id);
     const trans = translations[id];
     const intake = intakeTypes[id] || [];
-    const alias = aliases[id] || [];
-    const portions = portionsData[id] || [];
+    const portions = food?.portions || [];
+    const heldPortions = portionDecisions.filter(
+      (decision) => decision.external_food_id === id && decision.decision !== 'approve'
+    );
 
     const blocking_reasons = [];
     const warning_reasons = [];
@@ -28,7 +28,6 @@ async function generate() {
     let classification_status = 'ok';
     let intake_type_status = 'ok';
     let alias_status = 'ok';
-    let portion_overall_status = 'ok';
 
     // 1. Name & Identity
     if (!trans || trans.translation_status !== 'ready') {
@@ -92,19 +91,10 @@ async function generate() {
     }
 
     // 5. Portions
-    let ready_portion_count = 0;
-    let held_portion_count = 0;
-    for (const p of portions) {
-      if (p.review_status === 'ready') {
-        ready_portion_count++;
-      } else {
-        held_portion_count++;
-        if (p.review_note === 'abnormal_weight' || p.review_note === 'conflicting_measure') {
-           portion_overall_status = 'needs_review';
-           // Only block if it looks like a systematic error, for now we just flag it
-        }
-      }
-    }
+    // Stage 7 is the publication boundary: imported portions are publishable;
+    // excluded/deferred decisions remain held outside the package.
+    const ready_portion_count = portions.length;
+    const held_portion_count = heldPortions.length;
 
     // Determine Final Status
     let final_status = 'release_ready';
@@ -117,11 +107,7 @@ async function generate() {
         final_status = 'needs_data_review';
       }
     } else {
-      if (portion_overall_status !== 'ok') {
-        final_status = 'needs_portion_review';
-      } else if (ready_portion_count === 0 && portions.length > 0) {
-        final_status = 'release_ready_without_portion';
-      } else if (portions.length === 0) {
+      if (portions.length === 0) {
         final_status = 'release_ready_without_portion';
       }
     }
@@ -164,12 +150,12 @@ async function generate() {
     acc[r.final_status] = (acc[r.final_status] || 0) + 1;
     return acc;
   }, {});
-  console.log('--- 43 Ready Name Status Distribution ---');
+  console.log(`--- ${readyNames.length} Ready Name Status Distribution ---`);
   console.log(readyNamesStats);
 
   const needsReviewNames = results.filter(r => translations[r.external_id]?.translation_status === 'needs_review');
   const allNeedsReviewBlocked = needsReviewNames.every(r => r.blocking_reasons.length > 0);
-  console.log('All 357 Needs Review names blocked:', allNeedsReviewBlocked);
+  console.log(`All ${needsReviewNames.length} Needs Review names blocked:`, allNeedsReviewBlocked);
 
   const portionStats = results.reduce((acc, r) => {
     acc.ready += r.ready_portion_count;
