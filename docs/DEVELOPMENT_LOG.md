@@ -1,3 +1,24 @@
+## DEV-20260803-005
+
+- 日期：2026-08-03
+- 状态：代码修复完成，等待用户在最新本地页面进行最终视觉验收
+- 修改类型：P0 Fix / 乐观食品首帧绘制
+- 任务目标：确保食品乐观记录完成一次浏览器绘制后才启动Supabase持久化，消除函数顺序正确但真实视觉仍短暂等待的问题。
+- 实际完成内容：
+	- 确认上一版`void persistOptimisticFood()`会立即同步进入异步函数，并在首个`await`前调用`timelineService.createFoodEntryForMeal`构造Supabase请求；浏览器在当前事件任务结束前没有绘制机会。
+	- `handleFoodConfirm`现在用`flushSync`只提交最小的timeline乐观记录与Sheet关闭状态，不在其中执行网络、重载或复杂业务。
+	- 新增`scheduleAfterPaint`：等待一次`requestAnimationFrame`后再进入下一宏任务，随后才启动Supabase持久化；后台任务不会因TodayPage随后卸载而被组件cleanup取消。
+	- AddFoodSheet原有关闭动画最长300ms，乐观记录虽已在下层DOM中仍会被Sheet与遮罩覆盖；仅对此Sheet取消关闭动画，不改变其他Sheet或Realtime架构。
+	- 临时entry继续直接挂到稳定固定餐次本地ID，渲染不要求remote ID；成功后按既有operation/UUID规则原位替换，失败保留可重试状态。
+- 主要修改文件或模块：`frontend/src/pages/TodayPage.jsx`、`frontend/src/modals/AddFoodSheet.jsx`、`frontend/src/components/ui/sheet.jsx`、`frontend/src/lib/afterPaint.js`及专项测试。
+- 遇到的问题：先前测试只观察Store和函数调用数组，没有断言Supabase未启动时TodayPage DOM已经出现食品和同步更新的汇总，也没有覆盖Sheet退出动画的视觉遮挡。
+- 解决方式：增加真实DOM断言，并把浏览器绘制机会作为远程任务的明确调度边界。
+- 执行的测试：即时绘制/食品持久化/pending合并专项；TodayPage删除、Realtime/Broadcast、日期Store、移动端回归；前端全量测试；Production Build；`git diff --check`。
+- 测试结果：即时绘制专项3套件8项通过；相关回归7套件54项通过；全量37套件238项通过；Production Build成功。测试确认Supabase Promise尚未启动/永久pending时食品与营养汇总已存在于DOM，Sheet已关闭；远程任务只在animation frame及后续task后启动。仅保留既有Supabase测试环境提示、模拟session失败日志和Build `fs.F_OK`弃用警告。
+- 未完成事项：自动化环境无法操作Safari账号或Performance面板，因此未伪造真实设备毫秒测量；仍需用户在已打开的最新本地页面验证点击体感和5–10秒网络延迟情形。Feedback编号6继续保持pending。
+- 风险或注意事项：Migration 028未部署；未修改Realtime跨设备架构、数据库Schema、公共食品数据或审核状态。
+- Git Commit ID：由本独立提交承载；完整ID以Git历史和任务最终汇报为准。
+
 ## DEV-20260803-004
 
 - 日期：2026-08-03

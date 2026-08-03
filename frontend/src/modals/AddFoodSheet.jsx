@@ -112,7 +112,8 @@ export const AddFoodSheet = ({ open, onOpenChange, targetTitle, onConfirm }) => 
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent
         side="bottom"
-        className="rounded-t-3xl border-[#E5E5E0] bg-[#F7F7F5] max-w-md mx-auto p-0 h-[86dvh] max-h-[calc(100dvh-16px)] overflow-hidden"
+        className="rounded-t-3xl border-[#E5E5E0] bg-[#F7F7F5] max-w-md mx-auto p-0 h-[86dvh] max-h-[calc(100dvh-16px)] overflow-hidden data-[state=closed]:duration-0 data-[state=closed]:animate-none"
+        overlayClassName="data-[state=closed]:duration-0 data-[state=closed]:animate-none"
         data-testid="add-food-sheet"
       >
         <div className="flex flex-col h-full">

@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { flushSync } from 'react-dom';
 import { NutritionSummary } from '../components/NutritionSummary';
 import { TimelineItem } from '../components/TimelineItem';
 import { LiveClock } from '../components/LiveClock';
@@ -19,6 +20,7 @@ import { addDaysToDateString, getSydneyDateString } from '../services/historySer
 import { combineLocalDateAndTime, diffSecondsBetween, getLocalDateKey, getLocalTimeInputValue, secondsToDurationMinutes } from '../lib/localDateTime';
 import { useCurrentTime } from '../hooks/useCurrentTime';
 import { beginCreatePerfFlow, markCreatePerf, summarizeCreatePerfFlow } from '../lib/timelineCreatePerf';
+import { scheduleAfterPaint } from '../lib/afterPaint';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -342,13 +344,17 @@ export const TodayPage = () => {
       clientMutationId: operationId,
       sync_status: 'pending',
     };
-    setTimeline((currentTimeline) => currentTimeline.map((item) => (
-      item.id === targetMeal.id
-        ? { ...item, foods: [...(item.foods || []), optimisticFood] }
-        : item
-    )));
-    setFoodSheet({ open: false, target: null });
-    void persistOptimisticFood({ food, targetMeal, operationId, optimisticEntryId });
+    flushSync(() => {
+      setTimeline((currentTimeline) => currentTimeline.map((item) => (
+        item.id === targetMeal.id
+          ? { ...item, foods: [...(item.foods || []), optimisticFood] }
+          : item
+      )));
+      setFoodSheet({ open: false, target: null });
+    });
+    scheduleAfterPaint(() => {
+      void persistOptimisticFood({ food, targetMeal, operationId, optimisticEntryId });
+    });
     return true;
   };
 
@@ -369,7 +375,9 @@ export const TodayPage = () => {
         }
         : item
     )));
-    void persistOptimisticFood({ food: failedFood, targetMeal, operationId, optimisticEntryId });
+    scheduleAfterPaint(() => {
+      void persistOptimisticFood({ food: failedFood, targetMeal, operationId, optimisticEntryId });
+    });
   };
 
   const handleOpenSnackSheet = () => {

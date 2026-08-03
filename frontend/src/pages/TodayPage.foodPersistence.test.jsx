@@ -3,7 +3,10 @@ import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { toast } from 'sonner';
 import { useStore } from '../store';
 import { timelineService } from '../services/timelineService';
+import { scheduleAfterPaint } from '../lib/afterPaint';
 import { TodayPage } from './TodayPage';
+
+const mockScheduledAfterPaintTasks = [];
 
 jest.mock('../store', () => ({ useStore: jest.fn() }));
 jest.mock('../services/timelineService', () => ({
@@ -18,6 +21,9 @@ jest.mock('../services/timelineService', () => ({
   },
 }));
 jest.mock('sonner', () => ({ toast: { success: jest.fn(), error: jest.fn() } }));
+jest.mock('../lib/afterPaint', () => ({
+  scheduleAfterPaint: jest.fn((task) => mockScheduledAfterPaintTasks.push(task)),
+}));
 jest.mock('../hooks/useCurrentTime', () => ({
   useCurrentTime: () => new Date('2026-07-28T23:30:00+10:00'),
 }));
@@ -98,6 +104,8 @@ const mountPage = () => {
 describe('TodayPage 食品记录持久化', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    mockScheduledAfterPaintTasks.splice(0);
+    scheduleAfterPaint.mockImplementation((task) => mockScheduledAfterPaintTasks.push(task));
     setTimeline.mockImplementation((updater) => {
       storeState.timeline = typeof updater === 'function' ? updater(storeState.timeline) : updater;
     });
@@ -129,7 +137,11 @@ describe('TodayPage 食品记录持久化', () => {
   test('数据库写入成功后才使用真实餐次和food entry ID更新页面及汇总', async () => {
     const rendered = mountPage();
     fireEvent.click(screen.getByTestId('add-food-m1-local'));
-    await act(async () => fireEvent.click(screen.getByRole('button', { name: '确认测试食品' })));
+    fireEvent.click(screen.getByRole('button', { name: '确认测试食品' }));
+    expect(screen.getByText('测试燕麦')).toBeTruthy();
+    expect(screen.getByTestId('total-calories').textContent).toBe('190');
+    expect(timelineService.createFoodEntryForMeal).not.toHaveBeenCalled();
+    await act(async () => mockScheduledAfterPaintTasks.shift()());
 
     expect(timelineService.createFoodEntryForMeal).toHaveBeenCalledWith(expect.objectContaining({
       userId: 'user-1',
@@ -155,7 +167,8 @@ describe('TodayPage 食品记录持久化', () => {
     });
     mountPage();
     fireEvent.click(screen.getByTestId('add-food-m1-local'));
-    await act(async () => fireEvent.click(screen.getByRole('button', { name: '确认测试食品' })));
+    fireEvent.click(screen.getByRole('button', { name: '确认测试食品' }));
+    await act(async () => mockScheduledAfterPaintTasks.shift()());
 
     await waitFor(() => expect(toast.error).toHaveBeenCalledWith('数据库写入失败'));
     expect(storeState.timeline[0].id).toBe('m1-local');
@@ -180,11 +193,14 @@ describe('TodayPage 食品记录持久化', () => {
     fireEvent.click(screen.getByRole('button', { name: '确认测试食品' }));
 
     expect(order[0]).toBe('optimistic-store-update');
-    expect(order).toContain('supabase-request-start');
+    expect(order).not.toContain('supabase-request-start');
     expect(storeState.timeline[0].foods).toEqual([
       expect.objectContaining({ name: '测试燕麦', sync_status: expect.stringMatching(/pending|syncing/) }),
     ]);
     expect(screen.queryByRole('button', { name: '确认测试食品' })).toBeNull();
+    expect(screen.getByText('测试燕麦')).toBeTruthy();
+    mockScheduledAfterPaintTasks.shift()();
+    expect(order).toEqual(['optimistic-store-update', 'supabase-request-start']);
   });
 
   test('慢请求期间连续确认只发出一次写入', async () => {
@@ -198,12 +214,14 @@ describe('TodayPage 食品记录持久化', () => {
     fireEvent.click(confirm);
     fireEvent.click(confirm);
 
-    expect(timelineService.createFoodEntryForMeal).toHaveBeenCalledTimes(1);
+    expect(mockScheduledAfterPaintTasks).toHaveLength(1);
+    expect(timelineService.createFoodEntryForMeal).not.toHaveBeenCalled();
     expect(storeState.timeline[0].foods).toEqual([
       expect.objectContaining({ name: '测试燕麦', sync_status: 'pending' }),
     ]);
 
     await act(async () => {
+      mockScheduledAfterPaintTasks.shift()();
       resolveSave({
         data: {
           meal: { id: persistedMealId, type: 'meal', subtype: 'breakfast', title: '早餐', time: '08:00' },
