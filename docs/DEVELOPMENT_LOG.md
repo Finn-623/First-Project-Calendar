@@ -1,3 +1,22 @@
+## DEV-20260803-003
+
+- 日期：2026-08-03
+- 状态：代码完成，Migration待部署，等待双设备人工验收
+- 修改类型：Feature / 多设备时间线实时一致性
+- 任务目标：让同一账号在不同标签、浏览器和设备上的时间线以Supabase为唯一事实来源自动收敛。
+- 实际完成内容：
+	- 新增统一`timelineRealtimeService`，按当前`user_id`订阅`timeline_items`与`food_entries`的INSERT/UPDATE/DELETE；用户切换、退出和Store卸载时关闭旧channel，并以generation防止迟到启动留下订阅。
+	- Realtime或BroadcastChannel事件只触发当前日期40ms合并失效重载；其他日期只清缓存，其他用户直接忽略，避免重复合并和反馈循环。
+	- 增加`first-project-calendar-timeline` BroadcastChannel，同浏览器标签传播带`user_id`、`record_date`、`entity_id`、`operation_id`的变更通知；不支持时降级到Realtime。
+	- 食品新增、食品删除、固定餐次改时和活动修改使用乐观Store更新；成功后以Supabase真实UUID/返回行校准并广播，失败恢复操作前实体并显示错误。快速重复提交继续由既有提交锁拦截。
+	- Migration 028为两张时间线表启用FULL replica identity、加入Realtime publication，并为固定三餐增加`(user_id,event_date,item_type)`部分唯一索引；并发唯一冲突时客户端重新读取既有固定餐次后继续写入食品。
+- 主要修改文件或模块：`frontend/src/services/timelineRealtimeService.js`、`frontend/src/store.jsx`、`frontend/src/pages/TodayPage.jsx`、Migration 028及专项测试。
+- 执行的测试：Realtime/Broadcast/食品持久化/删除/Store专项；Migration 028契约；前端全量测试；Production Build；`git diff --check`。
+- 测试结果：Realtime/Broadcast及相关专项5套件32项通过；Migration 028契约2项通过；最终前端全量35套件233项通过；Production Build成功。首次全量发现Supabase测试mock缺少`channel`导致3项失败，增加无Realtime API环境的安全降级后全量通过。仅保留既有测试环境Supabase变量提示、模拟session失败日志及Build `fs.F_OK`弃用警告。
+- 未完成事项：Migration 028未部署；系统无法自动控制两个真实浏览器账号，仍需用户在两个真实设备完成新增、修改、删除和退出后不再同步的最终验收。Feedback编号6继续保持pending。
+- 风险或注意事项：本阶段不实现IndexedDB/Outbox离线写入；离线失败会回滚，在线状态以Supabase重新加载结果为准。部署Migration 028前必须先确认远程不存在重复固定餐次。
+- Git Commit ID：由本独立提交承载；完整ID以Git历史和任务最终汇报为准。
+
 ## DEV-20260803-002
 
 - 日期：2026-08-03

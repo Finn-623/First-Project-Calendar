@@ -7,6 +7,7 @@ import { authService } from './services/authService';
 import { targetService } from './services/targetService';
 import { addDaysToDateString, getSydneyDateString, getSydneyMidnightDelayMs, historyService } from './services/historyService';
 import { timelineService } from './services/timelineService';
+import { timelineRealtimeService } from './services/timelineRealtimeService';
 import { filterMeaningfulTimelineItems } from './lib/dayRecordUtils';
 
 const StoreContext = createContext(null);
@@ -131,6 +132,8 @@ export const StoreProvider = ({ children, user: initialUser, session: initialSes
   const timelineCacheRef = useRef(new Map());
   const endDaySubmittingRef = useRef(false);
   const logoutCompletedRef = useRef(false);
+  const currentDateRef = useRef(currentDate);
+  const realtimeReloadTimerRef = useRef(null);
 
   const wait = useCallback((ms) => new Promise((resolve) => setTimeout(resolve, ms)), []);
 
@@ -154,6 +157,11 @@ export const StoreProvider = ({ children, user: initialUser, session: initialSes
     privateFoodSeenCountRef.current.clear();
     endDaySubmittingRef.current = false;
     logoutCompletedRef.current = true;
+    if (realtimeReloadTimerRef.current) {
+      window.clearTimeout(realtimeReloadTimerRef.current);
+      realtimeReloadTimerRef.current = null;
+    }
+    void timelineRealtimeService.stop();
 
     const today = getSydneyDateString();
     selectedTodayDateRef.current = today;
@@ -175,6 +183,10 @@ export const StoreProvider = ({ children, user: initialUser, session: initialSes
     setDayInitialized(false);
     setAuthError(null);
   }, []);
+
+  useEffect(() => {
+    currentDateRef.current = currentDate;
+  }, [currentDate]);
 
   /**
    * 清除被删除日期的本地状态。
@@ -910,6 +922,45 @@ export const StoreProvider = ({ children, user: initialUser, session: initialSes
       }
     });
   }, [initializeSelectedDate, loadDayData, scheduleMidnightSync, user?.id]);
+
+  useEffect(() => {
+    const userId = user?.id;
+    if (!userId) {
+      void timelineRealtimeService.stop();
+      return undefined;
+    }
+
+    let disposed = false;
+    const onInvalidate = (message) => {
+      if (disposed || message?.user_id !== userId) return;
+      const activeDate = getSydneyDateString(currentDateRef.current);
+      if (message?.record_date && message.record_date !== activeDate) {
+        timelineCacheRef.current.delete(message.record_date);
+        return;
+      }
+
+      if (realtimeReloadTimerRef.current) window.clearTimeout(realtimeReloadTimerRef.current);
+      realtimeReloadTimerRef.current = window.setTimeout(async () => {
+        const dateToReload = getSydneyDateString(currentDateRef.current);
+        const { data, error } = await timelineService.getTimelineByDate(userId, dateToReload);
+        if (!disposed && !error && getSydneyDateString(currentDateRef.current) === dateToReload) {
+          const nextTimeline = mergePersistedTimelineWithFixedMeals(data);
+          timelineCacheRef.current.set(dateToReload, cloneTimeline(nextTimeline));
+          setTimeline(nextTimeline);
+        }
+      }, 40);
+    };
+
+    void timelineRealtimeService.start({ userId, onInvalidate });
+    return () => {
+      disposed = true;
+      if (realtimeReloadTimerRef.current) {
+        window.clearTimeout(realtimeReloadTimerRef.current);
+        realtimeReloadTimerRef.current = null;
+      }
+      void timelineRealtimeService.stop();
+    };
+  }, [user?.id]);
 
   const signIn = useCallback(async (username, password) => {
     setAuthLoading(true);

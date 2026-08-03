@@ -14,6 +14,7 @@ import { toast } from 'sonner';
 import { showSuccess } from '../lib/notifications';
 import { useStore } from '../store';
 import { timelineService } from '../services/timelineService';
+import { timelineRealtimeService } from '../services/timelineRealtimeService';
 import { addDaysToDateString, getSydneyDateString } from '../services/historyService';
 import { combineLocalDateAndTime, diffSecondsBetween, getLocalDateKey, getLocalTimeInputValue, secondsToDurationMinutes } from '../lib/localDateTime';
 import { useCurrentTime } from '../hooks/useCurrentTime';
@@ -73,6 +74,7 @@ const buildTimelineDisplayItems = (sortedItems, nowMinuteValue, shouldShowNowMar
 
 const WEEKDAY_LABELS = ['一', '二', '三', '四', '五', '六', '日'];
 const DEFAULT_MEAL_TYPES = ['breakfast', 'lunch', 'dinner'];
+const createOperationId = () => `op-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
 
 const getWeekDateStrings = (dateStr) => {
   const [year, month, day] = dateStr.split('-').map(Number);
@@ -278,6 +280,20 @@ export const TodayPage = () => {
     if (!user?.id || !targetMeal || addingFoodGuardRef.current) return false;
 
     addingFoodGuardRef.current = true;
+    const operationId = createOperationId();
+    const optimisticEntryId = `pending-${operationId}`;
+    const optimisticFood = {
+      ...food,
+      entryId: optimisticEntryId,
+      foodEntryId: optimisticEntryId,
+      clientMutationId: operationId,
+      sync_status: 'pending',
+    };
+    setTimeline((currentTimeline) => currentTimeline.map((item) => (
+      item.id === targetMeal.id
+        ? { ...item, foods: [...(item.foods || []), optimisticFood] }
+        : item
+    )));
     try {
       const { data, error } = await timelineService.createFoodEntryForMeal({
         userId: user.id,
@@ -289,20 +305,33 @@ export const TodayPage = () => {
         throw error || new Error('食品记录保存失败');
       }
 
-      setTimeline((currentTimeline) => currentTimeline.map((item) => (
-        item.id === targetMeal.id
-          ? {
-            ...item,
-            ...data.meal,
-            fixed: item.fixed,
-            foods: [...(item.foods || []), data.foodEntry],
-          }
-          : item
-      )));
+      setTimeline((currentTimeline) => currentTimeline.map((item) => {
+        if (item.id !== targetMeal.id && item.id !== data.meal.id) return item;
+        const withoutOptimisticOrDuplicate = (item.foods || []).filter((entry) => (
+          entry.entryId !== optimisticEntryId && entry.entryId !== data.foodEntry.entryId
+        ));
+        return {
+          ...item,
+          ...data.meal,
+          fixed: item.fixed,
+          foods: [...withoutOptimisticOrDuplicate, { ...data.foodEntry, sync_status: 'synced' }],
+        };
+      }));
+      timelineRealtimeService.broadcast({
+        type: 'food_entry_created',
+        user_id: user.id,
+        record_date: currentDateStr,
+        entity_id: data.foodEntry.entryId,
+        operation_id: operationId,
+      });
       setFoodSheet({ open: false, target: null });
       showSuccess(`已添加 ${food.name} 到 ${targetMeal.title}`);
       return true;
     } catch (error) {
+      setTimeline((currentTimeline) => currentTimeline.map((item) => ({
+        ...item,
+        foods: (item.foods || []).filter((entry) => entry.entryId !== optimisticEntryId),
+      })));
       toast.error(error?.message || '食品记录保存失败，请稍后重试');
       return false;
     } finally {
@@ -649,6 +678,8 @@ export const TodayPage = () => {
     setSavingEditItemId(item.id);
 
     const payload = prepareActivityUpdates(item, updates);
+    const operationId = createOperationId();
+    updateTimelineItemInState(item.id, (current) => ({ ...current, ...payload, sync_status: 'pending' }));
 
     try {
       const { data, error } = await timelineService.updateTimelineItem(item.id, payload);
@@ -657,7 +688,14 @@ export const TodayPage = () => {
       }
 
       if (data) {
-        updateTimelineItemInState(item.id, () => data);
+        updateTimelineItemInState(item.id, () => ({ ...data, sync_status: 'synced' }));
+        timelineRealtimeService.broadcast({
+          type: 'meal_updated',
+          user_id: user.id,
+          record_date: currentDateStr,
+          entity_id: data.id || item.id,
+          operation_id: operationId,
+        });
 
         // Event edits should not block on full-history refresh.
         // Keep non-event edits consistent via background sync only.
@@ -668,6 +706,7 @@ export const TodayPage = () => {
 
       showSuccess('记录已更新');
     } catch (error) {
+      updateTimelineItemInState(item.id, () => item);
       toast.error(error?.message || '更新失败，请稍后重试');
       throw error;
     } finally {
@@ -695,6 +734,11 @@ export const TodayPage = () => {
     if (savingEditItemId === item.id || newTime === item.time) return;
 
     setSavingEditItemId(item.id);
+    const previousTime = item.time;
+    const operationId = createOperationId();
+    setTimeline((prev) => prev.map((entry) => (
+      entry.id === item.id ? { ...entry, time: newTime, event_time: newTime, sync_status: 'pending' } : entry
+    )));
     try {
       const result = isLikelySupabaseUuid(item.id)
         ? await timelineService.updateTimelineItemByUser(item.id, user.id, { event_time: newTime })
@@ -712,11 +756,21 @@ export const TodayPage = () => {
 
       setTimeline((prev) => prev.map((entry) => (
         entry.id === item.id
-          ? { ...entry, ...(result.data || {}), foods: entry.foods || [], time: newTime, fixed: true }
+          ? { ...entry, ...(result.data || {}), foods: entry.foods || [], time: newTime, fixed: true, sync_status: 'synced' }
           : entry
       )));
+      timelineRealtimeService.broadcast({
+        type: isLikelySupabaseUuid(item.id) ? 'meal_updated' : 'meal_created',
+        user_id: user.id,
+        record_date: currentDateStr,
+        entity_id: result.data?.id || item.id,
+        operation_id: operationId,
+      });
       showSuccess('时间已更新');
     } catch (error) {
+      setTimeline((prev) => prev.map((entry) => (
+        entry.id === item.id ? { ...entry, time: previousTime, event_time: previousTime, sync_status: 'synced' } : entry
+      )));
       toast.error(error?.message || '时间保存失败，请稍后重试');
       throw error;
     } finally {
@@ -823,26 +877,38 @@ export const TodayPage = () => {
         pendingDeleteFood.foodEntryKey,
         pendingDeleteFood.foodIndex,
       );
+      const rollbackTimeline = timeline;
+      const operationId = createOperationId();
+      setTimeline(nextTimeline);
 
       try {
         if (shouldDeleteMealRow) {
           const { error } = await timelineService.deleteTimelineItemByUser(mealItem.id, user.id);
           if (error) {
+            setTimeline(rollbackTimeline);
             toast.error(error?.message || '删除失败，请稍后重试');
             return;
           }
         } else if (shouldDeleteFoodRow) {
           const { error } = await timelineService.deleteFoodEntry(pendingDeleteFood.foodEntryKey, user.id);
           if (error) {
+            setTimeline(rollbackTimeline);
             toast.error(error?.message || '删除失败，请稍后重试');
             return;
           }
         } else {
+          setTimeline(rollbackTimeline);
           toast.error('食物记录缺少有效标识，请刷新后重试');
           return;
         }
 
-        setTimeline(nextTimeline);
+        timelineRealtimeService.broadcast({
+          type: shouldDeleteMealRow ? 'meal_deleted' : 'food_entry_deleted',
+          user_id: user.id,
+          record_date: currentDateStr,
+          entity_id: shouldDeleteMealRow ? mealItem.id : pendingDeleteFood.foodEntryKey,
+          operation_id: operationId,
+        });
         setDeleteDialogOpen(false);
         setPendingDeleteFood(null);
         setPendingDeleteItem(null);

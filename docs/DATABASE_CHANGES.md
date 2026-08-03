@@ -1,3 +1,18 @@
+## DB-20260803-001
+
+- 日期：2026-08-03
+- 修改原因：多设备实时同步需要DELETE事件携带用户与父记录信息，并必须在数据库层阻止两个设备并发创建重复固定三餐。
+- 实际修改内容：`timeline_items`、`food_entries`设置`REPLICA IDENTITY FULL`并安全加入`supabase_realtime` publication；新增固定三餐部分唯一索引`idx_timeline_items_unique_default_meal`。
+- 涉及表和字段：不新增业务字段；索引键为`timeline_items(user_id,event_date,item_type)`，仅约束`breakfast/lunch/dinner`，不约束`snack`或其他自定义事件。
+- Migration文件路径：`supabase/migrations/028_timeline_realtime_consistency.sql`。
+- 对现有数据的影响：Migration不修改食品、food entry、历史快照或餐次内容；若部署目标已存在重复固定餐次，唯一索引会阻止部署并要求先人工审计，不会自动删除或合并用户记录。
+- 风险：Realtime publication会增加时间线变更事件流量；FULL replica identity会增加DELETE/UPDATE WAL载荷。
+- 回滚方式：使用新Migration移除部分唯一索引、从Realtime publication移除两表并恢复默认replica identity；不得修改已提交Migration 028。
+- 测试内容：静态契约验证两表FULL identity、publication幂等门禁、固定三餐唯一范围及自定义餐次不受约束。
+- 测试结果：契约2项通过；未执行远程Migration或Production写入。
+- 相关DEV编号：`DEV-20260803-003`。
+- 相关Commit ID：由本独立提交承载，完整ID以Git历史和任务最终汇报为准。
+
 ## DB-20260731-004
 
 - 日期：2026-07-31

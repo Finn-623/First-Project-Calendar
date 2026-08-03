@@ -175,6 +175,9 @@ describe('TodayPage 食品记录持久化', () => {
     fireEvent.click(confirm);
 
     expect(timelineService.createFoodEntryForMeal).toHaveBeenCalledTimes(1);
+    expect(storeState.timeline[0].foods).toEqual([
+      expect.objectContaining({ name: '测试燕麦', sync_status: 'pending' }),
+    ]);
 
     await act(async () => {
       resolveSave({
@@ -186,6 +189,12 @@ describe('TodayPage 食品记录持久化', () => {
       });
       await Promise.resolve();
     });
-    await waitFor(() => expect(storeState.timeline[0].foods).toHaveLength(1));
+    await waitFor(() => {
+      expect(storeState.timeline[0].foods).toHaveLength(1);
+      expect(storeState.timeline[0].foods[0]).toEqual(expect.objectContaining({
+        entryId: persistedEntryId,
+        sync_status: 'synced',
+      }));
+    });
   });
 });

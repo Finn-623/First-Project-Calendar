@@ -195,6 +195,7 @@ export const timelineService = {
       }
 
       let persistedMeal = null;
+      const isDefaultMeal = ['breakfast', 'lunch', 'dinner'].includes(itemType);
       if (isLikelySupabaseUuid(meal.id)) {
         const { data: existingMeal, error: existingMealError } = await supabase
           .from('timeline_items')
@@ -208,15 +209,18 @@ export const timelineService = {
         if (!existingMeal) return { data: null, error: new Error('目标餐次不存在，请刷新后重试') };
         persistedMeal = normalizeTimelineItem(existingMeal);
       } else {
-        const { data: existingMeal, error: existingMealError } = await supabase
-          .from('timeline_items')
-          .select('*')
-          .eq('user_id', userId)
-          .eq('event_date', dateStr)
-          .eq('item_type', itemType)
-          .order('created_at', { ascending: true })
-          .limit(1)
-          .maybeSingle();
+        const existingMealResult = isDefaultMeal
+          ? await supabase
+            .from('timeline_items')
+            .select('*')
+            .eq('user_id', userId)
+            .eq('event_date', dateStr)
+            .eq('item_type', itemType)
+            .order('created_at', { ascending: true })
+            .limit(1)
+            .maybeSingle()
+          : { data: null, error: null };
+        const { data: existingMeal, error: existingMealError } = existingMealResult;
 
         if (existingMealError) return { data: null, error: existingMealError };
 
@@ -232,11 +236,24 @@ export const timelineService = {
             details: meal.details || {},
             sort_order: Number.isFinite(Number(meal.sort_order)) ? Number(meal.sort_order) : 0,
           });
-          if (created.error || !created.data?.id) {
+          if (created.error?.code === '23505' && isDefaultMeal) {
+            const retry = await supabase
+              .from('timeline_items')
+              .select('*')
+              .eq('user_id', userId)
+              .eq('event_date', dateStr)
+              .eq('item_type', itemType)
+              .maybeSingle();
+            if (retry.error || !retry.data) {
+              return { data: null, error: retry.error || created.error };
+            }
+            persistedMeal = normalizeTimelineItem(retry.data);
+          } else if (created.error || !created.data?.id) {
             return { data: null, error: created.error || new Error('餐次创建失败') };
+          } else {
+            persistedMeal = created.data;
+            createdMealId = created.data.id;
           }
-          persistedMeal = created.data;
-          createdMealId = created.data.id;
         }
       }
 
