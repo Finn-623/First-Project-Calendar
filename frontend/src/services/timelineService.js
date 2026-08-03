@@ -52,6 +52,22 @@ const mapItemTypeToUi = (itemType) => {
   return { type: 'event' };
 };
 
+const isLikelySupabaseUuid = (value) => typeof value === 'string'
+  && /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(value);
+
+const normalizeFoodEntry = (entry) => ({
+  entryId: entry?.id,
+  foodEntryId: entry?.id,
+  foodId: entry?.source_food_id || null,
+  name: entry?.food_name_snapshot || '',
+  grams: Number(entry?.quantity || 0),
+  unit: entry?.unit_snapshot || 'g',
+  cal: Number(entry?.calories_snapshot || 0),
+  p: Number(entry?.protein_snapshot || 0),
+  f: Number(entry?.fat_snapshot || 0),
+  c: Number(entry?.carbs_snapshot || 0),
+});
+
 const normalizeTimelineItem = (item) => ({
   ...mapItemTypeToUi(item?.item_type || item?.type),
   item_type: item?.item_type || item?.type,
@@ -123,9 +139,155 @@ export const timelineService = {
         .order('event_time', { ascending: true })
         .order('sort_order', { ascending: true });
 
-      return { data: (data || []).map(normalizeTimelineItem), error };
+      if (error) return { data: [], error };
+
+      const timelineRows = data || [];
+      if (timelineRows.length === 0) return { data: [], error: null };
+
+      const { data: foodEntries, error: foodError } = await supabase
+        .from('food_entries')
+        .select('*')
+        .eq('user_id', userId)
+        .in('timeline_item_id', timelineRows.map((item) => item.id))
+        .order('created_at', { ascending: true });
+
+      if (foodError) return { data: [], error: foodError };
+
+      const foodsByTimelineId = new Map();
+      (foodEntries || []).forEach((entry) => {
+        const current = foodsByTimelineId.get(entry.timeline_item_id) || [];
+        current.push(normalizeFoodEntry(entry));
+        foodsByTimelineId.set(entry.timeline_item_id, current);
+      });
+
+      return {
+        data: timelineRows.map((item) => normalizeTimelineItem({
+          ...item,
+          foods: foodsByTimelineId.get(item.id) || [],
+        })),
+        error: null,
+      };
     } catch (err) {
       return { data: [], error: err };
+    }
+  },
+
+  /**
+   * Persist one food entry and ensure its meal exists first. The returned IDs
+   * are the database IDs used by refresh, navigation and later deletion.
+   */
+  async createFoodEntryForMeal({ userId, dateStr, meal, food }) {
+    let createdMealId = null;
+
+    try {
+      if (!userId || !dateStr || !meal || !food) {
+        return { data: null, error: new Error('缺少食品记录保存参数') };
+      }
+
+      const quantity = Number(food.grams);
+      if (!Number.isFinite(quantity) || quantity <= 0) {
+        return { data: null, error: new Error('请输入有效的食品克重') };
+      }
+
+      const itemType = meal.subtype || meal.item_type;
+      if (!['breakfast', 'lunch', 'dinner', 'snack'].includes(itemType)) {
+        return { data: null, error: new Error('目标餐次类型无效') };
+      }
+
+      let persistedMeal = null;
+      if (isLikelySupabaseUuid(meal.id)) {
+        const { data: existingMeal, error: existingMealError } = await supabase
+          .from('timeline_items')
+          .select('*')
+          .eq('id', meal.id)
+          .eq('user_id', userId)
+          .eq('event_date', dateStr)
+          .maybeSingle();
+
+        if (existingMealError) return { data: null, error: existingMealError };
+        if (!existingMeal) return { data: null, error: new Error('目标餐次不存在，请刷新后重试') };
+        persistedMeal = normalizeTimelineItem(existingMeal);
+      } else {
+        const { data: existingMeal, error: existingMealError } = await supabase
+          .from('timeline_items')
+          .select('*')
+          .eq('user_id', userId)
+          .eq('event_date', dateStr)
+          .eq('item_type', itemType)
+          .order('created_at', { ascending: true })
+          .limit(1)
+          .maybeSingle();
+
+        if (existingMealError) return { data: null, error: existingMealError };
+
+        if (existingMeal) {
+          persistedMeal = normalizeTimelineItem(existingMeal);
+        } else {
+          const created = await this.createTimelineItem(userId, {
+            event_date: dateStr,
+            event_time: meal.time || meal.event_time,
+            item_type: itemType,
+            title: meal.title || '餐次',
+            notes: meal.notes || null,
+            details: meal.details || {},
+            sort_order: Number.isFinite(Number(meal.sort_order)) ? Number(meal.sort_order) : 0,
+          });
+          if (created.error || !created.data?.id) {
+            return { data: null, error: created.error || new Error('餐次创建失败') };
+          }
+          persistedMeal = created.data;
+          createdMealId = created.data.id;
+        }
+      }
+
+      const { data: foodEntry, error: foodEntryError } = await supabase
+        .from('food_entries')
+        .insert([{
+          user_id: userId,
+          timeline_item_id: persistedMeal.id,
+          source_food_id: food.foodId || null,
+          food_name_snapshot: food.name,
+          quantity,
+          unit_snapshot: food.unit || 'g',
+          calories_snapshot: Number(food.cal || 0),
+          protein_snapshot: Number(food.p || 0),
+          fat_snapshot: Number(food.f || 0),
+          carbs_snapshot: Number(food.c || 0),
+        }])
+        .select('*')
+        .single();
+
+      if (foodEntryError || !foodEntry?.id) {
+        if (createdMealId) {
+          await supabase
+            .from('timeline_items')
+            .delete()
+            .eq('id', createdMealId)
+            .eq('user_id', userId);
+        }
+        return { data: null, error: foodEntryError || new Error('食品记录创建失败') };
+      }
+
+      return {
+        data: {
+          meal: persistedMeal,
+          foodEntry: normalizeFoodEntry(foodEntry),
+        },
+        error: null,
+      };
+    } catch (err) {
+      if (createdMealId) {
+        try {
+          await supabase
+            .from('timeline_items')
+            .delete()
+            .eq('id', createdMealId)
+            .eq('user_id', userId);
+        } catch {
+          // The original persistence error is more useful to the caller.
+        }
+      }
+      return { data: null, error: err };
     }
   },
 

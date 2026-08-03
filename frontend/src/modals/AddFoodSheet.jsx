@@ -21,6 +21,7 @@ export const AddFoodSheet = ({ open, onOpenChange, targetTitle, onConfirm }) => 
   const [selected, setSelected] = useState(null);
   const [grams, setGrams] = useState(100);
   const [loadingFoods, setLoadingFoods] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
 
   const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -30,6 +31,7 @@ export const AddFoodSheet = ({ open, onOpenChange, targetTitle, onConfirm }) => 
       setSelected(null);
       setGrams(100);
       setLoadingFoods(false);
+      setSubmitting(false);
     }
   }, [open]);
 
@@ -81,17 +83,21 @@ export const AddFoodSheet = ({ open, onOpenChange, targetTitle, onConfirm }) => 
 
   const preview = selected ? scale(selected, Number(grams) || 0) : null;
 
-  const handleConfirm = () => {
-    if (!selected) return;
+  const handleConfirm = async () => {
+    if (!selected || submitting) return;
     const macros = scale(selected, Number(grams) || 0);
-    onConfirm({
-      entryId: `food-entry-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
-      foodId: selected.id,
-      name: selected.name,
-      grams: Number(grams) || 0,
-      ...macros,
-    });
-    onOpenChange(false);
+    setSubmitting(true);
+    try {
+      const saved = await onConfirm({
+        foodId: selected.id,
+        name: selected.name,
+        grams: Number(grams) || 0,
+        ...macros,
+      });
+      if (saved !== false) onOpenChange(false);
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -183,11 +189,11 @@ export const AddFoodSheet = ({ open, onOpenChange, targetTitle, onConfirm }) => 
               )}
 
               <div className="flex gap-2">
-                <Button variant="outline" className="flex-1" onClick={() => setSelected(null)}>
+                <Button variant="outline" className="flex-1" onClick={() => setSelected(null)} disabled={submitting}>
                   返回
                 </Button>
-                <Button className="flex-1 bg-[#6B8067] hover:bg-[#5a6d57]" onClick={handleConfirm}>
-                  确认添加
+                <Button className="flex-1 bg-[#6B8067] hover:bg-[#5a6d57]" onClick={handleConfirm} disabled={submitting}>
+                  {submitting ? '保存中...' : '确认添加'}
                 </Button>
               </div>
             </div>

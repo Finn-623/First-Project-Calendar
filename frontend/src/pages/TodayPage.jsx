@@ -130,6 +130,7 @@ export const TodayPage = () => {
   const addMenuRef = useRef(null);
   const pendingOpenPerfRef = useRef(null);
   const deletingFoodGuardRef = useRef(false);
+  const addingFoodGuardRef = useRef(false);
   const now = useCurrentTime();
 
   useEffect(() => {
@@ -268,13 +269,41 @@ export const TodayPage = () => {
 
   const handleAddFood = (mealItem) => setFoodSheet({ open: true, target: mealItem });
 
-  const handleFoodConfirm = (food) => {
-    setTimeline(
-      timeline.map((it) =>
-        it.id === foodSheet.target.id ? { ...it, foods: [...(it.foods || []), food] } : it
-      )
-    );
-    showSuccess(`已添加 ${food.name} 到 ${foodSheet.target.title}`);
+  const handleFoodConfirm = async (food) => {
+    const targetMeal = foodSheet.target;
+    if (!user?.id || !targetMeal || addingFoodGuardRef.current) return false;
+
+    addingFoodGuardRef.current = true;
+    try {
+      const { data, error } = await timelineService.createFoodEntryForMeal({
+        userId: user.id,
+        dateStr: currentDateStr,
+        meal: targetMeal,
+        food,
+      });
+      if (error || !data?.meal?.id || !data?.foodEntry?.entryId) {
+        throw error || new Error('食品记录保存失败');
+      }
+
+      setTimeline((currentTimeline) => currentTimeline.map((item) => (
+        item.id === targetMeal.id
+          ? {
+            ...item,
+            ...data.meal,
+            fixed: item.fixed,
+            foods: [...(item.foods || []), data.foodEntry],
+          }
+          : item
+      )));
+      setFoodSheet({ open: false, target: null });
+      showSuccess(`已添加 ${food.name} 到 ${targetMeal.title}`);
+      return true;
+    } catch (error) {
+      toast.error(error?.message || '食品记录保存失败，请稍后重试');
+      return false;
+    } finally {
+      addingFoodGuardRef.current = false;
+    }
   };
 
   const handleOpenSnackSheet = () => {
