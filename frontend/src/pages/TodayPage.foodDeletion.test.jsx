@@ -67,9 +67,13 @@ const baseDate = new Date('2026-07-28T09:00:00+10:00');
 
 const breakfastId = '11111111-1111-4111-8111-111111111111';
 const lunchId = '22222222-2222-4222-8222-222222222222';
+const dinnerId = '33333333-3333-4333-8333-333333333333';
+const snackId = '44444444-4444-4444-8444-444444444444';
 const breakfastFoodA = 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa';
 const breakfastFoodB = 'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb';
 const lunchFood = 'cccccccc-cccc-4ccc-8ccc-cccccccccccc';
+const dinnerFood = 'dddddddd-dddd-4ddd-8ddd-dddddddddddd';
+const snackFood = 'eeeeeeee-eeee-4eee-8eee-eeeeeeeeeeee';
 
 const makeTimeline = () => ([
   {
@@ -135,18 +139,19 @@ function mountPage(timeline = makeTimeline()) {
 async function deleteFoodAndConfirm(itemId, foodIndex, mealTitle, foodName) {
   const mealBeforeDelete = storeState.timeline.find((item) => item.id === itemId);
   const isLastFoodBeforeDelete = Array.isArray(mealBeforeDelete?.foods) && mealBeforeDelete.foods.length === 1;
+  const isDefaultMeal = ['breakfast', 'lunch', 'dinner'].includes(mealBeforeDelete?.subtype);
 
   await act(async () => {
     fireEvent.click(screen.getByTestId(`delete-food-entry-${itemId}-${foodIndex}`));
   });
   await waitFor(() => {
-    expect(screen.getByText(`将从${mealTitle}中删除“${foodName}”。如果这是该餐次最后一个食物，会同时删除该餐次记录。`)).toBeTruthy();
+    expect(screen.getByText(new RegExp(`将从${mealTitle}中删除“${foodName}”`))).toBeTruthy();
   });
   await act(async () => {
     fireEvent.click(screen.getByRole('button', { name: '确认删除' }));
   });
   await waitFor(() => {
-    if (isLastFoodBeforeDelete) {
+    if (isLastFoodBeforeDelete && !isDefaultMeal) {
       expect(timelineService.deleteTimelineItemByUser).toHaveBeenCalled();
     } else {
       expect(timelineService.deleteFoodEntry).toHaveBeenCalled();
@@ -199,17 +204,60 @@ describe('TodayPage 食物删除闭环', () => {
     expect(lunch.foods[0].name).toBe('鸡胸肉');
   });
 
-  test('删除餐次最后一个食物后自动删除整餐记录', async () => {
+  test('删除固定午餐最后一个食物后保留空午餐并只删除food entry', async () => {
     mountPage();
 
     await deleteFoodAndConfirm(lunchId, 0, '午餐', '鸡胸肉');
 
     await waitFor(() => {
-      expect(timelineService.deleteTimelineItemByUser).toHaveBeenCalledWith(lunchId, 'user-1');
-      expect(storeState.timeline.find((item) => item.id === lunchId)).toBeUndefined();
-      expect(storeState.timeline).toHaveLength(1);
+      expect(timelineService.deleteFoodEntry).toHaveBeenCalledWith(lunchFood, 'user-1');
+      expect(timelineService.deleteTimelineItemByUser).not.toHaveBeenCalled();
+      expect(storeState.timeline.find((item) => item.id === lunchId)?.foods).toHaveLength(0);
+      expect(storeState.timeline).toHaveLength(2);
       expect(screen.getByTestId('total-cal').textContent).toBe('300');
     });
+  });
+
+  test.each([
+    ['breakfast', '早餐', breakfastId, breakfastFoodA, '鸡蛋'],
+    ['lunch', '午餐', lunchId, lunchFood, '鸡胸肉'],
+    ['dinner', '晚餐', dinnerId, dinnerFood, '三文鱼'],
+  ])('删除固定%s最后一个食物后固定餐次继续存在', async (subtype, title, itemId, entryId, foodName) => {
+    mountPage([{
+      id: itemId,
+      type: 'meal',
+      subtype,
+      title,
+      time: subtype === 'breakfast' ? '08:00' : subtype === 'lunch' ? '12:00' : '19:00',
+      fixed: true,
+      foods: [{ entryId, name: foodName, grams: 100, cal: 100, p: 10, f: 2, c: 5 }],
+    }]);
+
+    await deleteFoodAndConfirm(itemId, 0, title, foodName);
+
+    expect(timelineService.deleteFoodEntry).toHaveBeenCalledWith(entryId, 'user-1');
+    expect(timelineService.deleteTimelineItemByUser).not.toHaveBeenCalled();
+    expect(storeState.timeline).toEqual([
+      expect.objectContaining({ id: itemId, subtype, foods: [] }),
+    ]);
+  });
+
+  test('删除自定义加餐最后一个食物后删除整个餐次', async () => {
+    mountPage([{
+      id: snackId,
+      type: 'meal',
+      subtype: 'snack',
+      title: '训练后加餐',
+      time: '16:00',
+      fixed: false,
+      foods: [{ entryId: snackFood, name: '酸奶', grams: 100, cal: 80, p: 5, f: 2, c: 10 }],
+    }]);
+
+    await deleteFoodAndConfirm(snackId, 0, '训练后加餐', '酸奶');
+
+    expect(timelineService.deleteTimelineItemByUser).toHaveBeenCalledWith(snackId, 'user-1');
+    expect(timelineService.deleteFoodEntry).not.toHaveBeenCalled();
+    expect(storeState.timeline).toHaveLength(0);
   });
 
   test('删除失败时保留原页面数据并提示错误', async () => {
@@ -238,7 +286,7 @@ describe('TodayPage 食物删除闭环', () => {
       fireEvent.click(screen.getByTestId(`delete-food-entry-${breakfastId}-0`));
     });
     await waitFor(() => {
-      expect(screen.getByText(/如果这是该餐次最后一个食物/)).toBeTruthy();
+      expect(screen.getByText(/固定餐次会继续保留/)).toBeTruthy();
     });
     const confirmButton = screen.getByRole('button', { name: '确认删除' });
 

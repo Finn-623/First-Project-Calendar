@@ -1,3 +1,24 @@
+## DEV-20260803-002
+
+- 日期：2026-08-03
+- 状态：代码修复完成，等待用户人工验收
+- 修改类型：P0 Fix / v0.2.1 首页记录恢复与固定餐次规则
+- 任务目标：修复上一轮在真实浏览器中仍出现的刷新/返回首页丢失，并确保早餐、午餐、晚餐清空后仍保留。
+- 建议记录：编号6 Feedback `10f67ce6-d2b4-4dd1-b03c-c8f8c2b70013`继续保持pending；编号5仅更新删除规则部分，不提前标记整项完成。
+- 实际完成内容：
+	- 定位到上一轮只补齐写入和首次加载，却没有修复底部首页导航：`goHome`调用`initializeSelectedDate`后把时间线设为空模板，但未调用`loadDayData`读取数据库，因此离页返回会覆盖刚保存的服务端记录。
+	- `goHome`现在完成日期判定后显式等待当前记录日服务端重载；食品写入继续以数据库insert返回的真实meal/entry UUID为成功标准，成功后才更新页面、关闭Sheet和提示成功。
+	- 固定餐次使用稳定`item_type/subtype`值`breakfast`、`lunch`、`dinner`识别；删除最后一个食品时只删除`food_entries`，餐次及空卡片保留。`snack`等自定义餐次清空后仍删除整餐。
+	- 更新确认文案，明确固定餐次会保留；未改变整日历史删除、日期流转和历史快照规则。
+- 主要修改文件或模块：`frontend/src/store.jsx`、`frontend/src/pages/TodayPage.jsx`及持久化、删除、日期Store测试。
+- 遇到的问题：上一轮Service和页面单测只证明写入函数被调用及数据可查询，没有覆盖底部导航实际调用的`goHome`空模板覆盖路径；用户真实浏览器验收因此仍失败。
+- 解决方式：新增Store级返回首页数据库重载回归；保持数据库insert返回为保存成功边界，避免写入成功但附加回读失败时诱导用户重试并产生重复；固定/自定义餐次分别测试末项删除。
+- 执行的测试：专项`npm test -- --runInBand --watchAll=false src/pages/TodayPage.foodPersistence.test.jsx src/pages/TodayPage.foodDeletion.test.jsx src/services/timelineService.foodPersistence.test.js src/store.deletedDateState.test.jsx`；前端全量`npm test -- --runInBand --watchAll=false`；`npm run build`；本地Safari打开`http://localhost:3000`。
+- 测试结果：专项4套件29项通过；全量34套件230项通过；Production Build成功。仅保留既有测试环境Supabase变量提示、模拟session失败日志及Build `fs.F_OK`弃用警告。
+- 未完成事项：系统未授权终端控制Safari，无法代用户输入测试账号并完成真实浏览器点击/Network验收；编号6继续等待用户在已打开的本地最新页面最终验收。未push、未部署、未修改远程Feedback或公共食品数据。
+- 风险或注意事项：本轮没有Migration；固定餐次稳定身份沿用现有`item_type/subtype`，不依赖可编辑中文标题。
+- Git Commit ID：由本独立提交承载；完整ID以Git历史和任务最终汇报为准。
+
 ## DEV-20260803-001
 
 - 日期：2026-08-03

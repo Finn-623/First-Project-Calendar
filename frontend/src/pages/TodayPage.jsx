@@ -72,6 +72,7 @@ const buildTimelineDisplayItems = (sortedItems, nowMinuteValue, shouldShowNowMar
 };
 
 const WEEKDAY_LABELS = ['一', '二', '三', '四', '五', '六', '日'];
+const DEFAULT_MEAL_TYPES = ['breakfast', 'lunch', 'dinner'];
 
 const getWeekDateStrings = (dateStr) => {
   const [year, month, day] = dateStr.split('-').map(Number);
@@ -245,6 +246,9 @@ export const TodayPage = () => {
     if (food?.foodEntryId) return String(food.foodEntryId);
     return `legacy-${index}-${food?.foodId || food?.name || 'food'}`;
   };
+
+  const isDefaultMeal = (item) => item?.type === 'meal'
+    && DEFAULT_MEAL_TYPES.includes(item?.subtype || item?.item_type);
 
   const runningSessionConflictMessage = '请先结束当前正在进行的记录';
   const createHandledError = (message) => {
@@ -758,7 +762,7 @@ export const TodayPage = () => {
         nextFoods.splice(0, nextFoods.length, ...filteredFoods);
       }
 
-      if (nextFoods.length === 0) {
+      if (nextFoods.length === 0 && !isDefaultMeal(item)) {
         return null;
       }
 
@@ -803,8 +807,12 @@ export const TodayPage = () => {
       }
 
       const isLastFood = foods.length === 1;
-      const shouldDeleteMealRow = isLastFood && isLikelySupabaseUuid(mealItem.id);
-      const shouldDeleteFoodRow = !isLastFood && isLikelySupabaseUuid(pendingDeleteFood.foodEntryKey);
+      const keepEmptyDefaultMeal = isLastFood && isDefaultMeal(mealItem);
+      const shouldDeleteMealRow = isLastFood
+        && !keepEmptyDefaultMeal
+        && isLikelySupabaseUuid(mealItem.id);
+      const shouldDeleteFoodRow = (!isLastFood || keepEmptyDefaultMeal)
+        && isLikelySupabaseUuid(pendingDeleteFood.foodEntryKey);
 
       deletingFoodGuardRef.current = true;
       setDeletingFoodEntryKey(pendingDeleteFood.foodEntryKey);
@@ -1175,7 +1183,7 @@ export const TodayPage = () => {
             <AlertDialogTitle>{deleteDialogKind === 'food-entry' ? '确认删除食物' : '确认删除活动'}</AlertDialogTitle>
             <AlertDialogDescription>
               {deleteDialogKind === 'food-entry'
-                ? `将从${pendingDeleteFood?.mealTitle || '该餐次'}中删除“${pendingDeleteFood?.foodName || '该食物'}”。如果这是该餐次最后一个食物，会同时删除该餐次记录。`
+                ? `将从${pendingDeleteFood?.mealTitle || '该餐次'}中删除“${pendingDeleteFood?.foodName || '该食物'}”。${isDefaultMeal(pendingDeleteItem) ? '固定餐次会继续保留。' : '如果这是该餐次最后一个食物，会同时删除该餐次记录。'}`
                 : '确定删除这个活动吗？删除后无法恢复。'}
             </AlertDialogDescription>
           </AlertDialogHeader>

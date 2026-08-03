@@ -755,8 +755,16 @@ export const StoreProvider = ({ children, user: initialUser, session: initialSes
       return { success: false, error: '缺少用户 ID' };
     }
 
-    return initializeSelectedDate(userId);
-  }, [initializeSelectedDate, user?.id]);
+    const result = await initializeSelectedDate(userId);
+    if (!result?.success || !result.selectedDate) return result;
+
+    const loaded = await loadDayData(result.selectedDate, userId);
+    return {
+      ...result,
+      loadSuccess: loaded?.success === true,
+      loadError: loaded?.timelineResult?.value?.error || null,
+    };
+  }, [initializeSelectedDate, loadDayData, user?.id]);
 
   const requireAdmin = useCallback(() => {
     if (!user?.id) {

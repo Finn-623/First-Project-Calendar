@@ -35,6 +35,7 @@ jest.mock('./services/targetService', () => ({
 jest.mock('./services/timelineService', () => ({
   timelineService: {
     getItemsByDate: jest.fn().mockResolvedValue({ data: [], error: null }),
+    getTimelineByDate: jest.fn().mockResolvedValue({ data: [], error: null }),
     getRunningTimelineItems: jest.fn().mockResolvedValue({ data: [], error: null }),
   },
 }));
@@ -178,6 +179,7 @@ describe('Store 删除日期后的首页状态恢复', () => {
     targetService.getLatestTarget.mockResolvedValue({ data: null, error: null });
     targetService.getTargetHistory.mockResolvedValue({ data: [], error: null });
     timelineService.getItemsByDate.mockResolvedValue({ data: [], error: null });
+    timelineService.getTimelineByDate.mockResolvedValue({ data: [], error: null });
     timelineService.getRunningTimelineItems.mockResolvedValue({ data: [], error: null });
     historyService.getDayCompletion.mockResolvedValue({ data: null, error: null });
     historyService.getHistoryDates.mockResolvedValue({ data: [], error: null });
@@ -389,6 +391,36 @@ describe('Store 删除日期后的首页状态恢复', () => {
     await waitFor(() => {
       expect(screen.getByTestId('current-date').textContent).toBe('2026-07-27');
       expect(screen.getByTestId('recording-date').textContent).toBe('2026-07-27');
+    });
+  });
+
+  test('从其他页面返回首页时重新读取数据库时间线而不是保留空模板', async () => {
+    const persistedMealId = '11111111-1111-4111-8111-111111111111';
+    timelineService.getTimelineByDate.mockResolvedValue({
+      data: [{
+        id: persistedMealId,
+        type: 'meal',
+        subtype: 'breakfast',
+        title: '数据库早餐',
+        time: '08:00',
+        foods: [{ entryId: 'food-entry-1', name: '持久化燕麦', cal: 180, p: 6, f: 4, c: 30 }],
+      }],
+      error: null,
+    });
+
+    renderStore();
+    await waitFor(() => expect(screen.getByTestId('timeline-title').textContent).toBe('数据库早餐'));
+
+    fireEvent.click(screen.getByTestId('set-stale-timeline'));
+    expect(screen.getByTestId('timeline-title').textContent).toBe('旧缓存记录');
+
+    await act(async () => {
+      fireEvent.click(screen.getByTestId('go-home'));
+    });
+
+    await waitFor(() => {
+      expect(timelineService.getTimelineByDate).toHaveBeenLastCalledWith('user-1', '2026-07-27');
+      expect(screen.getByTestId('timeline-title').textContent).toBe('数据库早餐');
     });
   });
 
