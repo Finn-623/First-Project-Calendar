@@ -5375,3 +5375,18 @@
 - 未完成事项：需要用户在最新本地页面完成移动端、搜索筛选、分页和详情最终验收；远程Feedback保持pending。
 - 风险或注意事项：未修改数据库、公共食品内容或审核状态；未部署Migration 028；未push。
 - Git Commit ID：由本独立提交承载，以Git历史为准。
+
+## DEV-20260803-009
+
+- 日期：2026-08-03
+- 状态：代码修复完成，等待用户最终验收
+- 任务目标：重新打开P0编号19，确保真实`/library`页面明确展示公共食品筛选、列表营养数值和完整只读详情。
+- 实际完成内容：公共食品筛选区增加“食品分类”“主要摄入类型”可见标题与`aria-pressed`选中状态；卡片直接以每100g展示热量、蛋白质、碳水和脂肪的完整标签、单位及统一一位小数，并增加明确“查看详情”提示；详情继续展示扩展营养、alias、portion和来源，无标准份量时显示“暂无标准份量，可按克记录”。普通公共库排除无来源的legacy记录，全部筛选恢复136条正式AFCD食品。
+- 主要修改文件或模块：`PublicFoodBrowser.jsx`、`foodService.js`、公共食品组件/service测试、新增`FoodLibraryPage.publicBrowsing.test.jsx`页面级接入测试。
+- 遇到的问题：上一轮孤立组件测试证明功能存在，但没有验证真实路由；真实Build中功能已挂载，却因无分组标题、P/C/F缩写和缺少详情提示而不具备足够可发现性。同一端口还存在开发与静态预览两个旧进程，容易验收到错误服务；远程另有1条无来源legacy公共记录，使未筛选总数显示137而非正式AFCD基线136。
+- 解决方式：用Safari自动化读取真实Production Build bundle与DOM，基于证据强化视觉信息层级；增加`/library`、`?tab=public`、`?tab=mine`页面级测试；查询边界只纳入具有正式`source_name`的approved active公共食品，不修改远程记录。
+- 执行的测试：公共食品页面/组件/service专项；前端全量测试；Production Build；Safari本地Production预览DOM、搜索、详情、组合筛选、清除与窄屏检查；`git diff --check`。
+- 测试结果：专项3套件12项通过；全量41套件263项通过；Production Build成功。最新bundle中可见两个Tab、两个筛选标题、每卡四项营养及完整西兰花详情；分类结果15条、组合筛选正常、清除恢复136条；Safari最窄实际336px无页面横向溢出。仅有既有测试环境日志及`fs.F_OK`弃用警告。
+- 未完成事项：Safari无法设置到严格320px（最小实际336px）；仍需用户在最新本地Production预览完成最终视觉验收。Feedback保持pending。
+- 风险或注意事项：未修改远程食品、alias、portion或审核状态；未部署Migration 028；未push。
+- Git Commit ID：由本独立提交承载，以Git历史为准。

@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { ChevronLeft, ChevronRight, Search, X } from 'lucide-react';
 import { foodService } from '../../services/foodService';
 import { Input } from '../ui/input';
@@ -17,7 +17,11 @@ const CATEGORY_LABELS = {
 };
 const categoryLabel = (value) => CATEGORY_LABELS[value] || value;
 
-const nutrientText = (value, unit) => (value == null || Number.isNaN(value) ? '暂无数据' : `${value} ${unit}`);
+const nutrientText = (value, unit) => {
+  if (value == null || Number.isNaN(value)) return '暂无数据';
+  const rounded = Number(value).toFixed(1).replace(/\.0$/, '');
+  return `${rounded}${unit}`;
+};
 
 const FoodCard = ({ food, onOpen }) => (
   <button
@@ -38,11 +42,15 @@ const FoodCard = ({ food, onOpen }) => (
       {food.primaryCategory ? <span className="rounded-full bg-[#F4F4F1] px-2 py-1">{categoryLabel(food.primaryCategory)}</span> : null}
       {food.intakeTypes.map((type) => <span key={type} className="rounded-full bg-[#F4F4F1] px-2 py-1">{INTAKE_LABELS[type] || type}</span>)}
     </div>
-    <div className="mt-3 grid grid-cols-4 gap-2 text-[11px] text-[#5E6660]">
-      <span>{nutrientText(food.nutrients.energyKcal, 'kcal')}</span>
-      <span>P {nutrientText(food.nutrients.proteinG, 'g')}</span>
-      <span>C {nutrientText(food.nutrients.carbohydrateG, 'g')}</span>
-      <span>F {nutrientText(food.nutrients.fatG, 'g')}</span>
+    <div className="mt-3 border-t border-[#EEEEEA] pt-3">
+      <p className="text-[10px] text-[#858C88]">每100g</p>
+      <div className="mt-1.5 grid grid-cols-2 gap-x-4 gap-y-1.5 text-[11px] text-[#5E6660]">
+        <span>热量 <strong className="font-normal text-[#2C332F]">{nutrientText(food.nutrients.energyKcal, 'kcal')}</strong></span>
+        <span>蛋白质 <strong className="font-normal text-[#2C332F]">{nutrientText(food.nutrients.proteinG, 'g')}</strong></span>
+        <span>碳水 <strong className="font-normal text-[#2C332F]">{nutrientText(food.nutrients.carbohydrateG, 'g')}</strong></span>
+        <span>脂肪 <strong className="font-normal text-[#2C332F]">{nutrientText(food.nutrients.fatG, 'g')}</strong></span>
+      </div>
+      <p className="mt-3 text-right text-[11px] font-medium text-[#6B8067]">查看详情 ›</p>
     </div>
   </button>
 );
@@ -94,7 +102,7 @@ const FoodDetail = ({ foodId, onClose }) => {
             </section>
             <section>
               <h3 className="text-sm font-medium text-[#2C332F]">可用份量</h3>
-              {food.portions.length ? <ul className="mt-2 space-y-1 text-xs text-[#5E6660]">{food.portions.map((portion) => <li key={portion.id}>{portion.name} · {portion.grams}g</li>)}</ul> : <p className="mt-2 text-xs text-[#858C88]">暂无固定份量，可按克查看</p>}
+              {food.portions.length ? <ul className="mt-2 space-y-1 text-xs text-[#5E6660]">{food.portions.map((portion) => <li key={portion.id}>{portion.name} · {nutrientText(portion.grams, 'g')}</li>)}</ul> : <p className="mt-2 text-xs text-[#858C88]">暂无标准份量，可按克记录</p>}
             </section>
             {food.aliases.length ? <section><h3 className="text-sm font-medium text-[#2C332F]">公开别名</h3><p className="mt-2 text-xs leading-5 text-[#5E6660] break-words">{food.aliases.join('、')}</p></section> : null}
             <p className="text-xs text-[#858C88]">数据来源：{food.sourceName || '暂无数据'}</p>
@@ -155,14 +163,20 @@ export const PublicFoodBrowser = () => {
         <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#858C88]" />
         <Input value={queryInput} onChange={(event) => setQueryInput(event.target.value)} placeholder="搜索中文名、英文名、品牌或别名" className="h-11 rounded-xl border-[#E5E5E0] bg-white pl-9 text-base" data-testid="public-food-search" />
       </div>
-      <div className="mt-3 space-y-2">
-        <div className="flex gap-2 overflow-x-auto pb-1" data-testid="public-food-categories">
-          <button type="button" onClick={() => { setCategory(''); setPage(0); }} className={`min-h-10 shrink-0 rounded-full border px-3 text-xs ${!category ? 'bg-[#2C332F] text-white' : 'bg-white'}`}>全部分类</button>
-          {facets.categories.map((value) => <button key={value} type="button" onClick={() => { setCategory(value); setPage(0); }} className={`min-h-10 shrink-0 rounded-full border px-3 text-xs ${category === value ? 'bg-[#2C332F] text-white' : 'bg-white'}`}>{categoryLabel(value)}</button>)}
+      <div className="mt-4 space-y-4 rounded-2xl border border-[#E5E5E0] bg-white p-3" aria-label="公共食品筛选">
+        <div>
+          <p className="mb-2 text-xs font-medium text-[#2C332F]">食品分类</p>
+          <div className="flex gap-2 overflow-x-auto pb-1" data-testid="public-food-categories">
+            <button type="button" aria-pressed={!category} onClick={() => { setCategory(''); setPage(0); }} className={`min-h-10 shrink-0 rounded-full border px-3 text-xs ${!category ? 'bg-[#2C332F] text-white' : 'bg-white'}`}>全部分类</button>
+            {facets.categories.map((value) => <button key={value} type="button" aria-pressed={category === value} onClick={() => { setCategory(value); setPage(0); }} className={`min-h-10 shrink-0 rounded-full border px-3 text-xs ${category === value ? 'bg-[#2C332F] text-white' : 'bg-white'}`}>{categoryLabel(value)}</button>)}
+          </div>
         </div>
-        <div className="flex gap-2 overflow-x-auto pb-1" data-testid="public-food-intake-types">
-          <button type="button" onClick={() => { setIntakeType(''); setPage(0); }} className={`min-h-10 shrink-0 rounded-full border px-3 text-xs ${!intakeType ? 'bg-[#6B8067] text-white' : 'bg-white'}`}>全部摄入类型</button>
-          {facets.intakeTypes.map((value) => <button key={value} type="button" onClick={() => { setIntakeType(value); setPage(0); }} className={`min-h-10 shrink-0 rounded-full border px-3 text-xs ${intakeType === value ? 'bg-[#6B8067] text-white' : 'bg-white'}`}>{INTAKE_LABELS[value] || value}</button>)}
+        <div>
+          <p className="mb-2 text-xs font-medium text-[#2C332F]">主要摄入类型</p>
+          <div className="flex gap-2 overflow-x-auto pb-1" data-testid="public-food-intake-types">
+            <button type="button" aria-pressed={!intakeType} onClick={() => { setIntakeType(''); setPage(0); }} className={`min-h-10 shrink-0 rounded-full border px-3 text-xs ${!intakeType ? 'bg-[#6B8067] text-white' : 'bg-white'}`}>全部摄入类型</button>
+            {facets.intakeTypes.map((value) => <button key={value} type="button" aria-pressed={intakeType === value} onClick={() => { setIntakeType(value); setPage(0); }} className={`min-h-10 shrink-0 rounded-full border px-3 text-xs ${intakeType === value ? 'bg-[#6B8067] text-white' : 'bg-white'}`}>{INTAKE_LABELS[value] || value}</button>)}
+          </div>
         </div>
       </div>
       <div className="mt-3 flex items-center justify-between gap-3 text-xs text-[#858C88]">

@@ -8,6 +8,7 @@ const query = (result) => {
     select: jest.fn(() => value), eq: jest.fn(() => value), ilike: jest.fn(() => value),
     limit: jest.fn(() => value), order: jest.fn(() => value), range: jest.fn(() => value),
     contains: jest.fn(() => value), or: jest.fn(() => value), maybeSingle: jest.fn().mockResolvedValue(result),
+    not: jest.fn(() => value),
     then: (resolve, reject) => Promise.resolve(result).then(resolve, reject),
   };
   return value;
@@ -32,6 +33,7 @@ describe('foodService 普通用户公共食品查询', () => {
     expect(foods.eq).toHaveBeenCalledWith('visibility', 'public');
     expect(foods.eq).toHaveBeenCalledWith('review_status', 'approved');
     expect(foods.eq).toHaveBeenCalledWith('is_active', true);
+    expect(foods.not).toHaveBeenCalledWith('source_name', 'is', null);
     expect(foods.eq).toHaveBeenCalledWith('primary_category', '蔬菜');
     expect(foods.contains).toHaveBeenCalledWith('intake_types', ['fiber']);
     expect(foods.range).toHaveBeenCalledWith(24, 47);
@@ -54,6 +56,7 @@ describe('foodService 普通用户公共食品查询', () => {
     const result = await foodService.getVisiblePublicFoodDetail('hidden-id');
     expect(hidden.eq).toHaveBeenCalledWith('review_status', 'approved');
     expect(hidden.eq).toHaveBeenCalledWith('is_active', true);
+    expect(hidden.not).toHaveBeenCalledWith('source_name', 'is', null);
     expect(result.data).toBeNull();
     expect(result.error.message).toBe('食品不可用');
   });

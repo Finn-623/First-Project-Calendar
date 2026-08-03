@@ -121,6 +121,7 @@ export const foodService = {
         .eq('visibility', 'public')
         .eq('review_status', 'approved')
         .eq('is_active', true)
+        .not('source_name', 'is', null)
         .order('name', { ascending: true })
         .range(page * pageSize, ((page + 1) * pageSize) - 1);
       if (category) request = request.eq('primary_category', category);
@@ -145,7 +146,8 @@ export const foodService = {
         .select('primary_category,intake_types')
         .eq('visibility', 'public')
         .eq('review_status', 'approved')
-        .eq('is_active', true);
+        .eq('is_active', true)
+        .not('source_name', 'is', null);
       if (error) return { categories: [], intakeTypes: [], error };
       return {
         categories: [...new Set((data || []).map((row) => row.primary_category).filter(Boolean))].sort(),
@@ -167,6 +169,7 @@ export const foodService = {
         .eq('visibility', 'public')
         .eq('review_status', 'approved')
         .eq('is_active', true)
+        .not('source_name', 'is', null)
         .maybeSingle();
       if (error) return { data: null, error };
       return data
