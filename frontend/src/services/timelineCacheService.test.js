@@ -25,4 +25,13 @@ describe('timelineCacheService', () => {
     expect(await timelineCacheService.getSnapshot('user-a', '2026-08-03')).toBeNull();
     expect(await timelineCacheService.getSnapshot('user-b', '2026-08-03')).toBeNull();
   });
+
+  test('缓存保存待确认删除标记，刷新时不会恢复旧远程食品', async () => {
+    await timelineCacheService.putSnapshot('user-a', '2026-08-03', [], {
+      pendingDeleteEntryIds: new Set(['entry-deleting']),
+    });
+    expect(await timelineCacheService.getSnapshot('user-a', '2026-08-03')).toEqual(
+      expect.objectContaining({ pendingDeleteEntryIds: ['entry-deleting'] })
+    );
+  });
 });

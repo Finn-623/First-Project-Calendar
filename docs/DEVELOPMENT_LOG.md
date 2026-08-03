@@ -1,3 +1,23 @@
+## DEV-20260803-007
+
+- 日期：2026-08-03
+- 状态：代码修复完成，等待用户在最新Production本地预览最终验收
+- 修改类型：P0 Fix / 食品删除完整链路
+- 任务目标：修复建议编号5（Feedback `701eda5e-d2b4-421c-af2f-4ad22e813a7c`）的食品删除持久化、固定/自定义餐次清理、缓存与远程校准问题。
+- 实际完成内容：
+	- 固定早餐、午餐、晚餐继续按稳定`item_type/subtype`识别；删除最后一个食品只删除`food_entries`，不删除固定餐次。
+	- 自定义餐次最后一个食品改为严格先删除food entry，再删除空`timeline_items`；food entry失败时不触碰meal，meal清理失败时保留可见空餐次并显示部分失败提示。
+	- 乐观删除前保存完整timeline快照，失败时恢复食品和营养汇总；提交锁继续阻止重复请求。尚未同步的临时食品只做本地取消，不发送无效UUID删除，并在迟到新增成功时执行补偿清理。
+	- 增加按food entry UUID维护的pending-delete tombstone；IndexedDB快照保存tombstone，远程读取和Realtime校准先过滤待确认删除项，避免旧响应把食品恢复。远程确认不存在后清除tombstone。
+	- 删除成功后的轻量远程核对继续使用当前用户与记录日期；数据库仍是最终事实来源，未改变整日历史删除和Australia/Sydney日期规则。
+- 主要修改文件或模块：`frontend/src/pages/TodayPage.jsx`、`frontend/src/services/timelineService.js`、`frontend/src/store.jsx`、`frontend/src/lib/timelinePendingMerge.js`、`frontend/src/services/timelineCacheService.js`及对应测试。
+- 真实问题根因：现有自定义末项删除直接删除整餐并依赖级联，没有执行“先food entry、后空meal”；远程合并仅保护新增pending，没有删除tombstone，旧远程结果存在恢复已乐观删除食品的窗口；临时entry会被当成无效标识回滚并报错。
+- 执行的测试：删除/缓存/Store/持久化专项；TodayPage、History相关回归；普通测试账号受控数据库验收；前端全量测试；Production Build；`git diff --check`。
+- 测试结果：专项5套件41项通过；相关回归8套件55项通过；全量38套件251项通过；Production Build成功。普通非管理员账号数据库验收确认固定早餐两项依次删除后food entry为1、0且meal始终存在，自定义末项删除后food entry为0且meal不存在，创建记录残留为0；测试数据已清理。仅保留既有Supabase测试环境提示、模拟session失败日志及Build `fs.F_OK`弃用警告。
+- 未完成事项：远程Feedback状态保持pending；仍需用户在最新Production本地预览亲自确认删除、刷新、离页返回和重新登录体验。
+- 风险或注意事项：Migration 028未部署；本次没有修改Realtime publication、数据库Schema、公共食品数据、审核状态或历史快照。
+- Git Commit ID：由本独立提交承载；完整ID以Git历史和任务最终汇报为准。
+
 ## DEV-20260803-006
 
 - 日期：2026-08-03

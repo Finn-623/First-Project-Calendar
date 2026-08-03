@@ -114,7 +114,7 @@ const AddPickerMenu = ({ onSnack, onTraining, onEvent, testIdPrefix = 'picker' }
 );
 
 export const TodayPage = () => {
-  const { timeline, setTimeline, plan, dateLabel, endDay, dayInitialized, timelineSyncError, currentDate, recordingDateStr, setSelectedDate, goHome, user, loadHistory } = useStore();
+  const { timeline, setTimeline, plan, dateLabel, endDay, dayInitialized, timelineSyncError, currentDate, recordingDateStr, setSelectedDate, goHome, user, loadHistory, markFoodEntryPendingDelete, clearFoodEntryPendingDelete } = useStore();
   const [foodSheet, setFoodSheet] = useState({ open: false, target: null });
   const [snackSheetOpen, setSnackSheetOpen] = useState(false);
   const [trainingOpen, setTrainingOpen] = useState(false);
@@ -136,6 +136,7 @@ export const TodayPage = () => {
   const pendingOpenPerfRef = useRef(null);
   const deletingFoodGuardRef = useRef(false);
   const addingFoodGuardRef = useRef(false);
+  const cancelledFoodOperationsRef = useRef(new Map());
   const now = useCurrentTime();
 
   useEffect(() => {
@@ -289,6 +290,23 @@ export const TodayPage = () => {
         throw error || new Error('食品记录保存失败');
       }
 
+      if (cancelledFoodOperationsRef.current.has(operationId)) {
+        const cancellation = cancelledFoodOperationsRef.current.get(operationId);
+        const cleanupFood = await timelineService.deleteFoodEntry(data.foodEntry.entryId, user.id);
+        if (cleanupFood.error) {
+          markFoodEntryPendingDelete?.(data.foodEntry.entryId);
+          toast.error('已取消显示，但远程清理失败，请稍后重试');
+        } else {
+          confirmFoodEntryDeletion(data.foodEntry.entryId);
+        }
+        if (cancellation?.removeEmptyCustomMeal && !isDefaultMeal(targetMeal)) {
+          const cleanupMeal = await timelineService.deleteTimelineItemByUser(data.meal.id, user.id);
+          if (cleanupMeal.error) toast.error('食物已取消，但空餐次清理失败，请稍后重试');
+        }
+        cancelledFoodOperationsRef.current.delete(operationId);
+        return false;
+      }
+
       setTimeline((currentTimeline) => currentTimeline.map((item) => {
         if (item.id !== targetMeal.id && item.id !== data.meal.id) return item;
         const withoutOptimisticOrDuplicate = (item.foods || []).filter((entry) => (
@@ -315,6 +333,10 @@ export const TodayPage = () => {
       showSuccess(`已添加 ${food.name} 到 ${targetMeal.title}`);
       return true;
     } catch (error) {
+      if (cancelledFoodOperationsRef.current.has(operationId)) {
+        cancelledFoodOperationsRef.current.delete(operationId);
+        return false;
+      }
       setTimeline((currentTimeline) => currentTimeline.map((item) => ({
         ...item,
         foods: (item.foods || []).map((entry) => (
@@ -867,6 +889,17 @@ export const TodayPage = () => {
       };
     })
     .filter(Boolean);
+
+  const confirmFoodEntryDeletion = (entryId) => {
+    void timelineService.getTimelineByDate(user.id, currentDateStr).then(({ data, error }) => {
+      if (error) return;
+      const stillExists = (data || []).some((item) => (item.foods || []).some((food) => (
+        String(food?.entryId || food?.foodEntryId || food?.id || '') === String(entryId)
+      )));
+      if (!stillExists) clearFoodEntryPendingDelete?.(entryId);
+    });
+  };
+
   const handleConfirmDelete = async () => {
     if (!pendingDeleteItem) return;
 
@@ -903,11 +936,14 @@ export const TodayPage = () => {
 
       const isLastFood = foods.length === 1;
       const keepEmptyDefaultMeal = isLastFood && isDefaultMeal(mealItem);
-      const shouldDeleteMealRow = isLastFood
-        && !keepEmptyDefaultMeal
-        && isLikelySupabaseUuid(mealItem.id);
-      const shouldDeleteFoodRow = (!isLastFood || keepEmptyDefaultMeal)
-        && isLikelySupabaseUuid(pendingDeleteFood.foodEntryKey);
+      const entryId = pendingDeleteFood.foodEntryKey;
+      const shouldDeleteCustomMeal = isLastFood && !keepEmptyDefaultMeal;
+      const hasPersistedFoodEntry = isLikelySupabaseUuid(entryId);
+      const hasPersistedMeal = isLikelySupabaseUuid(mealItem.id);
+      const targetFood = foods[targetIndex];
+      const isUnsyncedLocalFood = !hasPersistedFoodEntry
+        && Boolean(targetFood?.clientMutationId)
+        && ['pending', 'syncing', 'failed'].includes(targetFood?.sync_status);
 
       deletingFoodGuardRef.current = true;
       setDeletingFoodEntryKey(pendingDeleteFood.foodEntryKey);
@@ -919,37 +955,81 @@ export const TodayPage = () => {
         pendingDeleteFood.foodIndex,
       );
       const rollbackTimeline = timeline;
+      const emptyCustomMealTimeline = timeline.map((item) => (
+        item.id === mealItem.id ? { ...item, foods: [] } : item
+      ));
       const operationId = createOperationId();
+      if (hasPersistedFoodEntry) markFoodEntryPendingDelete?.(entryId);
+      if (isUnsyncedLocalFood) {
+        cancelledFoodOperationsRef.current.set(targetFood.clientMutationId, {
+          removeEmptyCustomMeal: shouldDeleteCustomMeal,
+        });
+      }
       setTimeline(nextTimeline);
 
       try {
-        if (shouldDeleteMealRow) {
-          const { error } = await timelineService.deleteTimelineItemByUser(mealItem.id, user.id);
-          if (error) {
-            setTimeline(rollbackTimeline);
-            toast.error(error?.message || '删除失败，请稍后重试');
-            return;
-          }
-        } else if (shouldDeleteFoodRow) {
-          const { error } = await timelineService.deleteFoodEntry(pendingDeleteFood.foodEntryKey, user.id);
-          if (error) {
-            setTimeline(rollbackTimeline);
-            toast.error(error?.message || '删除失败，请稍后重试');
-            return;
-          }
-        } else {
+        if (isUnsyncedLocalFood) {
+          setDeleteDialogOpen(false);
+          setPendingDeleteFood(null);
+          setPendingDeleteItem(null);
+          showSuccess('食物已删除');
+          return;
+        }
+
+        if (!hasPersistedFoodEntry) {
           setTimeline(rollbackTimeline);
           toast.error('食物记录缺少有效标识，请刷新后重试');
           return;
         }
 
+        if (shouldDeleteCustomMeal) {
+          if (!hasPersistedMeal) {
+            setTimeline(rollbackTimeline);
+            clearFoodEntryPendingDelete?.(entryId);
+            toast.error('餐次记录缺少有效标识，请刷新后重试');
+            return;
+          }
+          const result = await timelineService.deleteFoodEntryThenCustomMeal(entryId, mealItem.id, user.id);
+          if (result.error) {
+            if (result.foodDeleted) {
+              setTimeline(emptyCustomMealTimeline);
+              timelineRealtimeService.broadcast({
+                type: 'food_entry_deleted',
+                user_id: user.id,
+                record_date: currentDateStr,
+                entity_id: entryId,
+                operation_id: operationId,
+              });
+              confirmFoodEntryDeletion(entryId);
+              setDeleteDialogOpen(false);
+              setPendingDeleteFood(null);
+              setPendingDeleteItem(null);
+              toast.error('食物已删除，但空餐次清理失败，请稍后重试');
+            } else {
+              setTimeline(rollbackTimeline);
+              clearFoodEntryPendingDelete?.(entryId);
+              toast.error(result.error?.message || '删除失败，请稍后重试');
+            }
+            return;
+          }
+        } else {
+          const { error } = await timelineService.deleteFoodEntry(entryId, user.id);
+          if (error) {
+            setTimeline(rollbackTimeline);
+            clearFoodEntryPendingDelete?.(entryId);
+            toast.error(error?.message || '删除失败，请稍后重试');
+            return;
+          }
+        }
+
         timelineRealtimeService.broadcast({
-          type: shouldDeleteMealRow ? 'meal_deleted' : 'food_entry_deleted',
+          type: shouldDeleteCustomMeal ? 'meal_deleted' : 'food_entry_deleted',
           user_id: user.id,
           record_date: currentDateStr,
-          entity_id: shouldDeleteMealRow ? mealItem.id : pendingDeleteFood.foodEntryKey,
+          entity_id: shouldDeleteCustomMeal ? mealItem.id : entryId,
           operation_id: operationId,
         });
+        confirmFoodEntryDeletion(entryId);
         setDeleteDialogOpen(false);
         setPendingDeleteFood(null);
         setPendingDeleteItem(null);

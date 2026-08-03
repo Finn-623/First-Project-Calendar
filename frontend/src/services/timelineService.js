@@ -630,4 +630,22 @@ export const timelineService = {
       return { error: err };
     }
   },
+
+  /**
+   * Delete the food row first, then remove an empty custom meal. The order is
+   * intentional: a meal must never disappear while its food row still exists.
+   */
+  async deleteFoodEntryThenCustomMeal(entryId, mealId, userId) {
+    const foodResult = await this.deleteFoodEntry(entryId, userId);
+    if (foodResult.error) {
+      return { foodDeleted: false, mealDeleted: false, error: foodResult.error };
+    }
+
+    const mealResult = await this.deleteTimelineItemByUser(mealId, userId);
+    if (mealResult.error) {
+      return { foodDeleted: true, mealDeleted: false, error: mealResult.error };
+    }
+
+    return { foodDeleted: true, mealDeleted: true, error: null };
+  },
 };

@@ -10,7 +10,7 @@ import { timelineService } from './services/timelineService';
 import { timelineRealtimeService } from './services/timelineRealtimeService';
 import { timelineCacheService } from './services/timelineCacheService';
 import { filterMeaningfulTimelineItems } from './lib/dayRecordUtils';
-import { mergeRemoteTimelineWithLocalPending } from './lib/timelinePendingMerge';
+import { filterPendingDeletedFoodEntries, mergeRemoteTimelineWithLocalPending } from './lib/timelinePendingMerge';
 
 const StoreContext = createContext(null);
 
@@ -127,6 +127,7 @@ export const StoreProvider = ({ children, user: initialUser, session: initialSes
   const [favorites, setFavorites] = useState([]);
   const [dayInitialized, setDayInitialized] = useState(false);
   const [timelineSyncError, setTimelineSyncError] = useState(null);
+  const [pendingDeleteEntryIds, setPendingDeleteEntryIds] = useState(() => new Set());
   const requestEpochRef = useRef(0);
   const privateFoodSeenCountRef = useRef(new Map());
   const selectedTodayDateRef = useRef(getSydneyDateString());
@@ -139,6 +140,7 @@ export const StoreProvider = ({ children, user: initialUser, session: initialSes
   const realtimeReloadTimerRef = useRef(null);
   const cacheHydratedRef = useRef(false);
   const cacheReadyToWriteRef = useRef(false);
+  const pendingDeleteEntryIdsRef = useRef(new Set());
 
   const wait = useCallback((ms) => new Promise((resolve) => setTimeout(resolve, ms)), []);
 
@@ -189,6 +191,8 @@ export const StoreProvider = ({ children, user: initialUser, session: initialSes
     setRecordingDateStr(today);
     setDayInitialized(false);
     setTimelineSyncError(null);
+    setPendingDeleteEntryIds(new Set());
+    pendingDeleteEntryIdsRef.current = new Set();
     setAuthError(null);
   }, []);
 
@@ -661,6 +665,18 @@ export const StoreProvider = ({ children, user: initialUser, session: initialSes
     }
   }, [isActiveRequest]);
 
+  const reconcileConfirmedFoodDeletes = useCallback((remoteTimeline) => {
+    if (!pendingDeleteEntryIdsRef.current.size) return;
+    const remoteEntryIds = new Set((remoteTimeline || []).flatMap((item) => (
+      (item?.foods || []).map((food) => String(food?.entryId || food?.foodEntryId || food?.id || '')).filter(Boolean)
+    )));
+    const next = new Set([...pendingDeleteEntryIdsRef.current].filter((entryId) => remoteEntryIds.has(entryId)));
+    if (next.size !== pendingDeleteEntryIdsRef.current.size) {
+      pendingDeleteEntryIdsRef.current = next;
+      setPendingDeleteEntryIds(next);
+    }
+  }, []);
+
   const loadDayData = useCallback(async (dateStr, userId = user?.id) => {
     if (!userId || !dateStr) return { success: false, error: '缺少必要参数' };
 
@@ -679,8 +695,12 @@ export const StoreProvider = ({ children, user: initialUser, session: initialSes
 
     if (isActiveRequest(epoch, userId) && timelineResult.status === 'fulfilled' && !timelineResult.value?.error) {
       setTimelineSyncError(null);
+      reconcileConfirmedFoodDeletes(timelineResult.value?.data);
       setTimeline((currentTimeline) => mergeRemoteTimelineWithLocalPending(
-        mergePersistedTimelineWithFixedMeals(timelineResult.value?.data),
+        filterPendingDeletedFoodEntries(
+          mergePersistedTimelineWithFixedMeals(timelineResult.value?.data),
+          pendingDeleteEntryIdsRef.current
+        ),
         currentTimeline
       ));
     } else if (isActiveRequest(epoch, userId)) {
@@ -697,7 +717,7 @@ export const StoreProvider = ({ children, user: initialUser, session: initialSes
       runningResult,
       timelineResult,
     };
-  }, [isActiveRequest, loadHistory, loadPlan, loadPlanHistory, loadProfile, refreshFoods, user?.id]);
+  }, [isActiveRequest, loadHistory, loadPlan, loadPlanHistory, loadProfile, reconcileConfirmedFoodDeletes, refreshFoods, user?.id]);
 
   const syncSelectedDate = useCallback(async (userId, force = false) => {
     if (!userId) return { success: false, error: '缺少用户 ID' };
@@ -950,6 +970,9 @@ export const StoreProvider = ({ children, user: initialUser, session: initialSes
       cacheReadyToWriteRef.current = true;
       if (cached?.timeline) {
         cacheHydratedRef.current = true;
+        const cachedPendingDeletes = new Set(cached.pendingDeleteEntryIds || []);
+        pendingDeleteEntryIdsRef.current = cachedPendingDeletes;
+        setPendingDeleteEntryIds(cachedPendingDeletes);
         selectedTodayDateRef.current = cached.recordDate;
         setRecordingDateStr(cached.recordDate);
         setCurrentDate(createDateFromString(cached.recordDate));
@@ -990,9 +1013,13 @@ export const StoreProvider = ({ children, user: initialUser, session: initialSes
         const { data, error } = await timelineService.getTimelineByDate(userId, dateToReload);
         if (!disposed && !error && getSydneyDateString(currentDateRef.current) === dateToReload) {
           setTimelineSyncError(null);
+          reconcileConfirmedFoodDeletes(data);
           setTimeline((currentTimeline) => {
             const nextTimeline = mergeRemoteTimelineWithLocalPending(
-              mergePersistedTimelineWithFixedMeals(data),
+              filterPendingDeletedFoodEntries(
+                mergePersistedTimelineWithFixedMeals(data),
+                pendingDeleteEntryIdsRef.current
+              ),
               currentTimeline
             );
             timelineCacheRef.current.set(dateToReload, cloneTimeline(nextTimeline));
@@ -1011,7 +1038,7 @@ export const StoreProvider = ({ children, user: initialUser, session: initialSes
       }
       void timelineRealtimeService.stop();
     };
-  }, [user?.id]);
+  }, [reconcileConfirmedFoodDeletes, user?.id]);
 
   const signIn = useCallback(async (username, password) => {
     setAuthLoading(true);
@@ -1146,9 +1173,24 @@ export const StoreProvider = ({ children, user: initialUser, session: initialSes
     const dateKey = getSydneyDateString(currentDate);
     timelineCacheRef.current.set(dateKey, cloneTimeline(timeline));
     if (user?.id && cacheReadyToWriteRef.current && !logoutCompletedRef.current) {
-      void timelineCacheService.putSnapshot(user.id, dateKey, cloneTimeline(timeline));
+      void timelineCacheService.putSnapshot(user.id, dateKey, cloneTimeline(timeline), { pendingDeleteEntryIds });
     }
-  }, [currentDate, timeline, user?.id]);
+  }, [currentDate, pendingDeleteEntryIds, timeline, user?.id]);
+
+  const markFoodEntryPendingDelete = useCallback((entryId) => {
+    if (!entryId) return;
+    const next = new Set([...pendingDeleteEntryIdsRef.current, String(entryId)]);
+    pendingDeleteEntryIdsRef.current = next;
+    setPendingDeleteEntryIds(next);
+  }, []);
+
+  const clearFoodEntryPendingDelete = useCallback((entryId) => {
+    if (!entryId) return;
+    const next = new Set(pendingDeleteEntryIdsRef.current);
+    next.delete(String(entryId));
+    pendingDeleteEntryIdsRef.current = next;
+    setPendingDeleteEntryIds(next);
+  }, []);
 
   const value = {
     user,
@@ -1188,6 +1230,8 @@ export const StoreProvider = ({ children, user: initialUser, session: initialSes
     setHistory,
     dayInitialized,
     timelineSyncError,
+    markFoodEntryPendingDelete,
+    clearFoodEntryPendingDelete,
     foods,
     setFoods,
     refreshFoods,

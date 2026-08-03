@@ -92,7 +92,7 @@ export const timelineCacheService = {
     }
   },
 
-  async putSnapshot(userId, dateStr, timeline) {
+  async putSnapshot(userId, dateStr, timeline, options = {}) {
     if (!userId || !dateStr || !Array.isArray(timeline)) return;
     const cachedAt = new Date().toISOString();
     const snapshot = {
@@ -101,6 +101,7 @@ export const timelineCacheService = {
       userId,
       recordDate: dateStr,
       timeline,
+      pendingDeleteEntryIds: Array.from(options.pendingDeleteEntryIds || []),
       cachedAt,
       schemaVersion: TIMELINE_CACHE_SCHEMA_VERSION,
     };

@@ -31,3 +31,18 @@ export const mergeRemoteTimelineWithLocalPending = (remoteTimeline = [], localTi
 
   return remote;
 };
+
+export const filterPendingDeletedFoodEntries = (timeline = [], pendingDeleteEntryIds = []) => {
+  const deletedIds = pendingDeleteEntryIds instanceof Set
+    ? pendingDeleteEntryIds
+    : new Set(pendingDeleteEntryIds || []);
+  if (!deletedIds.size) return timeline;
+
+  return (timeline || []).map((item) => ({
+    ...item,
+    foods: (item?.foods || []).filter((food) => {
+      const id = food?.entryId || food?.foodEntryId || food?.id;
+      return !id || !deletedIds.has(String(id));
+    }),
+  }));
+};

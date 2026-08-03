@@ -1,4 +1,4 @@
-import { mergeRemoteTimelineWithLocalPending } from './timelinePendingMerge';
+import { filterPendingDeletedFoodEntries, mergeRemoteTimelineWithLocalPending } from './timelinePendingMerge';
 
 describe('mergeRemoteTimelineWithLocalPending', () => {
   const localMeal = {
@@ -30,5 +30,15 @@ describe('mergeRemoteTimelineWithLocalPending', () => {
   test('同步失败记录也在远程刷新中保留以供重试', () => {
     const failed = [{ ...localMeal, foods: [{ ...localMeal.foods[0], sync_status: 'failed' }] }];
     expect(mergeRemoteTimelineWithLocalPending([], failed)[0].foods[0].sync_status).toBe('failed');
+  });
+
+  test('旧远程结果不会恢复pending delete食品', () => {
+    const remote = [{
+      id: 'meal-1', type: 'meal', subtype: 'breakfast',
+      foods: [{ entryId: 'deleted-entry', name: '已删除食品' }, { entryId: 'kept-entry', name: '保留食品' }],
+    }];
+    expect(filterPendingDeletedFoodEntries(remote, new Set(['deleted-entry']))[0].foods).toEqual([
+      expect.objectContaining({ entryId: 'kept-entry' }),
+    ]);
   });
 });

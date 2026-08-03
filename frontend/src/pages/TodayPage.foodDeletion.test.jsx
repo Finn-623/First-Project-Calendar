@@ -16,6 +16,8 @@ jest.mock('../services/timelineService', () => ({
     completeRunningTimelineItem: jest.fn(),
     deleteTimelineItemByUser: jest.fn(),
     deleteFoodEntry: jest.fn(),
+    deleteFoodEntryThenCustomMeal: jest.fn(),
+    getTimelineByDate: jest.fn(),
   },
 }));
 
@@ -113,6 +115,8 @@ const setSelectedDateMock = jest.fn();
 const goHomeMock = jest.fn();
 const endDayMock = jest.fn(() => Promise.resolve({ success: true }));
 const loadHistoryMock = jest.fn(() => Promise.resolve({ success: true }));
+const markFoodEntryPendingDeleteMock = jest.fn();
+const clearFoodEntryPendingDeleteMock = jest.fn();
 
 function mountPage(timeline = makeTimeline()) {
   storeState = {
@@ -128,6 +132,8 @@ function mountPage(timeline = makeTimeline()) {
     goHome: goHomeMock,
     user: { id: 'user-1' },
     loadHistory: loadHistoryMock,
+    markFoodEntryPendingDelete: markFoodEntryPendingDeleteMock,
+    clearFoodEntryPendingDelete: clearFoodEntryPendingDeleteMock,
   };
 
   useStore.mockImplementation(() => storeState);
@@ -140,6 +146,8 @@ async function deleteFoodAndConfirm(itemId, foodIndex, mealTitle, foodName) {
   const mealBeforeDelete = storeState.timeline.find((item) => item.id === itemId);
   const isLastFoodBeforeDelete = Array.isArray(mealBeforeDelete?.foods) && mealBeforeDelete.foods.length === 1;
   const isDefaultMeal = ['breakfast', 'lunch', 'dinner'].includes(mealBeforeDelete?.subtype);
+  const targetEntryId = mealBeforeDelete?.foods?.[foodIndex]?.entryId;
+  const isPersistedEntry = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(targetEntryId || '');
 
   await act(async () => {
     fireEvent.click(screen.getByTestId(`delete-food-entry-${itemId}-${foodIndex}`));
@@ -151,8 +159,11 @@ async function deleteFoodAndConfirm(itemId, foodIndex, mealTitle, foodName) {
     fireEvent.click(screen.getByRole('button', { name: '确认删除' }));
   });
   await waitFor(() => {
-    if (isLastFoodBeforeDelete && !isDefaultMeal) {
-      expect(timelineService.deleteTimelineItemByUser).toHaveBeenCalled();
+    if (!isPersistedEntry) {
+      expect(timelineService.deleteFoodEntry).not.toHaveBeenCalled();
+      expect(timelineService.deleteFoodEntryThenCustomMeal).not.toHaveBeenCalled();
+    } else if (isLastFoodBeforeDelete && !isDefaultMeal) {
+      expect(timelineService.deleteFoodEntryThenCustomMeal).toHaveBeenCalled();
     } else {
       expect(timelineService.deleteFoodEntry).toHaveBeenCalled();
     }
@@ -175,6 +186,8 @@ describe('TodayPage 食物删除闭环', () => {
     });
     timelineService.deleteFoodEntry.mockResolvedValue({ error: null });
     timelineService.deleteTimelineItemByUser.mockResolvedValue({ error: null });
+    timelineService.deleteFoodEntryThenCustomMeal.mockResolvedValue({ foodDeleted: true, mealDeleted: true, error: null });
+    timelineService.getTimelineByDate.mockResolvedValue({ data: [], error: null });
   });
 
   test('删除多食物餐次中的一个食物后，餐次继续存在且汇总更新', async () => {
@@ -255,9 +268,46 @@ describe('TodayPage 食物删除闭环', () => {
 
     await deleteFoodAndConfirm(snackId, 0, '训练后加餐', '酸奶');
 
-    expect(timelineService.deleteTimelineItemByUser).toHaveBeenCalledWith(snackId, 'user-1');
-    expect(timelineService.deleteFoodEntry).not.toHaveBeenCalled();
+    expect(timelineService.deleteFoodEntryThenCustomMeal).toHaveBeenCalledWith(snackFood, snackId, 'user-1');
     expect(storeState.timeline).toHaveLength(0);
+  });
+
+  test('自定义餐次食品已删除但空餐次删除失败时保留空餐并明确报错', async () => {
+    timelineService.deleteFoodEntryThenCustomMeal.mockResolvedValue({
+      foodDeleted: true,
+      mealDeleted: false,
+      error: new Error('餐次删除失败'),
+    });
+    mountPage([{
+      id: snackId,
+      type: 'meal',
+      subtype: 'snack',
+      title: '训练后加餐',
+      time: '16:00',
+      foods: [{ entryId: snackFood, name: '酸奶', grams: 100, cal: 80 }],
+    }]);
+
+    await deleteFoodAndConfirm(snackId, 0, '训练后加餐', '酸奶');
+
+    expect(storeState.timeline).toEqual([expect.objectContaining({ id: snackId, foods: [] })]);
+    expect(toast.error).toHaveBeenCalledWith('食物已删除，但空餐次清理失败，请稍后重试');
+    expect(clearFoodEntryPendingDeleteMock).toHaveBeenCalledWith(snackFood);
+  });
+
+  test('删除尚未同步的临时食品只更新本地且不发送无效远程delete', async () => {
+    mountPage([{
+      id: breakfastId,
+      type: 'meal',
+      subtype: 'breakfast',
+      title: '早餐',
+      foods: [{ entryId: 'pending-op-delete-local', clientMutationId: 'op-delete-local', name: '待同步食品', cal: 50, sync_status: 'pending' }],
+    }]);
+
+    await deleteFoodAndConfirm(breakfastId, 0, '早餐', '待同步食品');
+
+    expect(timelineService.deleteFoodEntry).not.toHaveBeenCalled();
+    expect(timelineService.deleteFoodEntryThenCustomMeal).not.toHaveBeenCalled();
+    expect(storeState.timeline[0].foods).toHaveLength(0);
   });
 
   test('删除失败时保留原页面数据并提示错误', async () => {

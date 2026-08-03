@@ -81,6 +81,7 @@ const StoreProbe = () => {
     resetDeletedDateState,
     setSelectedDate,
     setTimeline,
+    markFoodEntryPendingDelete,
   } = useStore();
   const totals = sumTimelineMacros(timeline);
 
@@ -164,6 +165,19 @@ const StoreProbe = () => {
         data-testid="set-stale-timeline"
       >
         写入旧缓存
+      </button>
+      <button
+        type="button"
+        onClick={() => {
+          markFoodEntryPendingDelete('cached-entry');
+          setTimeline((current) => current.map((item) => ({
+            ...item,
+            foods: (item.foods || []).filter((food) => food.entryId !== 'cached-entry'),
+          })));
+        }}
+        data-testid="optimistic-delete-cached-entry"
+      >
+        乐观删除缓存食品
       </button>
     </div>
   );
@@ -631,5 +645,24 @@ describe('Store 刷新缓存优先恢复', () => {
 
     await waitFor(() => expect(screen.getByTestId('timeline-sync-error').textContent).toContain('同步失败'));
     expect(screen.getByTestId('cached-food-name').textContent).toBe('缓存燕麦');
+  });
+
+  test('pending delete食品不会被随后到达的旧远程时间线恢复', async () => {
+    const cachedMeal = {
+      id: 'cached-breakfast', type: 'meal', subtype: 'breakfast', title: '早餐',
+      foods: [{ entryId: 'cached-entry', name: '待删除燕麦', cal: 190 }],
+    };
+    await timelineCacheService.putSnapshot('user-1', '2026-07-27', [cachedMeal]);
+    timelineService.getTimelineByDate.mockReturnValue(new Promise(() => {}));
+    renderStore();
+    await waitFor(() => expect(screen.getByTestId('cached-food-name').textContent).toBe('待删除燕麦'));
+
+    fireEvent.click(screen.getByTestId('optimistic-delete-cached-entry'));
+    expect(screen.getByTestId('cached-food-name').textContent).toBe('none');
+
+    timelineService.getTimelineByDate.mockResolvedValue({ data: [cachedMeal], error: null });
+    await act(async () => fireEvent.click(screen.getByTestId('go-home')));
+    await waitFor(() => expect(timelineService.getTimelineByDate).toHaveBeenCalled());
+    expect(screen.getByTestId('cached-food-name').textContent).toBe('none');
   });
 });

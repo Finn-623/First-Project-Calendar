@@ -117,4 +117,35 @@ describe('timelineService 食品记录持久化与恢复', () => {
     expect(cleanupQuery.eq).toHaveBeenCalledWith('id', mealRow.id);
     expect(cleanupQuery.eq).toHaveBeenCalledWith('user_id', 'user-1');
   });
+
+  test('自定义空餐次清理严格先删除food entry再删除meal', async () => {
+    const calls = [];
+    const foodSpy = jest.spyOn(timelineService, 'deleteFoodEntry').mockImplementation(async () => {
+      calls.push('food');
+      return { error: null };
+    });
+    const mealSpy = jest.spyOn(timelineService, 'deleteTimelineItemByUser').mockImplementation(async () => {
+      calls.push('meal');
+      return { error: null };
+    });
+
+    const result = await timelineService.deleteFoodEntryThenCustomMeal('entry-1', 'meal-1', 'user-1');
+
+    expect(result).toEqual({ foodDeleted: true, mealDeleted: true, error: null });
+    expect(calls).toEqual(['food', 'meal']);
+    foodSpy.mockRestore();
+    mealSpy.mockRestore();
+  });
+
+  test('food entry删除失败时绝不继续删除meal', async () => {
+    const foodSpy = jest.spyOn(timelineService, 'deleteFoodEntry').mockResolvedValue({ error: new Error('food delete failed') });
+    const mealSpy = jest.spyOn(timelineService, 'deleteTimelineItemByUser').mockResolvedValue({ error: null });
+
+    const result = await timelineService.deleteFoodEntryThenCustomMeal('entry-1', 'meal-1', 'user-1');
+
+    expect(result.foodDeleted).toBe(false);
+    expect(mealSpy).not.toHaveBeenCalled();
+    foodSpy.mockRestore();
+    mealSpy.mockRestore();
+  });
 });
