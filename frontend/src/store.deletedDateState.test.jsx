@@ -5,6 +5,8 @@ import { foodService } from './services/foodService';
 import { historyService } from './services/historyService';
 import { targetService } from './services/targetService';
 import { timelineService } from './services/timelineService';
+import { timelineCacheService } from './services/timelineCacheService';
+import { sumTimelineMacros } from './mockData';
 
 jest.mock('./lib/supabaseClient', () => ({
   supabase: null,
@@ -73,12 +75,14 @@ const StoreProbe = () => {
     timeline,
     history,
     dayInitialized,
+    timelineSyncError,
     endDay,
     goHome,
     resetDeletedDateState,
     setSelectedDate,
     setTimeline,
   } = useStore();
+  const totals = sumTimelineMacros(timeline);
 
   const deleteHistoryDate = async (dateStr) => {
     const { error } = await historyService.deleteFullDayRecords(dateStr);
@@ -94,7 +98,10 @@ const StoreProbe = () => {
       <span data-testid="current-date">{toDateStr(currentDate)}</span>
       <span data-testid="recording-date">{recordingDateStr}</span>
       <span data-testid="day-initialized">{String(dayInitialized)}</span>
+      <span data-testid="timeline-sync-error">{timelineSyncError || 'none'}</span>
       <span data-testid="timeline-title">{timeline[0]?.title || 'empty'}</span>
+      <span data-testid="cached-food-name">{timeline[0]?.foods?.[0]?.name || 'none'}</span>
+      <span data-testid="cached-total-calories">{totals.cal}</span>
       <span data-testid="history-count">{String(history.length)}</span>
       <button type="button" onClick={() => endDay()} data-testid="end-day">结束本日</button>
       <button type="button" onClick={() => goHome()} data-testid="go-home">返回首页</button>
@@ -174,6 +181,7 @@ describe('Store 删除日期后的首页状态恢复', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     localStorage.clear();
+    timelineCacheService.__resetMemoryForTests();
     foodService.getAllFoods.mockResolvedValue({ data: [], error: null });
     foodService.loadPublicFoods.mockResolvedValue({ data: [], error: null });
     targetService.getLatestTarget.mockResolvedValue({ data: null, error: null });
@@ -564,5 +572,64 @@ describe('Store 删除日期后的首页状态恢复', () => {
       expect(screen.getByTestId('recording-date').textContent).toBe('2026-07-27');
       expect(screen.getByTestId('current-date').textContent).toBe('2026-07-27');
     });
+  });
+});
+
+describe('Store 刷新缓存优先恢复', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    timelineCacheService.__resetMemoryForTests();
+    foodService.getAllFoods.mockResolvedValue({ data: [], error: null });
+    foodService.loadPublicFoods.mockResolvedValue({ data: [], error: null });
+    targetService.getLatestTarget.mockResolvedValue({ data: null, error: null });
+    targetService.getTargetHistory.mockResolvedValue({ data: [], error: null });
+    timelineService.getRunningTimelineItems.mockResolvedValue({ data: [], error: null });
+    timelineService.getTimelineByDate.mockResolvedValue({ data: [], error: null });
+    historyService.getDayCompletion.mockResolvedValue({ data: null, error: null });
+    historyService.getHistoryDates.mockResolvedValue({ data: [], error: null });
+  });
+
+  test('远程日期与时间线Promise未完成前已显示当前用户缓存食品和汇总来源', async () => {
+    await timelineCacheService.putSnapshot('user-1', '2026-07-27', [{
+      id: 'cached-breakfast',
+      type: 'meal',
+      subtype: 'breakfast',
+      title: '早餐',
+      time: '08:00',
+      foods: [{ entryId: 'cached-entry', name: '缓存燕麦', grams: 50, cal: 190, p: 6, f: 3, c: 32 }],
+    }]);
+    timelineService.getTimelineByDate.mockReturnValue(new Promise(() => {}));
+
+    renderStore();
+
+    await waitFor(() => expect(screen.getByTestId('cached-food-name').textContent).toBe('缓存燕麦'));
+    expect(screen.getByTestId('day-initialized').textContent).toBe('true');
+    expect(screen.getByTestId('cached-total-calories').textContent).toBe('190');
+    await waitFor(() => expect(timelineService.getTimelineByDate).toHaveBeenCalled());
+    expect(screen.getByTestId('cached-food-name').textContent).toBe('缓存燕麦');
+  });
+
+  test('不同用户不能读取另一账号的缓存', async () => {
+    await timelineCacheService.putSnapshot('user-2', '2026-07-27', [{
+      id: 'private-meal', type: 'meal', subtype: 'breakfast', title: '账号B早餐', foods: [{ name: '账号B食品' }],
+    }]);
+    historyService.getDayCompletion.mockReturnValue(new Promise(() => {}));
+
+    renderStore();
+
+    await waitFor(() => expect(screen.getByTestId('timeline-title').textContent).toBe('早餐'));
+    expect(screen.getByTestId('cached-food-name').textContent).toBe('none');
+  });
+
+  test('远程校准失败时保留缓存并显示非阻塞同步错误', async () => {
+    await timelineCacheService.putSnapshot('user-1', '2026-07-27', [{
+      id: 'cached-breakfast', type: 'meal', subtype: 'breakfast', title: '早餐', foods: [{ name: '缓存燕麦', cal: 190 }],
+    }]);
+    timelineService.getTimelineByDate.mockResolvedValue({ data: null, error: new Error('网络失败') });
+
+    renderStore();
+
+    await waitFor(() => expect(screen.getByTestId('timeline-sync-error').textContent).toContain('同步失败'));
+    expect(screen.getByTestId('cached-food-name').textContent).toBe('缓存燕麦');
   });
 });

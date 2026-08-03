@@ -123,6 +123,28 @@ describe('App 退出后的受保护路由', () => {
     expect(screen.queryByTestId('ordinary-login-page')).toBeNull();
   });
 
+  test('有效session确认后不等待profile远程请求即可挂载用户Store', async () => {
+    let resolveProfile;
+    mockProfileByUser.set('user-a', new Promise((resolve) => {
+      resolveProfile = resolve;
+    }));
+    supabase.auth.getSession.mockResolvedValue({
+      data: { session: { access_token: 'session-a', user: { id: 'user-a' } } },
+      error: null,
+    });
+
+    render(<App />);
+
+    await waitFor(() => {
+      expect(screen.getByText('受保护首页')).toBeTruthy();
+      expect(screen.getByTestId('store-user').textContent).toBe('user-a');
+      expect(screen.getByTestId('store-profile').textContent).toBe('null');
+    });
+
+    resolveProfile({ data: { id: 'user-a', display_name: '账号 A', role: 'user' }, error: null });
+    await waitFor(() => expect(screen.getByTestId('store-profile').textContent).toBe('账号 A'));
+  });
+
   test('session 恢复失败时结束 loading 并返回普通登录页', async () => {
     supabase.auth.getSession.mockResolvedValue({
       data: { session: null },

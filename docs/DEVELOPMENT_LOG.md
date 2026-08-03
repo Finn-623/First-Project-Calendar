@@ -1,3 +1,24 @@
+## DEV-20260803-006
+
+- 日期：2026-08-03
+- 状态：代码修复完成，等待用户在最新本地页面最终验收
+- 修改类型：Performance Fix / 首页时间线缓存优先恢复
+- 任务目标：修复刷新首页后先出现空记录框架、等待约1–2秒远程请求完成才显示已有记录的问题，同时保持Supabase为唯一事实来源。
+- 实际完成内容：
+	- 定位到有效session恢复仍同步等待远程profile，Store因此无法尽早挂载；Store挂载后又先等待远程记录日期解析，并把timeline重置为空固定三餐模板，最后才读取`timeline_items`与`food_entries`。
+	- 新增最小IndexedDB时间线快照，按应用来源、用户ID和记录日期隔离，保存完整食品营养快照、缓存时间和schema版本；损坏、缺失或版本不兼容时安全回退到空框架与远程读取。
+	- 有效session确认后立即挂载受保护Store，profile/管理员角色在后台恢复；Store先恢复该用户最近记录日缓存，再并行执行日期校准和Supabase刷新。
+	- 远程成功结果继续作为最终事实来源，并与本地pending/syncing/failed乐观记录合并；远程失败时保留缓存记录并显示非阻塞同步错误，不显示虚假成功。
+	- 新增、修改、删除、Realtime校准及日期数据加载导致timeline变化时更新快照；整日历史删除会清除对应用户和日期快照；退出立即清空内存Store，IndexedDB快照仍按用户隔离，不能在其他账号下读取。
+- 主要修改文件或模块：`frontend/src/services/timelineCacheService.js`、`frontend/src/store.jsx`、`frontend/src/App.js`、`frontend/src/pages/TodayPage.jsx`及对应测试。
+- 遇到的问题：初版缓存恢复在等待IndexedDB期间延后启动日期初始化，使既有“删除本日后忽略旧初始化结果”竞争回归失败。
+- 解决方式：日期初始化与缓存读取同时启动，并在缓存读取前后都校验初始化request ID，保证迟到缓存或迟到远程结果不能覆盖更新后的真实本日状态。
+- 执行的测试：缓存服务/日期Store/Auth启动/食品持久化与删除专项；前端全量测试；Production Build；本地Production预览刷新时序检查；`git diff --check`。
+- 测试结果：专项5套件38项通过；全量38套件244项通过；Production Build成功。Production预览刷新首次内容绘制约731ms，当天远程`timeline_items/food_entries`请求约2.69–3.46秒完成，已有食品和237 kcal汇总在刷新结果中保持显示，证明缓存恢复先于远程校准。仅保留既有Supabase测试环境提示、模拟session失败日志和Build `fs.F_OK`弃用警告。
+- 未完成事项：仍需用户在最新本地页面分别确认有缓存、无缓存、跨账号、断网/慢网与重新登录体验；Feedback编号6继续保持pending。
+- 风险或注意事项：IndexedDB只是启动快照，不是离线数据库或Outbox；首次使用、缓存被清除或schema升级失效时仍显示固定餐次框架并等待Supabase。未部署Migration 028，未改变食品新增首帧、Realtime架构、公共食品数据或审核状态。
+- Git Commit ID：由本独立提交承载；完整ID以Git历史和任务最终汇报为准。
+
 ## DEV-20260803-005
 
 - 日期：2026-08-03

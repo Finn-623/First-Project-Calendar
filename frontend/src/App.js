@@ -193,8 +193,10 @@ function App() {
           activeSessionUserRef.current = existingSession.user.id;
           setSession(existingSession);
           setUser(existingSession.user);
-          // Load profile
-          await loadUserProfile(existingSession.user.id);
+          // Session identity is enough to mount the user-isolated Store and
+          // restore its local timeline cache. Profile/role hydration continues
+          // independently and must not hold the first record frame.
+          void loadUserProfile(existingSession.user.id);
         }
 
         if (!mountedRef.current) return; // Component unmounted

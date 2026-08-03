@@ -114,7 +114,7 @@ const AddPickerMenu = ({ onSnack, onTraining, onEvent, testIdPrefix = 'picker' }
 );
 
 export const TodayPage = () => {
-  const { timeline, setTimeline, plan, dateLabel, endDay, dayInitialized, currentDate, recordingDateStr, setSelectedDate, goHome, user, loadHistory } = useStore();
+  const { timeline, setTimeline, plan, dateLabel, endDay, dayInitialized, timelineSyncError, currentDate, recordingDateStr, setSelectedDate, goHome, user, loadHistory } = useStore();
   const [foodSheet, setFoodSheet] = useState({ open: false, target: null });
   const [snackSheetOpen, setSnackSheetOpen] = useState(false);
   const [trainingOpen, setTrainingOpen] = useState(false);
@@ -1017,6 +1017,9 @@ export const TodayPage = () => {
     <div className="pb-32">
       {!dayInitialized ? (
         <div className="px-5 pt-10 text-[13px] text-[#858C88]">正在同步今日日期...</div>
+      ) : null}
+      {timelineSyncError ? (
+        <div className="mx-5 mt-4 text-[12px] text-[#A35D4F]" role="status">{timelineSyncError}</div>
       ) : null}
       {dayInitialized && !isViewingDeviceToday ? (
         <div

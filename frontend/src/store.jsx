@@ -8,6 +8,7 @@ import { targetService } from './services/targetService';
 import { addDaysToDateString, getSydneyDateString, getSydneyMidnightDelayMs, historyService } from './services/historyService';
 import { timelineService } from './services/timelineService';
 import { timelineRealtimeService } from './services/timelineRealtimeService';
+import { timelineCacheService } from './services/timelineCacheService';
 import { filterMeaningfulTimelineItems } from './lib/dayRecordUtils';
 import { mergeRemoteTimelineWithLocalPending } from './lib/timelinePendingMerge';
 
@@ -125,6 +126,7 @@ export const StoreProvider = ({ children, user: initialUser, session: initialSes
   const [publicFoods, setPublicFoods] = useState([]);
   const [favorites, setFavorites] = useState([]);
   const [dayInitialized, setDayInitialized] = useState(false);
+  const [timelineSyncError, setTimelineSyncError] = useState(null);
   const requestEpochRef = useRef(0);
   const privateFoodSeenCountRef = useRef(new Map());
   const selectedTodayDateRef = useRef(getSydneyDateString());
@@ -135,6 +137,8 @@ export const StoreProvider = ({ children, user: initialUser, session: initialSes
   const logoutCompletedRef = useRef(false);
   const currentDateRef = useRef(currentDate);
   const realtimeReloadTimerRef = useRef(null);
+  const cacheHydratedRef = useRef(false);
+  const cacheReadyToWriteRef = useRef(false);
 
   const wait = useCallback((ms) => new Promise((resolve) => setTimeout(resolve, ms)), []);
 
@@ -158,6 +162,8 @@ export const StoreProvider = ({ children, user: initialUser, session: initialSes
     privateFoodSeenCountRef.current.clear();
     endDaySubmittingRef.current = false;
     logoutCompletedRef.current = true;
+    cacheHydratedRef.current = false;
+    cacheReadyToWriteRef.current = false;
     if (realtimeReloadTimerRef.current) {
       window.clearTimeout(realtimeReloadTimerRef.current);
       realtimeReloadTimerRef.current = null;
@@ -182,6 +188,7 @@ export const StoreProvider = ({ children, user: initialUser, session: initialSes
     setCurrentDate(createDateFromString(today));
     setRecordingDateStr(today);
     setDayInitialized(false);
+    setTimelineSyncError(null);
     setAuthError(null);
   }, []);
 
@@ -198,6 +205,7 @@ export const StoreProvider = ({ children, user: initialUser, session: initialSes
 
     const today = getSydneyDateString();
     timelineCacheRef.current.delete(deletedDateStr);
+    if (user?.id) void timelineCacheService.removeSnapshot(user.id, deletedDateStr);
     setHistory((prev) => prev.filter((item) => item?.dateStr !== deletedDateStr));
 
     const shouldResetToToday = deletedDateStr === today || deletedDateStr === selectedTodayDateRef.current;
@@ -217,7 +225,7 @@ export const StoreProvider = ({ children, user: initialUser, session: initialSes
     setTimeline(nextFreshTimeline);
     timelineCacheRef.current.set(today, cloneTimeline(nextFreshTimeline));
     setDayInitialized(true);
-  }, [recordingDateStr]);
+  }, [recordingDateStr, user?.id]);
 
   const resolveHomeTargetDate = useCallback(async (userId) => {
     if (!userId) {
@@ -242,7 +250,7 @@ export const StoreProvider = ({ children, user: initialUser, session: initialSes
     if (!userId) return { success: false, error: '缺少用户 ID' };
 
     const requestId = ++initializationRequestRef.current;
-    setDayInitialized(false);
+    if (!cacheHydratedRef.current) setDayInitialized(false);
 
     try {
       const resolved = await resolveHomeTargetDate(userId);
@@ -255,9 +263,17 @@ export const StoreProvider = ({ children, user: initialUser, session: initialSes
       }
 
       selectedTodayDateRef.current = resolved.today;
+      const cached = await timelineCacheService.getSnapshot(userId, resolved.selectedDate);
+      if (requestId !== initializationRequestRef.current) {
+        return { success: false, ignored: true };
+      }
       setRecordingDateStr(resolved.selectedDate);
       setCurrentDate(createDateFromString(resolved.selectedDate));
-      setTimeline(freshTimeline());
+      if (cached?.timeline) {
+        setTimeline(mergePersistedTimelineWithFixedMeals(cached.timeline));
+      } else if (getSydneyDateString(currentDateRef.current) !== resolved.selectedDate) {
+        setTimeline(freshTimeline());
+      }
       setDayInitialized(true);
 
       return {
@@ -662,10 +678,13 @@ export const StoreProvider = ({ children, user: initialUser, session: initialSes
     ]);
 
     if (isActiveRequest(epoch, userId) && timelineResult.status === 'fulfilled' && !timelineResult.value?.error) {
+      setTimelineSyncError(null);
       setTimeline((currentTimeline) => mergeRemoteTimelineWithLocalPending(
         mergePersistedTimelineWithFixedMeals(timelineResult.value?.data),
         currentTimeline
       ));
+    } else if (isActiveRequest(epoch, userId)) {
+      setTimelineSyncError('同步失败，正在显示上次保存的记录');
     }
 
     return {
@@ -919,12 +938,34 @@ export const StoreProvider = ({ children, user: initialUser, session: initialSes
     const userId = user?.id;
     if (!userId) return;
 
-    void initializeSelectedDate(userId).then((result) => {
-      if (result?.success && result.selectedDate) {
+    let disposed = false;
+    logoutCompletedRef.current = false;
+    cacheHydratedRef.current = false;
+    cacheReadyToWriteRef.current = false;
+    void (async () => {
+      const initializationPromise = initializeSelectedDate(userId);
+      const startupRequestId = initializationRequestRef.current;
+      const cached = await timelineCacheService.getActiveSnapshot(userId);
+      if (disposed || startupRequestId !== initializationRequestRef.current) return;
+      cacheReadyToWriteRef.current = true;
+      if (cached?.timeline) {
+        cacheHydratedRef.current = true;
+        selectedTodayDateRef.current = cached.recordDate;
+        setRecordingDateStr(cached.recordDate);
+        setCurrentDate(createDateFromString(cached.recordDate));
+        setTimeline(mergePersistedTimelineWithFixedMeals(cached.timeline));
+        setDayInitialized(true);
+      }
+
+      const result = await initializationPromise;
+      if (!disposed && result?.success && result.selectedDate) {
         void loadDayData(result.selectedDate, userId);
         scheduleMidnightSync(userId);
       }
-    });
+    })();
+    return () => {
+      disposed = true;
+    };
   }, [initializeSelectedDate, loadDayData, scheduleMidnightSync, user?.id]);
 
   useEffect(() => {
@@ -948,6 +989,7 @@ export const StoreProvider = ({ children, user: initialUser, session: initialSes
         const dateToReload = getSydneyDateString(currentDateRef.current);
         const { data, error } = await timelineService.getTimelineByDate(userId, dateToReload);
         if (!disposed && !error && getSydneyDateString(currentDateRef.current) === dateToReload) {
+          setTimelineSyncError(null);
           setTimeline((currentTimeline) => {
             const nextTimeline = mergeRemoteTimelineWithLocalPending(
               mergePersistedTimelineWithFixedMeals(data),
@@ -956,7 +998,7 @@ export const StoreProvider = ({ children, user: initialUser, session: initialSes
             timelineCacheRef.current.set(dateToReload, cloneTimeline(nextTimeline));
             return nextTimeline;
           });
-        }
+        } else if (!disposed && error) setTimelineSyncError('同步失败，正在显示上次保存的记录');
       }, 40);
     };
 
@@ -1103,7 +1145,10 @@ export const StoreProvider = ({ children, user: initialUser, session: initialSes
   useEffect(() => {
     const dateKey = getSydneyDateString(currentDate);
     timelineCacheRef.current.set(dateKey, cloneTimeline(timeline));
-  }, [currentDate, timeline]);
+    if (user?.id && cacheReadyToWriteRef.current && !logoutCompletedRef.current) {
+      void timelineCacheService.putSnapshot(user.id, dateKey, cloneTimeline(timeline));
+    }
+  }, [currentDate, timeline, user?.id]);
 
   const value = {
     user,
@@ -1142,6 +1187,7 @@ export const StoreProvider = ({ children, user: initialUser, session: initialSes
     history,
     setHistory,
     dayInitialized,
+    timelineSyncError,
     foods,
     setFoods,
     refreshFoods,
