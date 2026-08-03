@@ -1,5 +1,5 @@
 import React from 'react';
-import { UtensilsCrossed, Dumbbell, Footprints, MapPin, Plus, Clock, Trash2, Loader2 } from 'lucide-react';
+import { UtensilsCrossed, Dumbbell, Footprints, MapPin, Plus, Clock, Trash2, Loader2, RotateCcw } from 'lucide-react';
 import { sumMealMacros } from '../mockData';
 import { SNACK_TYPE_LABELS, normalizeSnackType } from '../constants/snackTypes';
 import { getStrengthBodyPartLabels } from '../constants/trainingBodyParts';
@@ -23,6 +23,7 @@ export const TimelineItem = ({
   item,
   onAddFood,
   onDeleteFood,
+  onRetryFoodSync,
   onEditTime,
   onEditRecord,
   onDelete,
@@ -173,6 +174,19 @@ export const TimelineItem = ({
                   <div className="min-w-0">
                     <p className="text-[#2C332F] break-words">{f.name}</p>
                     <p className="font-num text-[#858C88]">{f.grams}g</p>
+                    {f.sync_status === 'pending' || f.sync_status === 'syncing' ? (
+                      <p className="text-[10px] text-[#858C88]">同步中…</p>
+                    ) : null}
+                    {f.sync_status === 'failed' ? (
+                      <button
+                        type="button"
+                        onClick={() => onRetryFoodSync && onRetryFoodSync(item, f)}
+                        className="mt-1 inline-flex min-h-8 items-center gap-1 text-[11px] text-[#D27D67]"
+                        aria-label={`重试同步${f.name}`}
+                      >
+                        <RotateCcw size={12} /> 同步失败，重试
+                      </button>
+                    ) : null}
                   </div>
 
                   <div className="flex items-center gap-2 shrink-0">

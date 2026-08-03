@@ -275,25 +275,7 @@ export const TodayPage = () => {
 
   const handleAddFood = (mealItem) => setFoodSheet({ open: true, target: mealItem });
 
-  const handleFoodConfirm = async (food) => {
-    const targetMeal = foodSheet.target;
-    if (!user?.id || !targetMeal || addingFoodGuardRef.current) return false;
-
-    addingFoodGuardRef.current = true;
-    const operationId = createOperationId();
-    const optimisticEntryId = `pending-${operationId}`;
-    const optimisticFood = {
-      ...food,
-      entryId: optimisticEntryId,
-      foodEntryId: optimisticEntryId,
-      clientMutationId: operationId,
-      sync_status: 'pending',
-    };
-    setTimeline((currentTimeline) => currentTimeline.map((item) => (
-      item.id === targetMeal.id
-        ? { ...item, foods: [...(item.foods || []), optimisticFood] }
-        : item
-    )));
+  const persistOptimisticFood = async ({ food, targetMeal, operationId, optimisticEntryId }) => {
     try {
       const { data, error } = await timelineService.createFoodEntryForMeal({
         userId: user.id,
@@ -314,7 +296,11 @@ export const TodayPage = () => {
           ...item,
           ...data.meal,
           fixed: item.fixed,
-          foods: [...withoutOptimisticOrDuplicate, { ...data.foodEntry, sync_status: 'synced' }],
+          foods: [...withoutOptimisticOrDuplicate, {
+            ...data.foodEntry,
+            clientMutationId: operationId,
+            sync_status: 'synced',
+          }],
         };
       }));
       timelineRealtimeService.broadcast({
@@ -324,19 +310,66 @@ export const TodayPage = () => {
         entity_id: data.foodEntry.entryId,
         operation_id: operationId,
       });
-      setFoodSheet({ open: false, target: null });
       showSuccess(`已添加 ${food.name} 到 ${targetMeal.title}`);
       return true;
     } catch (error) {
       setTimeline((currentTimeline) => currentTimeline.map((item) => ({
         ...item,
-        foods: (item.foods || []).filter((entry) => entry.entryId !== optimisticEntryId),
+        foods: (item.foods || []).map((entry) => (
+          entry.entryId === optimisticEntryId
+            ? { ...entry, sync_status: 'failed', sync_error: error?.message || '食品记录保存失败' }
+            : entry
+        )),
       })));
       toast.error(error?.message || '食品记录保存失败，请稍后重试');
       return false;
     } finally {
       addingFoodGuardRef.current = false;
     }
+  };
+
+  const handleFoodConfirm = (food) => {
+    const targetMeal = foodSheet.target;
+    if (!user?.id || !targetMeal || addingFoodGuardRef.current) return false;
+
+    addingFoodGuardRef.current = true;
+    const operationId = createOperationId();
+    const optimisticEntryId = `pending-${operationId}`;
+    const optimisticFood = {
+      ...food,
+      entryId: optimisticEntryId,
+      foodEntryId: optimisticEntryId,
+      clientMutationId: operationId,
+      sync_status: 'pending',
+    };
+    setTimeline((currentTimeline) => currentTimeline.map((item) => (
+      item.id === targetMeal.id
+        ? { ...item, foods: [...(item.foods || []), optimisticFood] }
+        : item
+    )));
+    setFoodSheet({ open: false, target: null });
+    void persistOptimisticFood({ food, targetMeal, operationId, optimisticEntryId });
+    return true;
+  };
+
+  const handleRetryFoodSync = (targetMeal, failedFood) => {
+    if (!user?.id || !targetMeal || !failedFood || addingFoodGuardRef.current) return;
+    addingFoodGuardRef.current = true;
+    const operationId = failedFood.clientMutationId || createOperationId();
+    const optimisticEntryId = failedFood.entryId || failedFood.foodEntryId || `pending-${operationId}`;
+    setTimeline((currentTimeline) => currentTimeline.map((item) => (
+      item.id === targetMeal.id
+        ? {
+          ...item,
+          foods: (item.foods || []).map((entry) => (
+            entry.entryId === optimisticEntryId
+              ? { ...entry, sync_status: 'pending', sync_error: null }
+              : entry
+          )),
+        }
+        : item
+    )));
+    void persistOptimisticFood({ food: failedFood, targetMeal, operationId, optimisticEntryId });
   };
 
   const handleOpenSnackSheet = () => {
@@ -1121,6 +1154,7 @@ export const TodayPage = () => {
                 layout="home-time-left"
                 onAddFood={handleAddFood}
                 onDeleteFood={handleDeleteFood}
+                onRetryFoodSync={handleRetryFoodSync}
                 onEditTime={(it) => setTimeSheet({ open: true, item: it })}
                 onEditRecord={(it) => setEditActivitySheet({ open: true, item: it })}
                 onDelete={handleDeleteClick}

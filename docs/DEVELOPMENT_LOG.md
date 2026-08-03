@@ -1,3 +1,24 @@
+## DEV-20260803-004
+
+- 日期：2026-08-03
+- 状态：代码修复完成，等待用户在最新本地页面人工验收
+- 修改类型：P0 Fix / 食品新增即时乐观渲染
+- 任务目标：消除点击确认后等待Supabase完成才看到新增食品的问题，同时保持Supabase为多设备最终事实来源。
+- 实际完成内容：
+	- 定位到临时食品虽然已写入Store，但`AddFoodSheet`会`await onConfirm`，且`TodayPage`只在远程成功后关闭Sheet，遮住了首个乐观渲染；Realtime/Broadcast触发的整日重载还会直接用远程结果覆盖本地pending记录。
+	- 添加确认现在在首个异步边界前依次生成operation/temp ID、同步写入当前餐次、同步更新汇总并关闭Sheet，随后才非阻塞启动Supabase持久化；临时固定餐次无需等待真实meal UUID。
+	- 新增远程时间线与本地pending/syncing/failed记录的确定性合并：空远程结果不会清掉待同步食品，相同`clientMutationId`只保留远程记录，成功后以真实meal/entry UUID原位校准。
+	- 自己的Broadcast事件继续按source ID忽略；Supabase Realtime回声即使触发轻量重载，也通过UUID/mutation合并保持单条记录，不再闪烁。
+	- 写入失败时保留食品并标记`failed`，展示“同步失败，重试”，不再无提示删除；提交锁继续阻止快速双击重复写入。
+- 主要修改文件或模块：`frontend/src/pages/TodayPage.jsx`、`frontend/src/modals/AddFoodSheet.jsx`、`frontend/src/store.jsx`、`frontend/src/components/TimelineItem.jsx`、`frontend/src/lib/timelinePendingMerge.js`及专项测试。
+- 遇到的问题：上一版测试只断言了Store在慢请求期间含pending记录，没有覆盖Sheet仍打开造成的视觉阻塞，也没有覆盖远程空重载覆盖pending记录。
+- 解决方式：将UI确认边界与远程完成边界彻底分离，并在所有当日服务端重载入口应用pending合并。
+- 执行的测试：即时乐观更新与pending合并专项；TodayPage食品删除、Realtime/Broadcast、日期Store回归；前端全量测试；Production Build；`git diff --check`。
+- 测试结果：专项5套件33项通过；全量36套件237项通过；Production Build成功。永久pending Promise测试确认Store更新先于Supabase调用且Sheet在远程返回前关闭；既有Supabase测试环境提示、模拟session失败日志和Build `fs.F_OK`弃用警告仍存在。
+- 未完成事项：无法由自动化终端代用户完成带真实账号的视觉点击和双设备验收；仍需用户在最新本地页面确认首次显示体感、延迟网络持续显示及第二端同步。Migration 028未部署。
+- 风险或注意事项：本次不扩展为离线Outbox；页面刷新仍以Supabase已落库数据为准。没有修改公共食品数据或审核状态。
+- Git Commit ID：由本独立提交承载；完整ID以Git历史和任务最终汇报为准。
+
 ## DEV-20260803-003
 
 - 日期：2026-08-03

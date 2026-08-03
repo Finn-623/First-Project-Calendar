@@ -9,6 +9,7 @@ import { addDaysToDateString, getSydneyDateString, getSydneyMidnightDelayMs, his
 import { timelineService } from './services/timelineService';
 import { timelineRealtimeService } from './services/timelineRealtimeService';
 import { filterMeaningfulTimelineItems } from './lib/dayRecordUtils';
+import { mergeRemoteTimelineWithLocalPending } from './lib/timelinePendingMerge';
 
 const StoreContext = createContext(null);
 
@@ -661,7 +662,10 @@ export const StoreProvider = ({ children, user: initialUser, session: initialSes
     ]);
 
     if (isActiveRequest(epoch, userId) && timelineResult.status === 'fulfilled' && !timelineResult.value?.error) {
-      setTimeline(mergePersistedTimelineWithFixedMeals(timelineResult.value?.data));
+      setTimeline((currentTimeline) => mergeRemoteTimelineWithLocalPending(
+        mergePersistedTimelineWithFixedMeals(timelineResult.value?.data),
+        currentTimeline
+      ));
     }
 
     return {
@@ -944,9 +948,14 @@ export const StoreProvider = ({ children, user: initialUser, session: initialSes
         const dateToReload = getSydneyDateString(currentDateRef.current);
         const { data, error } = await timelineService.getTimelineByDate(userId, dateToReload);
         if (!disposed && !error && getSydneyDateString(currentDateRef.current) === dateToReload) {
-          const nextTimeline = mergePersistedTimelineWithFixedMeals(data);
-          timelineCacheRef.current.set(dateToReload, cloneTimeline(nextTimeline));
-          setTimeline(nextTimeline);
+          setTimeline((currentTimeline) => {
+            const nextTimeline = mergeRemoteTimelineWithLocalPending(
+              mergePersistedTimelineWithFixedMeals(data),
+              currentTimeline
+            );
+            timelineCacheRef.current.set(dateToReload, cloneTimeline(nextTimeline));
+            return nextTimeline;
+          });
         }
       }, 40);
     };

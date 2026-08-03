@@ -148,7 +148,7 @@ describe('TodayPage 食品记录持久化', () => {
     expect(toast.success).toHaveBeenCalled();
   });
 
-  test('写入失败不保留虚假本地记录且不显示成功提示', async () => {
+  test('写入失败保留失败记录供重试且不显示成功提示', async () => {
     timelineService.createFoodEntryForMeal.mockResolvedValue({
       data: null,
       error: new Error('数据库写入失败'),
@@ -159,8 +159,32 @@ describe('TodayPage 食品记录持久化', () => {
 
     await waitFor(() => expect(toast.error).toHaveBeenCalledWith('数据库写入失败'));
     expect(storeState.timeline[0].id).toBe('m1-local');
-    expect(storeState.timeline[0].foods).toHaveLength(0);
+    expect(storeState.timeline[0].foods).toEqual([
+      expect.objectContaining({ name: '测试燕麦', sync_status: 'failed', sync_error: '数据库写入失败' }),
+    ]);
     expect(toast.success).not.toHaveBeenCalled();
+  });
+
+  test('远程 Promise 永久 pending 时先更新 Store 并立即关闭 Sheet', () => {
+    const order = [];
+    setTimeline.mockImplementation((updater) => {
+      order.push('optimistic-store-update');
+      storeState.timeline = typeof updater === 'function' ? updater(storeState.timeline) : updater;
+    });
+    timelineService.createFoodEntryForMeal.mockImplementation(() => {
+      order.push('supabase-request-start');
+      return new Promise(() => {});
+    });
+    mountPage();
+    fireEvent.click(screen.getByTestId('add-food-m1-local'));
+    fireEvent.click(screen.getByRole('button', { name: '确认测试食品' }));
+
+    expect(order[0]).toBe('optimistic-store-update');
+    expect(order).toContain('supabase-request-start');
+    expect(storeState.timeline[0].foods).toEqual([
+      expect.objectContaining({ name: '测试燕麦', sync_status: expect.stringMatching(/pending|syncing/) }),
+    ]);
+    expect(screen.queryByRole('button', { name: '确认测试食品' })).toBeNull();
   });
 
   test('慢请求期间连续确认只发出一次写入', async () => {

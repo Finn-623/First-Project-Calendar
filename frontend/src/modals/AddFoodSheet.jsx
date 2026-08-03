@@ -83,20 +83,28 @@ export const AddFoodSheet = ({ open, onOpenChange, targetTitle, onConfirm }) => 
 
   const preview = selected ? scale(selected, Number(grams) || 0) : null;
 
-  const handleConfirm = async () => {
+  const handleConfirm = () => {
     if (!selected || submitting) return;
     const macros = scale(selected, Number(grams) || 0);
     setSubmitting(true);
     try {
-      const saved = await onConfirm({
+      const saved = onConfirm({
         foodId: selected.id,
         name: selected.name,
         grams: Number(grams) || 0,
         ...macros,
       });
+      if (saved && typeof saved.then === 'function') {
+        saved.then((result) => {
+          if (result !== false) onOpenChange(false);
+        }).finally(() => setSubmitting(false));
+        return;
+      }
       if (saved !== false) onOpenChange(false);
-    } finally {
       setSubmitting(false);
+    } catch (error) {
+      setSubmitting(false);
+      throw error;
     }
   };
 

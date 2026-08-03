@@ -14,8 +14,8 @@
 - 当前Phase：Phase 1（完整饮食管理 App）
 - 当前正式版本：v0.1.3 — 基础记录闭环与稳定性收尾，已于 2026-07-28 15:55:36（Australia/Sydney）正式上线。
 - 当前开发版本：v0.2.1 — 公共食品数据库。
-- P0-1食品记录持久化：`第二轮代码修复完成，等待用户人工验收`。上一轮遗漏的`goHome`空模板覆盖路径已改为重新加载服务端时间线；添加食品仍以数据库insert返回真实meal/entry UUID后才显示成功。早餐、午餐、晚餐清空后保留固定餐次，自定义餐次清空后才删除整餐。远程Feedback仍为pending，尚未push或部署。
-- 多设备一致性：`代码完成、Migration 028待部署、等待双设备人工验收`。Store按用户订阅`timeline_items`/`food_entries` Realtime，并用BroadcastChannel同步同浏览器标签；乐观新增/修改/删除失败会回滚，事件最终按当前日期从Supabase校准。当前Production尚不具备Migration 028提供的DELETE完整载荷和固定三餐并发唯一约束。
+- P0-1食品记录持久化：`即时渲染修复完成，等待用户人工验收`。食品确认在首个异步边界前同步写入Store、更新汇总并关闭Sheet，Supabase在后台写入并返回真实meal/entry UUID；失败记录保留为可重试状态。早餐、午餐、晚餐清空后保留固定餐次，自定义餐次清空后才删除整餐。远程Feedback仍为pending，尚未push或部署。
+- 多设备一致性：`代码完成、Migration 028待部署、等待双设备人工验收`。Store按用户订阅`timeline_items`/`food_entries` Realtime，并用BroadcastChannel同步同浏览器标签；远程重载会与本地pending/syncing/failed记录合并，避免自己的Realtime回声造成新增食品消失再出现。Supabase仍是最终事实来源；当前Production尚不具备Migration 028提供的DELETE完整载荷和固定三餐并发唯一约束。
 - 当前状态：AFCD 400条客户端人工审核决定已正式实施；人工发布边界为publish 136、disable 264，5条客户端最终中文名已同步。
 - 判断结论：正式数据库仍为402条foods；400条AFCD最终为approved 136、pending 0、disabled 264。匿名和普通用户仅可读取136条approved active食品，审核前端及本阶段代码尚未重新部署Production。
 
