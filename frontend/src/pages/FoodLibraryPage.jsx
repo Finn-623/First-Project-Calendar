@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Search, Plus, Pencil, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { showSuccess } from '../lib/notifications';
@@ -9,6 +9,7 @@ import { Input } from '../components/ui/input';
 import { Button } from '../components/ui/button';
 import { Textarea } from '../components/ui/textarea';
 import { Switch } from '../components/ui/switch';
+import { PublicFoodBrowser } from '../components/food/PublicFoodBrowser';
 import {
   Dialog,
   DialogContent,
@@ -121,6 +122,7 @@ const PublicFoodCard = ({ food, onEdit, onToggleActive, submitting }) => (
 
 export const FoodLibraryPage = () => {
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
   const {
     foods,
     publicFoods,
@@ -146,6 +148,8 @@ export const FoodLibraryPage = () => {
   const [editingPublicFoodId, setEditingPublicFoodId] = useState(null);
   const [publicSubmitting, setPublicSubmitting] = useState(false);
   const [publicForm, setPublicForm] = useState(emptyPublicForm());
+  const activeTab = searchParams.get('tab') === 'mine' ? 'mine' : 'public';
+  const setActiveTab = (tab) => setSearchParams(tab === 'mine' ? { tab: 'mine' } : { tab: 'public' }, { replace: true });
 
   const list = useMemo(() => {
     return (foods || []).filter((f) => {
@@ -478,16 +482,22 @@ export const FoodLibraryPage = () => {
             <h1 className="text-[22px] font-medium text-[#2C332F] mt-1">食物数据库</h1>
             <p className="text-[12px] text-[#858C88] mt-1">公共食品 + 个人食品统一管理</p>
           </div>
-          <button
+          {activeTab === 'mine' ? <button
             data-testid="add-custom-food"
             onClick={() => setCreateOpen(true)}
             className="mt-1 w-9 h-9 rounded-full bg-[#2C332F] text-white flex items-center justify-center"
           >
             <Plus size={16} strokeWidth={1.8} />
-          </button>
+          </button> : null}
         </div>
       </header>
 
+      <div className="mx-5 mb-4 grid grid-cols-2 rounded-xl bg-[#ECEDE9] p-1" role="tablist" aria-label="食物库类型">
+        <button type="button" role="tab" aria-selected={activeTab === 'public'} onClick={() => setActiveTab('public')} className={`min-h-10 rounded-lg text-sm ${activeTab === 'public' ? 'bg-white text-[#2C332F] shadow-sm' : 'text-[#6F7772]'}`}>公共食品</button>
+        <button type="button" role="tab" aria-selected={activeTab === 'mine'} onClick={() => setActiveTab('mine')} className={`min-h-10 rounded-lg text-sm ${activeTab === 'mine' ? 'bg-white text-[#2C332F] shadow-sm' : 'text-[#6F7772]'}`}>我的食品</button>
+      </div>
+
+      {activeTab === 'public' ? <PublicFoodBrowser /> : <>
       <div className="px-5 space-y-3">
         <div className="relative">
           <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#858C88]" strokeWidth={1.5} />
@@ -627,6 +637,7 @@ export const FoodLibraryPage = () => {
           <p className="text-center text-sm text-[#858C88] py-8">食物库还是空的，请添加第一个食物</p>
         )}
       </div>
+      </>}
 
       <Dialog open={createOpen} onOpenChange={(open) => (open ? setCreateOpen(true) : setCreateOpen(false))}>
         <DialogContent className="max-w-md rounded-2xl">

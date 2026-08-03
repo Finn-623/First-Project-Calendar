@@ -23,6 +23,48 @@ const normalizeFood = (food) => {
   };
 };
 
+const nullableNumber = (value) => (value == null || value === '' ? null : Number(value));
+
+export const normalizePublicFood = (food) => food ? ({
+  id: food.id,
+  name: food.name,
+  nameEn: food.name_en || '',
+  brand: food.brand || '',
+  sourceName: food.source_name || '',
+  externalFoodId: food.external_food_id || '',
+  primaryCategory: food.primary_category || '',
+  secondaryCategory: food.secondary_category || '',
+  preparationState: food.preparation_state || null,
+  intakeTypes: Array.isArray(food.intake_types) ? food.intake_types : [],
+  nutrients: {
+    energyKcal: nullableNumber(food.energy_kcal),
+    proteinG: nullableNumber(food.protein_g),
+    carbohydrateG: nullableNumber(food.carbohydrate_g),
+    fatG: nullableNumber(food.fat_g),
+    fiberG: nullableNumber(food.fiber_g),
+    saturatedFatG: nullableNumber(food.saturated_fat_g),
+    totalSugarG: nullableNumber(food.total_sugar_g),
+    sodiumMg: nullableNumber(food.sodium_mg),
+    potassiumMg: nullableNumber(food.potassium_mg),
+  },
+  aliases: (food.food_public_aliases || []).map((row) => row.alias).filter(Boolean),
+  portions: (food.food_portions || []).map((row) => ({
+    id: row.id,
+    name: row.portion_name,
+    grams: nullableNumber(row.grams),
+    isDefault: row.is_default === true,
+  })),
+}) : null;
+
+const PUBLIC_FOOD_LIST_FIELDS = [
+  'id', 'name', 'name_en', 'brand', 'source_name', 'external_food_id',
+  'primary_category', 'secondary_category', 'preparation_state', 'intake_types',
+  'energy_kcal', 'protein_g', 'carbohydrate_g', 'fat_g', 'fiber_g',
+  'saturated_fat_g', 'total_sugar_g', 'sodium_mg', 'potassium_mg',
+].join(',');
+
+const escapePostgrestSearch = (value) => String(value || '').replace(/[,%()]/g, ' ').trim();
+
 const buildPrivateFoodPayload = (userId, food) => ({
   user_id: userId,
   visibility: 'private',
@@ -58,6 +100,82 @@ const buildPublicFoodPayload = (userId, food) => ({
 });
 
 export const foodService = {
+  async listVisiblePublicFoods({ query = '', category = '', intakeType = '', page = 0, pageSize = 24 } = {}) {
+    if (!supabase) return { data: [], count: 0, error: new Error('Supabase 尚未配置') };
+    try {
+      const cleanedQuery = escapePostgrestSearch(query);
+      let aliasFoodIds = [];
+      if (cleanedQuery) {
+        const aliasResult = await supabase
+          .from('food_public_aliases')
+          .select('food_id')
+          .ilike('alias', `%${cleanedQuery}%`)
+          .limit(200);
+        if (aliasResult.error) return { data: [], count: 0, error: aliasResult.error };
+        aliasFoodIds = [...new Set((aliasResult.data || []).map((row) => row.food_id).filter(Boolean))];
+      }
+
+      let request = supabase
+        .from('foods')
+        .select(PUBLIC_FOOD_LIST_FIELDS, { count: 'exact' })
+        .eq('visibility', 'public')
+        .eq('review_status', 'approved')
+        .eq('is_active', true)
+        .order('name', { ascending: true })
+        .range(page * pageSize, ((page + 1) * pageSize) - 1);
+      if (category) request = request.eq('primary_category', category);
+      if (intakeType) request = request.contains('intake_types', [intakeType]);
+      if (cleanedQuery) {
+        const direct = `name.ilike.%${cleanedQuery}%,name_en.ilike.%${cleanedQuery}%,brand.ilike.%${cleanedQuery}%`;
+        request = request.or(aliasFoodIds.length ? `${direct},id.in.(${aliasFoodIds.join(',')})` : direct);
+      }
+
+      const { data, count, error } = await request;
+      return { data: (data || []).map(normalizePublicFood), count: count || 0, error };
+    } catch (error) {
+      return { data: [], count: 0, error };
+    }
+  },
+
+  async loadVisiblePublicFoodFacets() {
+    if (!supabase) return { categories: [], intakeTypes: [], error: new Error('Supabase 尚未配置') };
+    try {
+      const { data, error } = await supabase
+        .from('foods')
+        .select('primary_category,intake_types')
+        .eq('visibility', 'public')
+        .eq('review_status', 'approved')
+        .eq('is_active', true);
+      if (error) return { categories: [], intakeTypes: [], error };
+      return {
+        categories: [...new Set((data || []).map((row) => row.primary_category).filter(Boolean))].sort(),
+        intakeTypes: [...new Set((data || []).flatMap((row) => row.intake_types || []))].sort(),
+        error: null,
+      };
+    } catch (error) {
+      return { categories: [], intakeTypes: [], error };
+    }
+  },
+
+  async getVisiblePublicFoodDetail(foodId) {
+    if (!supabase || !foodId) return { data: null, error: new Error('食品不可用') };
+    try {
+      const { data, error } = await supabase
+        .from('foods')
+        .select(`${PUBLIC_FOOD_LIST_FIELDS},food_public_aliases(alias),food_portions(id,portion_name,grams,is_default)`)
+        .eq('id', foodId)
+        .eq('visibility', 'public')
+        .eq('review_status', 'approved')
+        .eq('is_active', true)
+        .maybeSingle();
+      if (error) return { data: null, error };
+      return data
+        ? { data: normalizePublicFood(data), error: null }
+        : { data: null, error: new Error('食品不可用') };
+    } catch (error) {
+      return { data: null, error };
+    }
+  },
   /**
    * Get all foods for a user
    * @param {string} userId

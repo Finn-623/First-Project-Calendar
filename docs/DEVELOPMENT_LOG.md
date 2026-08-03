@@ -5361,3 +5361,17 @@
   - preparation_state: raw 213, cooked 77, unspecified 110 (合计400).
   - 常见基础食品41项通过覆盖验证。
 - Commit ID: 54e4151c4e5c36c54d7718dafd7ffd65c5bc839e
+## DEV-20260803-008
+
+- 日期：2026-08-03
+- 状态：代码完成，等待用户最终验收
+- 任务目标：P0 编号19，为普通用户增加可查看、搜索、筛选和分页的公共食品界面。
+- 实际完成内容：`/library` 增加“公共食品 / 我的食品”分区并默认进入公共食品；普通用户查询在数据库端限定 `public + approved + active`，支持中文名、英文名、品牌、公共别名搜索，一级分类与主要摄入类型组合筛选，24条服务端分页；新增只读详情、NULL营养展示、按需alias/portion读取、加载/错误/重试/空状态和迟到请求保护。P0编号5、6已按用户反馈校准为通过最终验收，但远程Feedback状态未修改。
+- 主要修改文件或模块：`FoodLibraryPage.jsx`、`PublicFoodBrowser.jsx`、`foodService.js`及专项测试。
+- 遇到的问题：正式分类字段为英文枚举；直接显示会与客户端中文界面不一致。
+- 解决方式：查询继续使用数据库真实枚举，展示层用确定性中文标签映射，不改变数据或筛选值。
+- 执行的测试：公共食品组件与service专项测试；普通测试账号远程只读权限验收；`node --test scripts/import-foods/*.test.mjs`；`CI=true npm test -- --watchAll=false --runInBand`；`npm run build`；`git diff --check`。
+- 测试结果：专项2套件9项、食品导入回归53项、前端全量40套件260项通过；远程只读验收为136 foods、28 aliases、203 portions，隐藏食品与审计不可见；Production Build成功。仅有既有`fs.F_OK`弃用警告。
+- 未完成事项：需要用户在最新本地页面完成移动端、搜索筛选、分页和详情最终验收；远程Feedback保持pending。
+- 风险或注意事项：未修改数据库、公共食品内容或审核状态；未部署Migration 028；未push。
+- Git Commit ID：由本独立提交承载，以Git历史为准。
