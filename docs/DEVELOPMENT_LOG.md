@@ -12,7 +12,7 @@
 - 测试结果：前端全量42套件283项通过；核心专项21项和数据链专项25项通过；Production Build成功；编辑器无错误。Build仅保留既有 Node `fs.F_OK` 弃用 warning。
 - 未完成事项：当前浏览器自动化页面仍停留登录页，未取得可复用的浏览器登录态；真实 API 和组件/自动化链已完成验证，仍需用户在真实页面完成最终视觉验收。
 - 风险或注意事项：未新增或部署 Migration，028仍未部署；未修改公共食品、审核状态或历史food_entries；未使用 service role 清理；远程反馈保持 `pending`。
-- Git Commit ID：未提交。
+- Git Commit ID：`0442c9c7deee011f17018aa00fffd84e23ca1f10`。
 
 ## DEV-20260804-009
 
