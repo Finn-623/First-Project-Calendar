@@ -106,7 +106,7 @@ const FoodDetail = ({ foodId, onClose, onCopy, copying }) => {
             </section>
             <section>
               <h3 className="text-sm font-medium text-[#2C332F]">可用份量</h3>
-              {food.portions.length ? <ul className="mt-2 space-y-1 text-xs text-[#5E6660]">{food.portions.map((portion) => <li key={portion.id}>{portion.name} · {nutrientText(portion.grams, 'g')}</li>)}</ul> : <p className="mt-2 text-xs text-[#858C88]">暂无标准份量，可按克记录</p>}
+              {food.portions.length ? <ul className="mt-2 space-y-1 text-xs text-[#5E6660]">{food.portions.map((portion) => <li key={portion.id}>{portion.name} · {portion.amount ?? portion.grams}{portion.unit === 'ml' ? 'ml' : 'g'}{portion.unit === 'ml' && portion.grams == null ? ' · 需按克记录' : ''}</li>)}</ul> : <p className="mt-2 text-xs text-[#858C88]">暂无标准份量，可按克记录</p>}
             </section>
             {food.aliases.length ? <section><h3 className="text-sm font-medium text-[#2C332F]">公开别名</h3><p className="mt-2 text-xs leading-5 text-[#5E6660] break-words">{food.aliases.join('、')}</p></section> : null}
             <p className="text-xs text-[#858C88]">数据来源：{food.sourceName || '暂无数据'}</p>

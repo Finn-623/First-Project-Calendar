@@ -29,6 +29,8 @@ const normalizeFood = (food) => {
     portions: (food.food_portions || []).map((row) => ({
       id: row.id,
       name: row.portion_name,
+      amount: nullableNumber(row.amount ?? row.grams),
+      unit: row.unit || 'g',
       grams: nullableNumber(row.grams),
       isDefault: row.is_default === true,
     })),
@@ -63,6 +65,8 @@ export const normalizePublicFood = (food) => food ? ({
   portions: (food.food_portions || []).map((row) => ({
     id: row.id,
     name: row.portion_name,
+    amount: nullableNumber(row.amount ?? row.grams),
+    unit: row.unit || 'g',
     grams: nullableNumber(row.grams),
     isDefault: row.is_default === true,
   })),
@@ -176,7 +180,7 @@ export const foodService = {
     try {
       const { data, error } = await supabase
         .from('foods')
-        .select(`${PUBLIC_FOOD_LIST_FIELDS},food_public_aliases(alias),food_portions(id,portion_name,grams,is_default)`)
+        .select(`${PUBLIC_FOOD_LIST_FIELDS},food_public_aliases(alias),food_portions(id,portion_name,amount,unit,grams,is_default)`)
         .eq('id', foodId)
         .eq('visibility', 'public')
         .eq('review_status', 'approved')
@@ -224,7 +228,9 @@ export const foodService = {
         p_notes: String(food.notes || '').trim() || null,
         p_portions: (food.portions || []).map((portion) => ({
           name: String(portion.name || portion.portion_name || '').trim(),
-          grams: Number(portion.grams),
+          amount: Number(portion.amount ?? portion.grams),
+          unit: portion.unit || 'g',
+          grams: portion.grams == null ? null : Number(portion.grams),
           isDefault: portion.isDefault === true || portion.is_default === true,
         })),
       });
@@ -246,7 +252,7 @@ export const foodService = {
     try {
       const { data, error } = await supabase
         .from('foods')
-        .select('*,food_private_aliases(alias),food_portions(id,portion_name,grams,is_default)')
+        .select('*,food_private_aliases(alias),food_portions(id,portion_name,amount,unit,grams,is_default)')
         .eq('is_active', true)
         .order('name', { ascending: true });
 

@@ -19,6 +19,8 @@ import {
 
 const FOOD_CATEGORIES = ['全部', '主食', '蛋白', '脂肪', '蔬菜', '水果'];
 
+const emptyPrivatePortion = () => ({ name: '', amount: '', unit: 'g', grams: '', isDefault: false });
+
 const emptyPrivateForm = () => ({
   name: '',
   name_en: '',
@@ -30,7 +32,7 @@ const emptyPrivateForm = () => ({
   fat: '',
   carbs: '',
   notes: '',
-  portions: [],
+  portions: [emptyPrivatePortion()],
 });
 
 const PRIVATE_CATEGORIES = ['其他', '主食', '蛋白', '脂肪', '蔬菜', '水果'];
@@ -209,13 +211,22 @@ export const FoodLibraryPage = () => {
 
     for (const portion of privateForm.portions || []) {
       const portionName = String(portion.name || '').trim();
-      const grams = parseNumber(portion.grams);
+      const amountText = String(portion.amount ?? portion.grams ?? '').trim();
+      const hasName = Boolean(portionName);
+      const hasAmount = Boolean(amountText);
+      if (!hasName && !hasAmount) continue;
       if (!portionName) return { ok: false, message: '请填写每个分量的名称' };
-      if (!Number.isFinite(grams) || grams <= 0) return { ok: false, message: '分量克数必须大于 0' };
+      if (!hasAmount) return { ok: false, message: '请填写分量数值' };
+      const unit = String(portion.unit || '').trim().toLowerCase();
+      if (!['g', 'ml'].includes(unit)) return { ok: false, message: '请选择分量单位' };
+      const amount = parseNumber(amountText);
+      if (!Number.isFinite(amount) || amount <= 0) return { ok: false, message: '分量数值必须大于 0' };
+      const grams = unit === 'g' ? amount : parseNumber(portion.grams);
+      if (unit === 'ml' && Number.isFinite(grams) && grams <= 0) return { ok: false, message: '换算克数必须大于 0' };
       const normalizedName = normalizeText(portionName);
       if (seenPortionNames.has(normalizedName)) return { ok: false, message: '同一食品的分量名称不能重复' };
       seenPortionNames.add(normalizedName);
-      portions.push({ name: portionName, grams, isDefault: portion.isDefault === true });
+      portions.push({ name: portionName, amount, unit, grams: Number.isFinite(grams) ? grams : null, isDefault: portion.isDefault === true });
     }
 
     if (portions.filter((portion) => portion.isDefault).length > 1) {
@@ -289,7 +300,7 @@ export const FoodLibraryPage = () => {
   const addPrivatePortion = () => {
     setPrivateForm((prev) => ({
       ...prev,
-      portions: [...(prev.portions || []), { name: '', grams: '', isDefault: false }],
+      portions: [...(prev.portions || []), emptyPrivatePortion()],
     }));
   };
 
@@ -297,7 +308,14 @@ export const FoodLibraryPage = () => {
     setPrivateForm((prev) => ({
       ...prev,
       portions: (prev.portions || []).map((portion, portionIndex) => (
-        portionIndex === index ? { ...portion, [key]: value } : portion
+        portionIndex === index
+          ? {
+            ...portion,
+            [key]: value,
+            ...(key === 'unit' && value === 'ml' && portion.unit !== 'ml' ? { grams: '' } : {}),
+            ...(key === 'unit' && value === 'g' ? { grams: portion.amount || '' } : {}),
+          }
+          : portion
       )),
     }));
   };
@@ -315,7 +333,10 @@ export const FoodLibraryPage = () => {
   const removePrivatePortion = (index) => {
     setPrivateForm((prev) => ({
       ...prev,
-      portions: (prev.portions || []).filter((_, portionIndex) => portionIndex !== index),
+      portions: (() => {
+        const remaining = (prev.portions || []).filter((_, portionIndex) => portionIndex !== index);
+        return remaining.length ? remaining : [emptyPrivatePortion()];
+      })(),
     }));
   };
 
@@ -377,6 +398,14 @@ export const FoodLibraryPage = () => {
   };
 
   const openEditPrivateDialog = (food) => {
+    const loadedPortions = (food.portions || []).map((portion) => ({
+      id: portion.id,
+      name: portion.name || '',
+      amount: String(portion.amount ?? portion.grams ?? ''),
+      unit: portion.unit || 'g',
+      grams: portion.grams == null ? '' : String(portion.grams),
+      isDefault: portion.isDefault === true,
+    }));
     setEditingFoodId(food.id);
     setPrivateForm({
       name: food.name || '',
@@ -389,12 +418,7 @@ export const FoodLibraryPage = () => {
       fat: String(food.fat ?? food.f100 ?? 0),
       carbs: String(food.carbs ?? food.c100 ?? 0),
       notes: food.notes || '',
-      portions: (food.portions || []).map((portion) => ({
-        id: portion.id,
-        name: portion.name || '',
-        grams: String(portion.grams ?? ''),
-        isDefault: portion.isDefault === true,
-      })),
+      portions: loadedPortions.length ? loadedPortions : [emptyPrivatePortion()],
     });
     setEditOpen(true);
   };
@@ -598,10 +622,16 @@ export const FoodLibraryPage = () => {
         </div>
         <div className="mt-3 space-y-2">
           {(privateForm.portions || []).map((portion, index) => (
-            <div key={portion.id || index} className="grid grid-cols-[minmax(0,1fr)_88px_auto] items-center gap-2">
-              <Input placeholder="如：1个" value={portion.name} onChange={(e) => updatePrivatePortion(index, 'name', e.target.value)} aria-label={`分量名称 ${index + 1}`} />
-              <Input type="number" placeholder="克数" value={portion.grams} onChange={(e) => updatePrivatePortion(index, 'grams', e.target.value)} aria-label={`分量克数 ${index + 1}`} />
-              <div className="flex items-center gap-1">
+            <div key={portion.id || index} className="grid gap-2 sm:grid-cols-[minmax(0,1fr)_188px_auto] sm:items-center">
+              <Input className="min-w-0" placeholder="如：1个" value={portion.name} onChange={(e) => updatePrivatePortion(index, 'name', e.target.value)} aria-label={`分量名称 ${index + 1}`} />
+              <div className="flex min-w-0 items-center gap-2">
+                <Input className="min-w-0 flex-1" type="number" placeholder="数值" value={portion.amount ?? ''} onChange={(e) => updatePrivatePortion(index, 'amount', e.target.value)} aria-label={`分量数值 ${index + 1}`} />
+                <select value={portion.unit || ''} onChange={(e) => updatePrivatePortion(index, 'unit', e.target.value)} className="h-10 w-[92px] shrink-0 rounded-md border border-[#E5E5E0] bg-white px-2 text-sm text-[#2C332F]" aria-label={`分量单位 ${index + 1}`}>
+                  <option value="g">克 (g)</option>
+                  <option value="ml">毫升 (ml)</option>
+                </select>
+              </div>
+              <div className="flex items-center justify-end gap-2 sm:justify-start">
                 <button type="button" onClick={() => setPrivateDefaultPortion(index)} className={`text-[11px] whitespace-nowrap ${portion.isDefault ? 'text-[#6B8067] font-medium' : 'text-[#858C88]'}`} aria-label={`设为默认分量 ${index + 1}`}>{portion.isDefault ? '默认' : '设默认'}</button>
                 <button type="button" onClick={() => removePrivatePortion(index)} className="p-2 text-[#C76D5E]" aria-label={`删除分量 ${index + 1}`}>×</button>
               </div>
@@ -820,7 +850,7 @@ export const FoodLibraryPage = () => {
               <div className="rounded-xl bg-[#F7F7F5] p-3">脂肪 <span className="float-right">{selectedPersonalFood.f100} g</span></div>
             </div>
             <section><h3 className="text-sm font-medium">个人别名</h3><p className="mt-1 text-xs text-[#858C88]">{selectedPersonalFood.aliases?.length ? selectedPersonalFood.aliases.join('、') : '暂无别名'}</p></section>
-            <section><h3 className="text-sm font-medium">可用份量</h3>{selectedPersonalFood.portions?.length ? <ul className="mt-1 space-y-1 text-xs text-[#858C88]">{selectedPersonalFood.portions.map((portion) => <li key={portion.id}>{portion.name} · {portion.grams}g</li>)}</ul> : <p className="mt-1 text-xs text-[#858C88]">暂无标准份量，可按克记录</p>}</section>
+            <section><h3 className="text-sm font-medium">可用份量</h3>{selectedPersonalFood.portions?.length ? <ul className="mt-1 space-y-1 text-xs text-[#858C88]">{selectedPersonalFood.portions.map((portion) => <li key={portion.id}>{portion.name} · {portion.amount ?? portion.grams}{portion.unit === 'ml' ? 'ml' : 'g'}</li>)}</ul> : <p className="mt-1 text-xs text-[#858C88]">暂无标准份量，可按克记录</p>}</section>
             {selectedPersonalFood.sourcePublicFoodId ? <p className="text-xs text-[#858C88]">复制自公共食品</p> : null}
             <div className="flex gap-2"><Button variant="outline" className="flex-1" onClick={() => { setSelectedPersonalFood(null); openEditPrivateDialog(selectedPersonalFood); }}>编辑</Button><Button variant="outline" className="flex-1 text-[#C76D5E]" onClick={() => { const food = selectedPersonalFood; setSelectedPersonalFood(null); void handleDeletePrivateFood(food); }}>删除</Button></div>
           </div> : null}

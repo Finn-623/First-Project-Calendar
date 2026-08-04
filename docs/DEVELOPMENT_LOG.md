@@ -1,3 +1,17 @@
+## DEV-20260804-006
+
+- 日期：2026-08-04
+- 状态：代码、Migration 032 和远程兼容性检查完成，等待用户最终页面验收
+- 任务目标：简化个人食品可用分量编辑器，并支持明确的克/毫升单位，避免未知密度的毫升被错误按克计算。
+- 实际完成内容：新建个人食品默认只显示一行空分量；点击“添加分量”逐行增加；删除最后一行时保留一行空白；编辑已有食品只加载实际分量，无分量时显示一行空白；空白行保存时忽略。每行支持名称、数值、克/毫升单位、默认和删除，移动端拆为两行布局。
+- 数据与换算：新增 `amount` 和 `unit` 字段，旧 portion 回填为 `amount=grams, unit='g'`。`g` 直接作为克数；`ml` 只有已有明确 `grams` 时才可用于营养计算，未知密度时保存 `grams=NULL`，添加记录必须改用克重。032 触发器兼容未显式写入新字段的 029/030 复制函数。
+- 主要修改文件或模块：`frontend/src/pages/FoodLibraryPage.jsx`、`frontend/src/modals/AddFoodSheet.jsx`、`frontend/src/services/foodService.js`及对应测试；`supabase/migrations/032_food_portion_units.sql`和契约测试。
+- 执行的测试：个人食品、AddFoodSheet、foodService、公共食品专项；前端全量 `CI=true npm test -- --watchAll=false --runInBand`；029-032 Migration契约；`npm run build`；`git diff --check`；远程 migration list 和 portion/AFCD只读检查。
+- 测试结果：专项26项通过；前端全量42套件277项通过；029-032契约通过；Production Build成功；032隔离部署只应用032。远程旧 portion 示例均为 `unit=g` 且 `amount=grams`，AFCD保持approved/pending/disabled为136/0/264。
+- 未完成事项：需要用户重新验收320px布局、默认一行、添加/删除分量、克/毫升选择、未知毫升提示、已有个人食品和复制食品兼容；远程Feedback保持pending。
+- 风险或注意事项：Migration 032已隔离部署；Migration 028仍未部署；未重新部署029/030/031；未修改公共食品、审核状态或历史food_entries；未push。
+- Git Commit ID：未提交。
+
 ## DEV-20260804-005
 
 - 日期：2026-08-04

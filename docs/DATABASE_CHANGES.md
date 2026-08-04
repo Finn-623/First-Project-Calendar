@@ -1,3 +1,18 @@
+## DB-20260804-004
+
+- 日期：2026-08-04
+- 修改原因：个人食品分量编辑器需要区分数量单位，且未知密度的毫升不能被当作克参与营养计算。
+- 实际修改内容：`food_portions.grams` 允许 NULL；新增 `amount NUMERIC(10,2)` 和 `unit TEXT`，单位限制为 `g/ml`；旧数据回填 `amount=grams, unit='g'`。新增触发器兼容旧复制函数省略新字段时的克分量。重定义 `save_personal_food`：g 使用 amount 作为 grams，ml 可保存未知 grams NULL；仍校验名称、数值、单位、重复名称和最多一个默认。
+- 涉及的表和字段：现有 `food_portions.food_id/portion_name/is_default/grams`；新增 `food_portions.amount/unit`。`food_entries`、`foods` 公共记录和审核字段不变。
+- Migration 文件路径：`supabase/migrations/032_food_portion_units.sql`。
+- 对现有数据的影响：旧 portion 全部默认为克且保留原 grams；已有历史 food_entries 不变。029/030 未重新部署，032 的触发器保证其未来复制旧格式克 portion 时自动填充 amount/unit。
+- 风险：ml 未提供密度时 grams 为 NULL，不能直接添加 record；前端会提示按克记录。已有 ml 且 grams 已知的 portion 可正常使用其确定克数。
+- 回滚方式：以新的后续 Migration 删除新增函数、触发器和字段；不得修改已应用的032文件，回滚前需确认新单位数据已迁移。
+- 测试内容：032 契约；029-031契约回归；前端专项26项、全量277项、Production Build；远程 migration list、旧 portion 字段回填和AFCD只读基线。
+- 测试结果：上述本地检查全部通过；032 已通过隔离目录部署且仅应用032。远程旧 portion 样本均为 `g` 且 amount 与 grams 一致，AFCD为136/0/264。
+- 相关DEV编号：`DEV-20260804-006`。
+- 相关Commit ID：未提交。
+
 ## DB-20260804-003
 
 - 日期：2026-08-04

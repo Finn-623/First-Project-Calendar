@@ -3,6 +3,7 @@ import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from '
 import { Input } from '../components/ui/input';
 import { Button } from '../components/ui/button';
 import { Search } from 'lucide-react';
+import { toast } from 'sonner';
 import { useStore } from '../store';
 
 const scale = (food, grams) => {
@@ -107,16 +108,26 @@ export const AddFoodSheet = ({ open, onOpenChange, targetTitle, onConfirm }) => 
       : null;
     setSelected(food);
     setSelectedPortion(defaultPortion || null);
-    setGrams(defaultPortion?.grams || 100);
+    setGrams(defaultPortion ? (defaultPortion.grams ?? '') : 100);
   };
 
   const selectPortion = (portion) => {
+    if (portion.unit === 'ml' && portion.grams == null) {
+      setSelectedPortion(portion);
+      setGrams('');
+      return;
+    }
     setSelectedPortion(portion);
-    setGrams(portion.grams);
+    setGrams(portion.grams ?? portion.amount);
   };
 
   const handleConfirm = () => {
     if (!selected || submitting) return;
+    const numericGrams = Number(grams);
+    if (selectedPortion?.unit === 'ml' && selectedPortion.grams == null && (!Number.isFinite(numericGrams) || numericGrams <= 0)) {
+      toast.error('该食品未设置毫升与克的换算关系，请按克记录');
+      return;
+    }
     const macros = scale(selected, Number(grams) || 0);
     setSubmitting(true);
     try {
@@ -230,7 +241,7 @@ export const AddFoodSheet = ({ open, onOpenChange, targetTitle, onConfirm }) => 
                   <div className="mt-2 flex flex-wrap gap-2">
                     {selected.portions.map((portion) => (
                       <button type="button" key={portion.id || portion.name} onClick={() => selectPortion(portion)} className={`rounded-full border px-3 py-2 text-xs ${selectedPortion?.id === portion.id ? 'border-[#6B8067] bg-[#EFF2ED] text-[#5E6660]' : 'border-[#E5E5E0] bg-white text-[#5E6660]'}`}>
-                        {portion.name} · {portion.grams}g{portion.isDefault ? ' · 默认' : ''}
+                        {portion.name} · {portion.amount ?? portion.grams}{portion.unit === 'ml' ? 'ml' : 'g'}{portion.isDefault ? ' · 默认' : ''}
                       </button>
                     ))}
                   </div>
@@ -245,6 +256,7 @@ export const AddFoodSheet = ({ open, onOpenChange, targetTitle, onConfirm }) => 
                   onChange={(e) => setGrams(e.target.value)}
                   className="mt-1 h-11 bg-white border-[#E5E5E0]"
                 />
+                {selectedPortion?.unit === 'ml' && selectedPortion.grams == null ? <p className="mt-1 text-[11px] text-[#C76D5E]">该食品未设置毫升与克的换算关系，请按克记录</p> : null}
               </div>
 
               {preview && (

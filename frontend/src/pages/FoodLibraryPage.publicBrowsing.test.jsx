@@ -96,8 +96,14 @@ describe('FoodLibraryPage 公共食品真实路由接入', () => {
     fireEvent.click(screen.getByTestId('add-custom-food'));
     expect(screen.getByTestId('private-food-brand')).toBeTruthy();
     expect(screen.getByTestId('private-portions-editor')).toBeTruthy();
+    expect(screen.getAllByLabelText('分量名称 1')).toHaveLength(1);
+    expect(screen.queryByLabelText('分量名称 2')).toBeNull();
     fireEvent.click(screen.getByRole('button', { name: '添加分量' }));
+    expect(screen.getByLabelText('分量名称 2')).toBeTruthy();
+    expect(screen.getByLabelText('分量数值 2')).toBeTruthy();
+    expect(screen.getByLabelText('分量单位 2')).toBeTruthy();
+    fireEvent.click(screen.getByRole('button', { name: '删除分量 2' }));
+    expect(screen.queryByLabelText('分量名称 2')).toBeNull();
     expect(screen.getByLabelText('分量名称 1')).toBeTruthy();
-    expect(screen.getByLabelText('分量克数 1')).toBeTruthy();
   });
 });
