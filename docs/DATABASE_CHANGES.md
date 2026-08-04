@@ -26,7 +26,7 @@
 - 测试内容：030静态契约、普通账号首次复制、软停用后再次复制恢复、alias/portion不重复、公共源基线和测试数据清理。
 - 测试结果：契约测试通过；远程普通账号验证`created=false`、`already_exists=true`、`restored=true`，恢复active并更新名称，alias 2个、portion 4个；测试数据残留为0。
 - 相关DEV编号：`DEV-20260804-004`。
-- 相关Commit ID：待本独立提交后填写真实完整ID。
+- 相关Commit ID：`1686bb2b566f78ccabdb76c8a4dff3714db384ea`。
 
 ## DB-20260803-001
 

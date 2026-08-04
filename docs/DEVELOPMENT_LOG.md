@@ -14,7 +14,7 @@
 - 测试结果：复制专项13项通过；029/030契约8项通过；030远程部署后普通账号验证`restored=true`、恢复active、名称更新、alias 2个、portion 4个，测试数据已清理。公共食品未修改。
 - 未完成事项：仍需用户在最新Production页面再次验收首次复制、重复复制、软停用后再次复制和刷新/重新登录可见性；远程Feedback保持pending。
 - 风险或注意事项：Migration 028仍未部署；029未重新部署；本轮仅隔离部署030。
-- Git Commit ID：待本任务独立提交后填写真实完整ID。
+- Git Commit ID：`1686bb2b566f78ccabdb76c8a4dff3714db384ea`。
 
 ## DEV-20260804-003
 
