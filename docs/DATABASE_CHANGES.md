@@ -11,7 +11,7 @@
 - 测试内容：032 契约；029-031契约回归；前端专项26项、全量277项、Production Build；远程 migration list、旧 portion 字段回填和AFCD只读基线。
 - 测试结果：上述本地检查全部通过；032 已通过隔离目录部署且仅应用032。远程旧 portion 样本均为 `g` 且 amount 与 grams 一致，AFCD为136/0/264。
 - 相关DEV编号：`DEV-20260804-006`。
-- 相关Commit ID：未提交。
+- 相关Commit ID：`20a04af9682bf6c3c13c5ce9958eae27660be221`。
 
 ## DB-20260804-003
 

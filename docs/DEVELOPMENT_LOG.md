@@ -10,7 +10,7 @@
 - 测试结果：专项26项通过；前端全量42套件277项通过；029-032契约通过；Production Build成功；032隔离部署只应用032。远程旧 portion 示例均为 `unit=g` 且 `amount=grams`，AFCD保持approved/pending/disabled为136/0/264。
 - 未完成事项：需要用户重新验收320px布局、默认一行、添加/删除分量、克/毫升选择、未知毫升提示、已有个人食品和复制食品兼容；远程Feedback保持pending。
 - 风险或注意事项：Migration 032已隔离部署；Migration 028仍未部署；未重新部署029/030/031；未修改公共食品、审核状态或历史food_entries；未push。
-- Git Commit ID：未提交。
+- Git Commit ID：`20a04af9682bf6c3c13c5ce9958eae27660be221`。
 
 ## DEV-20260804-005
 
