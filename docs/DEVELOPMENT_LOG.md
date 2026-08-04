@@ -1,3 +1,18 @@
+## DEV-20260804-009
+
+- 日期：2026-08-04
+- 状态：代码和测试完成，等待用户最终 UI 验收
+- 任务目标：执行 P0 编号8，参考 FatSecret 的信息层级和操作效率优化首页添加食品 Sheet。
+- 实际完成内容：搜索区增加明确辅助标签和清除入口；食品结果改为紧凑整行、保留个人食品优先和来源标签；选择态增加返回入口、可用分量、数量加减与克重同步，并保留直接克重模式；底部添加按钮固定在 Sheet 内，按餐次显示 `加入早餐` 等文案；NULL 营养值显示为“暂无数据”；公共搜索增加迟到响应保护；未知 ml 严格要求手动输入克重。
+- 主要修改文件或模块：`frontend/src/modals/AddFoodSheet.jsx`、`frontend/src/modals/AddFoodSheet.test.jsx`。
+- 遇到的问题：旧移动验收测试依赖“返回/确认添加”无障碍名称；新增测试夹具曾因共享portion对象互相污染。
+- 解决方式：保留既有无障碍名称而更新可见餐次文案；在每个测试前重置食品夹具。
+- 执行的测试：AddFoodSheet专项；移动端验收与AddFoodSheet专项；前端全量 `CI=true npm test -- --watchAll=false --runInBand`；`npm run build`；`git diff --check`；编辑器错误检查。
+- 测试结果：专项5项、受影响测试25项、前端全量42套件281项通过；Production Build成功；编辑器未发现错误。测试中仍有既有Supabase环境变量和Node弃用warning。
+- 未完成事项：未在真实登录账号和真机环境完成最终视觉验收。
+- 风险或注意事项：未新增Migration 033，未部署028，未修改公共食品、审核状态或历史food_entries；远程反馈保持 `pending`。
+- Git Commit ID：未提交。
+
 ## DEV-20260804-008
 
 - 日期：2026-08-04

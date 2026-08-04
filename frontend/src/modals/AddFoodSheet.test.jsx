@@ -30,6 +30,11 @@ jest.mock('sonner', () => ({ toast: { error: jest.fn() } }));
 describe('AddFoodSheet personal food priority', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    mockFoods[1].cal100 = 200;
+    mockFoods[1].p100 = 20;
+    mockFoods[1].f100 = 4;
+    mockFoods[1].c100 = 40;
+    mockFoods[1].portions = [{ id: 'portion-1', name: '1杯', amount: 250, unit: 'g', grams: 250, isDefault: true }];
     mockRefreshFoods.mockResolvedValue({ data: mockFoods, error: null });
     const { foodService } = require('../services/foodService');
     foodService.listVisiblePublicFoods.mockResolvedValue({ data: [], count: 0, error: null });
@@ -71,5 +76,31 @@ describe('AddFoodSheet personal food priority', () => {
     fireEvent.change(screen.getByRole('spinbutton'), { target: { value: '120' } });
     fireEvent.click(screen.getByRole('button', { name: '确认添加' }));
     await waitFor(() => expect(onConfirm).toHaveBeenCalledWith(expect.objectContaining({ foodId: 'mine-1', grams: 120 })));
+  });
+
+  test('keeps the query when returning and synchronizes portion quantity with grams', async () => {
+    render(<AddFoodSheet open targetTitle="早餐" onOpenChange={jest.fn()} onConfirm={jest.fn()} />);
+    await waitFor(() => expect(screen.getByTestId('food-group-personal')).toBeTruthy());
+    fireEvent.change(screen.getByTestId('food-search-input'), { target: { value: '我的品牌' } });
+    fireEvent.click(screen.getByTestId('food-select-mine-1'));
+    expect(screen.getByRole('button', { name: '增加数量' })).toBeTruthy();
+    fireEvent.click(screen.getByRole('button', { name: '增加数量' }));
+    expect(screen.getByRole('spinbutton').value).toBe('500');
+    fireEvent.click(screen.getByRole('button', { name: '返回' }));
+    expect(screen.getByTestId('food-search-input').value).toBe('我的品牌');
+    expect(screen.queryByRole('button', { name: '加入早餐' })).toBeNull();
+  });
+
+  test('shows dynamic add action and keeps null nutrients as unavailable', async () => {
+    mockFoods[1].cal100 = null;
+    mockFoods[1].p100 = null;
+    mockFoods[1].f100 = null;
+    mockFoods[1].c100 = null;
+    render(<AddFoodSheet open targetTitle="午餐" onOpenChange={jest.fn()} onConfirm={jest.fn()} />);
+    await waitFor(() => expect(screen.getByTestId('food-group-personal')).toBeTruthy());
+    expect(screen.getByText('每100g · 暂无数据')).toBeTruthy();
+    fireEvent.click(screen.getByTestId('food-select-mine-1'));
+    expect(screen.getByText('加入午餐')).toBeTruthy();
+    expect(screen.getByText('暂无数据')).toBeTruthy();
   });
 });
