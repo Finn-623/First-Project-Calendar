@@ -1,3 +1,21 @@
+## DEV-20260804-004
+
+- 日期：2026-08-04
+- 状态：代码和远程验收完成，等待用户最终页面验收
+- 修改类型：P0 Fix / 复制后个人食品可见性
+- 任务目标：修复真实页面中公共食品复制成功后未立即出现在“我的食品”的问题，并处理已软停用副本再次复制不可见的情况。
+- 实际完成内容：
+	- 公共食品复制成功后等待刷新个人食品，再切换到`tab=mine`；清空个人食品搜索和分类筛选，避免旧状态隐藏新食品。
+	- `PublicFoodBrowser`等待`onCopied`异步回调完成；食品库刷新调用兼容同步/异步Store返回值。
+	- 新增Migration 030，遇到同一用户同一公共来源的inactive副本时恢复`is_active=true`、更新名称并返回`restored=true`；不重复复制alias和portion。active副本仍保持幂等。
+- 真实根因：首次复制记录已正确创建，active个人食品查询也能返回，但页面复制回调仅切换tab，没有调用`refreshFoods`，页面继续使用复制前的Store快照；另一路径中029对已软停用副本返回`already_exists`但不恢复，导致唯一索引保留的inactive副本不可见。
+- 主要修改文件或模块：`frontend/src/components/food/PublicFoodBrowser.jsx`、`frontend/src/pages/FoodLibraryPage.jsx`、对应页面测试、`supabase/migrations/030_restore_inactive_personal_food_copy.sql`及契约测试。
+- 执行的测试：P0-20复制页面/组件专项13项；029/030契约8项；普通账号真实首次复制字段、active查询、软停用后再次复制恢复及清理；前端全量和Production Build将在提交前执行。
+- 测试结果：复制专项13项通过；029/030契约8项通过；030远程部署后普通账号验证`restored=true`、恢复active、名称更新、alias 2个、portion 4个，测试数据已清理。公共食品未修改。
+- 未完成事项：仍需用户在最新Production页面再次验收首次复制、重复复制、软停用后再次复制和刷新/重新登录可见性；远程Feedback保持pending。
+- 风险或注意事项：Migration 028仍未部署；029未重新部署；本轮仅隔离部署030。
+- Git Commit ID：待本任务独立提交后填写真实完整ID。
+
 ## DEV-20260804-003
 
 - 日期：2026-08-04

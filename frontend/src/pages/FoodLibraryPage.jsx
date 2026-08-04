@@ -171,9 +171,9 @@ export const FoodLibraryPage = () => {
 
   useEffect(() => {
     if (!user?.id) return;
-    refreshFoods(user.id).catch(console.error);
+    Promise.resolve(refreshFoods(user.id)).catch(console.error);
     if (isAdmin) {
-      loadPublicFoods(user.id).catch(console.error);
+      Promise.resolve(loadPublicFoods(user.id)).catch(console.error);
     }
   }, [isAdmin, loadPublicFoods, refreshFoods, user?.id]);
 
@@ -499,7 +499,12 @@ export const FoodLibraryPage = () => {
         <button type="button" role="tab" aria-selected={activeTab === 'mine'} onClick={() => setActiveTab('mine')} className={`min-h-10 rounded-lg text-sm ${activeTab === 'mine' ? 'bg-white text-[#2C332F] shadow-sm' : 'text-[#6F7772]'}`}>我的食品</button>
       </div>
 
-      {activeTab === 'public' ? <PublicFoodBrowser onCopied={() => setActiveTab('mine')} /> : <>
+      {activeTab === 'public' ? <PublicFoodBrowser onCopied={async () => {
+        setQuery('');
+        setCat('全部');
+        if (user?.id) await refreshFoods(user.id);
+        setActiveTab('mine');
+      }} /> : <>
       <div className="px-5 space-y-3">
         <div className="relative">
           <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#858C88]" strokeWidth={1.5} />

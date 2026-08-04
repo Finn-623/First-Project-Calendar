@@ -188,7 +188,7 @@ export const PublicFoodBrowser = ({ onCopied }) => {
     setCopyFood(null);
     setSelectedFoodId(null);
     showSuccess(data?.already_exists ? '该公共食品已复制到我的食品' : '已复制到我的食品');
-    onCopied?.(data);
+    await onCopied?.(data);
   };
 
   return (

@@ -6,12 +6,27 @@
 - 涉及表和字段：不新增字段或表；写入`foods`、`food_private_aliases`、`food_portions`，来源关联使用Migration 022既有`source_public_food_id`。
 - Migration文件路径：`supabase/migrations/029_copy_public_food_to_personal.sql`。
 - 对现有数据的影响：Migration本身不复制或修改任何食品；只新增索引、RPC及执行授权。公共食品、审核状态、历史快照和现有个人食品保持不变。
-- 风险：Migration 028仍未部署；个人食品历史记录依赖`foods`主记录保留，后续删除逻辑必须继续使用带用户和private条件的软停用。
+- 风险：Migration 028仍未部署；个人食品历史记录依赖`foods`主记录保留，后续删除逻辑必须继续使用带用户和private条件的软停用。Migration 030仅恢复当前用户自己的inactive副本，不修改公共食品。
 - 回滚方式：以新Migration撤销RPC和部分唯一索引；不得修改本Migration历史。
 - 测试内容：Migration 022/029专项契约、全部Migration契约、食品导入回归、复制service/UI、公共与个人页面、添加Sheet、前端全量测试和Production Build。
 - 测试结果：029部署前门禁通过；远程普通账号真实复制、幂等、编辑、历史快照、软停用和匿名拒绝通过，F007325复制2个alias/4个portion；测试数据清理后副本、重复组和关联残留为0，AFCD保持136/0/264。Migration 027/028/029契约12项通过；软停用/食品库专项11项通过。028未部署，029未重复部署。
 - 相关DEV编号：`DEV-20260804-003`。
 - 相关Commit ID：`587b796e22f6df83ad5959718806496210efce96`。
+
+## DB-20260804-002
+
+- 日期：2026-08-04
+- 修改原因：用户真实页面发现复制成功后个人食品未立即可见；029对已有inactive副本只返回already_exists，唯一索引阻止重新创建。
+- 实际修改内容：新增Migration 030，重定义`copy_public_food_to_personal(UUID, TEXT)`；同一`auth.uid()`、private、source公共食品的inactive副本恢复`is_active=true`并更新名称，返回`restored=true`；active副本继续幂等返回，不重复alias或portion。
+- 涉及表和字段：现有`foods.is_active`、`foods.name`、`foods.updated_by`；不新增表或字段。
+- Migration文件路径：`supabase/migrations/030_restore_inactive_personal_food_copy.sql`。
+- 对现有数据的影响：仅在用户再次复制已有公共来源时恢复其本人inactive副本；公共食品、审核状态、alias、portion和历史food_entries不变。
+- 风险：Migration 028仍未部署；030已通过隔离目录单独部署，未重新部署029。
+- 回滚方式：使用后续Migration恢复029的active副本返回逻辑；不得修改已应用历史Migration。
+- 测试内容：030静态契约、普通账号首次复制、软停用后再次复制恢复、alias/portion不重复、公共源基线和测试数据清理。
+- 测试结果：契约测试通过；远程普通账号验证`created=false`、`already_exists=true`、`restored=true`，恢复active并更新名称，alias 2个、portion 4个；测试数据残留为0。
+- 相关DEV编号：`DEV-20260804-004`。
+- 相关Commit ID：待本独立提交后填写真实完整ID。
 
 ## DB-20260803-001
 

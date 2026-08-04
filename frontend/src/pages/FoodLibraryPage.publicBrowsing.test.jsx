@@ -1,10 +1,11 @@
 import React from 'react';
-import { render, screen, waitFor } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { FoodLibraryPage } from './FoodLibraryPage';
 import { foodService } from '../services/foodService';
 
 let mockCurrentSearch = '';
 const mockSetSearchParams = jest.fn();
+const mockRefreshFoods = jest.fn(() => Promise.resolve({ data: [], error: null }));
 jest.mock('react-router-dom', () => ({
   useNavigate: () => jest.fn(),
   useSearchParams: () => [new URLSearchParams(mockCurrentSearch), mockSetSearchParams],
@@ -22,7 +23,7 @@ jest.mock('../store', () => ({ useStore: () => ({
     { id: 'inactive-1', name: '已停用燕麦', visibility: 'private', user_id: 'user-1', category: '我的', is_active: false },
   ],
   publicFoods: [], user: { id: 'user-1' }, profile: { role: 'user' },
-  refreshFoods: jest.fn().mockResolvedValue(), loadPublicFoods: jest.fn().mockResolvedValue(),
+  refreshFoods: mockRefreshFoods, loadPublicFoods: jest.fn().mockResolvedValue(),
   createPublicFood: jest.fn(), updatePublicFood: jest.fn(), setPublicFoodActive: jest.fn(),
 }) }));
 jest.mock('../components/ui/input', () => ({ Input: (props) => <input {...props} /> }));
@@ -55,6 +56,18 @@ describe('FoodLibraryPage 公共食品真实路由接入', () => {
     foodService.loadVisiblePublicFoodFacets.mockResolvedValue({ categories: ['vegetables'], intakeTypes: ['fiber'], error: null });
     foodService.listVisiblePublicFoods.mockResolvedValue({ data: [food], count: 1, error: null });
     foodService.getVisiblePublicFoodDetail.mockResolvedValue({ data: food, error: null });
+  });
+
+  test('复制公共食品后刷新个人食品并切换到第一页的我的食品', async () => {
+    foodService.copyPublicFoodToPersonal.mockResolvedValue({ data: { food_id: 'mine-copy', created: true }, error: null });
+    mount('/library?tab=public');
+
+    fireEvent.click((await screen.findAllByRole('button', { name: '复制到我的食品' }))[0]);
+    fireEvent.change(screen.getByDisplayValue('西兰花'), { target: { value: 'P0-20-页面复制食品' } });
+    fireEvent.click(screen.getByRole('button', { name: '确认复制' }));
+
+    await waitFor(() => expect(mockRefreshFoods).toHaveBeenCalledWith('user-1'));
+    expect(mockSetSearchParams).toHaveBeenCalledWith({ tab: 'mine' }, { replace: true });
   });
 
   test.each(['/library', '/library?tab=public'])('%s 默认挂载完整公共食品浏览器和可见筛选', async (path) => {
