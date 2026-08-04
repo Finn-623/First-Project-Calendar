@@ -154,7 +154,12 @@ export const AddFoodSheet = ({ open, onOpenChange, targetTitle, onConfirm }) => 
                       className="w-full text-left rounded-2xl bg-white border border-[#E5E5E0] p-3.5 flex items-center justify-between hover:border-[#6B8067]/40"
                     >
                       <div className="min-w-0 pr-2">
-                        <p className="text-[13.5px] text-[#2C332F] break-words">{f.name}</p>
+                        <div className="flex flex-wrap items-center gap-2">
+                          <p className="text-[13.5px] text-[#2C332F] break-words">{f.name}</p>
+                          <span className="rounded-full bg-[#F0EFE9] px-2 py-0.5 text-[10px] text-[#5E6660]" aria-label={f.visibility === 'public' ? '公共食品' : '个人食品'}>
+                            {f.visibility === 'public' ? '公共' : '个人'}
+                          </span>
+                        </div>
                         <p className="font-num text-[11px] text-[#858C88] mt-0.5">
                           每100g · P{f.p100 || 0} · F{f.f100 || 0} · C{f.c100 || 0}
                         </p>
@@ -176,7 +181,10 @@ export const AddFoodSheet = ({ open, onOpenChange, targetTitle, onConfirm }) => 
           {selected && (
             <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain px-5 pb-6 space-y-4">
               <div className="rounded-2xl bg-white border border-[#E5E5E0] p-4">
-                <p className="text-[13px] text-[#2C332F] break-words">{selected.name}</p>
+                <div className="flex flex-wrap items-center gap-2">
+                  <p className="text-[13px] text-[#2C332F] break-words">{selected.name}</p>
+                  <span className="rounded-full bg-[#F0EFE9] px-2 py-0.5 text-[10px] text-[#5E6660]">{selected.visibility === 'public' ? '公共' : '个人'}</span>
+                </div>
                 <p className="text-[11px] text-[#858C88] mt-1">输入克重后确认添加</p>
               </div>
 

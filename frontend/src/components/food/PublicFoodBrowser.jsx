@@ -5,6 +5,8 @@ import { Input } from '../ui/input';
 import { Button } from '../ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../ui/dialog';
 import { PUBLIC_FOOD_PAGE_SIZE } from '../../constants/publicFood';
+import { toast } from 'sonner';
+import { showSuccess } from '../../lib/notifications';
 
 const INTAKE_LABELS = {
   carbohydrate: '碳水', protein: '蛋白质', fat: '脂肪', fiber: '膳食纤维',
@@ -23,10 +25,8 @@ const nutrientText = (value, unit) => {
   return `${rounded}${unit}`;
 };
 
-const FoodCard = ({ food, onOpen }) => (
-  <button
-    type="button"
-    onClick={() => onOpen(food.id)}
+const FoodCard = ({ food, onOpen, onCopy, copying }) => (
+  <article
     className="w-full rounded-2xl border border-[#E5E5E0] bg-white p-4 text-left min-h-[132px]"
     data-testid={`public-food-${food.id}`}
   >
@@ -36,7 +36,7 @@ const FoodCard = ({ food, onOpen }) => (
         {food.nameEn ? <p className="mt-1 text-[11px] leading-4 text-[#858C88] break-words">{food.nameEn}</p> : null}
         {food.brand ? <p className="mt-1 text-[11px] text-[#5E6660] break-words">{food.brand}</p> : null}
       </div>
-      <span className="shrink-0 rounded-full bg-[#EEF3EC] px-2 py-1 text-[10px] text-[#60725D]">公共食品</span>
+      <span className="shrink-0 rounded-full bg-[#EEF3EC] px-2 py-1 text-[10px] text-[#60725D]" aria-label="公共食品，只读">公共</span>
     </div>
     <div className="mt-3 flex flex-wrap gap-1.5 text-[10px] text-[#66706A]">
       {food.primaryCategory ? <span className="rounded-full bg-[#F4F4F1] px-2 py-1">{categoryLabel(food.primaryCategory)}</span> : null}
@@ -50,12 +50,15 @@ const FoodCard = ({ food, onOpen }) => (
         <span>碳水 <strong className="font-normal text-[#2C332F]">{nutrientText(food.nutrients.carbohydrateG, 'g')}</strong></span>
         <span>脂肪 <strong className="font-normal text-[#2C332F]">{nutrientText(food.nutrients.fatG, 'g')}</strong></span>
       </div>
-      <p className="mt-3 text-right text-[11px] font-medium text-[#6B8067]">查看详情 ›</p>
+      <div className="mt-3 flex flex-wrap items-center justify-end gap-2">
+        <button type="button" onClick={() => onOpen(food.id)} className="min-h-10 rounded-lg px-3 text-[11px] font-medium text-[#6B8067]">查看详情 ›</button>
+        <button type="button" onClick={() => onCopy(food)} disabled={copying} className="min-h-10 rounded-lg border border-[#CBD5C8] px-3 text-[11px] font-medium text-[#52664F] disabled:opacity-50">复制到我的食品</button>
+      </div>
     </div>
-  </button>
+  </article>
 );
 
-const FoodDetail = ({ foodId, onClose }) => {
+const FoodDetail = ({ foodId, onClose, onCopy, copying }) => {
   const [state, setState] = useState({ loading: true, food: null, error: null });
 
   useEffect(() => {
@@ -77,6 +80,7 @@ const FoodDetail = ({ foodId, onClose }) => {
         {food ? (
           <div className="space-y-5" data-testid="public-food-detail">
             <div>
+              <span className="mb-2 inline-flex rounded-full bg-[#EEF3EC] px-2 py-1 text-[10px] text-[#60725D]">公共 · 系统提供，只读</span>
               <h2 className="text-lg font-medium text-[#2C332F] break-words">{food.name}</h2>
               {food.nameEn ? <p className="mt-1 text-sm text-[#858C88] break-words">{food.nameEn}</p> : null}
               {food.brand ? <p className="mt-1 text-sm text-[#5E6660]">品牌：{food.brand}</p> : null}
@@ -106,6 +110,7 @@ const FoodDetail = ({ foodId, onClose }) => {
             </section>
             {food.aliases.length ? <section><h3 className="text-sm font-medium text-[#2C332F]">公开别名</h3><p className="mt-2 text-xs leading-5 text-[#5E6660] break-words">{food.aliases.join('、')}</p></section> : null}
             <p className="text-xs text-[#858C88]">数据来源：{food.sourceName || '暂无数据'}</p>
+            <Button type="button" onClick={() => onCopy(food)} disabled={copying} className="min-h-11 w-full bg-[#6B8067] hover:bg-[#5a6d57]">复制到我的食品</Button>
           </div>
         ) : null}
       </DialogContent>
@@ -113,7 +118,7 @@ const FoodDetail = ({ foodId, onClose }) => {
   );
 };
 
-export const PublicFoodBrowser = () => {
+export const PublicFoodBrowser = ({ onCopied }) => {
   const [queryInput, setQueryInput] = useState('');
   const [query, setQuery] = useState('');
   const [category, setCategory] = useState('');
@@ -122,6 +127,9 @@ export const PublicFoodBrowser = () => {
   const [facets, setFacets] = useState({ categories: [], intakeTypes: [] });
   const [state, setState] = useState({ loading: true, foods: [], count: 0, error: null });
   const [selectedFoodId, setSelectedFoodId] = useState(null);
+  const [copyFood, setCopyFood] = useState(null);
+  const [copyName, setCopyName] = useState('');
+  const [copying, setCopying] = useState(false);
   const requestIdRef = useRef(0);
 
   useEffect(() => {
@@ -157,6 +165,32 @@ export const PublicFoodBrowser = () => {
     setPage(0);
   };
 
+  const openCopy = (food) => {
+    if (copying) return;
+    setCopyFood(food);
+    setCopyName(food.name || '');
+  };
+
+  const submitCopy = async () => {
+    if (!copyFood?.id || copying) return;
+    const finalName = copyName.trim();
+    if (!finalName) {
+      toast.error('请输入个人食品名称');
+      return;
+    }
+    setCopying(true);
+    const { data, error } = await foodService.copyPublicFoodToPersonal(copyFood.id, finalName);
+    setCopying(false);
+    if (error) {
+      toast.error(`复制失败：${error.message || '请稍后重试'}`);
+      return;
+    }
+    setCopyFood(null);
+    setSelectedFoodId(null);
+    showSuccess(data?.already_exists ? '该公共食品已复制到我的食品' : '已复制到我的食品');
+    onCopied?.(data);
+  };
+
   return (
     <section className="px-5 pb-4" aria-label="公共食品">
       <div className="relative">
@@ -186,9 +220,20 @@ export const PublicFoodBrowser = () => {
       {state.loading ? <div className="mt-3 grid grid-cols-1 gap-2" aria-label="正在加载公共食品">{Array.from({ length: PUBLIC_FOOD_PAGE_SIZE }, (_, index) => <div key={index} className="h-32 animate-pulse rounded-2xl bg-[#ECEDE9]" />)}</div> : null}
       {state.error && !state.loading ? <div className="mt-6 text-center"><p className="text-sm text-[#C76D5E]">公共食品加载失败</p><Button variant="outline" className="mt-3 min-h-11" onClick={() => void load()}>重试</Button></div> : null}
       {!state.loading && !state.error && !state.foods.length ? <p className="py-10 text-center text-sm text-[#858C88]">没有找到符合条件的公共食品</p> : null}
-      {!state.loading && !state.error ? <div className="mt-3 grid grid-cols-1 gap-2" data-testid="public-food-list">{state.foods.map((food) => <FoodCard key={food.id} food={food} onOpen={setSelectedFoodId} />)}</div> : null}
+      {!state.loading && !state.error ? <div className="mt-3 grid grid-cols-1 gap-2" data-testid="public-food-list">{state.foods.map((food) => <FoodCard key={food.id} food={food} onOpen={setSelectedFoodId} onCopy={openCopy} copying={copying} />)}</div> : null}
       {!state.loading && !state.error && state.count > PUBLIC_FOOD_PAGE_SIZE ? <div className="mt-5 flex items-center justify-center gap-3"><button type="button" aria-label="上一页" disabled={page === 0} onClick={() => setPage((value) => Math.max(0, value - 1))} className="flex h-11 w-11 items-center justify-center rounded-xl border disabled:opacity-40"><ChevronLeft size={16} /></button><span className="text-xs text-[#5E6660]">{page + 1} / {pageCount}</span><button type="button" aria-label="下一页" disabled={page + 1 >= pageCount} onClick={() => setPage((value) => value + 1)} className="flex h-11 w-11 items-center justify-center rounded-xl border disabled:opacity-40"><ChevronRight size={16} /></button></div> : null}
-      {selectedFoodId ? <FoodDetail foodId={selectedFoodId} onClose={() => setSelectedFoodId(null)} /> : null}
+      {selectedFoodId ? <FoodDetail foodId={selectedFoodId} onClose={() => setSelectedFoodId(null)} onCopy={openCopy} copying={copying} /> : null}
+      <Dialog open={Boolean(copyFood)} onOpenChange={(open) => !open && !copying && setCopyFood(null)}>
+        <DialogContent className="max-w-md rounded-2xl">
+          <DialogHeader><DialogTitle>复制到我的食品</DialogTitle></DialogHeader>
+          <p className="text-sm text-[#5E6660]">将创建一份仅你可见、可以独立修改的个人食品，原公共食品不会改变。</p>
+          <label className="block text-xs text-[#858C88]">个人食品名称<Input className="mt-1 min-h-11" value={copyName} onChange={(event) => setCopyName(event.target.value)} disabled={copying} /></label>
+          <div className="flex justify-end gap-2">
+            <Button variant="outline" onClick={() => setCopyFood(null)} disabled={copying}>取消</Button>
+            <Button onClick={submitCopy} disabled={copying} className="bg-[#6B8067] hover:bg-[#5a6d57]">{copying ? '复制中…' : '确认复制'}</Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </section>
   );
 };

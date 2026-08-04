@@ -141,6 +141,7 @@ describe.each(VIEWPORTS)('手机端关键结构 %d × %d', (width, height) => {
     await waitFor(() => {
       expect(screen.getByText(LONG_FOOD_NAME)).toBeTruthy();
     });
+    expect(screen.getByLabelText('个人食品')).toBeTruthy();
     fireEvent.click(screen.getByText(LONG_FOOD_NAME));
 
     const sheet = screen.getByTestId('add-food-sheet');

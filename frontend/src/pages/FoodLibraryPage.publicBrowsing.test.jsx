@@ -13,7 +13,7 @@ jest.mock('react-router-dom', () => ({
 jest.mock('../services/foodService', () => ({
   foodService: {
     listVisiblePublicFoods: jest.fn(), loadVisiblePublicFoodFacets: jest.fn(),
-    getVisiblePublicFoodDetail: jest.fn(), createFood: jest.fn(), updateFood: jest.fn(), deleteFood: jest.fn(),
+    getVisiblePublicFoodDetail: jest.fn(), copyPublicFoodToPersonal: jest.fn(), createFood: jest.fn(), updateFood: jest.fn(), deleteFood: jest.fn(),
   },
 }));
 jest.mock('../store', () => ({ useStore: () => ({
@@ -69,6 +69,8 @@ describe('FoodLibraryPage 公共食品真实路由接入', () => {
     mount('/library?tab=mine');
     expect(screen.getByRole('tab', { name: '我的食品' }).getAttribute('aria-selected')).toBe('true');
     expect(await screen.findByText('我的燕麦')).toBeTruthy();
+    expect(screen.getByText('个人')).toBeTruthy();
+    expect(screen.getByText('仅自己可见，可修改')).toBeTruthy();
     expect(screen.queryByText('食品分类')).toBeNull();
   });
 });

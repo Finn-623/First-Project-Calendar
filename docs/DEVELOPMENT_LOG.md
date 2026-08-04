@@ -5376,6 +5376,21 @@
 - 风险或注意事项：未修改数据库、公共食品内容或审核状态；未部署Migration 028；未push。
 - Git Commit ID：由本独立提交承载，以Git历史为准。
 
+## DEV-20260804-002
+
+- 日期：2026-08-04
+- 状态：代码完成，等待Migration 029部署与用户最终验收
+- 任务目标：P0编号20，明确区分公共与个人食品，并提供安全的公共食品复制为个人食品流程。
+- 实际完成内容：公共食品卡片/详情显示“公共、系统提供、只读”并提供复制入口；我的食品只列当前用户私有食品，显示“个人、仅自己可见、可修改”及详情/编辑/删除；添加食品Sheet显示来源标签。复制前可修改名称，RPC原子复制完整营养、公共alias与远程现有portion，并保留`source_public_food_id`。
+- 主要修改文件或模块：`PublicFoodBrowser.jsx`、`FoodLibraryPage.jsx`、`AddFoodSheet.jsx`、`foodService.js`、Migration 029及专项测试。
+- 遇到的问题：客户端分三次写foods、alias与portion会产生半成品；快速双击和网络重试也可能生成重复个人食品。
+- 解决方式：使用`auth.uid()`驱动的SECURITY DEFINER RPC与事务级advisory lock；按`user_id + source_public_food_id`建立部分唯一索引，已复制时幂等返回原个人食品，不接受前端角色或用户ID。
+- 执行的测试：Migration 022/029契约；全部Migration契约；食品导入回归；复制service/UI、FoodLibrary、AddFoodSheet移动端专项；前端全量；Production Build；`git diff --check`。
+- 测试结果：Migration专项17项、全部Migration 43项、食品导入53项、专项4套件37项、前端全量41套件268项通过；Production Build成功。本地Production预览确认公共卡片展示“公共”和复制入口，复制弹窗允许改名且未提交；我的食品展示“个人”、详情/编辑/删除；添加Sheet同时展示公共与个人标签。仅有既有测试环境日志与`fs.F_OK`弃用警告。
+- 未完成事项：Migration 029未获远程部署授权，故普通测试账号远程复制、跨账号隔离和清理验收尚未执行；P0编号20保持等待用户最终验收，远程Feedback仍为pending。
+- 风险或注意事项：未部署Migration 028或029；未修改公共食品、alias、portion、审核状态或历史数据；P0编号19已通过用户最终验收但远程Feedback待统一收尾。
+- Git Commit ID：由本独立提交承载，以Git历史为准。
+
 ## DEV-20260803-009
 
 - 日期：2026-08-03

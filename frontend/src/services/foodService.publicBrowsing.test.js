@@ -1,7 +1,7 @@
 import { supabase } from '../lib/supabaseClient';
 import { foodService } from './foodService';
 
-jest.mock('../lib/supabaseClient', () => ({ supabase: { from: jest.fn() } }));
+jest.mock('../lib/supabaseClient', () => ({ supabase: { from: jest.fn(), rpc: jest.fn() } }));
 
 const query = (result) => {
   const value = {
@@ -38,6 +38,16 @@ describe('foodService 普通用户公共食品查询', () => {
     expect(foods.contains).toHaveBeenCalledWith('intake_types', ['fiber']);
     expect(foods.range).toHaveBeenCalledWith(10, 19);
     expect(result.data[0].nutrients.fiberG).toBeNull();
+  });
+
+  test('复制公共食品只调用受控RPC并保留用户指定名称', async () => {
+    supabase.rpc.mockResolvedValue({ data: { food_id: 'mine-1', created: true }, error: null });
+    const result = await foodService.copyPublicFoodToPersonal('food-1', ' 我的西兰花 ');
+    expect(supabase.rpc).toHaveBeenCalledWith('copy_public_food_to_personal', {
+      p_source_food_id: 'food-1',
+      p_name: '我的西兰花',
+    });
+    expect(result.data.food_id).toBe('mine-1');
   });
 
   test('136条结果的第14页使用130到139的服务端range并允许少于10条', async () => {

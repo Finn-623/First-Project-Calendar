@@ -142,6 +142,7 @@ export const FoodLibraryPage = () => {
   const [editOpen, setEditOpen] = useState(false);
   const [editingFoodId, setEditingFoodId] = useState(null);
   const [submitting, setSubmitting] = useState(false);
+  const [selectedPersonalFood, setSelectedPersonalFood] = useState(null);
   const [privateForm, setPrivateForm] = useState(emptyPrivateForm());
   const [publicCreateOpen, setPublicCreateOpen] = useState(false);
   const [publicEditOpen, setPublicEditOpen] = useState(false);
@@ -153,11 +154,12 @@ export const FoodLibraryPage = () => {
 
   const list = useMemo(() => {
     return (foods || []).filter((f) => {
+      if (f.visibility === 'public' || f.user_id !== user?.id) return false;
       const matchQ = [f.name, f.brand].filter(Boolean).some((value) => normalizeText(value).includes(normalizeText(query)));
       const matchC = cat === '全部' || f.category === cat;
       return matchQ && matchC;
     });
-  }, [foods, query, cat]);
+  }, [foods, query, cat, user?.id]);
 
   const adminPublicList = useMemo(() => {
     return (publicFoods || []).filter((f) => {
@@ -329,7 +331,7 @@ export const FoodLibraryPage = () => {
     }
 
     setSubmitting(true);
-    const { error } = await foodService.updateFood(editingFoodId, validation.payload);
+    const { error } = await foodService.updateFood(editingFoodId, validation.payload, user.id);
     setSubmitting(false);
 
     if (error) {
@@ -358,7 +360,7 @@ export const FoodLibraryPage = () => {
     if (!confirmed) return;
 
     setSubmitting(true);
-    const { error } = await foodService.deleteFood(food.id);
+    const { error } = await foodService.deleteFood(food.id, user.id);
     setSubmitting(false);
 
     if (error) {
@@ -497,7 +499,7 @@ export const FoodLibraryPage = () => {
         <button type="button" role="tab" aria-selected={activeTab === 'mine'} onClick={() => setActiveTab('mine')} className={`min-h-10 rounded-lg text-sm ${activeTab === 'mine' ? 'bg-white text-[#2C332F] shadow-sm' : 'text-[#6F7772]'}`}>我的食品</button>
       </div>
 
-      {activeTab === 'public' ? <PublicFoodBrowser /> : <>
+      {activeTab === 'public' ? <PublicFoodBrowser onCopied={() => setActiveTab('mine')} /> : <>
       <div className="px-5 space-y-3">
         <div className="relative">
           <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#858C88]" strokeWidth={1.5} />
@@ -582,8 +584,9 @@ export const FoodLibraryPage = () => {
                 <div className="flex items-center gap-2 flex-wrap">
                   <p className="text-[13.5px] text-[#2C332F] break-words">{f.name}</p>
                   <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-[#F0EFE9] text-[#858C88]">
-                    {f.category || (isPublic ? '公共' : '我的')}
+                    {isPublic ? '公共' : '个人'}
                   </span>
+                  {!isPublic ? <span className="text-[10px] text-[#858C88]">仅自己可见，可修改</span> : null}
                   {f.isActive === false ? (
                     <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-[#F4F4F2] text-[#858C88]">
                       已停用
@@ -596,12 +599,14 @@ export const FoodLibraryPage = () => {
                 <p className="font-num text-[11px] text-[#858C88] mt-1 break-words">
                   每100g · P{f.p100 || 0} · F{f.f100 || 0} · C{f.c100 || 0}
                 </p>
+                {f.sourcePublicFoodId ? <p className="mt-1 text-[11px] text-[#858C88]">复制自公共食品</p> : null}
               </div>
               <div className="text-right shrink-0 ml-3">
                 <p className="font-num text-[15px] font-medium text-[#2C332F]">
                   {f.cal100 || 0} <span className="text-[10px] text-[#858C88] font-normal">kcal</span>
                 </p>
                 <div className="mt-1 flex items-center justify-end gap-3">
+                  {!isPublic ? <button type="button" onClick={() => setSelectedPersonalFood(f)} className="min-h-10 text-[11px] text-[#5E6660]">查看详情</button> : null}
                   {canEditPrivate ? (
                     <>
                       <button
@@ -662,6 +667,25 @@ export const FoodLibraryPage = () => {
               </Button>
             </div>
           </div>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={Boolean(selectedPersonalFood)} onOpenChange={(open) => !open && setSelectedPersonalFood(null)}>
+        <DialogContent className="max-h-[90dvh] max-w-md overflow-y-auto rounded-2xl">
+          <DialogHeader><DialogTitle>个人食品详情</DialogTitle></DialogHeader>
+          {selectedPersonalFood ? <div className="space-y-4" data-testid="personal-food-detail">
+            <div><span className="inline-flex rounded-full bg-[#F0EFE9] px-2 py-1 text-[10px] text-[#5E6660]">个人 · 仅自己可见</span><h2 className="mt-2 text-lg font-medium">{selectedPersonalFood.name}</h2></div>
+            <div className="grid grid-cols-2 gap-2 text-xs">
+              <div className="rounded-xl bg-[#F7F7F5] p-3">热量 <span className="float-right">{selectedPersonalFood.cal100} kcal</span></div>
+              <div className="rounded-xl bg-[#F7F7F5] p-3">蛋白质 <span className="float-right">{selectedPersonalFood.p100} g</span></div>
+              <div className="rounded-xl bg-[#F7F7F5] p-3">碳水 <span className="float-right">{selectedPersonalFood.c100} g</span></div>
+              <div className="rounded-xl bg-[#F7F7F5] p-3">脂肪 <span className="float-right">{selectedPersonalFood.f100} g</span></div>
+            </div>
+            <section><h3 className="text-sm font-medium">个人别名</h3><p className="mt-1 text-xs text-[#858C88]">{selectedPersonalFood.aliases?.length ? selectedPersonalFood.aliases.join('、') : '暂无别名'}</p></section>
+            <section><h3 className="text-sm font-medium">可用份量</h3>{selectedPersonalFood.portions?.length ? <ul className="mt-1 space-y-1 text-xs text-[#858C88]">{selectedPersonalFood.portions.map((portion) => <li key={portion.id}>{portion.name} · {portion.grams}g</li>)}</ul> : <p className="mt-1 text-xs text-[#858C88]">暂无标准份量，可按克记录</p>}</section>
+            {selectedPersonalFood.sourcePublicFoodId ? <p className="text-xs text-[#858C88]">复制自公共食品</p> : null}
+            <div className="flex gap-2"><Button variant="outline" className="flex-1" onClick={() => { setSelectedPersonalFood(null); openEditPrivateDialog(selectedPersonalFood); }}>编辑</Button><Button variant="outline" className="flex-1 text-[#C76D5E]" onClick={() => { const food = selectedPersonalFood; setSelectedPersonalFood(null); void handleDeletePrivateFood(food); }}>删除</Button></div>
+          </div> : null}
         </DialogContent>
       </Dialog>
 

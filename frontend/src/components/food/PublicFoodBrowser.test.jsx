@@ -8,8 +8,11 @@ jest.mock('../../services/foodService', () => ({
     listVisiblePublicFoods: jest.fn(),
     loadVisiblePublicFoodFacets: jest.fn(),
     getVisiblePublicFoodDetail: jest.fn(),
+    copyPublicFoodToPersonal: jest.fn(),
   },
 }));
+jest.mock('sonner', () => ({ toast: { error: jest.fn() } }));
+jest.mock('../../lib/notifications', () => ({ showSuccess: jest.fn() }));
 
 jest.mock('../ui/dialog', () => ({
   Dialog: ({ open, children }) => open ? <div role="dialog">{children}</div> : null,
@@ -45,6 +48,7 @@ describe('PublicFoodBrowser', () => {
     foodService.loadVisiblePublicFoodFacets.mockResolvedValue({ categories: ['dairy', 'vegetables'], intakeTypes: ['fiber', 'protein'], error: null });
     foodService.listVisiblePublicFoods.mockResolvedValue({ data: [broccoli, milk], count: 136, error: null });
     foodService.getVisiblePublicFoodDetail.mockResolvedValue({ data: milk, error: null });
+    foodService.copyPublicFoodToPersonal.mockResolvedValue({ data: { food_id: 'mine-copy', created: true }, error: null });
   });
 
   test('显示只读公共食品列表、结果数和分页，不暴露编辑或审核入口', async () => {
@@ -57,10 +61,10 @@ describe('PublicFoodBrowser', () => {
     await waitFor(() => expect(screen.getAllByText('西兰花')).toHaveLength(5));
     expect(screen.getByTestId('public-food-count').textContent).toContain('136');
     expect(screen.getAllByText('Broccoli, raw')).toHaveLength(5);
-    expect(screen.getAllByText('公共食品').length).toBeGreaterThan(0);
+    expect(screen.getAllByLabelText('公共食品，只读')).toHaveLength(10);
     expect(screen.queryByText('编辑')).toBeNull();
     expect(screen.queryByText('审核')).toBeNull();
-    expect(screen.getByTestId('public-food-list').querySelectorAll('button')).toHaveLength(10);
+    expect(screen.getByTestId('public-food-list').querySelectorAll('article')).toHaveLength(10);
     expect(screen.getByText('1 / 14')).toBeTruthy();
     expect(screen.getByTestId('public-food-list').className).toContain('grid-cols-1');
     expect(screen.getByTestId('public-food-list').className).not.toMatch(/(?:sm|md|lg|xl):grid-cols-[2-9]/);
@@ -132,7 +136,7 @@ describe('PublicFoodBrowser', () => {
   test('详情按需读取公开alias和portion，缺失营养不伪装为0', async () => {
     render(<PublicFoodBrowser />);
     await waitFor(() => expect(screen.getByTestId('public-food-food-2')).toBeTruthy());
-    fireEvent.click(screen.getByTestId('public-food-food-2'));
+    fireEvent.click(screen.getAllByRole('button', { name: '查看详情 ›' })[1]);
     await waitFor(() => expect(screen.getByTestId('public-food-detail')).toBeTruthy());
     expect(foodService.getVisiblePublicFoodDetail).toHaveBeenCalledWith('food-2');
     expect(screen.getByText('1杯 · 250g')).toBeTruthy();
@@ -145,7 +149,26 @@ describe('PublicFoodBrowser', () => {
     foodService.getVisiblePublicFoodDetail.mockResolvedValue({ data: null, error: new Error('not visible') });
     render(<PublicFoodBrowser />);
     await waitFor(() => expect(screen.getByTestId('public-food-food-1')).toBeTruthy());
-    fireEvent.click(screen.getByTestId('public-food-food-1'));
+    fireEvent.click(screen.getAllByRole('button', { name: '查看详情 ›' })[0]);
     await waitFor(() => expect(screen.getByText('食品不可用')).toBeTruthy());
+  });
+
+  test('公共食品只读但可改名后原子复制，提交期间防止重复', async () => {
+    let resolveCopy;
+    foodService.copyPublicFoodToPersonal.mockReturnValue(new Promise((resolve) => { resolveCopy = resolve; }));
+    const onCopied = jest.fn();
+    render(<PublicFoodBrowser onCopied={onCopied} />);
+    fireEvent.click((await screen.findAllByRole('button', { name: '复制到我的食品' }))[0]);
+    expect(screen.getByRole('dialog')).toBeTruthy();
+    const nameInput = screen.getByDisplayValue('西兰花');
+    fireEvent.change(nameInput, { target: { value: '我的西兰花' } });
+    const confirm = screen.getByRole('button', { name: '确认复制' });
+    fireEvent.click(confirm);
+    expect(screen.getByRole('button', { name: '复制中…' }).disabled).toBe(true);
+    fireEvent.click(screen.getByRole('button', { name: '复制中…' }));
+    expect(foodService.copyPublicFoodToPersonal).toHaveBeenCalledTimes(1);
+    expect(foodService.copyPublicFoodToPersonal).toHaveBeenCalledWith('food-1', '我的西兰花');
+    resolveCopy({ data: { food_id: 'mine-copy', created: true }, error: null });
+    await waitFor(() => expect(onCopied).toHaveBeenCalledTimes(1));
   });
 });

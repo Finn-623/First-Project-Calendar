@@ -21,6 +21,14 @@ const normalizeFood = (food) => {
     isActive: food.is_active !== false,
     brand: food.brand || '',
     imageUrl: food.image_url || '',
+    sourcePublicFoodId: food.source_public_food_id || null,
+    aliases: (food.food_private_aliases || []).map((row) => row.alias).filter(Boolean),
+    portions: (food.food_portions || []).map((row) => ({
+      id: row.id,
+      name: row.portion_name,
+      grams: nullableNumber(row.grams),
+      isDefault: row.is_default === true,
+    })),
   };
 };
 
@@ -180,6 +188,19 @@ export const foodService = {
       return { data: null, error };
     }
   },
+
+  async copyPublicFoodToPersonal(sourceFoodId, name) {
+    if (!supabase || !sourceFoodId) return { data: null, error: new Error('食品不可用') };
+    try {
+      const { data, error } = await supabase.rpc('copy_public_food_to_personal', {
+        p_source_food_id: sourceFoodId,
+        p_name: String(name || '').trim() || null,
+      });
+      return { data, error };
+    } catch (error) {
+      return { data: null, error };
+    }
+  },
   /**
    * Get all foods for a user
    * @param {string} userId
@@ -193,7 +214,7 @@ export const foodService = {
     try {
       const { data, error } = await supabase
         .from('foods')
-        .select('*')
+        .select('*,food_private_aliases(alias),food_portions(id,portion_name,grams,is_default)')
         .order('name', { ascending: true });
 
       const visibleFoods = (data || []).filter((food) => {
@@ -372,12 +393,15 @@ export const foodService = {
    * @param {Object} updates
    * @returns {Promise<{data, error}>}
    */
-  async updateFood(foodId, updates) {
+  async updateFood(foodId, updates, userId = null) {
     try {
-      const { data, error } = await supabase
+      let request = supabase
         .from('foods')
         .update(updates)
         .eq('id', foodId)
+        .eq('visibility', 'private');
+      if (userId) request = request.eq('user_id', userId);
+      const { data, error } = await request
         .select()
         .single();
 
@@ -444,12 +468,15 @@ export const foodService = {
    * @param {string} foodId
    * @returns {Promise<{error}>}
    */
-  async deleteFood(foodId) {
+  async deleteFood(foodId, userId = null) {
     try {
-      const { error } = await supabase
+      let request = supabase
         .from('foods')
         .delete()
-        .eq('id', foodId);
+        .eq('id', foodId)
+        .eq('visibility', 'private');
+      if (userId) request = request.eq('user_id', userId);
+      const { error } = await request;
 
       return { error };
     } catch (err) {
