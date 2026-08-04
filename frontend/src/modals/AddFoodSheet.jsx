@@ -46,7 +46,7 @@ export const AddFoodSheet = ({ open, onOpenChange, targetTitle, onConfirm }) => 
 
       setLoadingFoods(!foods.length);
       if (!foods.length) await refreshFoods(user.id);
-      const result = await foodService.listVisiblePublicFoods({ page: 0, pageSize: 50 });
+      const result = await foodService.listVisiblePublicFoods({ page: 0 });
       if (!disposed) {
         setPublicFoods((result.data || []).map((food) => ({
           ...food,
@@ -75,7 +75,7 @@ export const AddFoodSheet = ({ open, onOpenChange, targetTitle, onConfirm }) => 
   useEffect(() => {
     if (!open || !user?.id || !query.trim()) return undefined;
     const timer = window.setTimeout(async () => {
-      const result = await foodService.listVisiblePublicFoods({ query, page: 0, pageSize: 50 });
+      const result = await foodService.listVisiblePublicFoods({ query, page: 0 });
       setPublicFoods((result.data || []).map((food) => ({
         ...food,
         visibility: 'public',
