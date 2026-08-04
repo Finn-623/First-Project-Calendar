@@ -16,7 +16,7 @@
 - 测试结果：专项11项通过，Migration契约12项通过；远程AFCD基线为approved 136、pending 0、disabled 264，副本/重复组/本轮测试残留均为0。完整前端测试和Production Build将在提交前执行。
 - 未完成事项：第二普通账号环境变量未提供，跨账号真实人工验证受限；仍需用户在最新Production页面完成公共食品→复制→编辑→删除/停用→历史记录保留的最终验收。远程Feedback保持pending。
 - 风险或注意事项：Migration 028仍未部署；本轮未重新部署029，未修改公共食品审核状态、公共alias、公共portion或历史快照。
-- Git Commit ID：`587b796e7366476a3cb7d038205b9f138a2da6a1`。
+- Git Commit ID：`587b796e22f6df83ad5959718806496210efce96`。
 
 ## DEV-20260803-007
 
