@@ -17,7 +17,10 @@ jest.mock('../services/foodService', () => ({
   },
 }));
 jest.mock('../store', () => ({ useStore: () => ({
-  foods: [{ id: 'mine-1', name: '我的燕麦', visibility: 'private', user_id: 'user-1', category: '我的', p100: 1, f100: 1, c100: 1, cal100: 10 }],
+  foods: [
+    { id: 'mine-1', name: '我的燕麦', visibility: 'private', user_id: 'user-1', category: '我的', p100: 1, f100: 1, c100: 1, cal100: 10, is_active: true },
+    { id: 'inactive-1', name: '已停用燕麦', visibility: 'private', user_id: 'user-1', category: '我的', is_active: false },
+  ],
   publicFoods: [], user: { id: 'user-1' }, profile: { role: 'user' },
   refreshFoods: jest.fn().mockResolvedValue(), loadPublicFoods: jest.fn().mockResolvedValue(),
   createPublicFood: jest.fn(), updatePublicFood: jest.fn(), setPublicFoodActive: jest.fn(),
@@ -71,6 +74,7 @@ describe('FoodLibraryPage 公共食品真实路由接入', () => {
     expect(await screen.findByText('我的燕麦')).toBeTruthy();
     expect(screen.getByText('个人')).toBeTruthy();
     expect(screen.getByText('仅自己可见，可修改')).toBeTruthy();
+    expect(screen.queryByText('已停用燕麦')).toBeNull();
     expect(screen.queryByText('食品分类')).toBeNull();
   });
 });

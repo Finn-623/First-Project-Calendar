@@ -215,6 +215,7 @@ export const foodService = {
       const { data, error } = await supabase
         .from('foods')
         .select('*,food_private_aliases(alias),food_portions(id,portion_name,grams,is_default)')
+        .eq('is_active', true)
         .order('name', { ascending: true });
 
       const visibleFoods = (data || []).filter((food) => {
@@ -464,24 +465,38 @@ export const foodService = {
   },
 
   /**
-   * Delete a food (food_entries are preserved with snapshots)
+   * Deactivate a personal food without removing history or snapshots.
    * @param {string} foodId
-   * @returns {Promise<{error}>}
+   * @param {string} userId
+   * @returns {Promise<{data, error}>}
    */
-  async deleteFood(foodId, userId = null) {
-    try {
-      let request = supabase
-        .from('foods')
-        .delete()
-        .eq('id', foodId)
-        .eq('visibility', 'private');
-      if (userId) request = request.eq('user_id', userId);
-      const { error } = await request;
-
-      return { error };
-    } catch (err) {
-      return { error: err };
+  async deactivatePersonalFood(foodId, userId) {
+    if (!supabase || !foodId || !userId) {
+      return { data: null, error: new Error('食品不存在或无权操作') };
     }
+
+    try {
+      const { data, error } = await supabase
+        .from('foods')
+        .update({ is_active: false })
+        .eq('id', foodId)
+        .eq('visibility', 'private')
+        .eq('user_id', userId)
+        .eq('is_active', true)
+        .select('id')
+        .maybeSingle();
+
+      if (error) return { data: null, error };
+      if (!data) return { data: null, error: new Error('食品不存在或无权操作') };
+      return { data, error: null };
+    } catch (err) {
+      return { data: null, error: err };
+    }
+  },
+
+  // Keep the existing caller API while making its behavior history-preserving.
+  async deleteFood(foodId, userId = null) {
+    return this.deactivatePersonalFood(foodId, userId);
   },
 
   /**

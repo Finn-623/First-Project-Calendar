@@ -5,7 +5,7 @@ jest.mock('../lib/supabaseClient', () => ({ supabase: { from: jest.fn(), rpc: je
 
 const query = (result) => {
   const value = {
-    select: jest.fn(() => value), eq: jest.fn(() => value), ilike: jest.fn(() => value),
+    select: jest.fn(() => value), update: jest.fn(() => value), eq: jest.fn(() => value), ilike: jest.fn(() => value),
     limit: jest.fn(() => value), order: jest.fn(() => value), range: jest.fn(() => value),
     contains: jest.fn(() => value), or: jest.fn(() => value), maybeSingle: jest.fn().mockResolvedValue(result),
     not: jest.fn(() => value),
@@ -48,6 +48,43 @@ describe('foodService 普通用户公共食品查询', () => {
       p_name: '我的西兰花',
     });
     expect(result.data.food_id).toBe('mine-1');
+  });
+
+  test('个人食品删除执行带归属和active条件的软停用UPDATE', async () => {
+    const foods = query({ data: { id: 'mine-1' }, error: null });
+    supabase.from.mockReturnValue(foods);
+
+    const result = await foodService.deactivatePersonalFood('mine-1', 'user-1');
+
+    expect(foods.update).toHaveBeenCalledWith({ is_active: false });
+    expect(foods.eq).toHaveBeenCalledWith('id', 'mine-1');
+    expect(foods.eq).toHaveBeenCalledWith('visibility', 'private');
+    expect(foods.eq).toHaveBeenCalledWith('user_id', 'user-1');
+    expect(foods.eq).toHaveBeenCalledWith('is_active', true);
+    expect(foods.select).toHaveBeenCalledWith('id');
+    expect(result.data).toEqual({ id: 'mine-1' });
+    expect(result.error).toBeNull();
+  });
+
+  test('无匹配的个人食品不能被软停用并返回失败', async () => {
+    const foods = query({ data: null, error: null });
+    supabase.from.mockReturnValue(foods);
+
+    const result = await foodService.deleteFood('other-food', 'user-1');
+
+    expect(result.data).toBeNull();
+    expect(result.error).toEqual(new Error('食品不存在或无权操作'));
+  });
+
+  test('我的食品查询只读取active记录', async () => {
+    const foods = query({ data: [{ id: 'mine-1', visibility: 'private', user_id: 'user-1', is_active: true }], error: null });
+    supabase.from.mockReturnValue(foods);
+
+    const result = await foodService.getAllFoods('user-1');
+
+    expect(foods.eq).toHaveBeenCalledWith('is_active', true);
+    expect(result.data).toHaveLength(1);
+    expect(result.data[0].id).toBe('mine-1');
   });
 
   test('136条结果的第14页使用130到139的服务端range并允许少于10条', async () => {

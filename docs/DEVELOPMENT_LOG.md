@@ -1,3 +1,23 @@
+## DEV-20260804-003
+
+- 日期：2026-08-04
+- 状态：代码和远程验收完成，等待用户最终页面验收
+- 修改类型：P0 Fix / 个人食品软停用与Migration 029远程收尾
+- 任务目标：完成P0编号20的个人食品复制生命周期远程验收，并在保留历史快照的前提下将个人食品删除改为本人软停用。
+- 实际完成内容：
+	- `foodService`个人食品删除改为带`id`、`visibility=private`、当前`user_id`和`is_active=true`条件的UPDATE，将`is_active`设为false；无匹配记录时返回无权操作/食品不存在错误，保留原`deleteFood`兼容入口。
+	- 我的食品查询、页面列表和新增选择共用active过滤；删除确认文案说明历史快照保留，成功后刷新列表，失败显示错误并保留页面状态。
+	- 普通账号通过用户名登录真实调用029 RPC，完成F007325复制、营养字段核对、2个alias和4个portion复制、幂等重试、个人食品编辑、历史food_entry快照和软停用验证；匿名调用以400拒绝。
+	- 远程测试数据已精确清理，公共食品、alias、portion、审核状态和历史业务数据未修改；029已部署，028保持未部署。
+- 主要修改文件或模块：`frontend/src/services/foodService.js`、`frontend/src/pages/FoodLibraryPage.jsx`及对应食品库测试；`docs/DEVELOPMENT_LOG.md`、`docs/PROJECT_STATUS.md`、`docs/DATABASE_CHANGES.md`、`docs/food-data-quality/v0.2.1-feedback-review.md`。
+- 遇到的问题：首次动态脚本未从登录响应体直接取得用户ID，第二次将匿名RPC实际400拒绝误限为401/403；后续按JWT `sub`解析并纳入400后完成验收。长脚本中断后残留1条唯一测试副本，已按ID受控清理并复核为零。
+- 解决方式：沿用普通用户名登录链路，service role仅用于最终唯一测试数据清理和只读基线复核；未执行未限定范围的migration部署。
+- 执行的测试：软停用/食品库专项11项；Migration 027/028/029契约12项；远程只读门禁；普通账号复制、幂等、编辑、历史快照、软停用、匿名拒绝和清理验收；`git diff --check`。
+- 测试结果：专项11项通过，Migration契约12项通过；远程AFCD基线为approved 136、pending 0、disabled 264，副本/重复组/本轮测试残留均为0。完整前端测试和Production Build将在提交前执行。
+- 未完成事项：第二普通账号环境变量未提供，跨账号真实人工验证受限；仍需用户在最新Production页面完成公共食品→复制→编辑→删除/停用→历史记录保留的最终验收。远程Feedback保持pending。
+- 风险或注意事项：Migration 028仍未部署；本轮未重新部署029，未修改公共食品审核状态、公共alias、公共portion或历史快照。
+- Git Commit ID：待本任务独立提交后填写真实完整ID。
+
 ## DEV-20260803-007
 
 - 日期：2026-08-03

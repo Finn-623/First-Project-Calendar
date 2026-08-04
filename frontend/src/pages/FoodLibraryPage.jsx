@@ -154,7 +154,7 @@ export const FoodLibraryPage = () => {
 
   const list = useMemo(() => {
     return (foods || []).filter((f) => {
-      if (f.visibility === 'public' || f.user_id !== user?.id) return false;
+      if (f.visibility === 'public' || f.user_id !== user?.id || f.is_active === false) return false;
       const matchQ = [f.name, f.brand].filter(Boolean).some((value) => normalizeText(value).includes(normalizeText(query)));
       const matchC = cat === '全部' || f.category === cat;
       return matchQ && matchC;
@@ -356,7 +356,7 @@ export const FoodLibraryPage = () => {
       return;
     }
 
-    const confirmed = window.confirm(`确定删除「${food.name || '该食物'}」吗？`);
+    const confirmed = window.confirm(`确定删除「${food.name || '该食物'}」吗？历史记录中的营养快照会继续保留。`);
     if (!confirmed) return;
 
     setSubmitting(true);

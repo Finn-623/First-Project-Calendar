@@ -2,16 +2,16 @@
 
 - 日期：2026-08-04
 - 修改原因：P0编号20需要把公共食品、公共alias和可用portion原子复制为当前用户独立的个人食品，并阻止双击或网络重试生成无提示重复副本。
-- 实际修改内容：新增authenticated-only的`copy_public_food_to_personal(UUID, TEXT)` RPC；复用`foods.source_public_food_id`，新增当前用户与公共来源的部分唯一索引；RPC在单一事务中复制食品、可见公共alias和已入库portion。
+- 实际修改内容：新增authenticated-only的`copy_public_food_to_personal(UUID, TEXT)` RPC；复用`foods.source_public_food_id`，新增当前用户与公共来源的部分唯一索引；RPC在单一事务中复制食品、可见公共alias和已入库portion。029已使用隔离目录单独部署到远程；本轮前端个人食品删除改为现有`foods.is_active`软停用UPDATE，不新增Migration。
 - 涉及表和字段：不新增字段或表；写入`foods`、`food_private_aliases`、`food_portions`，来源关联使用Migration 022既有`source_public_food_id`。
 - Migration文件路径：`supabase/migrations/029_copy_public_food_to_personal.sql`。
 - 对现有数据的影响：Migration本身不复制或修改任何食品；只新增索引、RPC及执行授权。公共食品、审核状态、历史快照和现有个人食品保持不变。
-- 风险：Migration 029尚未部署，远程环境暂不能执行复制；部署前需确认不存在同一用户对同一公共来源的重复历史副本。
+- 风险：Migration 028仍未部署；个人食品历史记录依赖`foods`主记录保留，后续删除逻辑必须继续使用带用户和private条件的软停用。
 - 回滚方式：以新Migration撤销RPC和部分唯一索引；不得修改本Migration历史。
 - 测试内容：Migration 022/029专项契约、全部Migration契约、食品导入回归、复制service/UI、公共与个人页面、添加Sheet、前端全量测试和Production Build。
-- 测试结果：Migration专项17项、全部Migration 43项、食品导入53项、前端专项4套件37项、前端全量41套件268项通过；Production Build成功。未执行远程Migration或远程写入。
-- 相关DEV编号：`DEV-20260804-002`。
-- 相关Commit ID：由本独立提交承载，以Git历史和任务最终汇报为准。
+- 测试结果：029部署前门禁通过；远程普通账号真实复制、幂等、编辑、历史快照、软停用和匿名拒绝通过，F007325复制2个alias/4个portion；测试数据清理后副本、重复组和关联残留为0，AFCD保持136/0/264。Migration 027/028/029契约12项通过；软停用/食品库专项11项通过。028未部署，029未重复部署。
+- 相关DEV编号：`DEV-20260804-003`。
+- 相关Commit ID：待本独立提交后填写真实完整ID。
 
 ## DB-20260803-001
 
