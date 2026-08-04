@@ -1,3 +1,17 @@
+## DEV-20260804-005
+
+- 日期：2026-08-04
+- 状态：代码、Migration 031 和普通账号远程验收完成，等待用户最终页面验收
+- 任务目标：完善个人食品创建/编辑体验，支持品牌和多个可用分量，并让添加记录时个人食品优先显示。
+- 实际完成内容：个人食品表单新增英文名、品牌、分类、摄入类型和可用分量编辑器；品牌自动 trim，空值保存为 NULL；分量支持新增、修改、删除、克数校验、名称去重和单一默认分量。AddFoodSheet 按“我的食品/公共食品”分组，个人食品排前，搜索支持品牌并按最终分量克数创建历史快照。
+- 创建与编辑一致性：新增 `save_personal_food` SECURITY DEFINER RPC，以 `auth.uid()` 校验本人 private food，将 foods 与 portions 放在单一事务中；编辑通过替换本人食品的 portion 集合同步新增、修改和删除，不修改公共食品或 food_entries。
+- 主要修改文件或模块：`frontend/src/pages/FoodLibraryPage.jsx`、`frontend/src/modals/AddFoodSheet.jsx`、`frontend/src/services/foodService.js`、对应测试；`supabase/migrations/031_save_personal_food_with_portions.sql`及契约测试。
+- 执行的测试：个人食品/AddFoodSheet/foodService专项；前端全量 `CI=true npm test -- --watchAll=false --runInBand`；Migration 027-031契约；`npm run build`；`git diff --check`；普通测试账号远程创建、编辑、添加food_entry、修改portion后的历史快照保护和清理验收。
+- 测试结果：专项16项、前端全量42套件276项、Migration契约19项通过；Production Build成功。远程创建2个portion、编辑完成品牌NULL及分量增删改，300g/360kcal历史快照未受后续portion修改影响；测试残留 foods/portions/entries/timeline 均为0，AFCD保持136/0/264。
+- 未完成事项：需要用户在最新页面完成移动端表单、添加Sheet分组、品牌搜索、默认分量换算和历史记录的最终验收；远程Feedback保持pending。
+- 风险或注意事项：Migration 031已隔离部署；Migration 028仍未部署；未重新部署029或030；未修改公共食品、审核状态或历史业务数据；未push。
+- Git Commit ID：`4f65ef61cb5df7b9c21b3db22e1597bdc748b444`。
+
 ## DEV-20260804-004
 
 - 日期：2026-08-04

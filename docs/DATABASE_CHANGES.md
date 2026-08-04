@@ -1,3 +1,18 @@
+## DB-20260804-003
+
+- 日期：2026-08-04
+- 修改原因：个人食品需要支持品牌和多个用户自定义可用分量，同时创建/编辑必须避免 foods 与 portions 产生半完成状态。
+- 实际修改内容：新增 `public.save_personal_food` SECURITY DEFINER RPC；仅接受 authenticated 调用并使用 `auth.uid()`。创建或更新当前用户的 private、active foods 主记录，规范化品牌/文本空值，校验分量名称、正克数、名称唯一和最多一个默认分量；同一事务删除并重建该食品的 portions 集合。
+- 涉及的表和字段：现有 `foods.name/name_en/brand/primary_category/intake_types/calories/protein/fat/carbs/notes`；现有 `food_portions.food_id/portion_name/grams/is_default`。不新增表或字段，不写入 `food_entries`，不处理 public foods。
+- Migration 文件路径：`supabase/migrations/031_save_personal_food_with_portions.sql`。
+- 对现有数据的影响：Migration 只新增函数和 authenticated EXECUTE 权限；正常调用只影响调用用户自己指定的 private active food 及其 portions，历史 food_entries 快照、公共食品、公共审核状态和其他用户数据不变。
+- 风险：编辑采用同一事务内的 portion 集合替换，portion UUID 可能变化，但现有历史记录不引用 portion；停用食品不能通过该 RPC 编辑或恢复。
+- 回滚方式：以新的后续 Migration 撤销函数和执行权限；不得修改已应用的 031 文件。
+- 测试内容：031安全/输入校验/事务边界契约；前端专项16项、全量276项、Migration 027-031契约19项、Production Build；普通账号真实创建、编辑、portion同步、food_entry历史快照和清理。
+- 测试结果：上述测试全部通过；031隔离目录仅部署031。远程测试残留 foods/portions/entries/timeline 均为0，AFCD approved/pending/disabled为136/0/264。
+- 相关DEV编号：`DEV-20260804-005`。
+- 相关Commit ID：`4f65ef61cb5df7b9c21b3db22e1597bdc748b444`。
+
 ## DB-20260804-001
 
 - 日期：2026-08-04
