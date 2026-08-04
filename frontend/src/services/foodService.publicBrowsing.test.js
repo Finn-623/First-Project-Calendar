@@ -50,6 +50,31 @@ describe('foodService 普通用户公共食品查询', () => {
     expect(result.data.food_id).toBe('mine-1');
   });
 
+  test('个人食品保存通过原子RPC清理品牌空格并传递多个portion', async () => {
+    supabase.rpc.mockResolvedValue({ data: { food_id: 'mine-1', portion_count: 2 }, error: null });
+    const result = await foodService.savePersonalFood({
+      id: 'mine-1',
+      name: ' 我的燕麦 ',
+      brand: ' 我的品牌 ',
+      name_en: ' Oats ',
+      category: '主食',
+      intakeTypes: ['carbohydrate'],
+      calories: 120,
+      protein: 4,
+      fat: 2,
+      carbs: 20,
+      portions: [
+        { name: '1杯', grams: 250, isDefault: true },
+        { name: '1勺', grams: 15, isDefault: false },
+      ],
+    });
+    expect(supabase.rpc).toHaveBeenCalledWith('save_personal_food', expect.objectContaining({
+      p_food_id: 'mine-1', p_name: '我的燕麦', p_brand: '我的品牌', p_name_en: 'Oats',
+      p_portions: [{ name: '1杯', grams: 250, isDefault: true }, { name: '1勺', grams: 15, isDefault: false }],
+    }));
+    expect(result.data.portion_count).toBe(2);
+  });
+
   test('个人食品删除执行带归属和active条件的软停用UPDATE', async () => {
     const foods = query({ data: { id: 'mine-1' }, error: null });
     supabase.from.mockReturnValue(foods);

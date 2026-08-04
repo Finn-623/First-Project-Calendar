@@ -14,7 +14,7 @@ jest.mock('react-router-dom', () => ({
 jest.mock('../services/foodService', () => ({
   foodService: {
     listVisiblePublicFoods: jest.fn(), loadVisiblePublicFoodFacets: jest.fn(),
-    getVisiblePublicFoodDetail: jest.fn(), copyPublicFoodToPersonal: jest.fn(), createFood: jest.fn(), updateFood: jest.fn(), deleteFood: jest.fn(),
+    getVisiblePublicFoodDetail: jest.fn(), copyPublicFoodToPersonal: jest.fn(), savePersonalFood: jest.fn(), createFood: jest.fn(), updateFood: jest.fn(), deleteFood: jest.fn(),
   },
 }));
 jest.mock('../store', () => ({ useStore: () => ({
@@ -89,5 +89,15 @@ describe('FoodLibraryPage 公共食品真实路由接入', () => {
     expect(screen.getByText('仅自己可见，可修改')).toBeTruthy();
     expect(screen.queryByText('已停用燕麦')).toBeNull();
     expect(screen.queryByText('食品分类')).toBeNull();
+  });
+
+  test('个人食品表单显示品牌和可用分量编辑区域', () => {
+    mount('/library?tab=mine');
+    fireEvent.click(screen.getByTestId('add-custom-food'));
+    expect(screen.getByTestId('private-food-brand')).toBeTruthy();
+    expect(screen.getByTestId('private-portions-editor')).toBeTruthy();
+    fireEvent.click(screen.getByRole('button', { name: '添加分量' }));
+    expect(screen.getByLabelText('分量名称 1')).toBeTruthy();
+    expect(screen.getByLabelText('分量克数 1')).toBeTruthy();
   });
 });

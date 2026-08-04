@@ -21,12 +21,25 @@ const FOOD_CATEGORIES = ['全部', '主食', '蛋白', '脂肪', '蔬菜', '水�
 
 const emptyPrivateForm = () => ({
   name: '',
+  name_en: '',
+  brand: '',
+  category: '其他',
+  intakeTypes: [],
   calories: '',
   protein: '',
   fat: '',
   carbs: '',
   notes: '',
+  portions: [],
 });
+
+const PRIVATE_CATEGORIES = ['其他', '主食', '蛋白', '脂肪', '蔬菜', '水果'];
+const INTAKE_TYPES = [
+  ['carbohydrate', '碳水'],
+  ['protein', '蛋白质'],
+  ['fat', '脂肪'],
+  ['fiber', '膳食纤维'],
+];
 
 const emptyPublicForm = () => ({
   name: '',
@@ -191,6 +204,23 @@ export const FoodLibraryPage = () => {
     const protein = parseNumber(privateForm.protein);
     const fat = parseNumber(privateForm.fat);
     const carbs = parseNumber(privateForm.carbs);
+    const seenPortionNames = new Set();
+    const portions = [];
+
+    for (const portion of privateForm.portions || []) {
+      const portionName = String(portion.name || '').trim();
+      const grams = parseNumber(portion.grams);
+      if (!portionName) return { ok: false, message: '请填写每个分量的名称' };
+      if (!Number.isFinite(grams) || grams <= 0) return { ok: false, message: '分量克数必须大于 0' };
+      const normalizedName = normalizeText(portionName);
+      if (seenPortionNames.has(normalizedName)) return { ok: false, message: '同一食品的分量名称不能重复' };
+      seenPortionNames.add(normalizedName);
+      portions.push({ name: portionName, grams, isDefault: portion.isDefault === true });
+    }
+
+    if (portions.filter((portion) => portion.isDefault).length > 1) {
+      return { ok: false, message: '最多只能设置一个默认分量' };
+    }
 
     if (!name) return { ok: false, message: '请输入食物名称' };
     if (![calories, protein, fat, carbs].every((value) => Number.isFinite(value) && value >= 0)) {
@@ -201,6 +231,10 @@ export const FoodLibraryPage = () => {
       ok: true,
       payload: {
         name,
+        name_en: privateForm.name_en.trim() || null,
+        brand: privateForm.brand.trim() || null,
+        category: privateForm.category || '其他',
+        intakeTypes: privateForm.intakeTypes || [],
         default_quantity: 100,
         unit: 'g',
         calories,
@@ -208,6 +242,7 @@ export const FoodLibraryPage = () => {
         fat,
         carbs,
         notes: privateForm.notes.trim() || null,
+        portions,
       },
     };
   };
@@ -251,6 +286,48 @@ export const FoodLibraryPage = () => {
     setPrivateForm(emptyPrivateForm());
   };
 
+  const addPrivatePortion = () => {
+    setPrivateForm((prev) => ({
+      ...prev,
+      portions: [...(prev.portions || []), { name: '', grams: '', isDefault: false }],
+    }));
+  };
+
+  const updatePrivatePortion = (index, key, value) => {
+    setPrivateForm((prev) => ({
+      ...prev,
+      portions: (prev.portions || []).map((portion, portionIndex) => (
+        portionIndex === index ? { ...portion, [key]: value } : portion
+      )),
+    }));
+  };
+
+  const setPrivateDefaultPortion = (index) => {
+    setPrivateForm((prev) => ({
+      ...prev,
+      portions: (prev.portions || []).map((portion, portionIndex) => ({
+        ...portion,
+        isDefault: portionIndex === index,
+      })),
+    }));
+  };
+
+  const removePrivatePortion = (index) => {
+    setPrivateForm((prev) => ({
+      ...prev,
+      portions: (prev.portions || []).filter((_, portionIndex) => portionIndex !== index),
+    }));
+  };
+
+  const togglePrivateIntakeType = (value) => {
+    setPrivateForm((prev) => ({
+      ...prev,
+      intakeTypes: prev.intakeTypes.includes(value)
+        ? prev.intakeTypes.filter((item) => item !== value)
+        : [...prev.intakeTypes, value],
+    }));
+  };
+
   const resetPublicForm = () => {
     setPublicForm(emptyPublicForm());
   };
@@ -285,7 +362,7 @@ export const FoodLibraryPage = () => {
     }
 
     setSubmitting(true);
-    const { error } = await foodService.createFood(user.id, validation.payload);
+    const { error } = await foodService.savePersonalFood(validation.payload);
     setSubmitting(false);
 
     if (error) {
@@ -303,11 +380,21 @@ export const FoodLibraryPage = () => {
     setEditingFoodId(food.id);
     setPrivateForm({
       name: food.name || '',
+      name_en: food.name_en || food.nameEn || '',
+      brand: food.brand || '',
+      category: food.primary_category || food.category || '其他',
+      intakeTypes: food.intake_types || food.intakeTypes || [],
       calories: String(food.calories ?? food.cal100 ?? 0),
       protein: String(food.protein ?? food.p100 ?? 0),
       fat: String(food.fat ?? food.f100 ?? 0),
       carbs: String(food.carbs ?? food.c100 ?? 0),
       notes: food.notes || '',
+      portions: (food.portions || []).map((portion) => ({
+        id: portion.id,
+        name: portion.name || '',
+        grams: String(portion.grams ?? ''),
+        isDefault: portion.isDefault === true,
+      })),
     });
     setEditOpen(true);
   };
@@ -331,7 +418,7 @@ export const FoodLibraryPage = () => {
     }
 
     setSubmitting(true);
-    const { error } = await foodService.updateFood(editingFoodId, validation.payload, user.id);
+    const { error } = await foodService.savePersonalFood({ id: editingFoodId, ...validation.payload });
     setSubmitting(false);
 
     if (error) {
@@ -475,6 +562,57 @@ export const FoodLibraryPage = () => {
     showSuccess(food.isActive ? '公共食品已停用' : '公共食品已启用');
   };
 
+  const renderPrivateFoodFields = () => (
+    <div className="space-y-3 max-h-[68dvh] overflow-y-auto pr-1">
+      <Input placeholder="食品名称（必填）" value={privateForm.name} onChange={(e) => updatePrivateForm('name', e.target.value)} data-testid="private-food-name" />
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+        <Input placeholder="英文名称（可选）" value={privateForm.name_en} onChange={(e) => updatePrivateForm('name_en', e.target.value)} />
+        <Input placeholder="品牌（可选）" value={privateForm.brand} onChange={(e) => updatePrivateForm('brand', e.target.value)} data-testid="private-food-brand" />
+      </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+        <select value={privateForm.category} onChange={(e) => updatePrivateForm('category', e.target.value)} className="h-10 rounded-md border border-[#E5E5E0] bg-white px-3 text-sm text-[#2C332F]">
+          {PRIVATE_CATEGORIES.map((category) => <option key={category} value={category}>{category}</option>)}
+        </select>
+        <div className="flex flex-wrap items-center gap-x-3 gap-y-2 rounded-md border border-[#E5E5E0] bg-white px-3 py-2 text-xs text-[#5E6660]">
+          {INTAKE_TYPES.map(([value, label]) => (
+            <label key={value} className="inline-flex items-center gap-1.5">
+              <input type="checkbox" checked={privateForm.intakeTypes.includes(value)} onChange={() => togglePrivateIntakeType(value)} />
+              {label}
+            </label>
+          ))}
+        </div>
+      </div>
+      <div>
+        <p className="text-xs font-medium text-[#5E6660] mb-2">每100g营养</p>
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+          <Input type="number" placeholder="热量 kcal" value={privateForm.calories} onChange={(e) => updatePrivateForm('calories', e.target.value)} />
+          <Input type="number" placeholder="蛋白 g" value={privateForm.protein} onChange={(e) => updatePrivateForm('protein', e.target.value)} />
+          <Input type="number" placeholder="脂肪 g" value={privateForm.fat} onChange={(e) => updatePrivateForm('fat', e.target.value)} />
+          <Input type="number" placeholder="碳水 g" value={privateForm.carbs} onChange={(e) => updatePrivateForm('carbs', e.target.value)} />
+        </div>
+      </div>
+      <section className="rounded-xl border border-[#E5E5E0] bg-[#FAFAF8] p-3" data-testid="private-portions-editor">
+        <div className="flex items-center justify-between gap-2">
+          <div><p className="text-sm font-medium text-[#2C332F]">可用分量</p><p className="text-[11px] text-[#858C88] mt-0.5">没有分量时仍可按克记录</p></div>
+          <Button type="button" variant="outline" onClick={addPrivatePortion} className="min-h-9">添加分量</Button>
+        </div>
+        <div className="mt-3 space-y-2">
+          {(privateForm.portions || []).map((portion, index) => (
+            <div key={portion.id || index} className="grid grid-cols-[minmax(0,1fr)_88px_auto] items-center gap-2">
+              <Input placeholder="如：1个" value={portion.name} onChange={(e) => updatePrivatePortion(index, 'name', e.target.value)} aria-label={`分量名称 ${index + 1}`} />
+              <Input type="number" placeholder="克数" value={portion.grams} onChange={(e) => updatePrivatePortion(index, 'grams', e.target.value)} aria-label={`分量克数 ${index + 1}`} />
+              <div className="flex items-center gap-1">
+                <button type="button" onClick={() => setPrivateDefaultPortion(index)} className={`text-[11px] whitespace-nowrap ${portion.isDefault ? 'text-[#6B8067] font-medium' : 'text-[#858C88]'}`} aria-label={`设为默认分量 ${index + 1}`}>{portion.isDefault ? '默认' : '设默认'}</button>
+                <button type="button" onClick={() => removePrivatePortion(index)} className="p-2 text-[#C76D5E]" aria-label={`删除分量 ${index + 1}`}>×</button>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+      <Textarea placeholder="备注（可选）" value={privateForm.notes} onChange={(e) => updatePrivateForm('notes', e.target.value)} />
+    </div>
+  );
+
   return (
     <div className="pb-32">
       <header className="px-5 pt-6 pb-4">
@@ -598,12 +736,14 @@ export const FoodLibraryPage = () => {
                     </span>
                   ) : null}
                 </div>
+                {f.brand ? <p className="text-[11px] text-[#5E6660] mt-1">品牌：{f.brand}</p> : null}
                 {isPublic && f.notes ? (
                   <p className="text-[11px] text-[#858C88] mt-1 line-clamp-2">来源：{f.notes}</p>
                 ) : null}
                 <p className="font-num text-[11px] text-[#858C88] mt-1 break-words">
                   每100g · P{f.p100 || 0} · F{f.f100 || 0} · C{f.c100 || 0}
                 </p>
+                <p className="text-[11px] text-[#858C88] mt-1">{f.portions?.length ? `${f.portions.length} 个可用分量` : '可按克记录'}</p>
                 {f.sourcePublicFoodId ? <p className="mt-1 text-[11px] text-[#858C88]">复制自公共食品</p> : null}
               </div>
               <div className="text-right shrink-0 ml-3">
@@ -656,15 +796,7 @@ export const FoodLibraryPage = () => {
           </DialogHeader>
 
           <div className="space-y-3">
-            <Input placeholder="食物名称" value={privateForm.name} onChange={(e) => updatePrivateForm('name', e.target.value)} />
-            <Input type="number" placeholder="热量（每100g）" value={privateForm.calories} onChange={(e) => updatePrivateForm('calories', e.target.value)} />
-            <div className="grid grid-cols-3 gap-2">
-              <Input type="number" placeholder="蛋白" value={privateForm.protein} onChange={(e) => updatePrivateForm('protein', e.target.value)} />
-              <Input type="number" placeholder="脂肪" value={privateForm.fat} onChange={(e) => updatePrivateForm('fat', e.target.value)} />
-              <Input type="number" placeholder="碳水" value={privateForm.carbs} onChange={(e) => updatePrivateForm('carbs', e.target.value)} />
-            </div>
-            <Textarea placeholder="备注（可选）" value={privateForm.notes} onChange={(e) => updatePrivateForm('notes', e.target.value)} />
-
+            {renderPrivateFoodFields()}
             <div className="flex justify-end gap-2 pt-2">
               <Button variant="outline" onClick={() => setCreateOpen(false)} disabled={submitting}>取消</Button>
               <Button onClick={handleCreatePrivateFood} disabled={submitting} className="bg-[#6B8067] hover:bg-[#5a6d57]">
@@ -679,7 +811,8 @@ export const FoodLibraryPage = () => {
         <DialogContent className="max-h-[90dvh] max-w-md overflow-y-auto rounded-2xl">
           <DialogHeader><DialogTitle>个人食品详情</DialogTitle></DialogHeader>
           {selectedPersonalFood ? <div className="space-y-4" data-testid="personal-food-detail">
-            <div><span className="inline-flex rounded-full bg-[#F0EFE9] px-2 py-1 text-[10px] text-[#5E6660]">个人 · 仅自己可见</span><h2 className="mt-2 text-lg font-medium">{selectedPersonalFood.name}</h2></div>
+            <div><span className="inline-flex rounded-full bg-[#F0EFE9] px-2 py-1 text-[10px] text-[#5E6660]">个人 · 仅自己可见</span><h2 className="mt-2 text-lg font-medium">{selectedPersonalFood.name}</h2>{selectedPersonalFood.nameEn ? <p className="mt-1 text-xs text-[#858C88]">{selectedPersonalFood.nameEn}</p> : null}{selectedPersonalFood.brand ? <p className="mt-1 text-xs text-[#5E6660]">品牌：{selectedPersonalFood.brand}</p> : null}</div>
+            <div className="grid grid-cols-2 gap-2 text-xs"><div className="rounded-xl bg-[#F7F7F5] p-3">分类 <span className="float-right">{selectedPersonalFood.primaryCategory || '其他'}</span></div><div className="rounded-xl bg-[#F7F7F5] p-3">摄入类型 <span className="float-right">{selectedPersonalFood.intakeTypes?.length ? selectedPersonalFood.intakeTypes.join('、') : '未填写'}</span></div></div>
             <div className="grid grid-cols-2 gap-2 text-xs">
               <div className="rounded-xl bg-[#F7F7F5] p-3">热量 <span className="float-right">{selectedPersonalFood.cal100} kcal</span></div>
               <div className="rounded-xl bg-[#F7F7F5] p-3">蛋白质 <span className="float-right">{selectedPersonalFood.p100} g</span></div>
@@ -701,15 +834,7 @@ export const FoodLibraryPage = () => {
           </DialogHeader>
 
           <div className="space-y-3">
-            <Input placeholder="食物名称" value={privateForm.name} onChange={(e) => updatePrivateForm('name', e.target.value)} />
-            <Input type="number" placeholder="热量（每100g）" value={privateForm.calories} onChange={(e) => updatePrivateForm('calories', e.target.value)} />
-            <div className="grid grid-cols-3 gap-2">
-              <Input type="number" placeholder="蛋白" value={privateForm.protein} onChange={(e) => updatePrivateForm('protein', e.target.value)} />
-              <Input type="number" placeholder="脂肪" value={privateForm.fat} onChange={(e) => updatePrivateForm('fat', e.target.value)} />
-              <Input type="number" placeholder="碳水" value={privateForm.carbs} onChange={(e) => updatePrivateForm('carbs', e.target.value)} />
-            </div>
-            <Textarea placeholder="备注（可选）" value={privateForm.notes} onChange={(e) => updatePrivateForm('notes', e.target.value)} />
-
+            {renderPrivateFoodFields()}
             <div className="flex justify-end gap-2 pt-2">
               <Button variant="outline" onClick={closeEditPrivateDialog} disabled={submitting}>取消</Button>
               <Button onClick={handleUpdatePrivateFood} disabled={submitting} className="bg-[#6B8067] hover:bg-[#5a6d57]">

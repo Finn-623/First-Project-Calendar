@@ -19,6 +19,7 @@ export const AddFoodSheet = ({ open, onOpenChange, targetTitle, onConfirm }) => 
   const { foods, user, refreshFoods } = useStore();
   const [query, setQuery] = useState('');
   const [selected, setSelected] = useState(null);
+  const [selectedPortion, setSelectedPortion] = useState(null);
   const [grams, setGrams] = useState(100);
   const [loadingFoods, setLoadingFoods] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -29,6 +30,7 @@ export const AddFoodSheet = ({ open, onOpenChange, targetTitle, onConfirm }) => 
     if (!open) {
       setQuery('');
       setSelected(null);
+      setSelectedPortion(null);
       setGrams(100);
       setLoadingFoods(false);
       setSubmitting(false);
@@ -76,12 +78,42 @@ export const AddFoodSheet = ({ open, onOpenChange, targetTitle, onConfirm }) => 
     };
   }, [open, refreshFoods, user?.id]);
 
-  const list = useMemo(
-    () => (foods || []).filter((f) => (f.name || '').includes(query.trim())),
-    [foods, query]
-  );
+  const groups = useMemo(() => {
+    const normalizedQuery = query.trim().toLowerCase();
+    const visible = (foods || []).filter((food) => {
+      if (food?.is_active === false || food?.isActive === false) return false;
+      if (food?.visibility !== 'public' && food?.user_id !== user?.id) return false;
+      if (!normalizedQuery) return true;
+      return [food.name, food.brand, food.nameEn, food.name_en].filter(Boolean)
+        .some((value) => String(value).toLowerCase().includes(normalizedQuery));
+    }).sort((left, right) => {
+      const leftPrivate = left.visibility !== 'public' ? 0 : 1;
+      const rightPrivate = right.visibility !== 'public' ? 0 : 1;
+      if (leftPrivate !== rightPrivate) return leftPrivate - rightPrivate;
+      return String(left.name || '').localeCompare(String(right.name || ''), 'zh-CN');
+    });
+
+    return {
+      personal: visible.filter((food) => food.visibility !== 'public'),
+      public: visible.filter((food) => food.visibility === 'public'),
+    };
+  }, [foods, query, user?.id]);
 
   const preview = selected ? scale(selected, Number(grams) || 0) : null;
+
+  const selectFood = (food) => {
+    const defaultPortion = food.visibility !== 'public'
+      ? (food.portions || []).find((portion) => portion.isDefault)
+      : null;
+    setSelected(food);
+    setSelectedPortion(defaultPortion || null);
+    setGrams(defaultPortion?.grams || 100);
+  };
+
+  const selectPortion = (portion) => {
+    setSelectedPortion(portion);
+    setGrams(portion.grams);
+  };
 
   const handleConfirm = () => {
     if (!selected || submitting) return;
@@ -146,31 +178,34 @@ export const AddFoodSheet = ({ open, onOpenChange, targetTitle, onConfirm }) => 
                     <p className="text-center text-sm text-[#858C88] py-8">正在加载食物库...</p>
                   )}
 
-                  {!loadingFoods && list.map((f, index) => (
-                    <button
-                      key={f.id || `${f.name}-${index}`}
-                      onClick={() => setSelected(f)}
-                      data-testid={`food-select-${f.id || index}`}
-                      className="w-full text-left rounded-2xl bg-white border border-[#E5E5E0] p-3.5 flex items-center justify-between hover:border-[#6B8067]/40"
-                    >
-                      <div className="min-w-0 pr-2">
-                        <div className="flex flex-wrap items-center gap-2">
-                          <p className="text-[13.5px] text-[#2C332F] break-words">{f.name}</p>
-                          <span className="rounded-full bg-[#F0EFE9] px-2 py-0.5 text-[10px] text-[#5E6660]" aria-label={f.visibility === 'public' ? '公共食品' : '个人食品'}>
-                            {f.visibility === 'public' ? '公共' : '个人'}
-                          </span>
-                        </div>
-                        <p className="font-num text-[11px] text-[#858C88] mt-0.5">
-                          每100g · P{f.p100 || 0} · F{f.f100 || 0} · C{f.c100 || 0}
-                        </p>
-                      </div>
-                      <p className="font-num text-[14px] text-[#2C332F] shrink-0">
-                        {f.cal100 || 0} <span className="text-[10px] text-[#858C88]">kcal</span>
-                      </p>
-                    </button>
-                  ))}
+                  {!loadingFoods && [
+                    ['我的食品', groups.personal],
+                    ['公共食品', groups.public],
+                  ].map(([title, items]) => items.length ? (
+                    <section key={title} className="space-y-2" data-testid={`food-group-${title === '我的食品' ? 'personal' : 'public'}`}>
+                      <h3 className="px-1 pt-2 text-xs font-medium text-[#5E6660]">{title}</h3>
+                      {items.map((f, index) => (
+                        <button
+                          key={f.id || `${f.name}-${index}`}
+                          onClick={() => selectFood(f)}
+                          data-testid={`food-select-${f.id || index}`}
+                          className="w-full text-left rounded-2xl bg-white border border-[#E5E5E0] p-3.5 flex items-center justify-between hover:border-[#6B8067]/40"
+                        >
+                          <div className="min-w-0 pr-2">
+                            <div className="flex flex-wrap items-center gap-2">
+                              <p className="text-[13.5px] text-[#2C332F] break-words">{f.name}</p>
+                              <span className="rounded-full bg-[#F0EFE9] px-2 py-0.5 text-[10px] text-[#5E6660]" aria-label={f.visibility === 'public' ? '公共食品' : '个人食品'}>{f.visibility === 'public' ? '公共' : '个人'}</span>
+                            </div>
+                            {f.brand ? <p className="text-[11px] text-[#5E6660] mt-1 break-words">品牌：{f.brand}</p> : null}
+                            <p className="font-num text-[11px] text-[#858C88] mt-0.5">每100g · P{f.p100 || 0} · F{f.f100 || 0} · C{f.c100 || 0}</p>
+                          </div>
+                          <p className="font-num text-[14px] text-[#2C332F] shrink-0">{f.cal100 || 0} <span className="text-[10px] text-[#858C88]">kcal</span></p>
+                        </button>
+                      ))}
+                    </section>
+                  ) : null)}
 
-                  {!loadingFoods && list.length === 0 && (
+                  {!loadingFoods && groups.personal.length === 0 && groups.public.length === 0 && (
                     <p className="text-center text-sm text-[#858C88] py-8">食物库还是空的，请添加第一个食物</p>
                   )}
                 </div>
@@ -185,8 +220,22 @@ export const AddFoodSheet = ({ open, onOpenChange, targetTitle, onConfirm }) => 
                   <p className="text-[13px] text-[#2C332F] break-words">{selected.name}</p>
                   <span className="rounded-full bg-[#F0EFE9] px-2 py-0.5 text-[10px] text-[#5E6660]">{selected.visibility === 'public' ? '公共' : '个人'}</span>
                 </div>
+                {selected.brand ? <p className="text-[11px] text-[#5E6660] mt-1">品牌：{selected.brand}</p> : null}
                 <p className="text-[11px] text-[#858C88] mt-1">输入克重后确认添加</p>
               </div>
+
+              {selected.visibility !== 'public' && selected.portions?.length ? (
+                <div>
+                  <p className="text-[12px] text-[#858C88]">可用分量</p>
+                  <div className="mt-2 flex flex-wrap gap-2">
+                    {selected.portions.map((portion) => (
+                      <button type="button" key={portion.id || portion.name} onClick={() => selectPortion(portion)} className={`rounded-full border px-3 py-2 text-xs ${selectedPortion?.id === portion.id ? 'border-[#6B8067] bg-[#EFF2ED] text-[#5E6660]' : 'border-[#E5E5E0] bg-white text-[#5E6660]'}`}>
+                        {portion.name} · {portion.grams}g{portion.isDefault ? ' · 默认' : ''}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              ) : null}
 
               <div>
                 <label className="text-[12px] text-[#858C88]">克重 (g)</label>

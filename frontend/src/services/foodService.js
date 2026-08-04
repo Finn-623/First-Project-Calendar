@@ -20,6 +20,9 @@ const normalizeFood = (food) => {
     isPublic: food.visibility === 'public',
     isActive: food.is_active !== false,
     brand: food.brand || '',
+    nameEn: food.name_en || '',
+    intakeTypes: Array.isArray(food.intake_types) ? food.intake_types : [],
+    primaryCategory: food.primary_category || food.category || '',
     imageUrl: food.image_url || '',
     sourcePublicFoodId: food.source_public_food_id || null,
     aliases: (food.food_private_aliases || []).map((row) => row.alias).filter(Boolean),
@@ -195,6 +198,35 @@ export const foodService = {
       const { data, error } = await supabase.rpc('copy_public_food_to_personal', {
         p_source_food_id: sourceFoodId,
         p_name: String(name || '').trim() || null,
+      });
+      return { data, error };
+    } catch (error) {
+      return { data: null, error };
+    }
+  },
+
+  async savePersonalFood(food = {}) {
+    if (!supabase) return { data: null, error: new Error('Supabase 尚未配置') };
+    try {
+      const { data, error } = await supabase.rpc('save_personal_food', {
+        p_food_id: food.id || null,
+        p_name: String(food.name || '').trim(),
+        p_name_en: String(food.name_en || food.nameEn || '').trim() || null,
+        p_brand: String(food.brand || '').trim() || null,
+        p_category: String(food.category || food.primary_category || '').trim() || null,
+        p_intake_types: Array.isArray(food.intake_types || food.intakeTypes)
+          ? (food.intake_types || food.intakeTypes)
+          : [],
+        p_calories: Number(food.calories),
+        p_protein: Number(food.protein),
+        p_fat: Number(food.fat),
+        p_carbs: Number(food.carbs),
+        p_notes: String(food.notes || '').trim() || null,
+        p_portions: (food.portions || []).map((portion) => ({
+          name: String(portion.name || portion.portion_name || '').trim(),
+          grams: Number(portion.grams),
+          isDefault: portion.isDefault === true || portion.is_default === true,
+        })),
       });
       return { data, error };
     } catch (error) {
