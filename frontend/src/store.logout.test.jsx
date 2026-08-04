@@ -68,6 +68,9 @@ const StoreProbe = () => {
       <span data-testid="history">{store.history.length}</span>
       <span data-testid="history-dates">{store.history.map((item) => item.dateStr).join(',')}</span>
       <span data-testid="foods">{store.foods.map((item) => item.name).join(',')}</span>
+      <span data-testid="my-foods">{store.myFoods.map((item) => item.name).join(',')}</span>
+      <span data-testid="my-foods-status">{store.myFoodsStatus}</span>
+      <span data-testid="my-foods-user">{store.myFoodsUserId || 'null'}</span>
       <span data-testid="public-foods">{store.publicFoods.map((item) => item.name).join(',')}</span>
       <span data-testid="plan">{store.plan?.calories || 'null'}</span>
       <span data-testid="plan-history">{store.planHistory.length}</span>
@@ -245,8 +248,30 @@ describe('Store 退出账号清理', () => {
       expect(screen.getByTestId('current-date').textContent).toBe('2026-07-28');
       expect(screen.getByTestId('recording-date').textContent).toBe('2026-07-28');
       expect(screen.getByTestId('foods').textContent).toContain('账号 A 食物');
+      expect(screen.getByTestId('my-foods').textContent).toContain('账号 A 食物');
+      expect(screen.getByTestId('my-foods-status').textContent).toBe('success');
+      expect(screen.getByTestId('my-foods-user').textContent).toBe('user-1');
       expect(screen.getByTestId('history-dates').textContent).toBe('2026-07-28');
       expect(screen.getByTestId('plan').textContent).toBe('1900');
+    });
+  });
+
+  test('匿名阶段保持 idle，userId 变为真实值后才加载个人食品', async () => {
+    foodService.getAllFoods.mockResolvedValue({
+      data: [{ id: 'user-1-food', user_id: 'user-1', name: '登录后食品', visibility: 'private', is_active: true }],
+      error: null,
+    });
+    render(<StoreProvider><StoreProbe /></StoreProvider>);
+
+    await waitFor(() => {
+      expect(screen.getByTestId('my-foods-status').textContent).toBe('idle');
+      expect(screen.getByTestId('my-foods-user').textContent).toBe('null');
+    });
+    fireEvent.click(screen.getByRole('button', { name: '登录账号 A' }));
+    await waitFor(() => {
+      expect(screen.getByTestId('my-foods').textContent).toContain('登录后食品');
+      expect(screen.getByTestId('my-foods-status').textContent).toBe('success');
+      expect(screen.getByTestId('my-foods-user').textContent).toBe('user-1');
     });
   });
 
@@ -308,6 +333,9 @@ describe('Store 退出账号清理', () => {
       expect(screen.getByTestId('user').textContent).toBe('user-2');
       expect(screen.getByTestId('foods').textContent).toContain('user-2私有食物');
       expect(screen.getByTestId('foods').textContent).not.toContain('user-1私有食物');
+      expect(screen.getByTestId('my-foods').textContent).toContain('user-2私有食物');
+      expect(screen.getByTestId('my-foods').textContent).not.toContain('user-1私有食物');
+      expect(screen.getByTestId('my-foods-user').textContent).toBe('user-2');
       expect(screen.getByTestId('public-foods').textContent).toContain('公共食物');
       expect(screen.getByTestId('history-dates').textContent).toBe('2026-07-29');
       expect(screen.getByTestId('plan').textContent).toBe('1800');

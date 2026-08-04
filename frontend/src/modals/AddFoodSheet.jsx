@@ -25,7 +25,8 @@ const scale = (food, grams) => {
 const nutrientText = (value, suffix = '') => value == null ? '暂无数据' : `${value}${suffix}`;
 
 export const AddFoodSheet = ({ open, onOpenChange, targetTitle, onConfirm }) => {
-  const { foods, user, refreshFoods } = useStore();
+  const { foods, myFoods, myFoodsStatus, user, refreshFoods, ensureMyFoodsLoaded } = useStore();
+  const personalFoods = useMemo(() => myFoods ?? foods ?? [], [foods, myFoods]);
   const [publicFoods, setPublicFoods] = useState([]);
   const [query, setQuery] = useState('');
   const [selected, setSelected] = useState(null);
@@ -54,9 +55,13 @@ export const AddFoodSheet = ({ open, onOpenChange, targetTitle, onConfirm }) => 
     const loadFoodsOnOpen = async () => {
       if (!open || !user?.id) return;
 
-      setLoadingFoods(!foods.length);
-      if (!foods.length) await refreshFoods(user.id);
-      const result = await foodService.listVisiblePublicFoods({ page: 0 });
+      setLoadingFoods(!personalFoods.length && myFoodsStatus !== 'success');
+      const personalRequest = ensureMyFoodsLoaded
+        ? ensureMyFoodsLoaded(user.id)
+        : (personalFoods.length ? Promise.resolve({ data: personalFoods }) : refreshFoods(user.id));
+      const publicRequest = foodService.listVisiblePublicFoods({ page: 0 });
+      await Promise.allSettled([personalRequest, publicRequest]);
+      const result = await publicRequest;
       if (!disposed) {
         setPublicFoods((result.data || []).map((food) => ({
           ...food,
@@ -67,8 +72,6 @@ export const AddFoodSheet = ({ open, onOpenChange, targetTitle, onConfirm }) => 
           f100: food.nutrients.fatG,
           c100: food.nutrients.carbohydrateG,
         })));
-      }
-      if (!disposed) {
         setLoadingFoods(false);
       }
     };
@@ -80,7 +83,7 @@ export const AddFoodSheet = ({ open, onOpenChange, targetTitle, onConfirm }) => 
     return () => {
       disposed = true;
     };
-  }, [foods.length, open, refreshFoods, user?.id]);
+  }, [ensureMyFoodsLoaded, myFoodsStatus, open, personalFoods, refreshFoods, user?.id]);
 
   useEffect(() => {
     const requestId = ++searchRequestRef.current;
@@ -103,11 +106,11 @@ export const AddFoodSheet = ({ open, onOpenChange, targetTitle, onConfirm }) => 
 
   const groups = useMemo(() => {
     const normalizedQuery = query.trim().toLowerCase();
-    const visible = [...(foods || []), ...(publicFoods || [])].filter((food) => {
+    const visible = [...personalFoods, ...(publicFoods || [])].filter((food) => {
       if (food?.is_active === false || food?.isActive === false) return false;
       if (food?.visibility !== 'public' && food?.user_id !== user?.id) return false;
       if (!normalizedQuery) return true;
-      return [food.name, food.brand, food.nameEn, food.name_en].filter(Boolean)
+      return [food.name, food.brand, food.nameEn, food.name_en, ...(food.aliases || [])].filter(Boolean)
         .some((value) => String(value).toLowerCase().includes(normalizedQuery));
     }).sort((left, right) => {
       const leftPrivate = left.visibility !== 'public' ? 0 : 1;
@@ -120,7 +123,7 @@ export const AddFoodSheet = ({ open, onOpenChange, targetTitle, onConfirm }) => 
       personal: visible.filter((food) => food.visibility !== 'public'),
       public: visible.filter((food) => food.visibility === 'public'),
     };
-  }, [foods, publicFoods, query, user?.id]);
+  }, [personalFoods, publicFoods, query, user?.id]);
 
   const preview = selected ? scale(selected, Number(grams) || 0) : null;
 
@@ -224,11 +227,11 @@ export const AddFoodSheet = ({ open, onOpenChange, targetTitle, onConfirm }) => 
               </div>
               <div className="flex-1 overflow-y-auto px-5 pb-4">
                 <div className="space-y-2">
-                  {loadingFoods && (
+                  {loadingFoods && personalFoods.length === 0 && (
                     <p className="text-center text-sm text-[#858C88] py-8">正在加载食物库...</p>
                   )}
 
-                  {!loadingFoods && [
+                  {[
                     ['我的食品', groups.personal],
                     ['公共食品', groups.public],
                   ].map(([title, items]) => items.length ? (

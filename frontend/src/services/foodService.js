@@ -16,7 +16,7 @@ const normalizeFood = (food) => {
     p100: Number(food.protein || 0),
     f100: Number(food.fat || 0),
     c100: Number(food.carbs || 0),
-    category: food.category || (food.visibility === 'public' ? '公共' : '我的'),
+    category: food.category || food.primary_category || (food.visibility === 'public' ? '公共' : '我的'),
     isPublic: food.visibility === 'public',
     isActive: food.is_active !== false,
     brand: food.brand || '',
@@ -315,7 +315,7 @@ export const foodService = {
       try {
         const { data, error } = await supabase
           .from('foods')
-          .select('id,user_id,visibility,is_active,name,name_en,brand,notes,category,primary_category,intake_types,calories,protein,fat,carbs,source_public_food_id,default_quantity,unit,food_portions(id,portion_name,amount,unit,grams,is_default)')
+          .select('id,user_id,visibility,is_active,name,name_en,brand,notes,primary_category,intake_types,calories,protein,fat,carbs,source_public_food_id,default_quantity,unit,food_portions(id,portion_name,amount,unit,grams,is_default)')
           .eq('is_active', true)
           .eq('visibility', 'private')
           .eq('user_id', userId)

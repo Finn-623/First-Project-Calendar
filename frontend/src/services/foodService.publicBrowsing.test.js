@@ -116,6 +116,7 @@ describe('foodService 普通用户公共食品查询', () => {
     expect(foods.eq).toHaveBeenCalledWith('is_active', true);
     expect(foods.eq).toHaveBeenCalledWith('visibility', 'private');
     expect(foods.eq).toHaveBeenCalledWith('user_id', 'user-1');
+    expect(foods.select.mock.calls[0][0].split(',')).not.toContain('category');
     expect(result.data).toHaveLength(1);
     expect(result.data[0].id).toBe('mine-1');
   });

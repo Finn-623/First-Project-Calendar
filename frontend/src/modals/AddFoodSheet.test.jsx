@@ -3,6 +3,8 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { AddFoodSheet } from './AddFoodSheet';
 
 const mockRefreshFoods = jest.fn();
+const mockEnsureMyFoodsLoaded = jest.fn();
+let mockMyFoods;
 const mockFoods = [
   { id: 'public-1', name: '燕麦', brand: '公共牌', visibility: 'public', is_active: true, cal100: 100, p100: 10, f100: 2, c100: 20, portions: [] },
   { id: 'mine-1', name: '燕麦', brand: '我的品牌', visibility: 'private', user_id: 'user-1', is_active: true, cal100: 200, p100: 20, f100: 4, c100: 40, portions: [{ id: 'portion-1', name: '1杯', amount: 250, unit: 'g', grams: 250, isDefault: true }] },
@@ -11,7 +13,7 @@ const mockFoods = [
 ];
 
 jest.mock('../store', () => ({
-  useStore: () => ({ foods: mockFoods, user: { id: 'user-1' }, refreshFoods: mockRefreshFoods }),
+  useStore: () => ({ foods: mockFoods, myFoods: mockMyFoods, myFoodsStatus: mockMyFoods ? 'success' : 'idle', user: { id: 'user-1' }, refreshFoods: mockRefreshFoods, ensureMyFoodsLoaded: mockEnsureMyFoodsLoaded }),
 }));
 jest.mock('../services/foodService', () => ({
   foodService: { listVisiblePublicFoods: jest.fn() },
@@ -30,12 +32,14 @@ jest.mock('sonner', () => ({ toast: { error: jest.fn() } }));
 describe('AddFoodSheet personal food priority', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    mockMyFoods = undefined;
     mockFoods[1].cal100 = 200;
     mockFoods[1].p100 = 20;
     mockFoods[1].f100 = 4;
     mockFoods[1].c100 = 40;
     mockFoods[1].portions = [{ id: 'portion-1', name: '1杯', amount: 250, unit: 'g', grams: 250, isDefault: true }];
     mockRefreshFoods.mockResolvedValue({ data: mockFoods, error: null });
+    mockEnsureMyFoodsLoaded.mockResolvedValue({ data: mockFoods, error: null, cached: true });
     const { foodService } = require('../services/foodService');
     foodService.listVisiblePublicFoods.mockResolvedValue({ data: [], count: 0, error: null });
   });
@@ -102,5 +106,17 @@ describe('AddFoodSheet personal food priority', () => {
     fireEvent.click(screen.getByTestId('food-select-mine-1'));
     expect(screen.getByText('加入午餐')).toBeTruthy();
     expect(screen.getByText('暂无数据')).toBeTruthy();
+  });
+
+  test('uses shared myFoods immediately and does not hide it while public loading fails', async () => {
+    const { foodService } = require('../services/foodService');
+    mockMyFoods = mockFoods.filter((food) => food.visibility !== 'public');
+    foodService.listVisiblePublicFoods.mockRejectedValue(new Error('public unavailable'));
+    render(<AddFoodSheet open onOpenChange={jest.fn()} onConfirm={jest.fn()} />);
+    expect(screen.getByText('我的食品')).toBeTruthy();
+    expect(screen.getByTestId('food-group-personal').textContent).toContain('燕麦');
+    expect(mockEnsureMyFoodsLoaded).toHaveBeenCalledWith('user-1');
+    await waitFor(() => expect(screen.getByTestId('food-group-personal')).toBeTruthy());
+    expect(screen.queryByText('公共食品')).toBeNull();
   });
 });

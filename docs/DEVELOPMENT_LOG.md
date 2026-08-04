@@ -1,3 +1,19 @@
+## DEV-20260804-010
+
+- 日期：2026-08-04
+- 状态：代码、真实普通账号验收和测试完成，等待用户最终 UI 验收
+- 任务目标：修复真实页面 AddFoodSheet 没有显示“我的食品”的 P0 编号8缺陷。
+- 真实复现：普通测试账号初始没有 active 个人食品；通过正常 `username-login` 和 `save_personal_food` RPC 创建唯一临时食品后，食品库查询可见，但 Store 的同等查询失败。
+- 真实根因：`foodService.getAllFoods()` 请求了已部署 schema 不存在的 `foods.category` 列，导致私有食品请求整体失败，Store 只得到空结果；AddFoodSheet 只读取空的 `foods`，因此个人分组不渲染。另有 Store 未显式区分个人食品缓存状态、账号切换未清理个人缓存，以及公共 loading 会遮挡个人结果的问题。
+- 实际完成内容：移除无效 `category` 查询字段并保留 `primary_category` 分类回退；Store 增加按真实用户隔离的 `myFoods`、`myFoodsStatus`、`myFoodsUserId`、`ensureMyFoodsLoaded` 和 `invalidateMyFoods`；匿名不写 success 空缓存，userId 从 null 变为真实值后加载，账号切换清理旧个人数据；AddFoodSheet 复用共享 `myFoods`，个人/公共请求并行，公共 loading/失败不隐藏个人结果；食物库、新建、编辑、复制、删除共用个人缓存失效与刷新链。
+- 真实普通账号验收：修复后临时食品首次查询可见；复制公共食品可见并保留 `source_public_food_id`；软停用后消失；再次复制恢复后出现；临时食品最终清理，残留 0。原测试账号自身没有预先存在的 active 个人食品，未将临时数据误报为原有数据。
+- 主要修改文件或模块：`frontend/src/services/foodService.js`、`frontend/src/store.jsx`、`frontend/src/modals/AddFoodSheet.jsx`、`frontend/src/pages/FoodLibraryPage.jsx`及对应测试。
+- 执行的测试：个人食品数据链专项21项；食品库复制/AddFoodSheet/foodService专项25项；前端全量 `CI=true npm test -- --watchAll=false --runInBand`；`npm run build`；`git diff --check`；编辑器错误检查；普通账号 username-login、个人食品查询、RPC创建/复制/软停用/恢复/清理。
+- 测试结果：前端全量42套件283项通过；核心专项21项和数据链专项25项通过；Production Build成功；编辑器无错误。Build仅保留既有 Node `fs.F_OK` 弃用 warning。
+- 未完成事项：当前浏览器自动化页面仍停留登录页，未取得可复用的浏览器登录态；真实 API 和组件/自动化链已完成验证，仍需用户在真实页面完成最终视觉验收。
+- 风险或注意事项：未新增或部署 Migration，028仍未部署；未修改公共食品、审核状态或历史food_entries；未使用 service role 清理；远程反馈保持 `pending`。
+- Git Commit ID：未提交。
+
 ## DEV-20260804-009
 
 - 日期：2026-08-04

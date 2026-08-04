@@ -123,6 +123,9 @@ export const StoreProvider = ({ children, user: initialUser, session: initialSes
   const [planHistory, setPlanHistory] = useState([]);
   const [history, setHistory] = useState([]);
   const [foods, setFoods] = useState([]);
+  const [myFoods, setMyFoods] = useState([]);
+  const [myFoodsStatus, setMyFoodsStatus] = useState('idle');
+  const [myFoodsUserId, setMyFoodsUserId] = useState(null);
   const [publicFoods, setPublicFoods] = useState([]);
   const [favorites, setFavorites] = useState([]);
   const [dayInitialized, setDayInitialized] = useState(false);
@@ -186,6 +189,9 @@ export const StoreProvider = ({ children, user: initialUser, session: initialSes
     setPlanHistory([]);
     setHistory([]);
     setFavorites([]);
+    setMyFoods([]);
+    setMyFoodsStatus('idle');
+    setMyFoodsUserId(null);
     setFoods((prev) => (prev || []).filter((item) => item?.visibility === 'public'));
     setPublicFoods((prev) => (prev || []).filter((item) => item?.visibility === 'public'));
     setCurrentDate(createDateFromString(today));
@@ -298,20 +304,27 @@ export const StoreProvider = ({ children, user: initialUser, session: initialSes
 
   const refreshFoods = useCallback(async (userId) => {
     if (!userId) {
+      setMyFoods([]);
+      setMyFoodsStatus('idle');
+      setMyFoodsUserId(null);
       setFoods((prev) => (prev || []).filter((item) => item?.visibility === 'public'));
       setPublicFoods((prev) => (prev || []).filter((item) => item?.visibility === 'public'));
       return { data: [], error: null };
     }
 
     const epoch = requestEpochRef.current;
+    setMyFoodsStatus('loading');
+    setMyFoodsUserId(userId);
 
     const { data, error } = await foodService.getAllFoods(userId);
     if (error) {
       console.error('Failed to load foods:', error);
+      if (getCurrentUserId() === userId) setMyFoodsStatus('error');
       return { data: [], error };
     }
 
     if (!isActiveRequest(epoch, userId)) {
+      if (getCurrentUserId() === userId) setMyFoodsStatus('error');
       return { data: [], error: new Error('用户已切换，忽略旧请求结果') };
     }
 
@@ -322,9 +335,29 @@ export const StoreProvider = ({ children, user: initialUser, session: initialSes
     }
 
     setFoods(nextFoods);
+    setMyFoods(nextFoods);
+    setMyFoodsStatus('success');
+    setMyFoodsUserId(userId);
     setPublicFoods(nextFoods.filter((item) => item?.visibility === 'public'));
     return { data: nextFoods, error: null };
   }, [countPrivateFoods, isActiveRequest]);
+
+  const ensureMyFoodsLoaded = useCallback(async (userId) => {
+    if (!userId) return { data: [], error: null };
+    if (myFoodsUserId === userId && myFoodsStatus === 'success') {
+      return { data: myFoods, error: null, cached: true };
+    }
+    if (myFoodsUserId === userId && myFoodsStatus === 'loading') {
+      return { data: myFoods, error: null, loading: true };
+    }
+    return refreshFoods(userId);
+  }, [myFoods, myFoodsStatus, myFoodsUserId, refreshFoods]);
+
+  const invalidateMyFoods = useCallback((userId) => {
+    if (!userId) return;
+    foodService.invalidateUserFoodCache(userId);
+    if (myFoodsUserId === userId) setMyFoodsStatus('idle');
+  }, [myFoodsUserId]);
 
   const loadPublicFoods = useCallback(async (userId) => {
     if (!userId) {
@@ -372,6 +405,9 @@ export const StoreProvider = ({ children, user: initialUser, session: initialSes
     if (user?.id && user.id !== newUser?.id) {
       foodService.clearFoodCache?.();
       setFoods([]);
+      setMyFoods([]);
+      setMyFoodsStatus('idle');
+      setMyFoodsUserId(null);
     }
     requestEpochRef.current += 1;
     setUser(newUser);
@@ -1199,7 +1235,12 @@ export const StoreProvider = ({ children, user: initialUser, session: initialSes
     clearFoodEntryPendingDelete,
     foods,
     setFoods,
+    myFoods,
+    myFoodsStatus,
+    myFoodsUserId,
     refreshFoods,
+    ensureMyFoodsLoaded,
+    invalidateMyFoods,
     publicFoods,
     setPublicFoods,
     loadPublicFoods,

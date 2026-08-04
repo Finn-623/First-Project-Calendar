@@ -167,10 +167,12 @@ export const FoodLibraryPage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const {
     foods,
+    myFoods,
     publicFoods,
     user,
     profile,
     refreshFoods,
+    invalidateMyFoods,
     loadPublicFoods,
     createPublicFood,
     updatePublicFood,
@@ -195,13 +197,13 @@ export const FoodLibraryPage = () => {
   const setActiveTab = (tab) => setSearchParams(tab === 'mine' ? { tab: 'mine' } : { tab: 'public' }, { replace: true });
 
   const list = useMemo(() => {
-    return (foods || []).filter((f) => {
+    return (myFoods ?? foods ?? []).filter((f) => {
       if (f.visibility === 'public' || f.user_id !== user?.id || f.is_active === false) return false;
       const matchQ = [f.name, f.brand].filter(Boolean).some((value) => normalizeText(value).includes(normalizeText(query)));
       const matchC = cat === '全部' || normalizeCategory(f.primary_category || f.category) === cat;
       return matchQ && matchC;
     });
-  }, [foods, query, cat, user?.id]);
+  }, [foods, myFoods, query, cat, user?.id]);
 
   const adminPublicList = useMemo(() => {
     return (publicFoods || []).filter((f) => {
@@ -405,7 +407,8 @@ export const FoodLibraryPage = () => {
       return;
     }
 
-    foodService.invalidateUserFoodCache(user.id);
+    if (invalidateMyFoods) invalidateMyFoods(user.id);
+    else foodService.invalidateUserFoodCache?.(user.id);
     await refreshFoods(user.id);
     showSuccess('已添加到我的食物库');
     setCreateOpen(false);
@@ -463,7 +466,8 @@ export const FoodLibraryPage = () => {
       return;
     }
 
-    foodService.invalidateUserFoodCache(user.id);
+    if (invalidateMyFoods) invalidateMyFoods(user.id);
+    else foodService.invalidateUserFoodCache?.(user.id);
     await refreshFoods(user.id);
     showSuccess('已更新私人食物');
     closeEditPrivateDialog();
@@ -493,7 +497,8 @@ export const FoodLibraryPage = () => {
       return;
     }
 
-    foodService.invalidateUserFoodCache(user.id);
+    if (invalidateMyFoods) invalidateMyFoods(user.id);
+    else foodService.invalidateUserFoodCache?.(user.id);
     await refreshFoods(user.id);
     showSuccess('已删除私人食物');
   };
@@ -686,7 +691,11 @@ export const FoodLibraryPage = () => {
       {activeTab === 'public' ? <PublicFoodBrowser onCopied={async () => {
         setQuery('');
         setCat('全部');
-        if (user?.id) await refreshFoods(user.id);
+        if (user?.id) {
+          if (invalidateMyFoods) invalidateMyFoods(user.id);
+          else foodService.invalidateUserFoodCache?.(user.id);
+          await refreshFoods(user.id);
+        }
         setActiveTab('mine');
       }} /> : <>
       <div className="px-5 space-y-3">
