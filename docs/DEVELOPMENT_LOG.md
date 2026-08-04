@@ -1,3 +1,18 @@
+## DEV-20260804-007
+
+- 日期：2026-08-04
+- 状态：代码和测试完成，等待用户最终页面验收
+- 任务目标：优化我的食品分类筛选，补全个人食品正式分类，并把可用分量改为“数量 + 单位 + 克数”的常用录入方式。
+- 实际完成内容：顶部筛选改为紧凑、可横向滚动的 chips，保留全部和真实一级分类筛选；个人食品表单分类补全主食与谷物、薯类、肉禽、水产、蛋类、奶制品、豆类与豆制品、蔬菜、水果、坚果与种子、油脂、调味品、非酒精饮品、简单混合食品及其他兜底；intake types 复选框保留。
+- 可用分量：默认一行空分量，点击添加逐行增加，最后一行删除后保留空行；每行支持数量、个/份/瓶/片/杯/勺/袋/盒/碗/条、对应克数、默认和删除。保存时自动生成 `1瓶`、`1份` 等 portion_name，并写入对应 grams；空行忽略，历史快照逻辑不变。
+- 主要修改文件或模块：`frontend/src/pages/FoodLibraryPage.jsx`及页面专项测试；`frontend/src/services/foodService.publicBrowsing.test.js`；相关文档。
+- 数据库变化：无新增 Migration，无修改已部署 032；继续复用现有 portion_name/amount/unit/grams RPC 兼容层。
+- 执行的测试：个人食品/AddFoodSheet/foodService专项；前端全量 `CI=true npm test -- --watchAll=false --runInBand`；`npm run build`；`git diff --check`；Pylance/编辑器错误检查。
+- 测试结果：专项17项、前端全量42套件277项通过；Production Build成功；无新增代码错误。既有 Supabase 环境变量和 Node 弃用 warning仍存在但不影响测试结果。
+- 未完成事项：需要用户最终验收窄屏 chips、完整分类筛选、1瓶/1份分量录入、首页选择分量和历史快照保护。
+- 风险或注意事项：Migration 028仍未部署；未重新部署029/030/031/032；未修改公共食品、审核状态或历史food_entries；未push。
+- Git Commit ID：未提交。
+
 ## DEV-20260804-006
 
 - 日期：2026-08-04

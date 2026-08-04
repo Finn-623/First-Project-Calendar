@@ -64,15 +64,15 @@ describe('foodService 普通用户公共食品查询', () => {
       fat: 2,
       carbs: 20,
       portions: [
-        { name: '1杯', grams: 250, isDefault: true },
-        { name: '1勺', grams: 15, isDefault: false },
+        { name: '1瓶', grams: 200, isDefault: true },
+        { name: '1份', grams: 150, isDefault: false },
       ],
     });
     expect(supabase.rpc).toHaveBeenCalledWith('save_personal_food', expect.objectContaining({
       p_food_id: 'mine-1', p_name: '我的燕麦', p_brand: '我的品牌', p_name_en: 'Oats',
       p_portions: [
-        { name: '1杯', amount: 250, unit: 'g', grams: 250, isDefault: true },
-        { name: '1勺', amount: 15, unit: 'g', grams: 15, isDefault: false },
+        { name: '1瓶', amount: 200, unit: 'g', grams: 200, isDefault: true },
+        { name: '1份', amount: 150, unit: 'g', grams: 150, isDefault: false },
       ],
     }));
     expect(result.data.portion_count).toBe(2);

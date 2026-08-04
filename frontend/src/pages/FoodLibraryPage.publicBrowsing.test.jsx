@@ -19,7 +19,7 @@ jest.mock('../services/foodService', () => ({
 }));
 jest.mock('../store', () => ({ useStore: () => ({
   foods: [
-    { id: 'mine-1', name: '我的燕麦', visibility: 'private', user_id: 'user-1', category: '我的', p100: 1, f100: 1, c100: 1, cal100: 10, is_active: true },
+    { id: 'mine-1', name: '我的燕麦', visibility: 'private', user_id: 'user-1', category: 'vegetables', p100: 1, f100: 1, c100: 1, cal100: 10, is_active: true },
     { id: 'inactive-1', name: '已停用燕麦', visibility: 'private', user_id: 'user-1', category: '我的', is_active: false },
   ],
   publicFoods: [], user: { id: 'user-1' }, profile: { role: 'user' },
@@ -93,17 +93,25 @@ describe('FoodLibraryPage 公共食品真实路由接入', () => {
 
   test('个人食品表单显示品牌和可用分量编辑区域', () => {
     mount('/library?tab=mine');
+    expect(screen.getByTestId('cat-全部')).toBeTruthy();
+    expect(screen.getByTestId('cat-vegetables').textContent).toContain('蔬菜');
+    fireEvent.click(screen.getByTestId('cat-vegetables'));
     fireEvent.click(screen.getByTestId('add-custom-food'));
     expect(screen.getByTestId('private-food-brand')).toBeTruthy();
     expect(screen.getByTestId('private-portions-editor')).toBeTruthy();
-    expect(screen.getAllByLabelText('分量名称 1')).toHaveLength(1);
-    expect(screen.queryByLabelText('分量名称 2')).toBeNull();
+    expect(screen.getAllByLabelText('分量数量 1')).toHaveLength(1);
+    expect(screen.queryByLabelText('分量数量 2')).toBeNull();
+    expect(screen.getByLabelText('分量单位 1').value).toBe('');
+    expect(screen.getByLabelText('食品分类').value).toBe('');
+    expect(screen.getByRole('option', { name: '主食与谷物' })).toBeTruthy();
+    expect(screen.getByText('碳水')).toBeTruthy();
     fireEvent.click(screen.getByRole('button', { name: '添加分量' }));
-    expect(screen.getByLabelText('分量名称 2')).toBeTruthy();
-    expect(screen.getByLabelText('分量数值 2')).toBeTruthy();
-    expect(screen.getByLabelText('分量单位 2')).toBeTruthy();
+    expect(screen.getByLabelText('分量数量 2')).toBeTruthy();
+    expect(screen.getByLabelText('分量克数 2')).toBeTruthy();
+    const unitOptions = Array.from(screen.getByLabelText('分量单位 2').options).map((option) => option.textContent);
+    expect(unitOptions).toEqual(expect.arrayContaining(['个', '份', '瓶', '片', '杯', '勺', '袋', '盒', '碗', '条']));
     fireEvent.click(screen.getByRole('button', { name: '删除分量 2' }));
-    expect(screen.queryByLabelText('分量名称 2')).toBeNull();
-    expect(screen.getByLabelText('分量名称 1')).toBeTruthy();
+    expect(screen.queryByLabelText('分量数量 2')).toBeNull();
+    expect(screen.getByLabelText('分量数量 1')).toBeTruthy();
   });
 });
