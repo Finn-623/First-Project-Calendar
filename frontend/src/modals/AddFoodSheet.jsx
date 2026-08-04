@@ -5,6 +5,7 @@ import { Button } from '../components/ui/button';
 import { Search } from 'lucide-react';
 import { toast } from 'sonner';
 import { useStore } from '../store';
+import { foodService } from '../services/foodService';
 
 const scale = (food, grams) => {
   const k = (Number(grams) || 0) / 100;
@@ -18,14 +19,13 @@ const scale = (food, grams) => {
 
 export const AddFoodSheet = ({ open, onOpenChange, targetTitle, onConfirm }) => {
   const { foods, user, refreshFoods } = useStore();
+  const [publicFoods, setPublicFoods] = useState([]);
   const [query, setQuery] = useState('');
   const [selected, setSelected] = useState(null);
   const [selectedPortion, setSelectedPortion] = useState(null);
   const [grams, setGrams] = useState(100);
   const [loadingFoods, setLoadingFoods] = useState(false);
   const [submitting, setSubmitting] = useState(false);
-
-  const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
   useEffect(() => {
     if (!open) {
@@ -44,27 +44,20 @@ export const AddFoodSheet = ({ open, onOpenChange, targetTitle, onConfirm }) => 
     const loadFoodsOnOpen = async () => {
       if (!open || !user?.id) return;
 
-      setLoadingFoods(true);
-
-      for (let attempt = 0; attempt < 5; attempt += 1) {
-        if (disposed) return;
-
-        const { data } = await refreshFoods(user.id);
-        const currentFoods = data || [];
-        const hasPrivateFoods = currentFoods.some(
-          (item) => item?.user_id === user.id && item?.visibility !== 'public'
-        );
-
-        // If private foods are present, we are done. If only public foods are
-        // present, retry briefly to avoid a false-empty private list right after
-        // account switch/login.
-        if (hasPrivateFoods || attempt === 4) {
-          break;
-        }
-
-        await wait(120 * (attempt + 1));
+      setLoadingFoods(!foods.length);
+      if (!foods.length) await refreshFoods(user.id);
+      const result = await foodService.listVisiblePublicFoods({ page: 0, pageSize: 50 });
+      if (!disposed) {
+        setPublicFoods((result.data || []).map((food) => ({
+          ...food,
+          visibility: 'public',
+          is_active: true,
+          cal100: food.nutrients.energyKcal,
+          p100: food.nutrients.proteinG,
+          f100: food.nutrients.fatG,
+          c100: food.nutrients.carbohydrateG,
+        })));
       }
-
       if (!disposed) {
         setLoadingFoods(false);
       }
@@ -77,11 +70,28 @@ export const AddFoodSheet = ({ open, onOpenChange, targetTitle, onConfirm }) => 
     return () => {
       disposed = true;
     };
-  }, [open, refreshFoods, user?.id]);
+  }, [foods.length, open, refreshFoods, user?.id]);
+
+  useEffect(() => {
+    if (!open || !user?.id || !query.trim()) return undefined;
+    const timer = window.setTimeout(async () => {
+      const result = await foodService.listVisiblePublicFoods({ query, page: 0, pageSize: 50 });
+      setPublicFoods((result.data || []).map((food) => ({
+        ...food,
+        visibility: 'public',
+        is_active: true,
+        cal100: food.nutrients.energyKcal,
+        p100: food.nutrients.proteinG,
+        f100: food.nutrients.fatG,
+        c100: food.nutrients.carbohydrateG,
+      })));
+    }, 300);
+    return () => window.clearTimeout(timer);
+  }, [open, query, user?.id]);
 
   const groups = useMemo(() => {
     const normalizedQuery = query.trim().toLowerCase();
-    const visible = (foods || []).filter((food) => {
+    const visible = [...(foods || []), ...(publicFoods || [])].filter((food) => {
       if (food?.is_active === false || food?.isActive === false) return false;
       if (food?.visibility !== 'public' && food?.user_id !== user?.id) return false;
       if (!normalizedQuery) return true;
@@ -98,7 +108,7 @@ export const AddFoodSheet = ({ open, onOpenChange, targetTitle, onConfirm }) => 
       personal: visible.filter((food) => food.visibility !== 'public'),
       public: visible.filter((food) => food.visibility === 'public'),
     };
-  }, [foods, query, user?.id]);
+  }, [foods, publicFoods, query, user?.id]);
 
   const preview = selected ? scale(selected, Number(grams) || 0) : null;
 

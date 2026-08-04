@@ -23,7 +23,10 @@ const row = {
 };
 
 describe('foodService 普通用户公共食品查询', () => {
-  beforeEach(() => jest.clearAllMocks());
+  beforeEach(() => {
+    jest.clearAllMocks();
+    foodService.clearFoodCache();
+  });
 
   test('列表在数据库端限定approved active public并执行分页和组合筛选', async () => {
     const foods = query({ data: [row], count: 1, error: null });
@@ -111,8 +114,25 @@ describe('foodService 普通用户公共食品查询', () => {
     const result = await foodService.getAllFoods('user-1');
 
     expect(foods.eq).toHaveBeenCalledWith('is_active', true);
+    expect(foods.eq).toHaveBeenCalledWith('visibility', 'private');
+    expect(foods.eq).toHaveBeenCalledWith('user_id', 'user-1');
     expect(result.data).toHaveLength(1);
     expect(result.data[0].id).toBe('mine-1');
+  });
+
+  test('同一用户的并发食品请求共享Promise，缓存命中不重复查询', async () => {
+    const foods = query({ data: [row], count: null, error: null });
+    supabase.from.mockReturnValue(foods);
+
+    const [first, second] = await Promise.all([
+      foodService.getAllFoods('user-1'),
+      foodService.getAllFoods('user-1'),
+    ]);
+    const cached = await foodService.getAllFoods('user-1');
+
+    expect(first.data).toEqual(second.data);
+    expect(cached.cached).toBe(true);
+    expect(supabase.from).toHaveBeenCalledTimes(1);
   });
 
   test('136条结果的第14页使用130到139的服务端range并允许少于10条', async () => {
@@ -123,6 +143,18 @@ describe('foodService 普通用户公共食品查询', () => {
     expect(foods.range).toHaveBeenCalledWith(130, 139);
     expect(result.count).toBe(136);
     expect(result.data).toHaveLength(6);
+  });
+
+  test('公共食品相同分页参数命中缓存，不重复查询当前页', async () => {
+    const foods = query({ data: [row], count: 1, error: null });
+    supabase.from.mockReturnValue(foods);
+
+    const first = await foodService.listVisiblePublicFoods({ page: 0 });
+    const second = await foodService.listVisiblePublicFoods({ page: 0 });
+
+    expect(second.cached).toBe(true);
+    expect(second.data).toEqual(first.data);
+    expect(supabase.from).toHaveBeenCalledTimes(1);
   });
 
   test('alias命中去重后与名称、英文名和品牌一起交给主查询过滤', async () => {

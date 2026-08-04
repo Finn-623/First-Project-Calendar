@@ -211,14 +211,6 @@ export const FoodLibraryPage = () => {
     }).slice(0, 20);
   }, [publicFoods, query]);
 
-  useEffect(() => {
-    if (!user?.id) return;
-    Promise.resolve(refreshFoods(user.id)).catch(console.error);
-    if (isAdmin) {
-      Promise.resolve(loadPublicFoods(user.id)).catch(console.error);
-    }
-  }, [isAdmin, loadPublicFoods, refreshFoods, user?.id]);
-
   const updatePrivateForm = (key, value) => {
     setPrivateForm((prev) => ({ ...prev, [key]: value }));
   };
@@ -413,6 +405,7 @@ export const FoodLibraryPage = () => {
       return;
     }
 
+    foodService.invalidateUserFoodCache(user.id);
     await refreshFoods(user.id);
     showSuccess('已添加到我的食物库');
     setCreateOpen(false);
@@ -470,6 +463,7 @@ export const FoodLibraryPage = () => {
       return;
     }
 
+    foodService.invalidateUserFoodCache(user.id);
     await refreshFoods(user.id);
     showSuccess('已更新私人食物');
     closeEditPrivateDialog();
@@ -499,6 +493,7 @@ export const FoodLibraryPage = () => {
       return;
     }
 
+    foodService.invalidateUserFoodCache(user.id);
     await refreshFoods(user.id);
     showSuccess('已删除私人食物');
   };

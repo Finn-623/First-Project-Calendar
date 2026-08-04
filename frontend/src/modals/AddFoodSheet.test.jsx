@@ -13,6 +13,9 @@ const mockFoods = [
 jest.mock('../store', () => ({
   useStore: () => ({ foods: mockFoods, user: { id: 'user-1' }, refreshFoods: mockRefreshFoods }),
 }));
+jest.mock('../services/foodService', () => ({
+  foodService: { listVisiblePublicFoods: jest.fn() },
+}));
 jest.mock('../components/ui/sheet', () => ({
   Sheet: ({ children }) => <div>{children}</div>,
   SheetContent: ({ children, overlayClassName, ...props }) => <div {...props}>{children}</div>,
@@ -28,11 +31,14 @@ describe('AddFoodSheet personal food priority', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     mockRefreshFoods.mockResolvedValue({ data: mockFoods, error: null });
+    const { foodService } = require('../services/foodService');
+    foodService.listVisiblePublicFoods.mockResolvedValue({ data: [], count: 0, error: null });
   });
 
   test('personal group appears before public group and hides other users/inactive foods', async () => {
     render(<AddFoodSheet open onOpenChange={jest.fn()} onConfirm={jest.fn()} />);
     await waitFor(() => expect(screen.getByTestId('food-group-personal')).toBeTruthy());
+    expect(mockRefreshFoods).not.toHaveBeenCalled();
     const groups = screen.getByTestId('add-food-sheet').querySelectorAll('[data-testid^="food-group-"]');
     expect(groups[0].getAttribute('data-testid')).toBe('food-group-personal');
     expect(groups[1].getAttribute('data-testid')).toBe('food-group-public');

@@ -1,3 +1,18 @@
+## DEV-20260804-008
+
+- 日期：2026-08-04
+- 状态：代码和测试完成，等待用户使用真实账号验收性能
+- 任务目标：优化食物库和添加食品的加载速度，优先显示已有内容，减少重复请求和过量数据。
+- 真实根因：Store 初始化、FoodLibraryPage 挂载和 AddFoodSheet 打开分别触发 `refreshFoods`；Store 的旧 `getAllFoods` 使用 `*` 并同时读取私有 aliases/portions，还把公共食品混入一次性全量请求；AddFoodSheet 无缓存时最多串行重试5次，Store 登录后另有最多6轮重试。公共浏览器当前页分页本身已使用服务端range，但同参数和facets没有内存缓存。
+- 实际完成内容：`getAllFoods`改为当前用户 active private 食品最小字段查询，保留当前用户隔离；增加5分钟按用户内存缓存、并发Promise合并和缓存清理；公共当前页按 query/category/intakeType/page/pageSize缓存并合并并发请求，facets同样缓存；移除页面挂载重复刷新、Store登录后重复重试和AddFoodSheet多轮串行重试；AddFoodSheet优先显示Store个人食品，公共食品异步请求首批并按搜索分页查询；详情仍按food ID加载aliases/portions。
+- 请求与安全：公共食品仍由 `visibility=public`、`review_status=approved`、`is_active=true` 和非空source过滤；个人食品由 `visibility=private`、`user_id=当前用户`、`is_active=true`过滤；账号切换/退出清空缓存；没有修改公共食品审核状态。
+- 真实性能测量：浏览器未登录，访问 `/library?tab=mine`和`/library?tab=public`均重定向到`/login`，未取得受保护页面的auth/session、Supabase请求、首批食品和Sheet耗时。登录页导航实际记录为DOMContentLoaded约1516ms、load约3604ms；真实账号性能数字需用户验收时补测，未伪造数据。
+- 执行的测试：食品服务、FoodLibraryPage、AddFoodSheet、Store专项；前端全量 `CI=true npm test -- --watchAll=false --runInBand`；`npm run build`；`git diff --check`；编辑器错误检查。
+- 测试结果：专项40项通过；前端全量42套件279项通过；Production Build成功；无新增代码错误。仍有既有Supabase环境变量和Node弃用warning。
+- 未完成事项：未在真实登录浏览器中记录冷/热启动毫秒级食品数据；没有新增数据库索引或Migration 033，因为当前证据集中在重复请求和客户端过量加载，尚无数据库慢查询EXPLAIN证据。
+- 风险或注意事项：AddFoodSheet公共首批为最多50条，个人食品由Store完整加载；关闭Sheet不清空缓存；本轮未部署028、未新增或重新部署迁移、未push。
+- Git Commit ID：未提交。
+
 ## DEV-20260804-007
 
 - 日期：2026-08-04

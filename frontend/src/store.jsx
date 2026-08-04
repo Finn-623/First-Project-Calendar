@@ -166,6 +166,7 @@ export const StoreProvider = ({ children, user: initialUser, session: initialSes
     logoutCompletedRef.current = true;
     cacheHydratedRef.current = false;
     cacheReadyToWriteRef.current = false;
+    foodService.clearFoodCache?.();
     if (realtimeReloadTimerRef.current) {
       window.clearTimeout(realtimeReloadTimerRef.current);
       realtimeReloadTimerRef.current = null;
@@ -349,47 +350,6 @@ export const StoreProvider = ({ children, user: initialUser, session: initialSes
   }, [user?.id, refreshFoods]);
 
   useEffect(() => {
-    let disposed = false;
-
-    const reloadFoodsWithRetry = async () => {
-      const userId = user?.id;
-      if (!userId || !session?.access_token) return;
-
-      const transientPattern = /(jwt|token|session|auth|network|fetch|timed out|temporar|permission|401|403)/i;
-      const expectedPrivateCount = privateFoodSeenCountRef.current.get(userId) || 0;
-      const maxAttempts = 6;
-
-      for (let attempt = 0; attempt < maxAttempts; attempt += 1) {
-        if (disposed) return;
-
-        const { data, error } = await refreshFoods(userId);
-        const privateCount = countPrivateFoods(data, userId);
-        const missingKnownPrivateFoods = expectedPrivateCount > 0 && privateCount === 0;
-        const likelyNotReadyYet = privateCount === 0;
-
-        if (!error && !missingKnownPrivateFoods && !likelyNotReadyYet) return;
-
-        if (!error && (missingKnownPrivateFoods || likelyNotReadyYet) && attempt < maxAttempts - 1) {
-          await wait(220 * (attempt + 1));
-          continue;
-        }
-
-        if (!transientPattern.test(String(error?.message || '')) || attempt === maxAttempts - 1) {
-          return;
-        }
-
-        await wait(220 * (attempt + 1));
-      }
-    };
-
-    reloadFoodsWithRetry().catch(console.error);
-
-    return () => {
-      disposed = true;
-    };
-  }, [countPrivateFoods, session?.access_token, user?.id, refreshFoods, wait]);
-
-  useEffect(() => {
     if (!logoutCompletedRef.current) {
       requestEpochRef.current += 1;
       setUser(initialUser || null);
@@ -409,11 +369,15 @@ export const StoreProvider = ({ children, user: initialUser, session: initialSes
   }, [initialProfile]);
 
   const updateAuthState = useCallback((newUser, newSession, newProfile) => {
+    if (user?.id && user.id !== newUser?.id) {
+      foodService.clearFoodCache?.();
+      setFoods([]);
+    }
     requestEpochRef.current += 1;
     setUser(newUser);
     setSession(newSession);
     setProfile(newProfile);
-  }, []);
+  }, [user?.id]);
 
   const loadProfile = useCallback(async (userId) => {
     if (!supabase) {
@@ -839,6 +803,7 @@ export const StoreProvider = ({ children, user: initialUser, session: initialSes
   }, [profile, user?.id]);
 
   const reloadFoodLibrary = useCallback(async (userId) => {
+    foodService.invalidateUserFoodCache?.(userId);
     await Promise.allSettled([
       refreshFoods(userId),
       loadPublicFoods(userId),

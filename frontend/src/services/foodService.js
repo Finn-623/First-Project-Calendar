@@ -80,6 +80,11 @@ const PUBLIC_FOOD_LIST_FIELDS = [
 ].join(',');
 
 const escapePostgrestSearch = (value) => String(value || '').replace(/[,%()]/g, ' ').trim();
+const ALL_FOODS_CACHE_TTL_MS = 5 * 60 * 1000;
+const allFoodsCache = new Map();
+const PUBLIC_FOOD_CACHE_TTL_MS = 5 * 60 * 1000;
+const publicFoodCache = new Map();
+const publicFacetCache = { data: null, fetchedAt: 0, pendingPromise: null };
 
 const buildPrivateFoodPayload = (userId, food) => ({
   user_id: userId,
@@ -116,8 +121,28 @@ const buildPublicFoodPayload = (userId, food) => ({
 });
 
 export const foodService = {
+  invalidateUserFoodCache(userId) {
+    if (userId) allFoodsCache.delete(userId);
+  },
+
+  clearFoodCache() {
+    allFoodsCache.clear();
+    publicFoodCache.clear();
+    publicFacetCache.data = null;
+    publicFacetCache.fetchedAt = 0;
+    publicFacetCache.pendingPromise = null;
+  },
+
   async listVisiblePublicFoods({ query = '', category = '', intakeType = '', page = 0, pageSize = PUBLIC_FOOD_PAGE_SIZE } = {}) {
     if (!supabase) return { data: [], count: 0, error: new Error('Supabase 尚未配置') };
+    const cacheKey = JSON.stringify({ query: String(query || '').trim(), category, intakeType, page, pageSize });
+    const cached = publicFoodCache.get(cacheKey);
+    if (cached?.pendingPromise) return cached.pendingPromise;
+    if (cached && Date.now() - cached.fetchedAt < PUBLIC_FOOD_CACHE_TTL_MS) {
+      return { ...cached.result, cached: true };
+    }
+
+    const pendingPromise = (async () => {
     try {
       const cleanedQuery = escapePostgrestSearch(query);
       let aliasFoodIds = [];
@@ -148,14 +173,32 @@ export const foodService = {
       }
 
       const { data, count, error } = await request;
-      return { data: (data || []).map(normalizePublicFood), count: count || 0, error };
+      const result = { data: (data || []).map(normalizePublicFood), count: count || 0, error };
+      if (!error) publicFoodCache.set(cacheKey, { result, fetchedAt: Date.now() });
+      return result;
     } catch (error) {
       return { data: [], count: 0, error };
     }
+    })();
+    publicFoodCache.set(cacheKey, { result: cached?.result || null, fetchedAt: cached?.fetchedAt || 0, pendingPromise });
+    pendingPromise.then(() => {
+      const current = publicFoodCache.get(cacheKey);
+      if (current?.pendingPromise === pendingPromise) publicFoodCache.delete(cacheKey);
+    }, () => {
+      const current = publicFoodCache.get(cacheKey);
+      if (current?.pendingPromise === pendingPromise) publicFoodCache.delete(cacheKey);
+    });
+    return pendingPromise;
   },
 
   async loadVisiblePublicFoodFacets() {
     if (!supabase) return { categories: [], intakeTypes: [], error: new Error('Supabase 尚未配置') };
+    if (publicFacetCache.pendingPromise) return publicFacetCache.pendingPromise;
+    if (publicFacetCache.data && Date.now() - publicFacetCache.fetchedAt < PUBLIC_FOOD_CACHE_TTL_MS) {
+      return { ...publicFacetCache.data, cached: true };
+    }
+
+    const pendingPromise = (async () => {
     try {
       const { data, error } = await supabase
         .from('foods')
@@ -165,14 +208,25 @@ export const foodService = {
         .eq('is_active', true)
         .not('source_name', 'is', null);
       if (error) return { categories: [], intakeTypes: [], error };
-      return {
+      const result = {
         categories: [...new Set((data || []).map((row) => row.primary_category).filter(Boolean))].sort(),
         intakeTypes: [...new Set((data || []).flatMap((row) => row.intake_types || []))].sort(),
         error: null,
       };
+      publicFacetCache.data = result;
+      publicFacetCache.fetchedAt = Date.now();
+      return result;
     } catch (error) {
       return { categories: [], intakeTypes: [], error };
     }
+    })();
+    publicFacetCache.pendingPromise = pendingPromise;
+    pendingPromise.then(() => {
+      if (publicFacetCache.pendingPromise === pendingPromise) publicFacetCache.pendingPromise = null;
+    }, () => {
+      if (publicFacetCache.pendingPromise === pendingPromise) publicFacetCache.pendingPromise = null;
+    });
+    return pendingPromise;
   },
 
   async getVisiblePublicFoodDetail(foodId) {
@@ -244,29 +298,44 @@ export const foodService = {
    * @param {string} userId
    * @returns {Promise<{data, error}>}
    */
-  async getAllFoods(userId) {
+  async getAllFoods(userId, { force = false } = {}) {
     if (!supabase) {
       return { data: [], error: new Error('Supabase 尚未配置') };
     }
 
-    try {
-      const { data, error } = await supabase
-        .from('foods')
-        .select('*,food_private_aliases(alias),food_portions(id,portion_name,amount,unit,grams,is_default)')
-        .eq('is_active', true)
-        .order('name', { ascending: true });
-
-      const visibleFoods = (data || []).filter((food) => {
-        if (!food) return false;
-        if (food.visibility === 'public') return true;
-        return Boolean(userId) && food.user_id === userId;
-      });
-
-      const normalized = visibleFoods.map(normalizeFood).filter(Boolean);
-      return { data: normalized, error };
-    } catch (err) {
-      return { data: [], error: err };
+    const cached = allFoodsCache.get(userId);
+    if (!force && cached) {
+      if (cached.pendingPromise) return cached.pendingPromise;
+      if (Date.now() - cached.fetchedAt < ALL_FOODS_CACHE_TTL_MS) {
+        return { data: cached.data, error: null, cached: true };
+      }
     }
+
+    const pendingPromise = (async () => {
+      try {
+        const { data, error } = await supabase
+          .from('foods')
+          .select('id,user_id,visibility,is_active,name,name_en,brand,notes,category,primary_category,intake_types,calories,protein,fat,carbs,source_public_food_id,default_quantity,unit,food_portions(id,portion_name,amount,unit,grams,is_default)')
+          .eq('is_active', true)
+          .eq('visibility', 'private')
+          .eq('user_id', userId)
+          .order('name', { ascending: true });
+
+        const normalized = (data || []).map(normalizeFood).filter(Boolean);
+        if (!error) allFoodsCache.set(userId, { data: normalized, fetchedAt: Date.now() });
+        return { data: normalized, error };
+      } catch (err) {
+        return { data: [], error: err };
+      } finally {
+        const current = allFoodsCache.get(userId);
+        if (current?.pendingPromise === pendingPromise) {
+          allFoodsCache.delete(userId);
+        }
+      }
+    })();
+
+    allFoodsCache.set(userId, { data: cached?.data || [], fetchedAt: cached?.fetchedAt || 0, pendingPromise });
+    return pendingPromise;
   },
 
   /**
