@@ -4,8 +4,8 @@ import { foodService } from '../../services/foodService';
 import { Input } from '../ui/input';
 import { Button } from '../ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../ui/dialog';
+import { PUBLIC_FOOD_PAGE_SIZE } from '../../constants/publicFood';
 
-const PAGE_SIZE = 24;
 const INTAKE_LABELS = {
   carbohydrate: '碳水', protein: '蛋白质', fat: '脂肪', fiber: '膳食纤维',
 };
@@ -141,14 +141,14 @@ export const PublicFoodBrowser = () => {
   const load = async () => {
     const requestId = ++requestIdRef.current;
     setState((current) => ({ ...current, loading: true, error: null }));
-    const result = await foodService.listVisiblePublicFoods({ query, category, intakeType, page, pageSize: PAGE_SIZE });
+    const result = await foodService.listVisiblePublicFoods({ query, category, intakeType, page, pageSize: PUBLIC_FOOD_PAGE_SIZE });
     if (requestId !== requestIdRef.current) return;
     setState({ loading: false, foods: result.data || [], count: result.count || 0, error: result.error || null });
   };
 
   useEffect(() => { void load(); }, [category, intakeType, page, query]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const pageCount = Math.max(1, Math.ceil(state.count / PAGE_SIZE));
+  const pageCount = Math.max(1, Math.ceil(state.count / PUBLIC_FOOD_PAGE_SIZE));
   const clearFilters = () => {
     setQueryInput('');
     setQuery('');
@@ -183,11 +183,11 @@ export const PublicFoodBrowser = () => {
         <span data-testid="public-food-count">找到 {state.count} 条公共食品</span>
         {(query || category || intakeType) ? <button type="button" onClick={clearFilters} className="inline-flex min-h-10 items-center gap-1 text-[#6B8067]"><X size={13} /> 清除筛选</button> : null}
       </div>
-      {state.loading ? <div className="mt-3 grid gap-2 sm:grid-cols-2" aria-label="正在加载公共食品">{Array.from({ length: 6 }, (_, index) => <div key={index} className="h-32 animate-pulse rounded-2xl bg-[#ECEDE9]" />)}</div> : null}
+      {state.loading ? <div className="mt-3 grid grid-cols-1 gap-2" aria-label="正在加载公共食品">{Array.from({ length: PUBLIC_FOOD_PAGE_SIZE }, (_, index) => <div key={index} className="h-32 animate-pulse rounded-2xl bg-[#ECEDE9]" />)}</div> : null}
       {state.error && !state.loading ? <div className="mt-6 text-center"><p className="text-sm text-[#C76D5E]">公共食品加载失败</p><Button variant="outline" className="mt-3 min-h-11" onClick={() => void load()}>重试</Button></div> : null}
       {!state.loading && !state.error && !state.foods.length ? <p className="py-10 text-center text-sm text-[#858C88]">没有找到符合条件的公共食品</p> : null}
-      {!state.loading && !state.error ? <div className="mt-3 grid gap-2 sm:grid-cols-2" data-testid="public-food-list">{state.foods.map((food) => <FoodCard key={food.id} food={food} onOpen={setSelectedFoodId} />)}</div> : null}
-      {!state.loading && !state.error && state.count > PAGE_SIZE ? <div className="mt-5 flex items-center justify-center gap-3"><button type="button" aria-label="上一页" disabled={page === 0} onClick={() => setPage((value) => Math.max(0, value - 1))} className="flex h-11 w-11 items-center justify-center rounded-xl border disabled:opacity-40"><ChevronLeft size={16} /></button><span className="text-xs text-[#5E6660]">{page + 1} / {pageCount}</span><button type="button" aria-label="下一页" disabled={page + 1 >= pageCount} onClick={() => setPage((value) => value + 1)} className="flex h-11 w-11 items-center justify-center rounded-xl border disabled:opacity-40"><ChevronRight size={16} /></button></div> : null}
+      {!state.loading && !state.error ? <div className="mt-3 grid grid-cols-1 gap-2" data-testid="public-food-list">{state.foods.map((food) => <FoodCard key={food.id} food={food} onOpen={setSelectedFoodId} />)}</div> : null}
+      {!state.loading && !state.error && state.count > PUBLIC_FOOD_PAGE_SIZE ? <div className="mt-5 flex items-center justify-center gap-3"><button type="button" aria-label="上一页" disabled={page === 0} onClick={() => setPage((value) => Math.max(0, value - 1))} className="flex h-11 w-11 items-center justify-center rounded-xl border disabled:opacity-40"><ChevronLeft size={16} /></button><span className="text-xs text-[#5E6660]">{page + 1} / {pageCount}</span><button type="button" aria-label="下一页" disabled={page + 1 >= pageCount} onClick={() => setPage((value) => value + 1)} className="flex h-11 w-11 items-center justify-center rounded-xl border disabled:opacity-40"><ChevronRight size={16} /></button></div> : null}
       {selectedFoodId ? <FoodDetail foodId={selectedFoodId} onClose={() => setSelectedFoodId(null)} /> : null}
     </section>
   );

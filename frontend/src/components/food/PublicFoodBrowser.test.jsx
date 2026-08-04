@@ -43,20 +43,29 @@ describe('PublicFoodBrowser', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     foodService.loadVisiblePublicFoodFacets.mockResolvedValue({ categories: ['dairy', 'vegetables'], intakeTypes: ['fiber', 'protein'], error: null });
-    foodService.listVisiblePublicFoods.mockResolvedValue({ data: [broccoli, milk], count: 25, error: null });
+    foodService.listVisiblePublicFoods.mockResolvedValue({ data: [broccoli, milk], count: 136, error: null });
     foodService.getVisiblePublicFoodDetail.mockResolvedValue({ data: milk, error: null });
   });
 
   test('显示只读公共食品列表、结果数和分页，不暴露编辑或审核入口', async () => {
+    foodService.listVisiblePublicFoods.mockResolvedValue({
+      data: Array.from({ length: 10 }, (_, index) => ({ ...(index % 2 ? milk : broccoli), id: `food-${index + 1}` })),
+      count: 136,
+      error: null,
+    });
     render(<PublicFoodBrowser />);
-    await waitFor(() => expect(screen.getByText('西兰花')).toBeTruthy());
-    expect(screen.getByTestId('public-food-count').textContent).toContain('25');
-    expect(screen.getByText('Broccoli, raw')).toBeTruthy();
+    await waitFor(() => expect(screen.getAllByText('西兰花')).toHaveLength(5));
+    expect(screen.getByTestId('public-food-count').textContent).toContain('136');
+    expect(screen.getAllByText('Broccoli, raw')).toHaveLength(5);
     expect(screen.getAllByText('公共食品').length).toBeGreaterThan(0);
     expect(screen.queryByText('编辑')).toBeNull();
     expect(screen.queryByText('审核')).toBeNull();
+    expect(screen.getByTestId('public-food-list').querySelectorAll('button')).toHaveLength(10);
+    expect(screen.getByText('1 / 14')).toBeTruthy();
+    expect(screen.getByTestId('public-food-list').className).toContain('grid-cols-1');
+    expect(screen.getByTestId('public-food-list').className).not.toMatch(/(?:sm|md|lg|xl):grid-cols-[2-9]/);
     fireEvent.click(screen.getByRole('button', { name: '下一页' }));
-    await waitFor(() => expect(foodService.listVisiblePublicFoods).toHaveBeenLastCalledWith(expect.objectContaining({ page: 1, pageSize: 24 })));
+    await waitFor(() => expect(foodService.listVisiblePublicFoods).toHaveBeenLastCalledWith(expect.objectContaining({ page: 1, pageSize: 10 })));
   });
 
   test('搜索会去除空格并防抖，中文英文品牌或alias均交给服务端统一搜索', async () => {
@@ -78,6 +87,37 @@ describe('PublicFoodBrowser', () => {
     await waitFor(() => expect(foodService.listVisiblePublicFoods).toHaveBeenLastCalledWith(expect.objectContaining({ category: 'vegetables', intakeType: 'fiber', page: 0 })));
     fireEvent.click(screen.getByRole('button', { name: /清除筛选/ }));
     await waitFor(() => expect(foodService.listVisiblePublicFoods).toHaveBeenLastCalledWith(expect.objectContaining({ category: '', intakeType: '' })));
+  });
+
+  test('翻页保留当前分类和摄入类型筛选', async () => {
+    render(<PublicFoodBrowser />);
+    await waitFor(() => expect(screen.getByRole('button', { name: '蔬菜' })).toBeTruthy());
+    fireEvent.click(screen.getByRole('button', { name: '蔬菜' }));
+    fireEvent.click(screen.getByRole('button', { name: '膳食纤维' }));
+    await waitFor(() => expect(foodService.listVisiblePublicFoods).toHaveBeenLastCalledWith(expect.objectContaining({ page: 0, category: 'vegetables', intakeType: 'fiber' })));
+    fireEvent.click(await screen.findByRole('button', { name: '下一页' }));
+    await waitFor(() => expect(foodService.listVisiblePublicFoods).toHaveBeenLastCalledWith(expect.objectContaining({ page: 1, category: 'vegetables', intakeType: 'fiber', pageSize: 10 })));
+  });
+
+  test('搜索、分类、摄入类型和清除筛选都会回到第一页', async () => {
+    render(<PublicFoodBrowser />);
+    fireEvent.click(await screen.findByRole('button', { name: '下一页' }));
+    await waitFor(() => expect(foodService.listVisiblePublicFoods).toHaveBeenLastCalledWith(expect.objectContaining({ page: 1 })));
+
+    fireEvent.change(screen.getByTestId('public-food-search'), { target: { value: ' milk ' } });
+    await waitFor(() => expect(foodService.listVisiblePublicFoods).toHaveBeenLastCalledWith(expect.objectContaining({ page: 0, query: 'milk' })));
+
+    fireEvent.click(await screen.findByRole('button', { name: '下一页' }));
+    fireEvent.click(screen.getByRole('button', { name: '蔬菜' }));
+    await waitFor(() => expect(foodService.listVisiblePublicFoods).toHaveBeenLastCalledWith(expect.objectContaining({ page: 0, category: 'vegetables' })));
+
+    fireEvent.click(await screen.findByRole('button', { name: '下一页' }));
+    fireEvent.click(screen.getByRole('button', { name: '膳食纤维' }));
+    await waitFor(() => expect(foodService.listVisiblePublicFoods).toHaveBeenLastCalledWith(expect.objectContaining({ page: 0, intakeType: 'fiber' })));
+
+    fireEvent.click(await screen.findByRole('button', { name: '下一页' }));
+    fireEvent.click(screen.getByRole('button', { name: '清除筛选' }));
+    await waitFor(() => expect(foodService.listVisiblePublicFoods).toHaveBeenLastCalledWith(expect.objectContaining({ page: 0, query: '', category: '', intakeType: '' })));
   });
 
   test('请求失败显示重试，空结果显示明确空状态', async () => {

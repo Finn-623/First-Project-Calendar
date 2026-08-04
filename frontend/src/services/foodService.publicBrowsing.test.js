@@ -28,7 +28,7 @@ describe('foodService 普通用户公共食品查询', () => {
   test('列表在数据库端限定approved active public并执行分页和组合筛选', async () => {
     const foods = query({ data: [row], count: 1, error: null });
     supabase.from.mockReturnValue(foods);
-    const result = await foodService.listVisiblePublicFoods({ category: '蔬菜', intakeType: 'fiber', page: 1, pageSize: 24 });
+    const result = await foodService.listVisiblePublicFoods({ category: '蔬菜', intakeType: 'fiber', page: 1 });
     expect(supabase.from).toHaveBeenCalledWith('foods');
     expect(foods.eq).toHaveBeenCalledWith('visibility', 'public');
     expect(foods.eq).toHaveBeenCalledWith('review_status', 'approved');
@@ -36,8 +36,18 @@ describe('foodService 普通用户公共食品查询', () => {
     expect(foods.not).toHaveBeenCalledWith('source_name', 'is', null);
     expect(foods.eq).toHaveBeenCalledWith('primary_category', '蔬菜');
     expect(foods.contains).toHaveBeenCalledWith('intake_types', ['fiber']);
-    expect(foods.range).toHaveBeenCalledWith(24, 47);
+    expect(foods.range).toHaveBeenCalledWith(10, 19);
     expect(result.data[0].nutrients.fiberG).toBeNull();
+  });
+
+  test('136条结果的第14页使用130到139的服务端range并允许少于10条', async () => {
+    const finalRows = Array.from({ length: 6 }, (_, index) => ({ ...row, id: `food-${index}` }));
+    const foods = query({ data: finalRows, count: 136, error: null });
+    supabase.from.mockReturnValue(foods);
+    const result = await foodService.listVisiblePublicFoods({ page: 13 });
+    expect(foods.range).toHaveBeenCalledWith(130, 139);
+    expect(result.count).toBe(136);
+    expect(result.data).toHaveLength(6);
   });
 
   test('alias命中去重后与名称、英文名和品牌一起交给主查询过滤', async () => {

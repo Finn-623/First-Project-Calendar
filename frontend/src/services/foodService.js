@@ -4,6 +4,7 @@
  */
 
 import { supabase } from '../lib/supabaseClient';
+import { PUBLIC_FOOD_PAGE_SIZE } from '../constants/publicFood';
 
 const normalizeFood = (food) => {
   if (!food) return null;
@@ -100,7 +101,7 @@ const buildPublicFoodPayload = (userId, food) => ({
 });
 
 export const foodService = {
-  async listVisiblePublicFoods({ query = '', category = '', intakeType = '', page = 0, pageSize = 24 } = {}) {
+  async listVisiblePublicFoods({ query = '', category = '', intakeType = '', page = 0, pageSize = PUBLIC_FOOD_PAGE_SIZE } = {}) {
     if (!supabase) return { data: [], count: 0, error: new Error('Supabase 尚未配置') };
     try {
       const cleanedQuery = escapePostgrestSearch(query);

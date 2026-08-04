@@ -5390,3 +5390,18 @@
 - 未完成事项：Safari无法设置到严格320px（最小实际336px）；仍需用户在最新本地Production预览完成最终视觉验收。Feedback保持pending。
 - 风险或注意事项：未修改远程食品、alias、portion或审核状态；未部署Migration 028；未push。
 - Git Commit ID：由本独立提交承载，以Git历史为准。
+
+## DEV-20260804-001
+
+- 日期：2026-08-04
+- 状态：代码修复完成，等待用户最终验收
+- 任务目标：继续完善P0编号19，将公共食品列表统一为单列，并将服务端分页固定为每页10条。
+- 实际完成内容：公共食品卡片和加载骨架在手机、平板及桌面断点均使用单列布局；新增共享的`PUBLIC_FOOD_PAGE_SIZE = 10`常量，组件页数计算与Supabase查询共同使用；搜索、分类、摄入类型及清除筛选均回到第一页，正常翻页保留当前条件。
+- 主要修改文件或模块：`PublicFoodBrowser.jsx`、`foodService.js`、`constants/publicFood.js`及公共食品页面与service测试。
+- 遇到的问题：原页面组件与service分别使用24条分页，列表在`sm`断点恢复两列，无法满足桌面单列和真实10条服务端分页的一致要求。
+- 解决方式：移除响应式两列class，并把分页大小集中到共享常量；Supabase range继续由`page * pageSize`计算，不在前端二次截断。
+- 执行的测试：公共食品组件、FoodLibrary页面与service专项；前端全量测试；Production Build；本地Production预览页面检查；`git diff --check`。
+- 测试结果：专项3套件15项通过；前端全量41套件266项通过；Production Build成功。Safari本地Production预览在1324px确认首屏10张卡片全部单列、136条共14页、第2页10条、分类与清除筛选回到第1页、详情正常打开且无页面横向溢出；Safari自动化无法严格缩到320px，严格窄屏由单列DOM/class及移动端集成测试覆盖。仅有既有测试环境日志与`fs.F_OK`弃用警告。
+- 未完成事项：P0编号19继续等待用户在最新本地Production页面完成最终验收；远程Feedback保持pending。
+- 风险或注意事项：未修改搜索、筛选、详情、权限或远程数据逻辑；未部署Migration 028；未push。
+- Git Commit ID：由本独立提交承载，以Git历史为准。
