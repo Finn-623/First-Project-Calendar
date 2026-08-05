@@ -11,7 +11,7 @@
 - 测试内容：Migration 034 静态契约 2 项；`npx supabase db lint --local --schema public --level error --fail-on error`；前端反馈专项、全量测试和生产构建；隔离 dry-run、远程 migration list；普通/管理员 username-login、历史回填、权限、审计、completed 兼容、排序和测试数据清理验收。
 - 测试结果：Migration 契约 2 项通过；本地 lint 被现有 `public.is_app_admin` 引用缺失 `public.app_admins` 阻断；前端全量 42 套件 289 项通过，Production Build 成功；034 已部署且远程一致，028 仍为空；远程实际21条反馈全部编号和优先级合法，原有记录未改变，临时记录已清理。
 - 相关 DEV 编号：`DEV-20260805-002`。
-- 相关 Commit ID：未提交。
+- 相关 Commit ID：`52b8c281f87c91592f12f67024fbf263f785a997`。
 
 ## DB-20260805-001
 

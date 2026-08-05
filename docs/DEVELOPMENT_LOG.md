@@ -11,7 +11,7 @@
 - 测试结果：Migration 契约 2 项通过；反馈专项 29 项通过；前端全量 42 套件 289 项通过；Production Build 成功；`git diff --check` 通过；034 dry-run 仅包含034并已部署；远程21条反馈空编号、重复编号、空优先级、非法优先级、格式错误均为0；普通用户三项越权均拒绝；管理员 P2→P1→P3、审计字段和 P0>P1>P2>P3 排序通过；completed 编号/优先级保留且内容只读；测试反馈残留0，原有21条逐字段未改变；Supabase lint 未通过，唯一报告为现有 `public.is_app_admin` 依赖缺失本地 `public.app_admins`。
 - 未完成事项：等待用户进行编号7最终页面验收；远程 Feedback 业务状态继续保持 `pending`。
 - 风险或注意事项：Migration 034 已部署；Migration 028 仍未部署；编号序列已发出的测试编号未回退或复用；测试日志保留既有 Supabase 环境变量缺失和 Node 弃用 warning；未执行 Git push。
-- Git Commit ID：未提交。
+- Git Commit ID：`52b8c281f87c91592f12f67024fbf263f785a997`。
 
 ## DEV-20260805-001
 
