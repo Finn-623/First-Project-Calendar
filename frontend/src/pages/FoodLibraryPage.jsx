@@ -86,6 +86,7 @@ const parseNumber = (value) => {
 
 const normalizeText = (value) => String(value || '').trim().toLowerCase();
 const normalizeCategory = (value) => LEGACY_CATEGORY_MAP[value] || value || 'other';
+const isFoodActive = (food) => food?.isActive !== false && food?.is_active !== false;
 const parsePortionLabel = (name) => {
   const match = String(name || '').trim().match(/^(\d+(?:\.\d+)?)(个|份|瓶|片|杯|勺|袋|盒|碗|条)$/);
   return match ? { quantity: match[1], unit: match[2] } : { quantity: '1', unit: '' };
@@ -168,6 +169,7 @@ export const FoodLibraryPage = () => {
   const {
     foods,
     myFoods,
+    inactiveMyFoods,
     publicFoods,
     user,
     profile,
@@ -187,6 +189,7 @@ export const FoodLibraryPage = () => {
   const [editingFoodId, setEditingFoodId] = useState(null);
   const [submitting, setSubmitting] = useState(false);
   const [selectedPersonalFood, setSelectedPersonalFood] = useState(null);
+  const [personalStatus, setPersonalStatus] = useState('active');
   const [privateForm, setPrivateForm] = useState(emptyPrivateForm());
   const [publicCreateOpen, setPublicCreateOpen] = useState(false);
   const [publicEditOpen, setPublicEditOpen] = useState(false);
@@ -197,13 +200,16 @@ export const FoodLibraryPage = () => {
   const setActiveTab = (tab) => setSearchParams(tab === 'mine' ? { tab: 'mine' } : { tab: 'public' }, { replace: true });
 
   const list = useMemo(() => {
-    return (myFoods ?? foods ?? []).filter((f) => {
-      if (f.visibility === 'public' || f.user_id !== user?.id || f.is_active === false) return false;
+    const source = personalStatus === 'inactive' ? (inactiveMyFoods || []) : (myFoods ?? foods ?? []);
+    return source.filter((f) => {
+      if (f.visibility === 'public' || f.user_id !== user?.id) return false;
+      if (personalStatus === 'active' && f.is_active === false) return false;
+      if (personalStatus === 'inactive' && f.is_active !== false) return false;
       const matchQ = [f.name, f.brand].filter(Boolean).some((value) => normalizeText(value).includes(normalizeText(query)));
       const matchC = cat === '全部' || normalizeCategory(f.primary_category || f.category) === cat;
       return matchQ && matchC;
     });
-  }, [foods, myFoods, query, cat, user?.id]);
+  }, [foods, inactiveMyFoods, myFoods, personalStatus, query, cat, user?.id]);
 
   const adminPublicList = useMemo(() => {
     return (publicFoods || []).filter((f) => {
@@ -473,34 +479,89 @@ export const FoodLibraryPage = () => {
     closeEditPrivateDialog();
   };
 
-  const handleDeletePrivateFood = async (food) => {
+  const refreshPersonalFoods = async () => {
+    if (!user?.id) return;
+    if (invalidateMyFoods) invalidateMyFoods(user.id);
+    else foodService.invalidateUserFoodCache?.(user.id);
+    await refreshFoods(user.id);
+  };
+
+  const handleDeactivatePrivateFood = async (food) => {
     if (!user?.id || !food?.id) {
-      toast.error('无法删除该食物');
+      toast.error('无法停用该食物');
       return;
     }
 
     const canDelete = food.user_id === user.id && food.visibility !== 'public';
     if (!canDelete) {
-      toast.error('只能删除自己的私人食物');
+      toast.error('只能停用自己的私人食物');
       return;
     }
 
-    const confirmed = window.confirm(`确定删除「${food.name || '该食物'}」吗？历史记录中的营养快照会继续保留。`);
+    const confirmed = window.confirm('停用个人食品\n\n停用后，该食品不会继续出现在添加食品中，但历史记录会保留。确定停用吗？');
     if (!confirmed) return;
 
     setSubmitting(true);
-    const { error } = await foodService.deleteFood(food.id, user.id);
+    const { error } = await foodService.deactivatePersonalFood(food.id, user.id);
     setSubmitting(false);
 
     if (error) {
-      toast.error(`删除失败: ${error.message || '请稍后重试'}`);
+      toast.error(`停用失败: ${error.message || '请稍后重试'}`);
       return;
     }
 
-    if (invalidateMyFoods) invalidateMyFoods(user.id);
-    else foodService.invalidateUserFoodCache?.(user.id);
-    await refreshFoods(user.id);
-    showSuccess('已删除私人食物');
+    await refreshPersonalFoods();
+    showSuccess('已停用私人食品');
+  };
+
+  const handleReactivatePrivateFood = async (food) => {
+    if (!user?.id || !food?.id) {
+      toast.error('无法重新启用该食物');
+      return;
+    }
+    if (food.user_id !== user.id || food.visibility === 'public') {
+      toast.error('只能重新启用自己的私人食物');
+      return;
+    }
+
+    setSubmitting(true);
+    const { error } = await foodService.reactivatePersonalFood(food.id, user.id);
+    setSubmitting(false);
+    if (error) {
+      toast.error(`重新启用失败: ${error.message || '请稍后重试'}`);
+      return;
+    }
+
+    await refreshPersonalFoods();
+    showSuccess('已重新启用私人食品');
+  };
+
+  const handlePermanentDeletePrivateFood = async (food) => {
+    if (!user?.id || !food?.id) {
+      toast.error('无法永久删除该食物');
+      return;
+    }
+    if (food.user_id !== user.id || food.visibility === 'public') {
+      toast.error('只能永久删除自己的私人食物');
+      return;
+    }
+
+    const firstConfirm = window.confirm(`永久删除个人食品\n\n此操作不可撤销。只有未被任何历史记录使用的食品才能永久删除。\n\n确定永久删除「${food.name || '该食品'}」吗？`);
+    if (!firstConfirm) return;
+    const secondConfirm = window.confirm(`请再次确认：永久删除「${food.name || '该食品'}」？\n\n被历史记录使用的食品会被拒绝删除，不会自动停用。`);
+    if (!secondConfirm) return;
+
+    setSubmitting(true);
+    const { error } = await foodService.deletePersonalFoodPermanently(food.id, user.id);
+    setSubmitting(false);
+    if (error) {
+      toast.error(`永久删除失败: ${error.message || '该食品可能已用于历史记录'}`);
+      return;
+    }
+
+    if (selectedPersonalFood?.id === food.id) setSelectedPersonalFood(null);
+    await refreshPersonalFoods();
+    showSuccess('已永久删除私人食品');
   };
 
   const openCreatePublicDialog = () => {
@@ -699,6 +760,10 @@ export const FoodLibraryPage = () => {
         setActiveTab('mine');
       }} /> : <>
       <div className="px-5 space-y-3">
+        <div className="grid grid-cols-2 rounded-xl bg-[#ECEDE9] p-1" role="tablist" aria-label="个人食品状态">
+          <button type="button" role="tab" aria-selected={personalStatus === 'active'} onClick={() => setPersonalStatus('active')} className={`min-h-10 rounded-lg text-sm ${personalStatus === 'active' ? 'bg-white text-[#2C332F] shadow-sm' : 'text-[#6F7772]'}`}>使用中</button>
+          <button type="button" role="tab" aria-selected={personalStatus === 'inactive'} onClick={() => setPersonalStatus('inactive')} className={`min-h-10 rounded-lg text-sm ${personalStatus === 'inactive' ? 'bg-white text-[#2C332F] shadow-sm' : 'text-[#6F7772]'}`}>已停用</button>
+        </div>
         <div className="relative">
           <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#858C88]" strokeWidth={1.5} />
           <Input
@@ -785,7 +850,7 @@ export const FoodLibraryPage = () => {
                     {isPublic ? '公共' : '个人'}
                   </span>
                   {!isPublic ? <span className="text-[10px] text-[#858C88]">仅自己可见，可修改</span> : null}
-                  {f.isActive === false ? (
+                  {!isFoodActive(f) ? (
                     <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-[#F4F4F2] text-[#858C88]">
                       已停用
                     </span>
@@ -818,14 +883,35 @@ export const FoodLibraryPage = () => {
                       >
                         <Pencil size={12} strokeWidth={1.8} /> 编辑
                       </button>
+                      {!isFoodActive(f) ? (
+                        <button
+                          type="button"
+                          onClick={() => handleReactivatePrivateFood(f)}
+                          className="text-[11px] text-[#6B8067] hover:text-[#5a6d57]"
+                          data-testid={`reactivate-food-${f.id || index}`}
+                          disabled={submitting}
+                        >
+                          重新启用
+                        </button>
+                      ) : (
+                        <button
+                          type="button"
+                          onClick={() => handleDeactivatePrivateFood(f)}
+                          className="text-[11px] text-[#B47747] hover:text-[#9b6235]"
+                          data-testid={`deactivate-food-${f.id || index}`}
+                          disabled={submitting}
+                        >
+                          停用
+                        </button>
+                      )}
                       <button
                         type="button"
-                        onClick={() => handleDeletePrivateFood(f)}
-                        className="inline-flex items-center gap-1 text-[11px] text-[#C76D5E] hover:text-[#B85A4A]"
-                        data-testid={`delete-food-${f.id || index}`}
+                        onClick={() => handlePermanentDeletePrivateFood(f)}
+                        className="inline-flex items-center gap-1 text-[11px] text-[#C0574B] hover:text-[#A84439]"
+                        data-testid={`permanent-delete-food-${f.id || index}`}
                         disabled={submitting}
                       >
-                        <Trash2 size={12} strokeWidth={1.8} /> 删除
+                        <Trash2 size={12} strokeWidth={1.8} /> 永久删除
                       </button>
                     </>
                   ) : null}
@@ -877,7 +963,11 @@ export const FoodLibraryPage = () => {
             <section><h3 className="text-sm font-medium">个人别名</h3><p className="mt-1 text-xs text-[#858C88]">{selectedPersonalFood.aliases?.length ? selectedPersonalFood.aliases.join('、') : '暂无别名'}</p></section>
             <section><h3 className="text-sm font-medium">可用份量</h3>{selectedPersonalFood.portions?.length ? <ul className="mt-1 space-y-1 text-xs text-[#858C88]">{selectedPersonalFood.portions.map((portion) => <li key={portion.id}>{portion.name} · {portion.amount ?? portion.grams}{portion.unit === 'ml' ? 'ml' : 'g'}</li>)}</ul> : <p className="mt-1 text-xs text-[#858C88]">暂无标准份量，可按克记录</p>}</section>
             {selectedPersonalFood.sourcePublicFoodId ? <p className="text-xs text-[#858C88]">复制自公共食品</p> : null}
-            <div className="flex gap-2"><Button variant="outline" className="flex-1" onClick={() => { setSelectedPersonalFood(null); openEditPrivateDialog(selectedPersonalFood); }}>编辑</Button><Button variant="outline" className="flex-1 text-[#C76D5E]" onClick={() => { const food = selectedPersonalFood; setSelectedPersonalFood(null); void handleDeletePrivateFood(food); }}>删除</Button></div>
+            <div className="flex flex-wrap gap-2">
+              {isFoodActive(selectedPersonalFood) ? <Button variant="outline" className="flex-1 min-w-[105px] text-[#B47747]" onClick={() => { const food = selectedPersonalFood; setSelectedPersonalFood(null); void handleDeactivatePrivateFood(food); }}>停用</Button> : <Button variant="outline" className="flex-1 min-w-[105px] text-[#6B8067]" onClick={() => { const food = selectedPersonalFood; setSelectedPersonalFood(null); void handleReactivatePrivateFood(food); }}>重新启用</Button>}
+              <Button variant="outline" className="flex-1 min-w-[105px] text-[#C0574B]" onClick={() => { const food = selectedPersonalFood; setSelectedPersonalFood(null); void handlePermanentDeletePrivateFood(food); }}>永久删除</Button>
+              {isFoodActive(selectedPersonalFood) ? <Button variant="outline" className="flex-1 min-w-[105px]" onClick={() => { setSelectedPersonalFood(null); openEditPrivateDialog(selectedPersonalFood); }}>编辑</Button> : null}
+            </div>
           </div> : null}
         </DialogContent>
       </Dialog>

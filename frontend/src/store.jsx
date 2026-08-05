@@ -124,6 +124,7 @@ export const StoreProvider = ({ children, user: initialUser, session: initialSes
   const [history, setHistory] = useState([]);
   const [foods, setFoods] = useState([]);
   const [myFoods, setMyFoods] = useState([]);
+  const [inactiveMyFoods, setInactiveMyFoods] = useState([]);
   const [myFoodsStatus, setMyFoodsStatus] = useState('idle');
   const [myFoodsUserId, setMyFoodsUserId] = useState(null);
   const [publicFoods, setPublicFoods] = useState([]);
@@ -190,6 +191,7 @@ export const StoreProvider = ({ children, user: initialUser, session: initialSes
     setHistory([]);
     setFavorites([]);
     setMyFoods([]);
+    setInactiveMyFoods([]);
     setMyFoodsStatus('idle');
     setMyFoodsUserId(null);
     setFoods((prev) => (prev || []).filter((item) => item?.visibility === 'public'));
@@ -305,6 +307,7 @@ export const StoreProvider = ({ children, user: initialUser, session: initialSes
   const refreshFoods = useCallback(async (userId) => {
     if (!userId) {
       setMyFoods([]);
+      setInactiveMyFoods([]);
       setMyFoodsStatus('idle');
       setMyFoodsUserId(null);
       setFoods((prev) => (prev || []).filter((item) => item?.visibility === 'public'));
@@ -316,7 +319,7 @@ export const StoreProvider = ({ children, user: initialUser, session: initialSes
     setMyFoodsStatus('loading');
     setMyFoodsUserId(userId);
 
-    const { data, error } = await foodService.getAllFoods(userId);
+    const { data, error } = await foodService.getAllFoods(userId, { includeInactive: true });
     if (error) {
       console.error('Failed to load foods:', error);
       if (getCurrentUserId() === userId) setMyFoodsStatus('error');
@@ -334,8 +337,9 @@ export const StoreProvider = ({ children, user: initialUser, session: initialSes
       privateFoodSeenCountRef.current.set(userId, privateCount);
     }
 
-    setFoods(nextFoods);
-    setMyFoods(nextFoods);
+    setFoods(nextFoods.filter((item) => item?.is_active !== false));
+    setMyFoods(nextFoods.filter((item) => item?.is_active !== false));
+    setInactiveMyFoods(nextFoods.filter((item) => item?.is_active === false));
     setMyFoodsStatus('success');
     setMyFoodsUserId(userId);
     setPublicFoods(nextFoods.filter((item) => item?.visibility === 'public'));
@@ -406,6 +410,7 @@ export const StoreProvider = ({ children, user: initialUser, session: initialSes
       foodService.clearFoodCache?.();
       setFoods([]);
       setMyFoods([]);
+      setInactiveMyFoods([]);
       setMyFoodsStatus('idle');
       setMyFoodsUserId(null);
     }
@@ -1236,6 +1241,7 @@ export const StoreProvider = ({ children, user: initialUser, session: initialSes
     foods,
     setFoods,
     myFoods,
+    inactiveMyFoods,
     myFoodsStatus,
     myFoodsUserId,
     refreshFoods,

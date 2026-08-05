@@ -26,7 +26,7 @@ const nutrientText = (value, suffix = '') => value == null ? '暂无数据' : `$
 
 export const AddFoodSheet = ({ open, onOpenChange, targetTitle, onConfirm }) => {
   const { foods, myFoods, myFoodsStatus, user, refreshFoods, ensureMyFoodsLoaded } = useStore();
-  const personalFoods = useMemo(() => myFoods ?? foods ?? [], [foods, myFoods]);
+  const personalFoods = useMemo(() => (myFoods ?? foods ?? []).filter((food) => food?.is_active !== false && food?.isActive !== false), [foods, myFoods]);
   const [publicFoods, setPublicFoods] = useState([]);
   const [query, setQuery] = useState('');
   const [selected, setSelected] = useState(null);

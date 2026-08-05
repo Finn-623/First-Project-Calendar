@@ -1,3 +1,20 @@
+## DEV-20260805-001
+
+- 日期：2026-08-05
+- 状态：代码、Migration 033、真实普通账号验收和测试完成，等待用户最终页面验收
+- 任务目标：明确拆分个人食品的停用、重新启用和永久删除，保护历史 food_entries 快照。
+- 实际完成内容：将个人食品旧“删除”语义明确改为“停用”；新增“重新启用”和独立“永久删除”；食物库增加“使用中/已停用”状态筛选；active 卡片和详情显示编辑、停用、永久删除，inactive 显示重新启用、永久删除；停用和永久删除使用独立双重确认文案，永久删除失败不自动降级为停用。
+- 永久删除规则：新增 `delete_personal_food_permanently` SECURITY DEFINER RPC，在同一事务中使用 `auth.uid()` 校验 private/本人食品，检查全部 `food_entries.source_food_id` 引用；有历史引用时返回业务错误并保留食品和历史记录；无引用时清理本人 `favorite_foods`、`food_private_aliases`、`food_portions` 后删除 foods 主记录。公共源食品不会被删除。
+- 引用审计：实际检查 `food_entries.source_food_id`、`favorite_foods.food_id`、`food_portions.food_id`、`food_private_aliases.food_id`、`food_public_aliases.food_id`、`foods.source_public_food_id`、`food_review_events.food_id` 及 `timeline_items` 间接关系；历史引用阻止删除，非历史子关系由事务清理，公共食品和审核关系不受影响。
+- 缓存与添加流程：Store 同时维护 active `myFoods` 和 inactive `inactiveMyFoods`；服务层区分 active/all 缓存，停用食品不会进入 AddFoodSheet，重新启用后恢复；永久删除失效全部个人食品缓存，不影响公共缓存；账号切换和登出继续清理个人状态。
+- 主要修改文件或模块：`frontend/src/services/foodService.js`、`frontend/src/store.jsx`、`frontend/src/pages/FoodLibraryPage.jsx`、`frontend/src/modals/AddFoodSheet.jsx`及对应测试；`supabase/migrations/033_permanent_delete_personal_food.sql`及契约测试；相关开发记录。
+- 真实普通账号验收：停用后 `is_active=false`、重新启用后 `is_active=true`；未引用食品永久删除并确认 foods/portion/alias 不存在；带 food_entries 引用的食品永久删除被拒绝、食品和历史快照保留，随后停用成功；所有测试 food_entries、timeline_items 和 foods 清理后为 0。
+- 执行的测试：033 契约2项；食品服务、食物库、AddFoodSheet、Store专项31项；前端全量 `CI=true npm test -- --watchAll=false --runInBand`；`npm run build`；`git diff --check`；编辑器错误检查；普通账号真实生命周期/API/RPC验收；远程 migration list。
+- 测试结果：前端全量42套件288项通过；专项31项和033契约2项通过；Production Build成功；编辑器无错误。Build仅有既有 Node `fs.F_OK` 弃用 warning，测试有既有 Supabase 环境变量 console warning。
+- 未完成事项：浏览器没有可复用的认证态，尚未完成登录后的页面视觉验收；需要用户确认320px下三个操作按钮和状态筛选的最终观感。
+- 风险或注意事项：Migration 033 已通过隔离目录仅部署033；028仍未部署；未修改公共食品、审核状态或历史业务数据；远程反馈保持 `pending`；未执行 Git push。
+- Git Commit ID：未提交。
+
 ## DEV-20260804-010
 
 - 日期：2026-08-04

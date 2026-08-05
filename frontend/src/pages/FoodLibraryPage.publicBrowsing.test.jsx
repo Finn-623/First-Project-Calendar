@@ -14,14 +14,15 @@ jest.mock('react-router-dom', () => ({
 jest.mock('../services/foodService', () => ({
   foodService: {
     listVisiblePublicFoods: jest.fn(), loadVisiblePublicFoodFacets: jest.fn(),
-    getVisiblePublicFoodDetail: jest.fn(), copyPublicFoodToPersonal: jest.fn(), savePersonalFood: jest.fn(), createFood: jest.fn(), updateFood: jest.fn(), deleteFood: jest.fn(),
+    getVisiblePublicFoodDetail: jest.fn(), copyPublicFoodToPersonal: jest.fn(), savePersonalFood: jest.fn(), createFood: jest.fn(), updateFood: jest.fn(), deleteFood: jest.fn(), deactivatePersonalFood: jest.fn(), reactivatePersonalFood: jest.fn(), deletePersonalFoodPermanently: jest.fn(),
   },
 }));
 jest.mock('../store', () => ({ useStore: () => ({
   foods: [
     { id: 'mine-1', name: '我的燕麦', visibility: 'private', user_id: 'user-1', category: 'vegetables', p100: 1, f100: 1, c100: 1, cal100: 10, is_active: true },
-    { id: 'inactive-1', name: '已停用燕麦', visibility: 'private', user_id: 'user-1', category: '我的', is_active: false },
   ],
+  myFoods: [{ id: 'mine-1', name: '我的燕麦', visibility: 'private', user_id: 'user-1', category: 'vegetables', p100: 1, f100: 1, c100: 1, cal100: 10, is_active: true }],
+  inactiveMyFoods: [{ id: 'inactive-1', name: '已停用燕麦', visibility: 'private', user_id: 'user-1', category: '我的', is_active: false }],
   publicFoods: [], user: { id: 'user-1' }, profile: { role: 'user' },
   refreshFoods: mockRefreshFoods, loadPublicFoods: jest.fn().mockResolvedValue(),
   createPublicFood: jest.fn(), updatePublicFood: jest.fn(), setPublicFoodActive: jest.fn(),
@@ -89,6 +90,25 @@ describe('FoodLibraryPage 公共食品真实路由接入', () => {
     expect(screen.getByText('仅自己可见，可修改')).toBeTruthy();
     expect(screen.queryByText('已停用燕麦')).toBeNull();
     expect(screen.queryByText('食品分类')).toBeNull();
+  });
+
+  test('active personal food uses explicit deactivate and permanent-delete actions', async () => {
+    mount('/library?tab=mine');
+
+    expect(screen.getByTestId('deactivate-food-mine-1').textContent).toContain('停用');
+    expect(screen.getByTestId('permanent-delete-food-mine-1').textContent).toContain('永久删除');
+    expect(screen.queryByTestId('delete-food-mine-1')).toBeNull();
+    expect(screen.getByRole('tab', { name: '使用中' }).getAttribute('aria-selected')).toBe('true');
+  });
+
+  test('inactive tab shows inactive food with reactivation and permanent-delete actions', async () => {
+    mount('/library?tab=mine');
+    fireEvent.click(screen.getByRole('tab', { name: '已停用' }));
+
+    expect(await screen.findByText('已停用燕麦')).toBeTruthy();
+    expect(screen.getByTestId('reactivate-food-inactive-1').textContent).toContain('重新启用');
+    expect(screen.getByTestId('permanent-delete-food-inactive-1').textContent).toContain('永久删除');
+    expect(screen.getAllByText('已停用').length).toBeGreaterThanOrEqual(2);
   });
 
   test('个人食品表单显示品牌和可用分量编辑区域', () => {

@@ -14,7 +14,7 @@
 - 当前Phase：Phase 1（完整饮食管理 App）
 - 当前正式版本：v0.1.3 — 基础记录闭环与稳定性收尾，已于 2026-07-28 15:55:36（Australia/Sydney）正式上线。
 - 当前开发版本：v0.2.1 — 公共食品数据库。
-- 个人食品体验：代码和 Migration 031/032 已完成；本轮将我的食品顶部筛选改为紧凑横向 chips，使用完整正式一级分类；个人食品分量支持数量、个/份/瓶/片/杯/勺/袋/盒/碗/条和对应克数，保存生成如 `1瓶`、`1份` 的 portion。新建默认一行，AddFoodSheet 个人食品优先；食品列表按真实用户缓存并区分 idle/loading/success/error，公共首批异步加载；P0 编号8 已修复 Store 私有食品查询字段错误、补齐共享 myFoods 和首次加载链，并保留搜索、数量/克重同步和固定底部添加操作区；全量283项和Build通过，等待真实页面最终 UI 验收。
+- 个人食品体验：代码和 Migration 031/032/033 已完成；个人食品支持完整分类、常用分量、按真实用户缓存的 active/inactive 状态；新增明确的停用、重新启用、永久删除操作和“使用中/已停用”筛选。Migration 033 的永久删除 RPC 仅允许删除当前用户、未被任何 food_entries 引用的 private 食品，并在单事务中清理 alias、portion和收藏；AddFoodSheet 只读取 active，历史快照不受影响。P0 编号8 的个人食品查询、缓存和操作链已完成，前端全量288项和Build通过，等待真实页面最终 UI 验收。
 - P0-1食品记录持久化：`首帧绘制修复完成，等待用户人工验收`。食品确认通过最小`flushSync`提交Store、汇总与Sheet关闭；浏览器获得一次animation frame绘制机会后才启动Supabase后台写入。AddFoodSheet不再以300ms关闭动画遮挡已经渲染的记录；失败记录保留为可重试状态。远程Feedback仍为pending，尚未push或部署。
 - 多设备一致性：`代码完成、Migration 028待部署、等待双设备人工验收`。Store按用户订阅`timeline_items`/`food_entries` Realtime，并用BroadcastChannel同步同浏览器标签；远程重载会与本地pending/syncing/failed记录合并，避免自己的Realtime回声造成新增食品消失再出现。Supabase仍是最终事实来源；当前Production尚不具备Migration 028提供的DELETE完整载荷和固定三餐并发唯一约束。
 - 当前状态：AFCD 400条客户端人工审核决定已正式实施；人工发布边界为publish 136、disable 264，5条客户端最终中文名已同步。

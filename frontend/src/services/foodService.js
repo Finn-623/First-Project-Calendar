@@ -122,7 +122,9 @@ const buildPublicFoodPayload = (userId, food) => ({
 
 export const foodService = {
   invalidateUserFoodCache(userId) {
-    if (userId) allFoodsCache.delete(userId);
+    if (!userId) return;
+    allFoodsCache.delete(`${userId}:active`);
+    allFoodsCache.delete(`${userId}:all`);
   },
 
   clearFoodCache() {
@@ -298,12 +300,13 @@ export const foodService = {
    * @param {string} userId
    * @returns {Promise<{data, error}>}
    */
-  async getAllFoods(userId, { force = false } = {}) {
+  async getAllFoods(userId, { force = false, includeInactive = false } = {}) {
     if (!supabase) {
       return { data: [], error: new Error('Supabase 尚未配置') };
     }
 
-    const cached = allFoodsCache.get(userId);
+    const cacheKey = `${userId}:${includeInactive ? 'all' : 'active'}`;
+    const cached = allFoodsCache.get(cacheKey);
     if (!force && cached) {
       if (cached.pendingPromise) return cached.pendingPromise;
       if (Date.now() - cached.fetchedAt < ALL_FOODS_CACHE_TTL_MS) {
@@ -313,28 +316,29 @@ export const foodService = {
 
     const pendingPromise = (async () => {
       try {
-        const { data, error } = await supabase
+        let request = supabase
           .from('foods')
           .select('id,user_id,visibility,is_active,name,name_en,brand,notes,primary_category,intake_types,calories,protein,fat,carbs,source_public_food_id,default_quantity,unit,food_portions(id,portion_name,amount,unit,grams,is_default)')
-          .eq('is_active', true)
           .eq('visibility', 'private')
           .eq('user_id', userId)
           .order('name', { ascending: true });
+        if (!includeInactive) request = request.eq('is_active', true);
+        const { data, error } = await request;
 
         const normalized = (data || []).map(normalizeFood).filter(Boolean);
-        if (!error) allFoodsCache.set(userId, { data: normalized, fetchedAt: Date.now() });
+        if (!error) allFoodsCache.set(cacheKey, { data: normalized, fetchedAt: Date.now() });
         return { data: normalized, error };
       } catch (err) {
         return { data: [], error: err };
       } finally {
-        const current = allFoodsCache.get(userId);
+        const current = allFoodsCache.get(cacheKey);
         if (current?.pendingPromise === pendingPromise) {
           allFoodsCache.delete(userId);
         }
       }
     })();
 
-    allFoodsCache.set(userId, { data: cached?.data || [], fetchedAt: cached?.fetchedAt || 0, pendingPromise });
+    allFoodsCache.set(cacheKey, { data: cached?.data || [], fetchedAt: cached?.fetchedAt || 0, pendingPromise });
     return pendingPromise;
   },
 
@@ -598,6 +602,62 @@ export const foodService = {
       return { data, error: null };
     } catch (err) {
       return { data: null, error: err };
+    }
+  },
+
+  async reactivatePersonalFood(foodId, userId) {
+    if (!supabase || !foodId || !userId) {
+      return { data: null, error: new Error('食品不存在或无权操作') };
+    }
+
+    try {
+      const { data, error } = await supabase
+        .from('foods')
+        .update({ is_active: true })
+        .eq('id', foodId)
+        .eq('visibility', 'private')
+        .eq('user_id', userId)
+        .eq('is_active', false)
+        .select('id')
+        .maybeSingle();
+
+      if (error) return { data: null, error };
+      if (!data) return { data: null, error: new Error('食品不存在或无权操作') };
+      return { data, error: null };
+    } catch (err) {
+      return { data: null, error: err };
+    }
+  },
+
+  async deletePersonalFoodPermanently(foodId, userId) {
+    if (!supabase || !foodId || !userId) {
+      return { data: null, error: new Error('食品不存在或无权操作') };
+    }
+
+    try {
+      const { data, error } = await supabase.rpc('delete_personal_food_permanently', {
+        p_food_id: foodId,
+      });
+      return { data, error };
+    } catch (err) {
+      return { data: null, error: err };
+    }
+  },
+
+  async getPersonalFoodUsage(foodId, userId) {
+    if (!supabase || !foodId || !userId) {
+      return { count: 0, error: new Error('食品不存在或无权操作') };
+    }
+
+    try {
+      const { count, error } = await supabase
+        .from('food_entries')
+        .select('id', { count: 'exact', head: true })
+        .eq('source_food_id', foodId)
+        .eq('user_id', userId);
+      return { count: count || 0, error };
+    } catch (err) {
+      return { count: 0, error: err };
     }
   },
 

@@ -107,6 +107,41 @@ describe('foodService 普通用户公共食品查询', () => {
     expect(result.error).toEqual(new Error('食品不存在或无权操作'));
   });
 
+  test('个人食品重新启用只更新本人已停用记录', async () => {
+    const foods = query({ data: { id: 'mine-1' }, error: null });
+    supabase.from.mockReturnValue(foods);
+
+    const result = await foodService.reactivatePersonalFood('mine-1', 'user-1');
+
+    expect(foods.update).toHaveBeenCalledWith({ is_active: true });
+    expect(foods.eq).toHaveBeenCalledWith('id', 'mine-1');
+    expect(foods.eq).toHaveBeenCalledWith('visibility', 'private');
+    expect(foods.eq).toHaveBeenCalledWith('user_id', 'user-1');
+    expect(foods.eq).toHaveBeenCalledWith('is_active', false);
+    expect(result.data).toEqual({ id: 'mine-1' });
+  });
+
+  test('永久删除只调用安全RPC，不使用模糊deleteFood', async () => {
+    supabase.rpc.mockResolvedValue({ data: { deleted: true, food_id: 'mine-1' }, error: null });
+
+    const result = await foodService.deletePersonalFoodPermanently('mine-1', 'user-1');
+
+    expect(supabase.rpc).toHaveBeenCalledWith('delete_personal_food_permanently', { p_food_id: 'mine-1' });
+    expect(result.data).toEqual({ deleted: true, food_id: 'mine-1' });
+  });
+
+  test('个人食品使用量查询限定食品和当前用户', async () => {
+    const entries = query({ count: 2, error: null });
+    supabase.from.mockReturnValue(entries);
+
+    const result = await foodService.getPersonalFoodUsage('mine-1', 'user-1');
+
+    expect(entries.select).toHaveBeenCalledWith('id', { count: 'exact', head: true });
+    expect(entries.eq).toHaveBeenCalledWith('source_food_id', 'mine-1');
+    expect(entries.eq).toHaveBeenCalledWith('user_id', 'user-1');
+    expect(result.count).toBe(2);
+  });
+
   test('我的食品查询只读取active记录', async () => {
     const foods = query({ data: [{ id: 'mine-1', visibility: 'private', user_id: 'user-1', is_active: true }], error: null });
     supabase.from.mockReturnValue(foods);

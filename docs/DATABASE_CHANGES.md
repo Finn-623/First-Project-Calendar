@@ -1,3 +1,18 @@
+## DB-20260805-001
+
+- 日期：2026-08-05
+- 修改原因：个人食品原“删除”实际是软停用，需要明确区分停用、重新启用和永久删除；永久删除必须保护历史 `food_entries` 快照并防止跨用户或公共食品误删。
+- 实际修改内容：新增 `public.delete_personal_food_permanently(UUID)` SECURITY DEFINER RPC。函数使用 `auth.uid()` 锁定并校验当前用户的 private `foods`；统计所有 `food_entries.source_food_id` 引用，引用数大于0时抛出明确业务错误；无引用时在同一事务中清理当前用户 `favorite_foods`、`food_private_aliases`、`food_portions`，最后删除本人 foods 主记录并返回 `deleted=true`。保留已有 foods 删除触发器，未修改历史 Migration。
+- 涉及的表和字段：`foods.id/user_id/visibility/is_active/source_public_food_id`；`food_entries.source_food_id`；`favorite_foods.food_id`；`food_private_aliases.food_id/user_id`；`food_portions.food_id`。只读审计了 `food_public_aliases.food_id`、`food_review_events.food_id`、`timeline_items` 关系；公共食品和审核事件不在删除路径中。
+- Migration 文件路径：`supabase/migrations/033_permanent_delete_personal_food.sql`。
+- 对现有数据的影响：停用和重新启用只更新本人 private foods 的 `is_active`，不改变 alias、portion、source_public_food_id 或 food_entries；永久删除只允许无历史引用食品，历史 food_entries 不删除；公共 foods、公共 alias、审核状态不变。无引用食品的收藏、个人 alias、portion 会在同一事务清理。
+- 风险：永久删除不可撤销；并发操作由目标食品行锁和数据库事务约束保护。已有 `food_entries` 的食品只能停用。`source_public_food_id` 仅是个人食品到公共源的引用，不会触发公共源删除。
+- 回滚方式：使用新的后续 Migration 删除 `delete_personal_food_permanently(UUID)` 函数及执行权限；不得修改或重写已部署的033。回滚前确认没有依赖该 RPC 的客户端调用，历史数据无需回滚。
+- 测试内容：033契约2项；前端食品服务/食物库/AddFoodSheet/Store专项31项；全量42套件288项；普通账号真实停用、重新启用、未引用永久删除、历史引用阻止删除和清理；远程 migration list；Production Build。
+- 测试结果：033 dry-run 仅计划033，隔离目录实际仅部署033；远程 `029-033` 一致，`028` 仍未部署。普通账号被引用删除被拒绝且 food_entries 保留，最终测试 foods/food_entries/timeline_items 残留均为0。公共食品基线和审核状态未修改。
+- 相关 DEV 编号：`DEV-20260805-001`。
+- 相关 Commit ID：未提交。
+
 ## DB-20260804-004
 
 - 日期：2026-08-04
