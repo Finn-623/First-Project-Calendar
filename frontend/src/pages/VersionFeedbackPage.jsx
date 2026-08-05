@@ -18,6 +18,7 @@ import {
 } from '../components/ui/alert-dialog';
 import { versionFeedbackService } from '../services/versionFeedbackService';
 import { VERSION_RECORDS } from '../data/versionHistory';
+import { APP_VERSION_META } from '../config/appVersion';
 import { validateCompletedVersion, validateFeedbackForm } from '../lib/versionFeedbackValidation';
 import {
   FEEDBACK_PRIORITIES,
@@ -53,7 +54,7 @@ export const VersionFeedbackPage = () => {
   const [deletingId, setDeletingId] = useState('');
   const [completeVersionMap, setCompleteVersionMap] = useState({});
   const [completeVersionErrors, setCompleteVersionErrors] = useState({});
-  const [formData, setFormData] = useState({ title: '', description: '' });
+  const [formData, setFormData] = useState({ title: '', description: '', submittedPriority: '' });
   const [errors, setErrors] = useState({});
   const mountedRef = useRef(false);
 
@@ -233,6 +234,8 @@ export const VersionFeedbackPage = () => {
       userId: user.id,
       title: validated.normalized.title,
       description: validated.normalized.description,
+      submittedPriority: validated.normalized.submittedPriority,
+      targetVersion: APP_VERSION_META.version,
     });
 
     if (!result.success) {
@@ -241,7 +244,7 @@ export const VersionFeedbackPage = () => {
       return;
     }
 
-    setFormData({ title: '', description: '' });
+    setFormData({ title: '', description: '', submittedPriority: '' });
     setSubmitting(false);
     showSuccess('修改意见已提交');
     setActiveTab('history');
@@ -266,7 +269,10 @@ export const VersionFeedbackPage = () => {
   const handleSaveEdit = async (item) => {
     if (item?.status !== 'pending' || savingEditId || editingId !== item.id) return;
 
-    const validated = validateFeedbackForm(editingForm);
+    const validated = validateFeedbackForm({
+      ...editingForm,
+      submittedPriority: item.submitted_priority || item.priority,
+    });
     if (!validated.valid) {
       setEditingErrors(validated.errors);
       return;
@@ -460,6 +466,38 @@ export const VersionFeedbackPage = () => {
 
         <TabsContent value="submit">
           <form onSubmit={handleSubmit} className="rounded-2xl border border-[#E5E5E0] bg-white p-4 mt-3 space-y-3">
+            <div className="rounded-xl border border-[#E5E5E0] bg-[#F7F7F5] px-3 py-2">
+              <p className="text-[12px] text-[#6A6F6C]">所属版本</p>
+              <p className="mt-1 text-[14px] font-medium text-[#2C332F]">v{APP_VERSION_META.version}</p>
+              <p className="mt-1 text-[11px] text-[#858C88]">建议编号将按此版本单独顺序生成</p>
+            </div>
+
+            <fieldset>
+              <legend className="text-[12px] text-[#6A6F6C]">优先级（必选）</legend>
+              <div className="mt-1 grid grid-cols-1 gap-2">
+                {FEEDBACK_PRIORITIES.map((priority) => (
+                  <label
+                    key={priority}
+                    className={`flex min-w-0 cursor-pointer items-start gap-2 rounded-lg border px-3 py-2 ${formData.submittedPriority === priority ? 'border-[#6B8067] bg-[#F1F5EF]' : 'border-[#D5DCD2] bg-white'}`}
+                  >
+                    <input
+                      type="radio"
+                      name="feedback-priority"
+                      value={priority}
+                      checked={formData.submittedPriority === priority}
+                      onChange={(event) => {
+                        setFormData((prev) => ({ ...prev, submittedPriority: event.target.value }));
+                        setErrors((prev) => ({ ...prev, submittedPriority: '' }));
+                      }}
+                      className="mt-0.5 shrink-0 accent-[#6B8067]"
+                    />
+                    <span className="min-w-0 text-[13px] leading-5 text-[#2C332F]">{getFeedbackPriorityLabel(priority)}</span>
+                  </label>
+                ))}
+              </div>
+              {errors.submittedPriority ? <p className="mt-1 text-[12px] text-[#A8483E]">{errors.submittedPriority}</p> : null}
+            </fieldset>
+
             <div>
               <label htmlFor="feedback-title" className="text-[12px] text-[#6A6F6C]">建议标题</label>
               <input
@@ -555,8 +593,12 @@ export const VersionFeedbackPage = () => {
                   <Badge variant={getFeedbackStatusVariant(item.status)}>{getFeedbackStatusLabel(item.status)}</Badge>
                 </div>
 
-                        <div className="mt-2 flex flex-wrap items-center gap-2">
-                          <Badge variant="outline">{getFeedbackPriorityLabel(item.priority)}</Badge>
+                        <div className="mt-2 space-y-1">
+                          <p className="text-[12px] text-[#46504B]">
+                            用户选择：{getFeedbackPriorityLabel(item.submitted_priority || item.priority)}
+                          </p>
+                          <div className="flex flex-wrap items-center gap-2">
+                            <Badge variant="outline">当前优先级：{getFeedbackPriorityLabel(item.priority)}</Badge>
                           {isAdmin ? (
                             <select
                               aria-label={`调整${item.feedback_number || item.title}优先级`}
@@ -570,6 +612,7 @@ export const VersionFeedbackPage = () => {
                               ))}
                             </select>
                           ) : null}
+                          </div>
                         </div>
 
                 {item.status === 'pending' && editingId === item.id ? (
@@ -642,6 +685,9 @@ export const VersionFeedbackPage = () => {
                 )}
 
                 <p className="text-[11px] text-[#858C88] mt-2">提交时间：{formatLocalDateTime(item.created_at)}</p>
+                {item.target_version ? (
+                  <p className="text-[11px] text-[#858C88] mt-1">所属版本：v{String(item.target_version).replace(/^v/, '')}</p>
+                ) : null}
                 {item.status === 'pending' ? (
                   <p className="text-[11px] text-[#6B8067] mt-1">
                     已提交 {getLocalCalendarDayDifference(item.created_at)} 天

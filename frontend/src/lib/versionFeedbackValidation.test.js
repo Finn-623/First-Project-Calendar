@@ -28,11 +28,29 @@ describe('versionFeedbackValidation', () => {
     const result = validateFeedbackForm({
       title: '  版本页优化建议  ',
       description: '  希望增加上线时间说明，避免与更新时间混淆。  ',
+      submittedPriority: 'P2',
     });
 
     expect(result.valid).toBe(true);
     expect(result.normalized.title).toBe('版本页优化建议');
     expect(result.normalized.description).toBe('希望增加上线时间说明，避免与更新时间混淆。');
+    expect(result.normalized.submittedPriority).toBe('P2');
+  });
+
+  test('requires one of the four submitted priorities', () => {
+    const result = validateFeedbackForm({
+      title: '有效标题',
+      description: '这是有效描述内容',
+      submittedPriority: '',
+    });
+
+    expect(result.valid).toBe(false);
+    expect(result.errors.submittedPriority).toBe('请选择建议优先级');
+    expect(validateFeedbackForm({ title: '有效标题', description: '这是有效描述内容', submittedPriority: 'P0' }).valid).toBe(true);
+    expect(validateFeedbackForm({ title: '有效标题', description: '这是有效描述内容', submittedPriority: 'P1' }).valid).toBe(true);
+    expect(validateFeedbackForm({ title: '有效标题', description: '这是有效描述内容', submittedPriority: 'P2' }).valid).toBe(true);
+    expect(validateFeedbackForm({ title: '有效标题', description: '这是有效描述内容', submittedPriority: 'P3' }).valid).toBe(true);
+    expect(validateFeedbackForm({ title: '有效标题', description: '这是有效描述内容', submittedPriority: 'custom' }).valid).toBe(false);
   });
 
   test('status validation should only allow pending and completed', () => {

@@ -70,6 +70,7 @@ jest.mock('../services/versionFeedbackService', () => ({
     deleteFeedback: jest.fn(),
     completeFeedback: jest.fn(),
     reopenFeedback: jest.fn(),
+    updateFeedbackPriority: jest.fn(),
   },
 }));
 
@@ -114,6 +115,11 @@ function renderPage({ strict = false } = {}) {
 
 function openHistoryTab() {
   fireEvent.click(screen.getByRole('tab', { name: '建议历史' }));
+}
+
+function fillFeedbackForm() {
+  fireEvent.change(screen.getByLabelText('建议标题'), { target: { value: '一个有效建议' } });
+  fireEvent.change(screen.getByLabelText('详细说明'), { target: { value: '这是一个足够详细的修改意见。' } });
 }
 
 describe('VersionFeedbackPage history', () => {
@@ -168,6 +174,33 @@ describe('VersionFeedbackPage history', () => {
     expect(screen.getByText('未完成建议（0）')).toBeTruthy();
     expect(screen.getByText('已完成建议（0）')).toBeTruthy();
     expect(screen.getByText('目前没有已完成建议')).toBeTruthy();
+  });
+
+  test('requires a priority before submitting and sends the selected priority with the current version', async () => {
+    versionFeedbackService.createFeedback.mockResolvedValue({
+      success: true,
+      data: { id: 'created-1', submitted_priority: 'P0', priority: 'P0', target_version: '0.1.3' },
+    });
+
+    renderPage();
+    fillFeedbackForm();
+    fireEvent.click(screen.getByRole('button', { name: '提交修改意见' }));
+
+    expect(await screen.findByText('请选择建议优先级')).toBeTruthy();
+    expect(versionFeedbackService.createFeedback).not.toHaveBeenCalled();
+
+    fireEvent.click(screen.getByRole('radio', { name: 'P0 · 最快速完成' }));
+    fireEvent.click(screen.getByRole('button', { name: '提交修改意见' }));
+
+    await waitFor(() => {
+      expect(versionFeedbackService.createFeedback).toHaveBeenCalledWith({
+        userId: 'user-1',
+        title: '一个有效建议',
+        description: '这是一个足够详细的修改意见。',
+        submittedPriority: 'P0',
+        targetVersion: '0.1.3',
+      });
+    });
   });
 
   test('stops loading on failure and retries the request successfully', async () => {
@@ -256,6 +289,7 @@ describe('VersionFeedbackPage history', () => {
           updated_at: '2026-07-21T10:00:00.000Z',
           completed_at: null,
           completed_version: null,
+          submitted_priority: 'P2',
         },
       ],
       hasMore: false,
@@ -288,6 +322,7 @@ describe('VersionFeedbackPage history', () => {
           updated_at: '2026-07-21T10:00:00.000Z',
           completed_at: null,
           completed_version: null,
+          submitted_priority: 'P2',
         },
       ],
       hasMore: false,
@@ -343,6 +378,7 @@ describe('VersionFeedbackPage history', () => {
           updated_at: '2026-07-21T10:00:00.000Z',
           completed_at: null,
           completed_version: null,
+          submitted_priority: 'P2',
         },
       ],
       hasMore: false,

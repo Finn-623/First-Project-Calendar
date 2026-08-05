@@ -2,12 +2,13 @@ const TITLE_MIN = 2;
 const TITLE_MAX = 80;
 const DESCRIPTION_MIN = 5;
 const DESCRIPTION_MAX = 1000;
+const FEEDBACK_PRIORITIES = ['P0', 'P1', 'P2', 'P3'];
 
 export function normalizeFeedbackInput(value) {
   return String(value || '').trim();
 }
 
-export function validateFeedbackForm({ title, description }) {
+export function validateFeedbackForm({ title, description, submittedPriority }) {
   const normalizedTitle = normalizeFeedbackInput(title);
   const normalizedDescription = normalizeFeedbackInput(description);
   const errors = {};
@@ -24,12 +25,17 @@ export function validateFeedbackForm({ title, description }) {
     errors.description = '详细说明长度需在 5 到 1000 个字符之间';
   }
 
+  if (!FEEDBACK_PRIORITIES.includes(submittedPriority)) {
+    errors.submittedPriority = '请选择建议优先级';
+  }
+
   return {
     valid: Object.keys(errors).length === 0,
     errors,
     normalized: {
       title: normalizedTitle,
       description: normalizedDescription,
+      submittedPriority,
     },
   };
 }

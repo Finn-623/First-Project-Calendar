@@ -26,6 +26,8 @@ function normalizeFeedbackRow(row) {
     title: row.title,
     description: row.description,
     status: row.status,
+    submitted_priority: row.submitted_priority,
+    target_version: row.target_version,
     created_at: row.created_at,
     completed_at: row.completed_at,
     completed_version: row.completed_version,
@@ -53,7 +55,7 @@ async function loadSubmitterMap(ids = []) {
 }
 
 export const versionFeedbackService = {
-  async createFeedback({ userId, title, description }) {
+  async createFeedback({ userId, title, description, submittedPriority, targetVersion }) {
     if (!supabase) {
       return { success: false, error: 'Supabase 尚未配置' };
     }
@@ -69,6 +71,8 @@ export const versionFeedbackService = {
           user_id: userId,
           title,
           description,
+          submitted_priority: submittedPriority,
+          target_version: targetVersion,
         })
         .select('*')
         .single();
@@ -97,7 +101,7 @@ export const versionFeedbackService = {
 
       let query = supabase
         .from('version_feedback')
-        .select('id, feedback_number, user_id, title, description, status, priority, priority_assigned_at, priority_assigned_by, created_at, completed_at, completed_version, updated_at')
+        .select('id, feedback_number, user_id, title, description, status, submitted_priority, target_version, priority, priority_assigned_at, priority_assigned_by, created_at, completed_at, completed_version, updated_at')
         .order('priority', { ascending: true })
         .order('created_at', { ascending: true })
         .limit(safeLimit + 1);

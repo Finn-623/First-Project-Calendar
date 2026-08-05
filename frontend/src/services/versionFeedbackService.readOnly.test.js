@@ -97,7 +97,7 @@ describe('versionFeedbackService completed feedback guards', () => {
     supabase.rpc.mockResolvedValue({
       data: {
         id: 'pending-1',
-        feedback_number: 'FB-2026-0001',
+        feedback_number: 'FB-v0.1.3-001',
         user_id: 'user-1',
         title: '建议',
         description: '内容',
@@ -119,7 +119,7 @@ describe('versionFeedbackService completed feedback guards', () => {
       feedback_priority: 'P0',
     });
     expect(result.success).toBe(true);
-    expect(result.data.feedback_number).toBe('FB-2026-0001');
+    expect(result.data.feedback_number).toBe('FB-v0.1.3-001');
     expect(result.data.priority_assigned_by).toBe('admin-1');
   });
 });
