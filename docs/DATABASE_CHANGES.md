@@ -1,3 +1,18 @@
+## DB-20260805-002
+
+- 日期：2026-08-05
+- 修改原因：版本反馈需要数据库安全生成的年度连续编号、明确优先级体系以及管理员调整审计，避免前端生成编号或优先级失控。
+- 实际修改内容：新增 `version_feedback_number_counters` 年度计数器表；为 `version_feedback` 新增 `feedback_number`、`priority`、`priority_assigned_at`、`priority_assigned_by`；历史记录按创建年份稳定回填 `FB-YYYY-NNNN`；新增唯一索引、编号格式约束、P0-P3约束和优先级排序索引；新增数据库编号触发器、不可修改编号保护和管理员专用 `set_version_feedback_priority(UUID, TEXT)` RPC。
+- 涉及的表和字段：`public.version_feedback.feedback_number/priority/priority_assigned_at/priority_assigned_by`；`public.version_feedback_number_counters.feedback_year/next_number`。
+- Migration 文件路径：`supabase/migrations/034_feedback_number_priority.sql`。
+- 对现有数据的影响：现有反馈会按 `created_at` 年份和 `created_at,id` 稳定顺序获得编号；现有优先级默认为 P2；不修改标题、说明、状态、完成时间或完成版本；删除后的编号不会回收到计数器。
+- 风险：Migration 034 已部署远程；本地 lint 仍受现有缺失 `public.app_admins` 依赖阻断；Migration 028 仍未部署。编号序列不会因测试数据清理回退或复用。
+- 回滚方式：使用后续 Migration 撤销新增 RPC、触发器、索引、约束、计数器表和字段；回滚前必须确认前端已移除对编号和优先级字段的依赖，且不得修改已应用的034文件。
+- 测试内容：Migration 034 静态契约 2 项；`npx supabase db lint --local --schema public --level error --fail-on error`；前端反馈专项、全量测试和生产构建；隔离 dry-run、远程 migration list；普通/管理员 username-login、历史回填、权限、审计、completed 兼容、排序和测试数据清理验收。
+- 测试结果：Migration 契约 2 项通过；本地 lint 被现有 `public.is_app_admin` 引用缺失 `public.app_admins` 阻断；前端全量 42 套件 289 项通过，Production Build 成功；034 已部署且远程一致，028 仍为空；远程实际21条反馈全部编号和优先级合法，原有记录未改变，临时记录已清理。
+- 相关 DEV 编号：`DEV-20260805-002`。
+- 相关 Commit ID：未提交。
+
 ## DB-20260805-001
 
 - 日期：2026-08-05

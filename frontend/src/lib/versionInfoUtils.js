@@ -68,3 +68,16 @@ export function getFeedbackStatusLabel(status) {
 export function getFeedbackStatusVariant(status) {
   return status === 'completed' ? 'secondary' : 'outline';
 }
+
+export const FEEDBACK_PRIORITIES = ['P0', 'P1', 'P2', 'P3'];
+
+export function getFeedbackPriorityLabel(priority) {
+  const labels = {
+    P0: 'P0 · 最快速完成',
+    P1: 'P1 · 下个版本上线前完成',
+    P2: 'P2 · 本大版本完成',
+    P3: 'P3 · 后续版本完成',
+  };
+
+  return labels[priority] || labels.P2;
+}

@@ -1,3 +1,18 @@
+## DEV-20260805-002
+
+- 日期：2026-08-05
+- 状态：代码、Migration 034、远程普通/管理员验收和测试完成，等待用户最终页面验收
+- 任务目标：为版本反馈增加数据库生成且不可复用的年度建议编号，建立 P0/P1/P2/P3 优先级体系，并保留管理员调整审计信息。
+- 实际完成内容：新增按年份加锁计数器和 `FB-YYYY-NNNN` 编号生成；历史建议按 `created_at` 年份及 `created_at,id` 稳定顺序回填编号；新增默认 P2、P0/P1/P2/P3 约束、调整人和调整时间；新增管理员专用优先级 RPC；完成建议保留编号和优先级，管理员仍可调整 completed 优先级但不能修改内容；前端显示编号、统一优先级文案、管理员调整入口和审计时间，并按 P0 到 P3、创建时间升序展示。
+- 主要修改文件或模块：`supabase/migrations/034_feedback_number_priority.sql`及契约测试；`frontend/src/services/versionFeedbackService.js`；`frontend/src/pages/VersionFeedbackPage.jsx`及测试；`frontend/src/lib/versionInfoUtils.js`；相关记录文档。
+- 遇到的问题：旧页面测试仍断言创建时间倒序；部署回填首次触发 021 的 completed 只读保护，随后修复结构化回填期间的触发器顺序和 PL/pgSQL 年份变量歧义；本地 Supabase lint 被现有 `public.is_app_admin` 对缺失本地 `app_admins` 表的引用阻断。
+- 解决方式：更新排序契约为优先级升序和创建时间升序；034 在历史结构回填期间临时禁用并立即恢复更新触发器；修正 `target_year` 变量；保留 lint 的真实阻断结果，不修改无关本地 schema。
+- 执行的测试：Migration 034 Node 契约测试 2 项；反馈页面和服务专项 29 项；前端全量 `CI=true npm test -- --watchAll=false --runInBand`；`npm run build`；`git diff --check`；`npx supabase db lint --local --schema public --level error --fail-on error`；隔离 dry-run；远程 migration list；普通/管理员正常 username-login 远程验收。
+- 测试结果：Migration 契约 2 项通过；反馈专项 29 项通过；前端全量 42 套件 289 项通过；Production Build 成功；`git diff --check` 通过；034 dry-run 仅包含034并已部署；远程21条反馈空编号、重复编号、空优先级、非法优先级、格式错误均为0；普通用户三项越权均拒绝；管理员 P2→P1→P3、审计字段和 P0>P1>P2>P3 排序通过；completed 编号/优先级保留且内容只读；测试反馈残留0，原有21条逐字段未改变；Supabase lint 未通过，唯一报告为现有 `public.is_app_admin` 依赖缺失本地 `public.app_admins`。
+- 未完成事项：等待用户进行编号7最终页面验收；远程 Feedback 业务状态继续保持 `pending`。
+- 风险或注意事项：Migration 034 已部署；Migration 028 仍未部署；编号序列已发出的测试编号未回退或复用；测试日志保留既有 Supabase 环境变量缺失和 Node 弃用 warning；未执行 Git push。
+- Git Commit ID：未提交。
+
 ## DEV-20260805-001
 
 - 日期：2026-08-05

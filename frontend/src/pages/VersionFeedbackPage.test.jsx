@@ -199,7 +199,7 @@ describe('VersionFeedbackPage history', () => {
     expect(versionFeedbackService.listFeedback).toHaveBeenCalledTimes(2);
   });
 
-  test('keeps records sorted by created_at desc in history view', async () => {
+  test('sorts records by priority and then created_at asc in history view', async () => {
     versionFeedbackService.listFeedback.mockResolvedValueOnce({
       success: true,
       data: [
@@ -213,6 +213,7 @@ describe('VersionFeedbackPage history', () => {
           updated_at: '2026-07-20T10:00:00.000Z',
           completed_at: null,
           completed_version: null,
+          priority: 'P2',
         },
         {
           id: 'newer',
@@ -224,6 +225,7 @@ describe('VersionFeedbackPage history', () => {
           updated_at: '2026-07-21T10:00:00.000Z',
           completed_at: null,
           completed_version: null,
+          priority: 'P2',
         },
       ],
       hasMore: false,
@@ -237,7 +239,7 @@ describe('VersionFeedbackPage history', () => {
     const newerNode = screen.getByText('新建议');
     const olderNode = screen.getByText('旧建议');
 
-    expect(Boolean(newerNode.compareDocumentPosition(olderNode) & Node.DOCUMENT_POSITION_FOLLOWING)).toBe(true);
+    expect(Boolean(olderNode.compareDocumentPosition(newerNode) & Node.DOCUMENT_POSITION_FOLLOWING)).toBe(true);
   });
 
   test('allows owner to open edit mode with current values', async () => {
@@ -595,7 +597,7 @@ describe('VersionFeedbackPage history', () => {
     const pendingOld = within(pendingSection).getByText('较早提交');
     const completedNew = within(completedSection).getByText('最近完成');
     const completedOld = within(completedSection).getByText('较早完成');
-    expect(Boolean(pendingNew.compareDocumentPosition(pendingOld) & Node.DOCUMENT_POSITION_FOLLOWING)).toBe(true);
+    expect(Boolean(pendingOld.compareDocumentPosition(pendingNew) & Node.DOCUMENT_POSITION_FOLLOWING)).toBe(true);
     expect(Boolean(completedNew.compareDocumentPosition(completedOld) & Node.DOCUMENT_POSITION_FOLLOWING)).toBe(true);
     expect(within(pendingSection).queryByText('最近完成')).toBeNull();
     expect(within(completedSection).queryByText('最近提交')).toBeNull();

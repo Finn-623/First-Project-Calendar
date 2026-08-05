@@ -21,6 +21,7 @@ function normalizeError(error) {
 function normalizeFeedbackRow(row) {
   return {
     id: row.id,
+    feedback_number: row.feedback_number,
     user_id: row.user_id,
     title: row.title,
     description: row.description,
@@ -28,6 +29,9 @@ function normalizeFeedbackRow(row) {
     created_at: row.created_at,
     completed_at: row.completed_at,
     completed_version: row.completed_version,
+    priority: row.priority || 'P2',
+    priority_assigned_at: row.priority_assigned_at,
+    priority_assigned_by: row.priority_assigned_by,
     updated_at: row.updated_at,
   };
 }
@@ -93,8 +97,9 @@ export const versionFeedbackService = {
 
       let query = supabase
         .from('version_feedback')
-        .select('id, user_id, title, description, status, created_at, completed_at, completed_version, updated_at')
-        .order('created_at', { ascending: false })
+        .select('id, feedback_number, user_id, title, description, status, priority, priority_assigned_at, priority_assigned_by, created_at, completed_at, completed_version, updated_at')
+        .order('priority', { ascending: true })
+        .order('created_at', { ascending: true })
         .limit(safeLimit + 1);
 
       if (!isAdmin) {
@@ -130,6 +135,7 @@ export const versionFeedbackService = {
       const enriched = rows.map((item) => ({
         ...item,
         submitter: submitterMap[item.user_id] || null,
+        priorityAssigner: submitterMap[item.priority_assigned_by] || null,
       }));
 
       return {
@@ -249,6 +255,35 @@ export const versionFeedbackService = {
         .rpc('reopen_version_feedback', {
           feedback_id: feedbackId,
         });
+
+      if (error) {
+        return { success: false, error: normalizeError(error) };
+      }
+
+      return { success: true, data: normalizeFeedbackRow(data) };
+    } catch (error) {
+      return { success: false, error: normalizeError(error) };
+    }
+  },
+
+  async updateFeedbackPriority({ feedbackId, priority }) {
+    if (!supabase) {
+      return { success: false, error: 'Supabase 尚未配置' };
+    }
+
+    if (!feedbackId) {
+      return { success: false, error: '缺少任务 ID' };
+    }
+
+    if (!['P0', 'P1', 'P2', 'P3'].includes(priority)) {
+      return { success: false, error: '优先级无效' };
+    }
+
+    try {
+      const { data, error } = await supabase.rpc('set_version_feedback_priority', {
+        feedback_id: feedbackId,
+        feedback_priority: priority,
+      });
 
       if (error) {
         return { success: false, error: normalizeError(error) };

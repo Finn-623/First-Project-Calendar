@@ -20,8 +20,10 @@ import { versionFeedbackService } from '../services/versionFeedbackService';
 import { VERSION_RECORDS } from '../data/versionHistory';
 import { validateCompletedVersion, validateFeedbackForm } from '../lib/versionFeedbackValidation';
 import {
+  FEEDBACK_PRIORITIES,
   formatLocalDateTime,
   getLocalCalendarDayDifference,
+  getFeedbackPriorityLabel,
   getFeedbackStatusLabel,
   getFeedbackStatusVariant,
 } from '../lib/versionInfoUtils';
@@ -41,6 +43,7 @@ export const VersionFeedbackPage = () => {
   const [history, setHistory] = useState([]);
   const [submitting, setSubmitting] = useState(false);
   const [updatingStatusId, setUpdatingStatusId] = useState('');
+  const [updatingPriorityId, setUpdatingPriorityId] = useState('');
   const [editingId, setEditingId] = useState('');
   const [editingForm, setEditingForm] = useState({ title: '', description: '' });
   const [editingErrors, setEditingErrors] = useState({});
@@ -80,16 +83,16 @@ export const VersionFeedbackPage = () => {
   const pendingHistory = useMemo(() => history
     .filter((item) => item.status === 'pending')
     .sort((a, b) => (
-      new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime()
+      FEEDBACK_PRIORITIES.indexOf(a.priority || 'P2') - FEEDBACK_PRIORITIES.indexOf(b.priority || 'P2')
+      || new Date(a.created_at || 0).getTime() - new Date(b.created_at || 0).getTime()
       || String(a.id).localeCompare(String(b.id))
     )), [history]);
 
   const completedHistory = useMemo(() => history
     .filter((item) => item.status === 'completed')
     .sort((a, b) => (
-      new Date(b.completed_at || 0).getTime() - new Date(a.completed_at || 0).getTime()
-      || new Date(b.updated_at || 0).getTime() - new Date(a.updated_at || 0).getTime()
-      || new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime()
+      FEEDBACK_PRIORITIES.indexOf(a.priority || 'P2') - FEEDBACK_PRIORITIES.indexOf(b.priority || 'P2')
+      || new Date(a.created_at || 0).getTime() - new Date(b.created_at || 0).getTime()
       || String(a.id).localeCompare(String(b.id))
     )), [history]);
 
@@ -364,6 +367,32 @@ export const VersionFeedbackPage = () => {
     showSuccess('任务已标记为已完成');
   };
 
+  const handlePriorityChange = async (item, priority) => {
+    if (!isAdmin || !item?.id || item.priority === priority || updatingPriorityId) return;
+
+    setUpdatingPriorityId(item.id);
+    const result = await versionFeedbackService.updateFeedbackPriority({
+      feedbackId: item.id,
+      priority,
+    });
+
+    if (!result.success) {
+      toast.error(result.error || '优先级更新失败，请稍后重试');
+      setUpdatingPriorityId('');
+      return;
+    }
+
+    setHistory((prev) => {
+      const nextRows = prev.map((record) => (record.id === item.id ? { ...record, ...result.data } : record));
+      queryClient.setQueryData(historyQueryKey, (cached) => (
+        cached?.success ? { ...cached, data: nextRows } : cached
+      ));
+      return nextRows;
+    });
+    setUpdatingPriorityId('');
+    showSuccess('优先级已更新');
+  };
+
   useEffect(() => {
     mountedRef.current = true;
     return () => {
@@ -519,9 +548,29 @@ export const VersionFeedbackPage = () => {
                     ) : section.items.map((item) => (
               <article key={item.id} className="px-4 py-3 border-b border-[#F0EFE9] last:border-b-0">
                 <div className="flex items-start justify-between gap-2">
-                  <p className="text-[14px] text-[#2C332F] font-medium break-all">{item.title}</p>
+                          <div className="min-w-0">
+                            <p className="text-[11px] text-[#858C88] break-all">{item.feedback_number || '编号生成中'}</p>
+                            <p className="text-[14px] text-[#2C332F] font-medium break-all">{item.title}</p>
+                          </div>
                   <Badge variant={getFeedbackStatusVariant(item.status)}>{getFeedbackStatusLabel(item.status)}</Badge>
                 </div>
+
+                        <div className="mt-2 flex flex-wrap items-center gap-2">
+                          <Badge variant="outline">{getFeedbackPriorityLabel(item.priority)}</Badge>
+                          {isAdmin ? (
+                            <select
+                              aria-label={`调整${item.feedback_number || item.title}优先级`}
+                              value={item.priority || 'P2'}
+                              disabled={updatingPriorityId === item.id}
+                              onChange={(event) => handlePriorityChange(item, event.target.value)}
+                              className="min-h-9 rounded-lg border border-[#D5DCD2] bg-white px-2 text-[12px] text-[#2C332F]"
+                            >
+                              {FEEDBACK_PRIORITIES.map((priority) => (
+                                <option key={priority} value={priority}>{getFeedbackPriorityLabel(priority)}</option>
+                              ))}
+                            </select>
+                          ) : null}
+                        </div>
 
                 {item.status === 'pending' && editingId === item.id ? (
                   <div className="mt-2 space-y-2">
@@ -608,6 +657,11 @@ export const VersionFeedbackPage = () => {
                 {isAdmin ? (
                   <p className="text-[11px] text-[#858C88] mt-1">
                     提交人：{item.submitter?.display_name || item.submitter?.username || '未知用户'}
+                  </p>
+                ) : null}
+                {item.priority_assigned_at ? (
+                  <p className="text-[11px] text-[#858C88] mt-1">
+                    优先级调整：{item.priorityAssigner?.display_name || item.priorityAssigner?.username || '管理员'} · {formatLocalDateTime(item.priority_assigned_at)}
                   </p>
                 ) : null}
 
