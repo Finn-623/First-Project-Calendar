@@ -1,3 +1,18 @@
+## DEV-20260805-003
+
+- 日期：2026-08-05
+- 状态：代码、Migration 035、远程部署和验收完成，等待用户重新进行编号7最终页面验收
+- 任务目标：纠正 034 与最终产品需求的偏差，让用户提交时自行选择优先级，并将建议编号改为版本号加版本内顺序编号。
+- 实际完成内容：新增 `submitted_priority` 与 `target_version`；用户提交必须选择 P0/P1/P2/P3，初始 `priority` 由数据库等于用户选择；管理员仍可调整当前 `priority`，但不能修改原始选择；编号改为 `FB-v<版本号>-<三位版本内编号>`，数据库按版本计数器和事务锁生成。历史21条反馈按真实 `completed_version` 或当前正式版本 `0.1.3` 归属，按 `created_at,id` 稳定重编号；completed 内容继续只读。
+- 034 偏差与兼容纠正：034 原实现使用 `FB-YYYY-NNNN` 且默认 P2，和最终需求不一致；未修改已部署的034，新增并部署 Migration 035 完成兼容纠正。第一次035部署因版本正则双反斜杠事务回滚，修正为 PostgreSQL 单反斜杠后重新隔离部署成功。
+- 主要修改文件或模块：`supabase/migrations/035_feedback_user_priority_version_number.sql`及契约测试；`frontend/src/pages/VersionFeedbackPage.jsx`及测试；`frontend/src/services/versionFeedbackService.js`；`frontend/src/lib/versionFeedbackValidation.js`及测试。
+- 远程验收：正常 username-login 的普通账号并发提交 P0/P1/P2/P3；版本编号、初始优先级、普通用户两种越权更新拒绝、管理员优先级调整和审计、completed 兼容、同版本/跨版本编号、删除不复用、排序均通过。原有21条反馈逐字段未改变，业务状态仍为 `pending`。
+- 执行的测试：Migration 全部契约 `node --test supabase/migrations/*.test.mjs`；反馈专项及校验专项；前端全量 `CI=true npm test -- --watchAll=false --runInBand`；`npm run build`；`git diff --check`；编辑器错误检查；035 隔离 dry-run 和远程 migration list；普通/管理员真实远程验收。
+- 测试结果：Migration 59项通过；前端全量42套件291项通过；Production Build成功；035 dry-run仅包含035并已部署；远程总反馈21条，空编号、重复编号、缺版本、非法格式、非法submitted_priority和非法priority均为0；测试数据残留0；本地 lint 未在本任务重复执行，既有 `public.is_app_admin` 对缺失本地 `public.app_admins` 的阻断仍存在。
+- 未完成事项：用户需要重新完成编号7页面验收；远程 Feedback 不标记为 completed。
+- 风险或注意事项：Migration 034保持未修改且已部署；Migration 028仍未部署；编号清理不会回退计数器；未执行 Git push。
+- Git Commit ID：`7d2814d3b3fb2b0cf4dce60c1c73c938afb2d472`。
+
 ## DEV-20260805-002
 
 - 日期：2026-08-05

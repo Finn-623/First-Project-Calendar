@@ -1,3 +1,19 @@
+## DB-20260805-003
+
+- 日期：2026-08-05
+- 修改原因：Migration 034 的年度编号和默认 P2 与最终需求不一致；反馈需要保留用户提交时的原始优先级，并按所属版本生成版本内编号。
+- 实际修改内容：新增 `version_feedback.submitted_priority`、`version_feedback.target_version`；新增 `version_feedback_counters(version_number,next_sequence)`；历史反馈按版本和 `created_at,id` 稳定回填 `FB-v<version>-NNN`；新增版本计数器、事务 advisory lock、插入触发器、版本格式约束、原始优先级和编号不可变保护；管理员优先级 RPC继续只更新当前 `priority` 并记录 `priority_assigned_at/priority_assigned_by`；更新普通用户 INSERT policy。
+- 涉及的表和字段：`public.version_feedback.feedback_number/submitted_priority/target_version/priority/priority_assigned_at/priority_assigned_by`；`public.version_feedback_counters.version_number/next_sequence`。
+- Migration 文件路径：`supabase/migrations/035_feedback_user_priority_version_number.sql`。
+- 历史数据影响：远程21条反馈均按现有证据归属 `0.1.3`；4条 completed 使用真实 `completed_version=v0.1.3`，17条 pending 使用当前正式应用版本 `0.1.3`。按 `created_at ASC,id ASC` 生成版本内序号；标题、描述、用户、状态、完成字段和已有 priority 未改变，`submitted_priority` 对历史行回填为原有 priority。该回填无法恢复历史用户当时未保存的原始选择。
+- 兼容与权限：用户必须提交 P0/P1/P2/P3 之一，插入时 `priority=submitted_priority`；创建后普通用户不能修改二者，管理员可调整当前 priority 但不能修改 submitted_priority；completed 内容仍只读，管理员可按现有 RPC调整 completed priority。
+- 风险：035首次部署因正则转义错误事务回滚，未留下远程数据变化；修正后仅035隔离部署成功。已发编号不会因删除反馈回退或复用。Migration 034未修改，Migration 028未部署。
+- 回滚方式：使用后续 Migration 撤销035新增字段、计数器、约束、触发器、policy和函数；不得修改或重写已应用的034/035文件，回滚前必须先移除前端对版本编号和 submitted_priority 的依赖。
+- 测试内容：全部Migration契约59项；035隔离dry-run；远程迁移状态；普通/管理员正常username-login；P0-P3并发提交、越权拒绝、管理员审计、completed只读、同版本/跨版本编号、删除不复用、排序和精确清理。
+- 测试结果：契约59/59通过；035 dry-run仅包含035并部署成功；远程035存在、028为空；远程21条完整反馈无空/重复/非法编号和优先级；所有临时测试数据残留0，原有21条逐字段未改变。
+- 相关 DEV 编号：`DEV-20260805-003`。
+- 相关 Commit ID：`7d2814d3b3fb2b0cf4dce60c1c73c938afb2d472`。
+
 ## DB-20260805-002
 
 - 日期：2026-08-05
