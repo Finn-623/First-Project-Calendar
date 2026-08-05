@@ -13,7 +13,7 @@
 - 测试结果：前端全量42套件288项通过；专项31项和033契约2项通过；Production Build成功；编辑器无错误。Build仅有既有 Node `fs.F_OK` 弃用 warning，测试有既有 Supabase 环境变量 console warning。
 - 未完成事项：浏览器没有可复用的认证态，尚未完成登录后的页面视觉验收；需要用户确认320px下三个操作按钮和状态筛选的最终观感。
 - 风险或注意事项：Migration 033 已通过隔离目录仅部署033；028仍未部署；未修改公共食品、审核状态或历史业务数据；远程反馈保持 `pending`；未执行 Git push。
-- Git Commit ID：未提交。
+- Git Commit ID：`3bf09a9ee9fabf2bee00933f33c129ad17fce6c8`。
 
 ## DEV-20260804-010
 

@@ -11,7 +11,7 @@
 - 测试内容：033契约2项；前端食品服务/食物库/AddFoodSheet/Store专项31项；全量42套件288项；普通账号真实停用、重新启用、未引用永久删除、历史引用阻止删除和清理；远程 migration list；Production Build。
 - 测试结果：033 dry-run 仅计划033，隔离目录实际仅部署033；远程 `029-033` 一致，`028` 仍未部署。普通账号被引用删除被拒绝且 food_entries 保留，最终测试 foods/food_entries/timeline_items 残留均为0。公共食品基线和审核状态未修改。
 - 相关 DEV 编号：`DEV-20260805-001`。
-- 相关 Commit ID：未提交。
+- 相关 Commit ID：`3bf09a9ee9fabf2bee00933f33c129ad17fce6c8`。
 
 ## DB-20260804-004
 
