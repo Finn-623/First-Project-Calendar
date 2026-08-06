@@ -1,10 +1,24 @@
+## DEV-20260806-004
+
+- 日期：2026-08-06
+- 状态：编号30、31最终 priority 校准完成，等待用户最终确认编号7页面
+- 任务目标：完成新增反馈编号30、31的最终执行优先级确认。
+- 实际完成内容：通过管理员正常 username-login 和 `set_version_feedback_priority` RPC，仅将 `FB-v0.1.3-030`“事件情况确定”从P1更新为P2；`FB-v0.1.3-031`“未来已经添加事件后出现未完成固定三餐”保持P1，未调用无意义更新。
+- 远程结果：总数23，pending 19，completed 4；最终当前priority为P0=5、P1=7、P2=11、P3=0。
+- 字段保护：030、031的 `submitted_priority` 均保持P1；`feedback_number`、title、description、status、target_version、completed_at、completed_version均未变化。030的 `priority_assigned_at` 更新为本轮时间，`priority_assigned_by`为当前管理员；031的priority、审计字段和 `updated_at` 全部未变化。
+- 执行的测试或检查：管理员登录；030/031更新前后字段快照；唯一一次030 RPC HTTP 200；全表priority/status统计；不可变字段和审计字段直接比较；`git diff --check`。
+- 测试结果：030=P2、031=P1；不可变字段差异为空；031整条目标记录未变化；总反馈数和pending/completed数量符合要求。未执行代码测试，因为本轮未修改代码。
+- 未完成事项：用户仍需重新进行编号7页面最终验收。
+- 风险或注意事项：未新增或部署Migration，Migration 028仍未部署，未修改公共食品及审核状态，未执行push。
+- Git Commit ID：未提交
+
 ## DEV-20260806-003
 
 - 日期：2026-08-06
 - 状态：远程 priority 校准和文档记录完成，等待用户最终确认编号7页面
 - 任务目标：根据用户已确认的 P0/P1/P2 分级，校准现有23条修改意见的当前执行优先级。
-- 实际完成内容：通过管理员正常 username-login 和 `set_version_feedback_priority` RPC，将编号5、6、8、19、20调整为P0，将编号7、9、16、17、18、21调整为P1；编号10-15原本已为P2，未产生无意义审计记录。编号1-4在审核文档中为Closed且已completed，本轮保持P2不擅自重分；新增030、031未能明确对应审核文档编号，保持原P1并等待用户确认。
-- 远程结果：总数23，pending 19，completed 4；最终当前priority为P0=5、P1=8、P2=10、P3=0。实际更新11条，文档范围内原本正确6条；030/031和Closed编号1-4不计入本轮可校准P0-P3目标。
+- 实际完成内容：通过管理员正常 username-login 和 `set_version_feedback_priority` RPC，将编号5、6、8、19、20调整为P0，将编号7、9、16、17、18、21调整为P1；编号10-15原本已为P2，未产生无意义审计记录。编号1-4在审核文档中为Closed且已completed，本轮保持P2不擅自重分；当时新增030、031保持原P1，后续由DEV-20260806-004完成最终校准。
+- 远程结果：本轮校准后总数23，pending 19，completed 4；当时当前priority为P0=5、P1=8、P2=10、P3=0。实际更新11条，文档范围内原本正确6条；030/031和Closed编号1-4不计入当时可校准P0-P3目标。
 - 字段保护：23条 `submitted_priority` 全部不变；`feedback_number`、title、description、status、user_id、target_version、completed_at、completed_version均不变；11条变更记录的 `priority_assigned_at`、`priority_assigned_by`均由当前管理员RPC更新。
 - 新增反馈：`FB-v0.1.3-030`“事件情况确定”和`FB-v0.1.3-031`“未来已经添加事件后出现未完成固定三餐”不在审核文档中，未猜测分级、未修改。
 - 执行的测试或检查：Git状态/分支/commit/ahead-behind；`npx supabase migration list --linked`；远程管理员登录、23条脱敏快照前后比较、11次管理员RPC、最终状态与priority统计。
