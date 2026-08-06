@@ -1,3 +1,19 @@
+## DEV-20260806-006
+
+- 日期：2026-08-06
+- 状态：P1编号9移动端表单自动放大修复完成，等待用户最终人工验收
+- 任务目标：修复移动端打开“提交修改意见”输入框时 Safari 自动放大，以及输入完成、键盘收起后页面布局异常的问题。
+- 真实根因：反馈页面提交标题、提交描述、pending编辑标题、pending编辑描述使用移动端小于16px的14px字号；管理员当前priority和完成版本原生select使用12px字号。iPhone Safari聚焦小于16px的可编辑控件会自动放大页面。viewport已有`width=device-width, initial-scale=1`且未配置禁止缩放参数，不是viewport缺失问题。
+- 修复范围：反馈页面全部标题/描述输入框改为移动端16px、桌面端保持14px；管理员priority select和completed版本select改为移动端16px、桌面端保持12px；相关控件增加`box-border`、`min-w-0`、`max-w-full`约束；共用Radix `SelectTrigger`改为移动端16px、桌面端14px并增加`min-w-0`。未使用`user-scalable=no`、`maximum-scale`、JavaScript zoom重置或其他禁止用户缩放手段。
+- 影响控件：提交建议priority单选、建议标题、建议描述、pending编辑标题、pending编辑描述、管理员priority选择、管理员完成版本选择；提交流程和completed独立页面均保留原有行为。
+- 移动端验证：VersionFeedbackPage回归测试覆盖320px下控件16px class、宽度收缩约束、priority控件与分页；CSS规则对320/375/390px统一生效，控件使用`w-full`/`min-w-0`/`box-border`。本地生产构建可加载；真实iPhone Safari的320/375/390点击、键盘收起和无横向滚动仍等待用户人工验收。
+- 执行的测试：`CI=true npm test -- --watchAll=false --runInBand src/pages/VersionFeedbackPage.test.jsx`；`CI=true npm test -- --watchAll=false --runInBand`；`npm run build`；`git diff --check`。
+- 测试结果：反馈专项32项通过；前端全量42套件299项通过；Production Build成功；保留既有React `act`和Node `fs.F_OK` warning；未修改数据库、Migration、公共食品或审核状态。
+- 远程状态：Feedback仍为pending 19、completed 4，总数23；编号7仍等待用户最终验收，未标记completed。
+- Git Commit ID：功能提交 `072d8cba7334a0ac3c5eb1b9fa9c5e642d5b622f`
+- 未完成事项：用户进行编号9在320/375/390px的真实移动端人工验收。
+- 风险或注意事项：Migration 028仍未部署，未新增Migration，未执行push。
+
 ## DEV-20260806-005
 
 - 日期：2026-08-06

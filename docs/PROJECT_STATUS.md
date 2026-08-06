@@ -2,6 +2,14 @@
 
 ## P1 编号7：版本反馈编号与优先级
 
+### P1 编号9：移动端提交修改意见自动放大
+
+- 根因：反馈页面多个可聚焦控件在移动端使用小于16px字号，触发iPhone Safari聚焦自动缩放；viewport已有`width=device-width, initial-scale=1`，未通过禁止用户缩放规避问题。
+- 修复：提交标题/描述、pending编辑标题/描述、管理员priority select、完成版本select均改为移动端16px；共用Radix `SelectTrigger`同步改为移动端16px。相关输入和select增加`box-border`、`min-w-0`、`max-w-full`，保持桌面字号与布局。
+- 覆盖范围包含priority单选、提交表单、pending编辑、管理员pending/completed操作，未只修复单个textarea；未修改viewport，保留用户手势缩放。
+- 验证：反馈专项32项、前端全量299项、Production Build均通过；320px CSS/回归约束与横向overflow防护已覆盖。375px、390px使用相同移动断点规则，真实iPhone Safari点击、键盘收起和最终人工布局验收待用户完成。
+- 功能提交：`072d8cba7334a0ac3c5eb1b9fa9c5e642d5b622f`。Feedback远程状态仍为pending 19、completed 4，总数23；编号7仍等待最终验收。
+
 ### 2026-08-06 用户最新反馈优先级最终同步
 
 - 已通过管理员 RPC 完成六条当前执行 priority 调整：编号18由P1调整为P2；编号10、11、12、13、14由P2调整为P3；其余反馈保持不变。
