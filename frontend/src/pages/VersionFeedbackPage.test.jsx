@@ -1173,4 +1173,32 @@ describe('VersionFeedbackPage admin completion flow', () => {
     await waitFor(() => expect(toast.error).toHaveBeenCalledWith('优先级更新失败'));
     expect(prioritySelect.value).toBe('P2');
   });
+
+  test('keeps pagination and priority controls available at 320px width', async () => {
+    Object.defineProperty(window, 'innerWidth', { configurable: true, value: 320 });
+    versionFeedbackService.listFeedback.mockResolvedValueOnce({
+      success: true,
+      data: Array.from({ length: 21 }, (_, index) => ({
+        id: `mobile-${index + 1}`,
+        user_id: 'other-user',
+        title: `移动端建议${index + 1}`,
+        description: '内容',
+        status: index === 20 ? 'completed' : 'pending',
+        priority: 'P2',
+        submitted_priority: 'P2',
+        feedback_number: `FB-v0.1.3-${String(index + 1).padStart(3, '0')}`,
+        created_at: `2026-07-${String(index + 1).padStart(2, '0')}T10:00:00.000Z`,
+        updated_at: `2026-07-${String(index + 1).padStart(2, '0')}T10:00:00.000Z`,
+      })),
+      totalCount: 21,
+    });
+
+    renderPage();
+    openHistoryTab();
+    expect(await screen.findByRole('combobox', { name: '调整FB-v0.1.3-001优先级' })).toBeTruthy();
+    expect(screen.getByRole('button', { name: '上一页' })).toBeTruthy();
+    expect(screen.getByRole('button', { name: '下一页' })).toBeTruthy();
+    expect(screen.getByText('共 21 条 · 第 1 / 3 页')).toBeTruthy();
+    Object.defineProperty(window, 'innerWidth', { configurable: true, value: 1024 });
+  });
 });
