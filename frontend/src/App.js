@@ -367,6 +367,7 @@ function App() {
                 <Route path="/settings/profile" element={<Navigate to="/settings/personal-info" replace />} />
                 <Route path="/settings/version" element={<SettingsVersionPage />} />
                 <Route path="/settings/version/feedback" element={<VersionFeedbackPage />} />
+                <Route path="/settings/version/feedback/completed" element={<VersionFeedbackPage completedOnly />} />
                 <Route path="/settings/intake-plan" element={<SettingsIntakePlanPage />} />
                 <Route path="/settings/record-settings" element={<SettingsRecordSettingsPage />} />
                 <Route path="/settings/account-actions" element={<Navigate to="/settings" replace />} />

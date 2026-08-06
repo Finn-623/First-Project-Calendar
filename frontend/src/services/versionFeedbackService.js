@@ -87,7 +87,7 @@ export const versionFeedbackService = {
     }
   },
 
-  async listFeedback({ userId, isAdmin }) {
+  async listFeedbackPage({ userId, isAdmin, status, page = 1, pageSize = 10 }) {
     if (!supabase) {
       return { success: false, error: 'Supabase 尚未配置' };
     }
@@ -97,12 +97,22 @@ export const versionFeedbackService = {
     }
 
     try {
+      const isUnpaged = pageSize === null;
+      const safePageSize = isUnpaged ? null : Math.max(1, Math.min(Number(pageSize) || 10, 30));
+      const safePage = Math.max(1, Number(page) || 1);
       let query = supabase
         .from('version_feedback')
         .select('id, feedback_number, user_id, title, description, status, submitted_priority, target_version, priority, priority_assigned_at, priority_assigned_by, created_at, completed_at, completed_version, updated_at', { count: 'exact' })
+        .eq('status', status)
         .order('priority', { ascending: true })
         .order('created_at', { ascending: true })
         .order('id', { ascending: true });
+
+      if (!isUnpaged) {
+        const rangeStart = (safePage - 1) * safePageSize;
+        const rangeEnd = rangeStart + safePageSize - 1;
+        query = query.range(rangeStart, rangeEnd);
+      }
 
       if (!isAdmin) {
         query = query.eq('user_id', userId);
@@ -113,35 +123,46 @@ export const versionFeedbackService = {
         return { success: false, error: normalizeError(error) };
       }
 
-      const rows = (data || []).map(normalizeFeedbackRow);
+      let rows = (data || []).map(normalizeFeedbackRow);
 
-      if (!isAdmin) {
-        return {
-          success: true,
-          data: rows,
-          totalCount: count ?? rows.length,
-        };
+      if (isAdmin) {
+        const submitterIds = [...new Set([
+          ...rows.map((item) => item.user_id),
+          ...rows.map((item) => item.priority_assigned_by),
+        ].filter(Boolean))];
+        const submitterMap = await loadSubmitterMap(submitterIds);
+        rows = rows.map((item) => ({
+          ...item,
+          submitter: submitterMap[item.user_id] || null,
+          priorityAssigner: submitterMap[item.priority_assigned_by] || null,
+        }));
       }
-
-      const submitterIds = [...new Set([
-        ...rows.map((item) => item.user_id),
-        ...rows.map((item) => item.priority_assigned_by),
-      ].filter(Boolean))];
-      const submitterMap = await loadSubmitterMap(submitterIds);
-      const enriched = rows.map((item) => ({
-        ...item,
-        submitter: submitterMap[item.user_id] || null,
-        priorityAssigner: submitterMap[item.priority_assigned_by] || null,
-      }));
 
       return {
         success: true,
-        data: enriched,
-        totalCount: count ?? enriched.length,
+        items: rows,
+        totalCount: count || 0,
+        page: safePage,
+        totalPages: isUnpaged ? 1 : Math.max(1, Math.ceil((count || 0) / safePageSize)),
       };
     } catch (error) {
       return { success: false, error: normalizeError(error) };
     }
+  },
+
+  async listPendingFeedback({ userId, isAdmin, page = 1, pageSize = 10 }) {
+    return this.listFeedbackPage({ userId, isAdmin, status: 'pending', page, pageSize });
+  },
+
+  async listCompletedFeedback({ userId, isAdmin }) {
+    return this.listFeedbackPage({ userId, isAdmin, status: 'completed', page: 1, pageSize: null });
+  },
+
+  async countCompletedFeedback({ userId, isAdmin }) {
+    const result = await this.listFeedbackPage({ userId, isAdmin, status: 'completed', page: 1, pageSize: 1 });
+    return result.success
+      ? { success: true, totalCount: result.totalCount }
+      : result;
   },
 
   async updateFeedbackContent({ feedbackId, title, description }) {

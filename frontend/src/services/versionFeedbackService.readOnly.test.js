@@ -19,6 +19,17 @@ function createMutationQuery(result) {
   return query;
 }
 
+function createListQuery(result) {
+  const query = {
+    select: jest.fn(() => query),
+    eq: jest.fn(() => query),
+    order: jest.fn(() => query),
+    range: jest.fn(() => query),
+    then: (resolve) => Promise.resolve(result).then(resolve),
+  };
+  return query;
+}
+
 describe('versionFeedbackService completed feedback guards', () => {
   beforeEach(() => {
     jest.clearAllMocks();
@@ -121,5 +132,45 @@ describe('versionFeedbackService completed feedback guards', () => {
     expect(result.success).toBe(true);
     expect(result.data.feedback_number).toBe('FB-v0.1.3-001');
     expect(result.data.priority_assigned_by).toBe('admin-1');
+  });
+});
+
+describe('versionFeedbackService history query contracts', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  test('lists pending feedback with exact count, stable ordering, and page range', async () => {
+    const query = createListQuery({ data: [], error: null, count: 17 });
+    supabase.from.mockReturnValue(query);
+
+    const result = await versionFeedbackService.listPendingFeedback({
+      userId: 'admin-1',
+      isAdmin: true,
+      page: 2,
+      pageSize: 10,
+    });
+
+    expect(query.select).toHaveBeenCalledWith(expect.stringContaining('feedback_number'), { count: 'exact' });
+    expect(query.eq).toHaveBeenCalledWith('status', 'pending');
+    expect(query.order).toHaveBeenNthCalledWith(1, 'priority', { ascending: true });
+    expect(query.order).toHaveBeenNthCalledWith(2, 'created_at', { ascending: true });
+    expect(query.order).toHaveBeenNthCalledWith(3, 'id', { ascending: true });
+    expect(query.range).toHaveBeenCalledWith(10, 19);
+    expect(result).toEqual({ success: true, items: [], totalCount: 17, page: 2, totalPages: 2 });
+  });
+
+  test('lists completed feedback independently without pending range pagination', async () => {
+    const query = createListQuery({ data: [], error: null, count: 4 });
+    supabase.from.mockReturnValue(query);
+
+    const result = await versionFeedbackService.listCompletedFeedback({
+      userId: 'admin-1',
+      isAdmin: true,
+    });
+
+    expect(query.eq).toHaveBeenCalledWith('status', 'completed');
+    expect(query.range).not.toHaveBeenCalled();
+    expect(result).toEqual({ success: true, items: [], totalCount: 4, page: 1, totalPages: 1 });
   });
 });

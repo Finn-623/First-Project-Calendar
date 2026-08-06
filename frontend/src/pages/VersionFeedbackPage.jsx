@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
+import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { showSuccess } from '../lib/notifications';
 import { useStore } from '../store';
@@ -33,15 +34,19 @@ const DESCRIPTION_PREVIEW_LIMIT = 120;
 const FEEDBACK_CACHE_STALE_TIME = 60_000;
 const HISTORY_PAGE_SIZE = 10;
 
-export const VersionFeedbackPage = () => {
+export const VersionFeedbackPage = ({ completedOnly = false }) => {
   const { user, profile } = useStore();
   const queryClient = useQueryClient();
-  const [activeTab, setActiveTab] = useState('submit');
+  const navigate = useNavigate();
+  const [activeTab, setActiveTab] = useState('history');
   const [loadingHistory, setLoadingHistory] = useState(false);
-  const [historyPage, setHistoryPage] = useState(1);
-  const [historyTotalCount, setHistoryTotalCount] = useState(0);
+  const [pendingPage, setPendingPage] = useState(1);
+  const [pendingTotalCount, setPendingTotalCount] = useState(0);
+  const [pendingItems, setPendingItems] = useState([]);
+  const [completedPage, setCompletedPage] = useState(1);
+  const [completedTotalCount, setCompletedTotalCount] = useState(0);
+  const [completedItems, setCompletedItems] = useState([]);
   const [historyError, setHistoryError] = useState('');
-  const [history, setHistory] = useState([]);
   const [submitting, setSubmitting] = useState(false);
   const [updatingStatusId, setUpdatingStatusId] = useState('');
   const [updatingPriorityId, setUpdatingPriorityId] = useState('');
@@ -72,8 +77,8 @@ export const VersionFeedbackPage = () => {
   }, [profile?.account_type, profile?.is_admin, profile?.role]);
 
   const historyQueryKey = useMemo(
-    () => ['private', 'version-feedback', user?.id || 'anonymous', isAdmin ? 'admin' : 'owner'],
-    [isAdmin, user?.id]
+    () => ['private', 'version-feedback', user?.id || 'anonymous', isAdmin ? 'admin' : 'owner', completedOnly ? 'completed' : 'pending', completedOnly ? completedPage : pendingPage],
+    [completedOnly, completedPage, isAdmin, pendingPage, user?.id]
   );
   const historyRequestIdentity = historyQueryKey.join(':');
   const activeRequestIdentityRef = useRef(historyRequestIdentity);
@@ -83,25 +88,28 @@ export const VersionFeedbackPage = () => {
     return [...new Map(items.map((item) => [item.id, item])).values()];
   }, []);
 
-  const sortedHistory = useMemo(() => [...history].sort((a, b) => (
-    FEEDBACK_PRIORITIES.indexOf(a.priority || 'P2') - FEEDBACK_PRIORITIES.indexOf(b.priority || 'P2')
-    || new Date(a.created_at || 0).getTime() - new Date(b.created_at || 0).getTime()
-    || String(a.id).localeCompare(String(b.id))
-  )), [history]);
-
-  const pagedHistory = useMemo(() => sortedHistory.slice(
-    (historyPage - 1) * HISTORY_PAGE_SIZE,
-    historyPage * HISTORY_PAGE_SIZE
-  ), [historyPage, sortedHistory]);
-
-  const totalHistoryPages = Math.max(1, Math.ceil(historyTotalCount / HISTORY_PAGE_SIZE));
+  const sortHistoryItems = useCallback((items) => {
+    return [...items].sort((left, right) => {
+      const priorityDifference = FEEDBACK_PRIORITIES.indexOf(left.priority) - FEEDBACK_PRIORITIES.indexOf(right.priority);
+      if (priorityDifference !== 0) return priorityDifference;
+      const createdDifference = String(left.created_at || '').localeCompare(String(right.created_at || ''));
+      if (createdDifference !== 0) return createdDifference;
+      return String(left.id || '').localeCompare(String(right.id || ''));
+    });
+  }, []);
 
   const applyHistoryResult = useCallback((result) => {
-    const rows = mergeHistory(result?.data || []);
-    setHistory(rows);
-    setHistoryTotalCount(result?.totalCount ?? rows.length);
-    setHistoryPage(1);
-  }, [mergeHistory]);
+    const rows = sortHistoryItems(mergeHistory(result?.items || result?.data || []));
+    if (completedOnly) {
+      setCompletedItems(rows);
+      setCompletedTotalCount(result?.totalCount ?? rows.length);
+      setCompletedPage(Math.min(result?.page || 1, Math.max(1, Math.ceil((result?.totalCount ?? rows.length) / HISTORY_PAGE_SIZE))));
+    } else {
+      setPendingItems(rows);
+      setPendingTotalCount(result?.totalCount ?? rows.length);
+      setPendingPage(Math.min(result?.page || 1, Math.max(1, Math.ceil((result?.totalCount ?? rows.length) / HISTORY_PAGE_SIZE))));
+    }
+  }, [completedOnly, mergeHistory, sortHistoryItems]);
 
   const loadHistory = useCallback(async ({ force = false } = {}) => {
     if (!user?.id) return;
@@ -133,13 +141,23 @@ export const VersionFeedbackPage = () => {
       });
     }
 
+    const page = completedOnly ? completedPage : pendingPage;
     const result = await queryClient.fetchQuery({
       queryKey: historyQueryKey,
       staleTime: force ? 0 : FEEDBACK_CACHE_STALE_TIME,
-      queryFn: () => versionFeedbackService.listFeedback({
+      queryFn: () => (completedOnly
+        ? versionFeedbackService.listCompletedFeedback({
+          userId: user.id,
+          isAdmin,
+          page,
+          pageSize: HISTORY_PAGE_SIZE,
+        })
+        : versionFeedbackService.listPendingFeedback({
         userId: user.id,
         isAdmin,
-      }),
+          page,
+          pageSize: HISTORY_PAGE_SIZE,
+        })),
     });
 
     if (!mountedRef.current || activeRequestIdentityRef.current !== requestIdentity) {
@@ -154,12 +172,24 @@ export const VersionFeedbackPage = () => {
     }
 
     applyHistoryResult(result);
+    if (!completedOnly) {
+      const completedCountResult = await versionFeedbackService.countCompletedFeedback({
+        userId: user.id,
+        isAdmin,
+      });
+      if (completedCountResult?.success && mountedRef.current && activeRequestIdentityRef.current === requestIdentity) {
+        setCompletedTotalCount(completedCountResult.totalCount ?? 0);
+      }
+    }
     setLoadingHistory(false);
   }, [
     applyHistoryResult,
     historyQueryKey,
     historyRequestIdentity,
     isAdmin,
+    completedOnly,
+    completedPage,
+    pendingPage,
     queryClient,
     user?.id,
   ]);
@@ -246,13 +276,15 @@ export const VersionFeedbackPage = () => {
       return;
     }
 
-    setHistory((prev) => {
-      const nextRows = prev.map((record) => (record.id === item.id ? { ...record, ...result.data } : record));
+    const updateItems = (prev) => {
+      const nextRows = sortHistoryItems(prev.map((record) => (record.id === item.id ? { ...record, ...result.data } : record)));
       queryClient.setQueryData(historyQueryKey, (cached) => (
-        cached?.success ? { ...cached, data: nextRows } : cached
+        cached?.success ? { ...cached, items: nextRows } : cached
       ));
       return nextRows;
-    });
+    };
+    if (completedOnly) setCompletedItems(updateItems);
+    else setPendingItems(updateItems);
     setSavingEditId('');
     setEditingId('');
     showSuccess('修改意见已更新');
@@ -270,11 +302,12 @@ export const VersionFeedbackPage = () => {
       return;
     }
 
-    setHistory((prev) => {
+    setPendingItems((prev) => {
       const nextRows = prev.filter((record) => record.id !== deleteTarget.id);
       queryClient.setQueryData(historyQueryKey, (cached) => (
-        cached?.success ? { ...cached, data: nextRows } : cached
+        cached?.success ? { ...cached, items: nextRows, totalCount: Math.max(0, (cached.totalCount ?? pendingTotalCount) - 1) } : cached
       ));
+      setPendingTotalCount((count) => Math.max(0, count - 1));
       return nextRows;
     });
     setDeletingId('');
@@ -308,13 +341,15 @@ export const VersionFeedbackPage = () => {
       return;
     }
 
-    setHistory((prev) => {
-      const nextRows = prev.map((record) => (record.id === item.id ? { ...record, ...result.data } : record));
+    const updateItems = (prev) => {
+      const nextRows = prev.filter((record) => record.id !== item.id);
       queryClient.setQueryData(historyQueryKey, (cached) => (
-        cached?.success ? { ...cached, data: nextRows } : cached
+        cached?.success ? { ...cached, items: nextRows, totalCount: Math.max(0, (cached.totalCount ?? pendingTotalCount) - 1) } : cached
       ));
       return nextRows;
-    });
+    };
+    setPendingItems(updateItems);
+    setPendingTotalCount((count) => Math.max(0, count - 1));
     setCompleteVersionMap((prev) => ({ ...prev, [item.id]: validation.normalized }));
     setUpdatingStatusId('');
     showSuccess('任务已标记为已完成');
@@ -335,13 +370,15 @@ export const VersionFeedbackPage = () => {
       return;
     }
 
-    setHistory((prev) => {
+    const updateItems = (prev) => {
       const nextRows = prev.map((record) => (record.id === item.id ? { ...record, ...result.data } : record));
       queryClient.setQueryData(historyQueryKey, (cached) => (
-        cached?.success ? { ...cached, data: nextRows } : cached
+        cached?.success ? { ...cached, items: nextRows } : cached
       ));
       return nextRows;
-    });
+    };
+    if (completedOnly) setCompletedItems(updateItems);
+    else setPendingItems(updateItems);
     setUpdatingPriorityId('');
     showSuccess('优先级已更新');
   };
@@ -358,18 +395,23 @@ export const VersionFeedbackPage = () => {
     if (cachedResult?.success) {
       applyHistoryResult(cachedResult);
     } else {
-      setHistory([]);
-      setHistoryTotalCount(0);
-      setHistoryPage(1);
+      if (completedOnly) {
+        setCompletedItems([]);
+        setCompletedTotalCount(0);
+      } else {
+        setPendingItems([]);
+        setPendingTotalCount(0);
+      }
     }
     setHistoryError('');
 
-    if (activeTab === 'history') {
+    if (completedOnly || activeTab === 'history') {
       loadHistory();
     }
   }, [
     activeTab,
     applyHistoryResult,
+    completedOnly,
     historyQueryKey,
     historyRequestIdentity,
     loadHistory,
@@ -390,27 +432,33 @@ export const VersionFeedbackPage = () => {
     }));
   };
 
+  const visibleItems = completedOnly ? completedItems : pendingItems;
+  const visibleTotalCount = completedOnly ? completedTotalCount : pendingTotalCount;
+  const visiblePage = completedOnly ? completedPage : pendingPage;
+  const visibleTotalPages = Math.max(1, Math.ceil(visibleTotalCount / HISTORY_PAGE_SIZE));
+  const setVisiblePage = completedOnly ? setCompletedPage : setPendingPage;
+
   return (
     <div className="w-full max-w-md mx-auto px-4 pt-6 pb-28">
       <SettingsSubpageHeader
         title="修改意见"
-        description="提交使用建议，并查看建议的处理进度。"
-        backTo="/settings/version"
-        backLabel="返回版本信息"
+        description={completedOnly ? '查看已完成建议。' : '提交使用建议，并查看未完成建议的处理进度。'}
+        backTo={completedOnly ? '/settings/version/feedback' : '/settings/version'}
+        backLabel={completedOnly ? '返回建议历史' : '返回版本信息'}
         backReplace
       />
 
-      <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
+      <Tabs value={completedOnly ? 'history' : activeTab} onValueChange={handleTabChange} className="w-full">
         <TabsList className="w-full grid grid-cols-2 h-11">
-          <TabsTrigger value="submit">提交建议</TabsTrigger>
+          {!completedOnly ? <TabsTrigger value="submit">提交建议</TabsTrigger> : null}
           <TabsTrigger
             value="history"
           >
-            建议历史
+            {completedOnly ? '已完成建议' : '未完成建议'}
           </TabsTrigger>
         </TabsList>
 
-        <TabsContent value="submit">
+        {!completedOnly ? <TabsContent value="submit">
           <form onSubmit={handleSubmit} className="rounded-2xl border border-[#E5E5E0] bg-white p-4 mt-3 space-y-3">
             <div className="rounded-xl border border-[#E5E5E0] bg-[#F7F7F5] px-3 py-2">
               <p className="text-[12px] text-[#6A6F6C]">所属版本</p>
@@ -483,7 +531,7 @@ export const VersionFeedbackPage = () => {
               {submitting ? '提交中...' : '提交修改意见'}
             </button>
           </form>
-        </TabsContent>
+        </TabsContent> : null}
 
         <TabsContent value="history">
           <div className="rounded-2xl border border-[#E5E5E0] bg-white mt-3 overflow-hidden">
@@ -503,20 +551,12 @@ export const VersionFeedbackPage = () => {
 
             {!historyError ? (
               <div className="space-y-4 bg-[#F7F7F5] p-3" data-testid="feedback-history-sections">
-                {[
-                  {
-                    key: 'pending',
-                    title: '未完成建议',
-                    items: pagedHistory.filter((item) => item.status === 'pending'),
-                    emptyText: '目前没有未完成建议',
-                  },
-                  {
-                    key: 'completed',
-                    title: '已完成建议',
-                    items: pagedHistory.filter((item) => item.status === 'completed'),
-                    emptyText: '目前没有已完成建议',
-                  },
-                ].map((section) => (
+                {[{
+                  key: completedOnly ? 'completed' : 'pending',
+                  title: completedOnly ? '已完成建议' : '未完成建议',
+                  items: visibleItems,
+                  emptyText: completedOnly ? '目前没有已完成建议' : '目前没有未完成建议',
+                }].map((section) => (
                   <section
                     key={section.key}
                     data-testid={`${section.key}-feedback-section`}
@@ -524,7 +564,7 @@ export const VersionFeedbackPage = () => {
                   >
                     <div className="flex min-w-0 items-center justify-between gap-2 border-b border-[#F0EFE9] px-4 py-3">
                       <h2 className="min-w-0 break-words text-[14px] font-medium text-[#2C332F]">
-                        {section.title}（{section.items.length}）
+                        {section.title}（{visibleTotalCount}）
                       </h2>
                     </div>
                     {!loadingHistory && section.items.length === 0 ? (
@@ -719,26 +759,35 @@ export const VersionFeedbackPage = () => {
                     ))}
                   </section>
                 ))}
+                {!completedOnly ? (
+                  <button
+                    type="button"
+                    onClick={() => navigate('/settings/version/feedback/completed')}
+                    className="w-full min-h-11 rounded-lg border border-[#D5DCD2] bg-white text-[13px] text-[#2C332F]"
+                  >
+                    查看已完成建议（{completedTotalCount}）
+                  </button>
+                ) : null}
               </div>
             ) : null}
 
-            {!loadingHistory && !historyError && historyTotalCount > 0 ? (
+            {!loadingHistory && !historyError && visibleTotalCount > 0 && !completedOnly ? (
               <div className="px-4 py-3 border-t border-[#F0EFE9]">
                 <div className="flex items-center justify-between gap-2 text-[12px] text-[#6A6F6C]">
-                  <span>共 {historyTotalCount} 条 · 第 {historyPage} / {totalHistoryPages} 页</span>
+                  <span>共 {visibleTotalCount} 条 · 第 {visiblePage} / {visibleTotalPages} 页</span>
                   <div className="flex items-center gap-2">
                     <button
                       type="button"
-                      disabled={historyPage <= 1}
-                      onClick={() => setHistoryPage((page) => Math.max(1, page - 1))}
+                      disabled={visiblePage <= 1}
+                      onClick={() => setVisiblePage((page) => Math.max(1, page - 1))}
                       className="min-h-10 px-3 rounded-lg border border-[#D5DCD2] text-[12px] text-[#2C332F] disabled:opacity-45"
                     >
                       上一页
                     </button>
                     <button
                       type="button"
-                      disabled={historyPage >= totalHistoryPages}
-                      onClick={() => setHistoryPage((page) => Math.min(totalHistoryPages, page + 1))}
+                      disabled={visiblePage >= visibleTotalPages}
+                      onClick={() => setVisiblePage((page) => Math.min(visibleTotalPages, page + 1))}
                       className="min-h-10 px-3 rounded-lg border border-[#D5DCD2] text-[12px] text-[#2C332F] disabled:opacity-45"
                     >
                       下一页

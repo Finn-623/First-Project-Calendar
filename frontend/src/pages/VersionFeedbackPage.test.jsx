@@ -71,6 +71,9 @@ jest.mock('../services/versionFeedbackService', () => ({
     completeFeedback: jest.fn(),
     reopenFeedback: jest.fn(),
     updateFeedbackPriority: jest.fn(),
+    listPendingFeedback: jest.fn(),
+    listCompletedFeedback: jest.fn(),
+    countCompletedFeedback: jest.fn(),
   },
 }));
 
@@ -96,15 +99,37 @@ function createTestQueryClient() {
   });
 }
 
-function renderPage({ strict = false } = {}) {
+function mockSplitListServices() {
+  const adapt = (status) => async (args) => {
+    const result = await versionFeedbackService.listFeedback(args);
+    const sourceItems = result?.items || result?.data || [];
+    const allItems = sourceItems.filter((item) => item.status === status);
+    const totalCount = result?.totalCount ?? allItems.length;
+    const page = args?.page || 1;
+    const items = status === 'pending'
+      ? allItems.slice((page - 1) * 10, page * 10)
+      : allItems;
+    return {
+      success: result?.success !== false,
+      items,
+      totalCount,
+      page,
+      totalPages: Math.max(1, Math.ceil(totalCount / 10)),
+    };
+  };
+  versionFeedbackService.listPendingFeedback.mockImplementation(adapt('pending'));
+  versionFeedbackService.listCompletedFeedback.mockImplementation(adapt('completed'));
+}
+
+function renderPage({ strict = false, completedOnly = false } = {}) {
   if (!testQueryClient) {
     testQueryClient = createTestQueryClient();
   }
   const page = strict ? (
     <React.StrictMode>
-      <VersionFeedbackPage />
+      <VersionFeedbackPage completedOnly={completedOnly} />
     </React.StrictMode>
-  ) : <VersionFeedbackPage />;
+  ) : <VersionFeedbackPage completedOnly={completedOnly} />;
 
   return render(
     <QueryClientProvider client={testQueryClient}>
@@ -114,10 +139,14 @@ function renderPage({ strict = false } = {}) {
 }
 
 function openHistoryTab() {
-  fireEvent.click(screen.getByRole('tab', { name: '建议历史' }));
+  fireEvent.click(screen.getByRole('tab', { name: '未完成建议' }));
 }
 
 function fillFeedbackForm() {
+  const submitTab = screen.queryByRole('tab', { name: '提交建议' });
+  if (submitTab && submitTab.getAttribute('aria-selected') !== 'true') {
+    fireEvent.click(submitTab);
+  }
   fireEvent.change(screen.getByLabelText('建议标题'), { target: { value: '一个有效建议' } });
   fireEvent.change(screen.getByLabelText('详细说明'), { target: { value: '这是一个足够详细的修改意见。' } });
 }
@@ -138,6 +167,8 @@ describe('VersionFeedbackPage history', () => {
       hasMore: false,
       nextCursor: null,
     });
+    mockSplitListServices();
+    versionFeedbackService.countCompletedFeedback.mockResolvedValue({ success: true, totalCount: 0 });
   });
 
   afterEach(() => {
@@ -167,13 +198,30 @@ describe('VersionFeedbackPage history', () => {
   });
 
   test('shows separate empty states when query succeeds with empty list', async () => {
-    renderPage();
-    openHistoryTab();
+    const pendingPage = renderPage();
 
     expect(await screen.findByText('目前没有未完成建议')).toBeTruthy();
     expect(screen.getByText('未完成建议（0）')).toBeTruthy();
+    expect(screen.queryByTestId('completed-feedback-section')).toBeNull();
+    expect(screen.getByRole('button', { name: '查看已完成建议（0）' })).toBeTruthy();
+
+    pendingPage.unmount();
+    renderPage({ completedOnly: true });
+    expect(await screen.findByText('目前没有已完成建议')).toBeTruthy();
     expect(screen.getByText('已完成建议（0）')).toBeTruthy();
-    expect(screen.getByText('目前没有已完成建议')).toBeTruthy();
+  });
+
+  test('opens completed history from pending page and returns to pending route', async () => {
+    versionFeedbackService.countCompletedFeedback.mockResolvedValueOnce({ success: true, totalCount: 4 });
+    renderPage();
+
+    fireEvent.click(await screen.findByRole('button', { name: '查看已完成建议（4）' }));
+    expect(mockNavigate).toHaveBeenCalledWith('/settings/version/feedback/completed');
+
+    const completedView = renderPage({ completedOnly: true });
+    fireEvent.click(screen.getByRole('button', { name: '返回建议历史' }));
+    expect(mockNavigate).toHaveBeenCalledWith('/settings/version/feedback', { replace: true });
+    completedView.unmount();
   });
 
   test('requires a priority before submitting and sends the selected priority with the current version', async () => {
@@ -498,6 +546,7 @@ describe('VersionFeedbackPage history', () => {
     });
 
     expect(await screen.findByText('目前没有未完成建议')).toBeTruthy();
+    expect(screen.getByText('未完成建议（0）')).toBeTruthy();
   });
 
   test('does not show edit and delete for non-owner record', async () => {
@@ -526,12 +575,13 @@ describe('VersionFeedbackPage history', () => {
 
     expect(screen.queryByRole('button', { name: '编辑' })).toBeNull();
     expect(screen.queryByRole('button', { name: '删除' })).toBeNull();
+    expect(screen.queryAllByRole('combobox')).toHaveLength(0);
   });
 
-  test('shows completed time and version for completed records only', async () => {
-    versionFeedbackService.listFeedback.mockResolvedValue({
+  test('shows completed time and version on the completed-only page', async () => {
+    versionFeedbackService.listCompletedFeedback.mockResolvedValueOnce({
       success: true,
-      data: [
+      items: [
         {
           id: 'f8',
           user_id: 'user-1',
@@ -543,34 +593,22 @@ describe('VersionFeedbackPage history', () => {
           completed_at: '2026-07-22T11:00:00.000Z',
           completed_version: 'v0.2.0',
         },
-        {
-          id: 'f9',
-          user_id: 'user-1',
-          title: '未完成建议',
-          description: '内容',
-          status: 'pending',
-          created_at: '2026-07-20T10:00:00.000Z',
-          updated_at: '2026-07-20T11:00:00.000Z',
-          completed_at: null,
-          completed_version: null,
-        },
       ],
-      hasMore: false,
-      nextCursor: null,
+      totalCount: 1,
+      page: 1,
+      totalPages: 1,
     });
 
-    renderPage();
-    openHistoryTab();
+    renderPage({ completedOnly: true });
 
-    await screen.findByText('已完成建议');
     const completedSection = screen.getByTestId('completed-feedback-section');
-    expect(within(completedSection).getByText('已完成建议')).toBeTruthy();
+    expect(await within(completedSection).findByText('已完成建议')).toBeTruthy();
     expect(within(completedSection).getByText('已完成')).toBeTruthy();
     expect(within(completedSection).getByText(/完成时间：/)).toBeTruthy();
     expect(within(completedSection).getByText('完成版本：v0.2.0')).toBeTruthy();
   });
 
-  test('partitions pending above completed and sorts each section by its business timestamp', async () => {
+  test('pending page excludes completed rows and sorts pending by priority and timestamp', async () => {
     versionFeedbackService.listFeedback.mockResolvedValueOnce({
       success: true,
       data: [
@@ -620,23 +658,16 @@ describe('VersionFeedbackPage history', () => {
     });
 
     renderPage();
-    openHistoryTab();
 
     await screen.findByText('最近提交');
     const pendingSection = screen.getByTestId('pending-feedback-section');
-    const completedSection = screen.getByTestId('completed-feedback-section');
-    expect(screen.getByTestId('feedback-history-sections').firstElementChild).toBe(pendingSection);
     expect(within(pendingSection).getByText('未完成建议（2）')).toBeTruthy();
-    expect(within(completedSection).getByText('已完成建议（2）')).toBeTruthy();
 
     const pendingNew = within(pendingSection).getByText('最近提交');
     const pendingOld = within(pendingSection).getByText('较早提交');
-    const completedNew = within(completedSection).getByText('最近完成');
-    const completedOld = within(completedSection).getByText('较早完成');
     expect(Boolean(pendingOld.compareDocumentPosition(pendingNew) & Node.DOCUMENT_POSITION_FOLLOWING)).toBe(true);
-    expect(Boolean(completedNew.compareDocumentPosition(completedOld) & Node.DOCUMENT_POSITION_FOLLOWING)).toBe(true);
     expect(within(pendingSection).queryByText('最近完成')).toBeNull();
-    expect(within(completedSection).queryByText('最近提交')).toBeNull();
+    expect(screen.queryByTestId('completed-feedback-section')).toBeNull();
   });
 
   test('shows local calendar-day submission ages without negative values', async () => {
@@ -690,8 +721,7 @@ describe('VersionFeedbackPage history', () => {
       nextCursor: null,
     });
 
-    renderPage();
-    openHistoryTab();
+    renderPage({ completedOnly: true });
 
     await screen.findByText('只读建议');
     const completedSection = screen.getByTestId('completed-feedback-section');
@@ -724,42 +754,32 @@ describe('VersionFeedbackPage history loading responsiveness', () => {
       user: { id: 'user-1' },
       profile: { role: 'user', is_admin: false },
     });
+    mockSplitListServices();
+    versionFeedbackService.countCompletedFeedback.mockResolvedValue({ success: true, totalCount: 0 });
   });
 
-  test('renders both section structures and a loading state before an uncached request resolves', async () => {
+  test('renders the pending section and loading state before an uncached request resolves', async () => {
     let resolveRequest;
     versionFeedbackService.listFeedback.mockReturnValueOnce(new Promise((resolve) => {
       resolveRequest = resolve;
     }));
 
     renderPage();
-    openHistoryTab();
-
     expect(screen.getByText('正在加载建议历史...')).toBeTruthy();
     expect(screen.getByText('未完成建议（0）')).toBeTruthy();
-    expect(screen.getByText('已完成建议（0）')).toBeTruthy();
     expect(versionFeedbackService.listFeedback).toHaveBeenCalledTimes(1);
 
     await act(async () => {
       resolveRequest({
         success: true,
-        data: [
-          feedbackRow(),
-          feedbackRow({
-            id: 'completed-1',
-            title: '已完成缓存建议',
-            status: 'completed',
-            completed_at: '2026-07-28T11:00:00.000Z',
-            completed_version: 'v0.1.3',
-          }),
-        ],
+        data: [feedbackRow()],
         hasMore: false,
         nextCursor: null,
       });
     });
 
     expect(await screen.findByText('缓存建议')).toBeTruthy();
-    expect(screen.getByText('已完成缓存建议')).toBeTruthy();
+    expect(screen.queryByText('已完成缓存建议')).toBeNull();
   });
 
   test('deduplicates the equivalent history request under Strict Mode', async () => {
@@ -769,7 +789,6 @@ describe('VersionFeedbackPage history loading responsiveness', () => {
     }));
 
     renderPage({ strict: true });
-    openHistoryTab();
     expect(versionFeedbackService.listFeedback).toHaveBeenCalledTimes(1);
 
     await act(async () => {
@@ -793,13 +812,10 @@ describe('VersionFeedbackPage history loading responsiveness', () => {
     });
 
     const firstRender = renderPage();
-    openHistoryTab();
     expect(await screen.findByText('缓存建议')).toBeTruthy();
     firstRender.unmount();
 
     renderPage();
-    openHistoryTab();
-
     expect(screen.getByText('缓存建议')).toBeTruthy();
     expect(screen.queryByText('正在加载建议历史...')).toBeNull();
     expect(versionFeedbackService.listFeedback).toHaveBeenCalledTimes(1);
@@ -807,25 +823,25 @@ describe('VersionFeedbackPage history loading responsiveness', () => {
 
   test('shows stale cache first and replaces it with refreshed data without duplicates', async () => {
     testQueryClient.setQueryData(
-      ['private', 'version-feedback', 'user-1', 'owner'],
+      ['private', 'version-feedback', 'user-1', 'owner', 'pending', 1],
       {
         success: true,
-        data: [feedbackRow({ id: 'stale', title: '旧缓存建议' })],
-        hasMore: false,
-        nextCursor: null,
+        items: [feedbackRow({ id: 'stale', title: '旧缓存建议' })],
+        totalCount: 1,
+        page: 1,
+        totalPages: 1,
       },
       { updatedAt: Date.now() - 120_000 }
     );
     versionFeedbackService.listFeedback.mockResolvedValueOnce({
       success: true,
-      data: [feedbackRow({ id: 'fresh', title: '刷新后建议' })],
-      hasMore: false,
-      nextCursor: null,
+      items: [feedbackRow({ id: 'fresh', title: '刷新后建议' })],
+      totalCount: 1,
+      page: 1,
+      totalPages: 1,
     });
 
     renderPage();
-    openHistoryTab();
-
     expect(screen.getByText('旧缓存建议')).toBeTruthy();
     expect(await screen.findByText('刷新后建议')).toBeTruthy();
     expect(screen.queryByText('旧缓存建议')).toBeNull();
@@ -839,19 +855,19 @@ describe('VersionFeedbackPage history loading responsiveness', () => {
       resolveRequest = resolve;
     }));
     const view = renderPage();
-    openHistoryTab();
     view.unmount();
 
     resolveRequest({
       success: true,
-      data: [feedbackRow({ title: '卸载后返回' })],
-      hasMore: false,
-      nextCursor: null,
+      items: [feedbackRow({ title: '卸载后返回' })],
+      totalCount: 1,
+      page: 1,
+      totalPages: 1,
     });
     await waitFor(() => {
       expect(testQueryClient.getQueryData(
-        ['private', 'version-feedback', 'user-1', 'owner']
-      )?.data?.[0]?.title).toBe('卸载后返回');
+        ['private', 'version-feedback', 'user-1', 'owner', 'pending', 1]
+      )?.items?.[0]?.title).toBe('卸载后返回');
     });
     expect(view.container.innerHTML).toBe('');
   });
@@ -876,13 +892,13 @@ describe('VersionFeedbackPage history loading responsiveness', () => {
           user_id: 'user-2',
           title: '账号 B 建议',
         })],
-        hasMore: false,
-        nextCursor: null,
+        totalCount: 1,
+        page: 1,
+        totalPages: 1,
       });
     });
 
     const view = renderPage();
-    openHistoryTab();
     currentStore = {
       user: { id: 'user-2' },
       profile: { role: 'user', is_admin: false },
@@ -897,16 +913,17 @@ describe('VersionFeedbackPage history loading responsiveness', () => {
     resolveAccountA({
       success: true,
       data: [feedbackRow({ title: '账号 A 迟到建议' })],
-      hasMore: false,
-      nextCursor: null,
+      totalCount: 1,
+      page: 1,
+      totalPages: 1,
     });
     await waitFor(() => {
       expect(screen.queryByText('账号 A 迟到建议')).toBeNull();
     });
     expect(screen.getByText('账号 B 建议')).toBeTruthy();
     expect(testQueryClient.getQueryData(
-      ['private', 'version-feedback', 'user-2', 'owner']
-    )?.data?.[0]?.title).toBe('账号 B 建议');
+      ['private', 'version-feedback', 'user-2', 'owner', 'pending', 1]
+    )?.items?.[0]?.title).toBe('账号 B 建议');
   });
 });
 
@@ -918,6 +935,8 @@ describe('VersionFeedbackPage admin completion flow', () => {
       user: { id: 'admin-1' },
       profile: { role: 'admin', is_admin: true },
     });
+    mockSplitListServices();
+    versionFeedbackService.countCompletedFeedback.mockResolvedValue({ success: true, totalCount: 0 });
 
     versionFeedbackService.listFeedback.mockResolvedValue({
       success: true,
@@ -978,11 +997,8 @@ describe('VersionFeedbackPage admin completion flow', () => {
       expect(within(screen.getByTestId('pending-feedback-section')).queryByText('管理员处理建议')).toBeNull();
     });
     const pendingSection = screen.getByTestId('pending-feedback-section');
-    const completedSection = screen.getByTestId('completed-feedback-section');
     expect(within(pendingSection).queryByText('管理员处理建议')).toBeNull();
-    expect(within(completedSection).getByText('管理员处理建议')).toBeTruthy();
-    expect(within(completedSection).getByText('完成版本：v0.1.3')).toBeTruthy();
-    expect(within(completedSection).queryByRole('button', { name: /编辑|删除|恢复/ })).toBeNull();
+    expect(screen.queryByTestId('completed-feedback-section')).toBeNull();
   });
 
   test('keeps a pending item editable when completion fails', async () => {
@@ -999,12 +1015,12 @@ describe('VersionFeedbackPage admin completion flow', () => {
 
     await waitFor(() => expect(toast.error).toHaveBeenCalledWith('完成失败'));
     expect(within(screen.getByTestId('pending-feedback-section')).getByText('管理员处理建议')).toBeTruthy();
-    expect(within(screen.getByTestId('completed-feedback-section')).queryByText('管理员处理建议')).toBeNull();
+    expect(screen.queryByTestId('completed-feedback-section')).toBeNull();
     expect(screen.getByRole('button', { name: '标记为已完成' })).toBeTruthy();
   });
 
-  test('paginates the complete sorted result into 10, 10, and 1 records', async () => {
-    const rows = Array.from({ length: 21 }, (_, index) => ({
+  test('paginates pending results into 10 and 7 records with the database total in both titles', async () => {
+    const rows = Array.from({ length: 17 }, (_, index) => ({
       id: `page-${index + 1}`,
       user_id: `user-${index + 1}`,
       title: `分页建议${index + 1}`,
@@ -1016,28 +1032,24 @@ describe('VersionFeedbackPage admin completion flow', () => {
       created_at: `2026-07-${String(index + 1).padStart(2, '0')}T10:00:00.000Z`,
       updated_at: `2026-07-${String(index + 1).padStart(2, '0')}T10:00:00.000Z`,
     }));
-    versionFeedbackService.listFeedback.mockResolvedValueOnce({
+    versionFeedbackService.listFeedback.mockResolvedValue({
       success: true,
       data: rows,
-      totalCount: 21,
+      totalCount: 17,
     });
 
     renderPage();
-    openHistoryTab();
     expect(await screen.findByText('分页建议1')).toBeTruthy();
-    expect(screen.getByText('共 21 条 · 第 1 / 3 页')).toBeTruthy();
+    expect(screen.getByText('未完成建议（17）')).toBeTruthy();
+    expect(screen.getByText('共 17 条 · 第 1 / 2 页')).toBeTruthy();
     expect(screen.getAllByText(/分页建议/)).toHaveLength(10);
     expect(screen.getByRole('button', { name: '上一页' }).disabled).toBe(true);
 
     fireEvent.click(screen.getByRole('button', { name: '下一页' }));
     expect(await screen.findByText('分页建议11')).toBeTruthy();
-    expect(screen.getByText('共 21 条 · 第 2 / 3 页')).toBeTruthy();
-    expect(screen.getAllByText(/分页建议/)).toHaveLength(10);
-
-    fireEvent.click(screen.getByRole('button', { name: '下一页' }));
-    expect(await screen.findByText('分页建议21')).toBeTruthy();
-    expect(screen.getByText('共 21 条 · 第 3 / 3 页')).toBeTruthy();
-    expect(screen.getAllByText(/分页建议/)).toHaveLength(1);
+    expect(screen.getByText('未完成建议（17）')).toBeTruthy();
+    expect(screen.getByText('共 17 条 · 第 2 / 2 页')).toBeTruthy();
+    expect(screen.getAllByText(/分页建议/)).toHaveLength(7);
     expect(screen.getByRole('button', { name: '下一页' }).disabled).toBe(true);
   });
 
@@ -1046,7 +1058,7 @@ describe('VersionFeedbackPage admin completion flow', () => {
       user: { id: 'admin-1' },
       profile: { role: 'user', account_type: 'admin', is_admin: false },
     });
-    versionFeedbackService.listFeedback.mockResolvedValueOnce({
+    versionFeedbackService.listFeedback.mockResolvedValue({
       success: true,
       data: [
         {
@@ -1077,6 +1089,26 @@ describe('VersionFeedbackPage admin completion flow', () => {
         },
       ],
       totalCount: 2,
+    });
+    versionFeedbackService.listCompletedFeedback.mockResolvedValueOnce({
+      success: true,
+      items: [{
+        id: 'other-completed',
+        user_id: 'other-user-2',
+        title: '他人已完成建议',
+        description: '内容',
+        status: 'completed',
+        priority: 'P3',
+        submitted_priority: 'P2',
+        feedback_number: 'FB-v0.1.3-102',
+        created_at: '2026-07-21T10:00:00.000Z',
+        updated_at: '2026-07-22T10:00:00.000Z',
+        completed_at: '2026-07-22T10:00:00.000Z',
+        completed_version: 'v0.1.3',
+      }],
+      totalCount: 1,
+      page: 1,
+      totalPages: 1,
     });
     versionFeedbackService.updateFeedbackPriority
       .mockResolvedValueOnce({
@@ -1116,13 +1148,11 @@ describe('VersionFeedbackPage admin completion flow', () => {
         },
       });
 
-    renderPage();
-    openHistoryTab();
+    const pendingPage = renderPage();
     await screen.findByText('他人待处理建议');
     const pendingPriority = screen.getByRole('combobox', { name: '调整FB-v0.1.3-101优先级' });
-    const completedPriority = screen.getByRole('combobox', { name: '调整FB-v0.1.3-102优先级' });
     expect(pendingPriority).toBeTruthy();
-    expect(completedPriority).toBeTruthy();
+    expect(screen.queryByRole('combobox', { name: '调整FB-v0.1.3-102优先级' })).toBeNull();
 
     fireEvent.change(pendingPriority, { target: { value: 'P0' } });
     await waitFor(() => expect(versionFeedbackService.updateFeedbackPriority).toHaveBeenCalledWith({
@@ -1133,6 +1163,9 @@ describe('VersionFeedbackPage admin completion flow', () => {
     expect(within(screen.getByTestId('pending-feedback-section')).getByText(/用户选择：P1 ·/)).toBeTruthy();
     expect(within(screen.getByTestId('pending-feedback-section')).getByText('FB-v0.1.3-101')).toBeTruthy();
 
+    pendingPage.unmount();
+    renderPage({ completedOnly: true });
+    const completedPriority = await screen.findByRole('combobox', { name: '调整FB-v0.1.3-102优先级' });
     fireEvent.change(completedPriority, { target: { value: 'P1' } });
     await waitFor(() => expect(versionFeedbackService.updateFeedbackPriority).toHaveBeenCalledWith({
       feedbackId: 'other-completed',
