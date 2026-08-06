@@ -5,6 +5,7 @@ import { supabase } from './lib/supabaseClient';
 import { registerAuthListener } from './lib/authState';
 
 let mockProfileByUser;
+const mockNavigate = jest.fn();
 
 jest.mock('@/App.css', () => ({}), { virtual: true });
 
@@ -13,6 +14,7 @@ jest.mock('react-router-dom', () => ({
   Routes: ({ children }) => <div>{children}</div>,
   Route: ({ path, element }) => <div data-testid={`route-${path}`}>{element}</div>,
   Navigate: ({ to }) => <div data-testid={`redirect-${to}`}>redirect:{to}</div>,
+  useNavigate: () => mockNavigate,
   useLocation: () => ({ pathname: '/settings' }),
 }), { virtual: true });
 
@@ -61,6 +63,7 @@ jest.mock('sonner', () => ({ Toaster: () => null }));
 describe('App 退出后的受保护路由', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    window.sessionStorage.clear();
     mockProfileByUser = new Map();
     supabase.auth.getSession.mockResolvedValue({ data: { session: null }, error: null });
     supabase.from.mockImplementation((table) => ({
@@ -241,5 +244,26 @@ describe('App 退出后的受保护路由', () => {
       expect(screen.getByTestId('store-user').textContent).toBe('user-a');
     });
     expect(supabase.from).toHaveBeenCalledTimes(1);
+  });
+
+  test('新应用会话首次进入首页，并在同一会话刷新时保留当前路由', async () => {
+    mockProfileByUser.set('user-a', {
+      data: { id: 'user-a', display_name: '账号 A', role: 'user' },
+      error: null,
+    });
+    supabase.auth.getSession.mockResolvedValue({
+      data: { session: { access_token: 'session-a', user: { id: 'user-a' } } },
+      error: null,
+    });
+
+    render(<App />);
+
+    await waitFor(() => expect(screen.getByText('受保护首页')).toBeTruthy());
+    expect(mockNavigate).toHaveBeenCalledWith('/', { replace: true });
+
+    mockNavigate.mockClear();
+    render(<App />);
+    await waitFor(() => expect(screen.getByText('受保护首页')).toBeTruthy());
+    expect(mockNavigate).not.toHaveBeenCalled();
   });
 });

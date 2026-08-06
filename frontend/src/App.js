@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef, useCallback } from 'react';
 import '@/App.css';
-import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, useLocation, useNavigate } from 'react-router-dom';
 import { Toaster } from 'sonner';
 import { BottomNav } from './components/BottomNav';
 import { TodayPage } from './pages/TodayPage';
@@ -34,6 +34,58 @@ function LoginPerfRouteProbe({ isAuthenticated }) {
   }, [isAuthenticated, location.pathname]);
 
   return null;
+}
+
+const APP_SESSION_INITIALIZED_KEY = 'first-project-calendar:session-initialized';
+
+function AuthenticatedRoutes() {
+  const navigate = useNavigate();
+  const [entryReady, setEntryReady] = useState(false);
+
+  useEffect(() => {
+    let shouldOpenHome = false;
+
+    try {
+      shouldOpenHome = !window.sessionStorage.getItem(APP_SESSION_INITIALIZED_KEY);
+      window.sessionStorage.setItem(APP_SESSION_INITIALIZED_KEY, 'true');
+    } catch {
+      // Private browsing modes may reject sessionStorage; keep routing usable.
+      shouldOpenHome = false;
+    }
+
+    if (shouldOpenHome) {
+      navigate('/', { replace: true });
+    }
+    setEntryReady(true);
+  }, [navigate]);
+
+  if (!entryReady) return null;
+
+  return (
+    <>
+      <Routes>
+        <Route path="/" element={<TodayPage />} />
+        <Route path="/history" element={<HistoryPage />} />
+        <Route path="/history/:dateStr" element={<HistoryDetailPage />} />
+        <Route path="/library" element={<FoodLibraryPage />} />
+        <Route path="/library/review" element={<PublicFoodReviewPage />} />
+        <Route path="/settings" element={<SettingsPage />} />
+        <Route path="/settings/account" element={<AccountInfoPage />} />
+        <Route path="/settings/personal-info" element={<ProfileInfoPage />} />
+        <Route path="/settings/profile" element={<Navigate to="/settings/personal-info" replace />} />
+        <Route path="/settings/version" element={<SettingsVersionPage />} />
+        <Route path="/settings/version/feedback" element={<VersionFeedbackPage />} />
+        <Route path="/settings/version/feedback/completed" element={<VersionFeedbackPage completedOnly />} />
+        <Route path="/settings/intake-plan" element={<SettingsIntakePlanPage />} />
+        <Route path="/settings/record-settings" element={<SettingsRecordSettingsPage />} />
+        <Route path="/settings/account-actions" element={<Navigate to="/settings" replace />} />
+        <Route path="/plan" element={<PlanPage />} />
+        <Route path="/login" element={<Navigate to="/" replace />} />
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+      <BottomNav />
+    </>
+  );
 }
 
 /**
@@ -77,6 +129,14 @@ function App() {
   const mountedRef = useRef(true);
   const profileLoadRef = useRef({ userId: null, promise: null });
   const activeSessionUserRef = useRef(null);
+
+  const clearAppSessionEntry = () => {
+    try {
+      window.sessionStorage.removeItem(APP_SESSION_INITIALIZED_KEY);
+    } catch {
+      // Ignore storage errors; authentication state remains authoritative.
+    }
+  };
 
   const fetchLegacyAdminFlag = useCallback(async (userId) => {
     if (!userId || !supabase) return false;
@@ -180,6 +240,7 @@ function App() {
 
         if (sessionError) {
           console.error('Session check error:', sessionError);
+          clearAppSessionEntry();
           activeSessionUserRef.current = null;
           setSession(null);
           setUser(null);
@@ -219,6 +280,7 @@ function App() {
               loadUserProfile(nextUserId).catch(console.error);
             }
           } else {
+            clearAppSessionEntry();
             activeSessionUserRef.current = null;
             setSession(null);
             setUser(null);
@@ -355,27 +417,7 @@ function App() {
         {isAuthenticated ? (
           <StoreProvider user={user} session={session} profile={profile}>
             <div className="app-shell">
-              <Routes>
-                <Route path="/" element={<TodayPage />} />
-                <Route path="/history" element={<HistoryPage />} />
-                <Route path="/history/:dateStr" element={<HistoryDetailPage />} />
-                <Route path="/library" element={<FoodLibraryPage />} />
-                <Route path="/library/review" element={<PublicFoodReviewPage />} />
-                <Route path="/settings" element={<SettingsPage />} />
-                <Route path="/settings/account" element={<AccountInfoPage />} />
-                <Route path="/settings/personal-info" element={<ProfileInfoPage />} />
-                <Route path="/settings/profile" element={<Navigate to="/settings/personal-info" replace />} />
-                <Route path="/settings/version" element={<SettingsVersionPage />} />
-                <Route path="/settings/version/feedback" element={<VersionFeedbackPage />} />
-                <Route path="/settings/version/feedback/completed" element={<VersionFeedbackPage completedOnly />} />
-                <Route path="/settings/intake-plan" element={<SettingsIntakePlanPage />} />
-                <Route path="/settings/record-settings" element={<SettingsRecordSettingsPage />} />
-                <Route path="/settings/account-actions" element={<Navigate to="/settings" replace />} />
-                <Route path="/plan" element={<PlanPage />} />
-                <Route path="/login" element={<Navigate to="/" replace />} />
-                <Route path="*" element={<Navigate to="/" replace />} />
-              </Routes>
-              <BottomNav />
+              <AuthenticatedRoutes />
             </div>
           </StoreProvider>
         ) : (
