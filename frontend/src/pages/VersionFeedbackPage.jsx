@@ -502,7 +502,7 @@ export const VersionFeedbackPage = ({ completedOnly = false }) => {
                   setErrors((prev) => ({ ...prev, title: '' }));
                 }}
                 placeholder="简要说明希望修改的内容"
-                className="mt-1 w-full min-h-11 rounded-lg border border-[#D5DCD2] bg-white px-3 text-[14px] text-[#2C332F]"
+                      className="mt-1 box-border min-w-0 w-full min-h-11 rounded-lg border border-[#D5DCD2] bg-white px-3 text-base text-[#2C332F] md:text-[14px]"
               />
               {errors.title ? <p className="mt-1 text-[12px] text-[#A8483E]">{errors.title}</p> : null}
             </div>
@@ -518,7 +518,7 @@ export const VersionFeedbackPage = ({ completedOnly = false }) => {
                 }}
                 rows={6}
                 placeholder="请描述遇到的问题、希望的改动或具体使用场景"
-                className="mt-1 w-full rounded-lg border border-[#D5DCD2] bg-white px-3 py-2 text-[14px] text-[#2C332F] resize-y"
+                className="mt-1 box-border min-w-0 w-full rounded-lg border border-[#D5DCD2] bg-white px-3 py-2 text-base text-[#2C332F] resize-y md:text-[14px]"
               />
               {errors.description ? <p className="mt-1 text-[12px] text-[#A8483E]">{errors.description}</p> : null}
             </div>
@@ -591,7 +591,7 @@ export const VersionFeedbackPage = ({ completedOnly = false }) => {
                               value={item.priority || 'P2'}
                               disabled={updatingPriorityId === item.id}
                               onChange={(event) => handlePriorityChange(item, event.target.value)}
-                              className="min-h-9 rounded-lg border border-[#D5DCD2] bg-white px-2 text-[12px] text-[#2C332F]"
+                              className="box-border min-w-0 min-h-9 max-w-full rounded-lg border border-[#D5DCD2] bg-white px-2 text-base text-[#2C332F] md:text-[12px]"
                             >
                               {FEEDBACK_PRIORITIES.map((priority) => (
                                 <option key={priority} value={priority}>{getFeedbackPriorityLabel(priority)}</option>
@@ -612,7 +612,7 @@ export const VersionFeedbackPage = ({ completedOnly = false }) => {
                           setEditingForm((prev) => ({ ...prev, title: event.target.value }));
                           setEditingErrors((prev) => ({ ...prev, title: '' }));
                         }}
-                        className="mt-1 w-full min-h-11 rounded-lg border border-[#D5DCD2] bg-white px-3 text-[14px] text-[#2C332F]"
+                        className="mt-1 box-border min-w-0 w-full min-h-11 rounded-lg border border-[#D5DCD2] bg-white px-3 text-base text-[#2C332F] md:text-[14px]"
                       />
                       {editingErrors.title ? <p className="mt-1 text-[12px] text-[#A8483E]">{editingErrors.title}</p> : null}
                     </div>
@@ -627,7 +627,7 @@ export const VersionFeedbackPage = ({ completedOnly = false }) => {
                           setEditingForm((prev) => ({ ...prev, description: event.target.value }));
                           setEditingErrors((prev) => ({ ...prev, description: '' }));
                         }}
-                        className="mt-1 w-full rounded-lg border border-[#D5DCD2] bg-white px-3 py-2 text-[14px] text-[#2C332F] resize-y"
+                        className="mt-1 box-border min-w-0 w-full rounded-lg border border-[#D5DCD2] bg-white px-3 py-2 text-base text-[#2C332F] resize-y md:text-[14px]"
                       />
                       {editingErrors.description ? <p className="mt-1 text-[12px] text-[#A8483E]">{editingErrors.description}</p> : null}
                     </div>
@@ -732,7 +732,7 @@ export const VersionFeedbackPage = ({ completedOnly = false }) => {
                             }));
                             setCompleteVersionErrors((prev) => ({ ...prev, [item.id]: '' }));
                           }}
-                          className="min-h-10 rounded-lg border border-[#D5DCD2] bg-white px-2 text-[12px] text-[#2C332F]"
+                          className="box-border min-w-0 max-w-full min-h-10 rounded-lg border border-[#D5DCD2] bg-white px-2 text-base text-[#2C332F] md:text-[12px]"
                         >
                           <option value="">选择完成版本</option>
                           {availableVersions.map((version) => (

@@ -251,6 +251,29 @@ describe('VersionFeedbackPage history', () => {
     });
   });
 
+  test('keeps all feedback form controls at mobile-safe font size and width constraints', () => {
+    renderPage();
+    fireEvent.click(screen.getByRole('tab', { name: '提交建议' }));
+
+    expect(screen.getByLabelText('建议标题').classList.contains('text-base')).toBe(true);
+    expect(screen.getByLabelText('建议标题').classList.contains('min-w-0')).toBe(true);
+    expect(screen.getByLabelText('建议标题').classList.contains('box-border')).toBe(true);
+    expect(screen.getByLabelText('建议标题').classList.contains('w-full')).toBe(true);
+    expect(screen.getByLabelText('详细说明').classList.contains('text-base')).toBe(true);
+    expect(screen.getByLabelText('详细说明').classList.contains('min-w-0')).toBe(true);
+    expect(screen.getByLabelText('详细说明').classList.contains('box-border')).toBe(true);
+    expect(screen.getByRole('radio', { name: /最快速完成/ })).toBeTruthy();
+
+    fireEvent.click(screen.getByRole('tab', { name: '未完成建议' }));
+    const adminPrioritySelect = screen.queryByRole('combobox', { name: /调整/ });
+    if (adminPrioritySelect) {
+      expect(adminPrioritySelect.classList.contains('text-base')).toBe(true);
+      expect(adminPrioritySelect.classList.contains('min-w-0')).toBe(true);
+      expect(adminPrioritySelect.classList.contains('max-w-full')).toBe(true);
+      expect(adminPrioritySelect.classList.contains('box-border')).toBe(true);
+    }
+  });
+
   test('stops loading on failure and retries the request successfully', async () => {
     versionFeedbackService.listFeedback.mockResolvedValueOnce({
       success: false,
