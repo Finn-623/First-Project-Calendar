@@ -1,3 +1,19 @@
+## DEV-20260806-001
+
+- 日期：2026-08-06
+- 状态：代码、自动化测试和远程权限验收完成，等待用户重新进行编号7最终页面验收
+- 任务目标：修复用户发现的建议历史只显示10条、管理员无法修改现存建议当前 priority 两个问题。
+- 实际完成内容：反馈服务一次查询完整排序结果并返回总数，页面按每页10条提供总数、当前页/总页数、上一页/下一页；完整结果按 P0、P1、P2、P3 再按 `created_at,id` 排序后分页。管理员身份判断补充 `profile.account_type=admin`，使管理员可操作所有用户的 pending 和 completed priority；修改成功后更新本地列表并重新排序，RPC失败显示错误。
+- 两个真实根因：历史页原先使用 `limit(10)` 加游标“查看更多”，没有分页状态、总数和完整结果分页；管理员页面只判断 `role`/`is_admin`，遗漏项目实际返回的 `account_type`，因此按普通用户加载并隐藏管理员控件。
+- 主要修改文件或模块：`frontend/src/services/versionFeedbackService.js`、`frontend/src/pages/VersionFeedbackPage.jsx`、`frontend/src/pages/VersionFeedbackPage.test.jsx`。
+- 数据库变化：未新增 Migration，未修改已部署034/035；035 的管理员 priority RPC 已确认无 status、owner 或 pending 限制。
+- 远程验收：正常 username-login 登录普通账号和管理员账号；远程当前实际总数为23（旧21条基线之外，2026-08-06 新增2条真实 pending 建议，编号030、031，未删除或过滤）。管理员成功修改其他用户 pending 和 completed 的当前 priority，`priority_assigned_at/priority_assigned_by` 正确；普通用户 RPC 修改被拒绝；恢复两条 priority 后，23条内容、状态、最终 priority、submitted_priority 和 feedback_number 与验收前一致。
+- 执行的测试：反馈专项 `CI=true npm test -- --watchAll=false --runInBand src/pages/VersionFeedbackPage.test.jsx src/services/versionFeedbackService.readOnly.test.js src/lib/versionFeedbackValidation.test.js`；前端全量 `CI=true npm test -- --watchAll=false --runInBand`；`npm run build`；`git diff --check`；远程普通/管理员 username-login 验收。
+- 测试结果：反馈专项40项通过；前端全量42套件294项通过；Production Build成功；远程23条验收通过，测试写入已恢复，公共食品和审核状态未修改。Build保留既有 Node `fs.F_OK` 弃用警告，测试保留既有 Supabase 环境变量 warning。
+- 未完成事项：用户需要重新完成编号7页面验收；远程 Feedback 不自动改变业务状态，原有 completed/pending 状态保持。
+- 风险或注意事项：文档此前记录的21条是旧验收基线，当前远程真实总数已因两条新用户提交变为23；页面应显示真实总数23，对应10/10/3页。Migration 028仍未部署；未执行 Git push。
+- Git Commit ID：功能提交 `ae52e13634a4a90c4309a9ab6c576fa87407be55`；文档提交待本任务完成后填写真实 ID。
+
 ## DEV-20260805-003
 
 - 日期：2026-08-05
