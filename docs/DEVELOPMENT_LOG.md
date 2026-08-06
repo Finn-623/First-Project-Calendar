@@ -11,7 +11,7 @@
 - 测试结果：专项37项、前端全量298项通过；Production Build成功；`git diff --check`通过；编辑器4个目标文件无错误；远程 pending 19（10+9）、completed 4，权限和恢复验收通过。仅有既有 React `act`、Node `fs.F_OK` 和测试环境 warning。
 - 未完成事项：用户仍需重新完成编号7页面验收。
 - 风险或注意事项：未新增或修改Migration，未修改远程数据、034/035或公共食品；priority 测试修改已恢复，远程Feedback状态保持原状；未执行push。
-- Git Commit ID：功能提交 `697cb51b8b5cd850f5b7e75c2e4e7f747a25e6f8`；文档提交 `76fa0338b7c8d2f410f65db81f4648acf167e274`；本次元数据回填提交待创建
+- Git Commit ID：功能提交 `697cb51b8b5cd850f5b7e75c2e4e7f747a25e6f8`；文档提交 `76fa0338b7c8d2f410f65db81f4648acf167e274`；元数据回填提交 `ca7b2bf`
 
 ## DEV-20260806-001
 
