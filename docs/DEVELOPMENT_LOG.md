@@ -1,3 +1,18 @@
+## DEV-20260806-002
+
+- 日期：2026-08-06
+- 状态：代码、自动化测试和远程验收完成，等待用户最终页面验收
+- 任务目标：继续修复P1编号7的建议历史页面结构，分离未完成与已完成历史，并用数据库总数展示标题。
+- 实际完成内容：反馈服务增加按状态的精确计数与范围查询；主页面只查询并分页 pending，标题显示数据库 pending 总数；已完成建议通过独立路由和不分页查询展示，并单独显示 completed 总数；主页面增加已完成建议入口；分页缓存统一使用 `items` 返回结构；状态变化后限制当前页不超出新的总页数；补齐 pending/completed、入口返回、管理员 priority、普通用户只读、不可变字段和错误处理测试。
+- 主要修改文件或模块：`frontend/src/App.js`、`frontend/src/pages/VersionFeedbackPage.jsx`、`frontend/src/services/versionFeedbackService.js`、`frontend/src/pages/VersionFeedbackPage.test.jsx`。
+- 遇到的问题：旧页面测试仍按 pending/completed 混合列表、同页双区块和完整结果三页分页编写，与本轮独立页面结构冲突；删除和完成处理器还残留旧 `setHistory` 状态调用。
+- 解决方式：迁移测试夹具和断言到 pending 主页/completed 独立子页契约；修复 pending 删除/完成后的总数与缓存状态；priority 更新后按 priority、created_at、id 重新排序。
+- 执行的测试：反馈专项 `CI=true npm test -- --watchAll=false --runInBand src/pages/VersionFeedbackPage.test.jsx src/services/versionFeedbackService.readOnly.test.js`（2套件37项）；前端全量 `CI=true npm test -- --watchAll=false --runInBand`（42套件298项）；`npm run build`；`git diff --check`；编辑器错误检查；远程 username-login、分页、权限、字段保护和可恢复 priority 验收。
+- 测试结果：专项37项、前端全量298项通过；Production Build成功；`git diff --check`通过；编辑器4个目标文件无错误；远程 pending 19（10+9）、completed 4，权限和恢复验收通过。仅有既有 React `act`、Node `fs.F_OK` 和测试环境 warning。
+- 未完成事项：用户仍需重新完成编号7页面验收。
+- 风险或注意事项：未新增或修改Migration，未修改远程数据、034/035或公共食品；priority 测试修改已恢复，远程Feedback状态保持原状；未执行push。
+- Git Commit ID：未提交
+
 ## DEV-20260806-001
 
 - 日期：2026-08-06
