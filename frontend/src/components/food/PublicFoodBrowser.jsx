@@ -74,7 +74,7 @@ const FoodDetail = ({ foodId, onClose, onCopy, copying }) => {
   return (
     <Dialog open={Boolean(foodId)} onOpenChange={(open) => !open && onClose()}>
       <DialogContent className="max-h-[90dvh] max-w-lg overflow-y-auto rounded-2xl">
-        <DialogHeader><DialogTitle>公共食品详情</DialogTitle></DialogHeader>
+        <DialogHeader><DialogTitle>{food?.name || '食品详情'}</DialogTitle></DialogHeader>
         {state.loading ? <p className="py-8 text-center text-sm text-[#858C88]">正在加载食品详情…</p> : null}
         {state.error || (!state.loading && !food) ? <p className="py-8 text-center text-sm text-[#C76D5E]">食品不可用</p> : null}
         {food ? (

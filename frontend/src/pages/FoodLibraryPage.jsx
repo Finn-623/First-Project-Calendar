@@ -726,13 +726,11 @@ export const FoodLibraryPage = () => {
   );
 
   return (
-    <div className="pb-32">
-      <header className="px-5 pt-6 pb-4">
+    <div className="overflow-x-hidden pb-32">
+      <header className="px-5 pt-4 pb-3">
         <div className="flex items-start justify-between">
           <div>
-            <p className="text-[11px] uppercase tracking-[0.22em] text-[#858C88]">LIBRARY</p>
-            <h1 className="text-[22px] font-medium text-[#2C332F] mt-1">食物数据库</h1>
-            <p className="text-[12px] text-[#858C88] mt-1">公共食品 + 个人食品统一管理</p>
+            <h1 className="text-[22px] font-medium text-[#2C332F]">食物库</h1>
           </div>
           {activeTab === 'mine' ? <button
             data-testid="add-custom-food"

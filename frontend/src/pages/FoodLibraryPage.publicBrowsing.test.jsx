@@ -73,6 +73,11 @@ describe('FoodLibraryPage 公共食品真实路由接入', () => {
 
   test.each(['/library', '/library?tab=public'])('%s 默认挂载完整公共食品浏览器和可见筛选', async (path) => {
     mount(path);
+    expect(screen.getByRole('heading', { level: 1 }).parentElement.parentElement.parentElement.parentElement.className).toContain('overflow-x-hidden');
+    expect(screen.getAllByRole('heading', { level: 1 })).toHaveLength(1);
+    expect(screen.getByRole('heading', { level: 1 }).textContent).toBe('食物库');
+    expect(screen.queryByText('食物数据库')).toBeNull();
+    expect(screen.queryByText('公共食品 + 个人食品统一管理')).toBeNull();
     expect(screen.getByRole('tab', { name: '公共食品' }).getAttribute('aria-selected')).toBe('true');
     expect(screen.getByText('食品分类')).toBeTruthy();
     expect(screen.getByText('主要摄入类型')).toBeTruthy();
@@ -84,6 +89,9 @@ describe('FoodLibraryPage 公共食品真实路由接入', () => {
 
   test('/library?tab=mine 保留个人食品页面', async () => {
     mount('/library?tab=mine');
+    expect(screen.getAllByRole('heading', { level: 1 })).toHaveLength(1);
+    expect(screen.getByRole('heading', { level: 1 }).textContent).toBe('食物库');
+    expect(screen.queryByText('个人食品库')).toBeNull();
     expect(screen.getByRole('tab', { name: '我的食品' }).getAttribute('aria-selected')).toBe('true');
     expect(await screen.findByText('我的燕麦')).toBeTruthy();
     expect(screen.getByText('个人')).toBeTruthy();
@@ -133,5 +141,15 @@ describe('FoodLibraryPage 公共食品真实路由接入', () => {
     fireEvent.click(screen.getByRole('button', { name: '删除分量 2' }));
     expect(screen.queryByLabelText('分量数量 2')).toBeNull();
     expect(screen.getByLabelText('分量数量 1')).toBeTruthy();
+  });
+
+  test('公共食品详情标题使用具体食品名称', async () => {
+    mount('/library?tab=public');
+
+    fireEvent.click((await screen.findAllByRole('button', { name: '查看详情 ›' }))[0]);
+
+    await waitFor(() => expect(screen.getByRole('dialog')).toBeTruthy());
+    expect(screen.getByRole('dialog').querySelector('h2').textContent).toBe('西兰花');
+    expect(screen.queryByText('公共食品详情')).toBeNull();
   });
 });
