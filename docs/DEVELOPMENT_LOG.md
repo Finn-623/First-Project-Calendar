@@ -1,3 +1,19 @@
+## DEV-20260806-008
+
+- 日期：2026-08-06
+- 状态：P1编号21食物库标题层级精简完成，等待用户人工验收
+- 任务目标：简化食物库页面标题和顶部信息层级，减少移动端首屏被重复标题占用，同时保持搜索、筛选、分页和食品操作不变。
+- 原标题结构：主页面同时显示`LIBRARY`眉标、“食物数据库”大标题、“公共食品 + 个人食品统一管理”副标题、公共/我的食品Tab，以及个人状态Tab和功能区标题；公共食品结果数、搜索和筛选另有各自功能区域，顶部层级显得重复。
+- 实际完成内容：主页面统一使用唯一主标题“食物库”，删除`LIBRARY`眉标和公共/个人统一管理副标题；公共食品与我的食品继续由Tab表达；我的食品保留新增食品按钮和使用中/已停用、搜索、分类筛选；公共食品结果数保留在搜索结果区域；公共食品详情标题改为具体食品名称；页面增加根级横向溢出保护。
+- 管理员结构：食物库内的公共食品管理功能保持原有操作；独立审核页继续使用“公共食品审核”标题和“返回食物库”入口，不与普通食物库主标题混用。
+- 移动端改善：顶部从眉标、主标题、副标题三层收紧为主标题加Tab；320px、375px、390px共用稳定两列Tab和横向筛选容器，页面根节点阻止横向溢出，搜索和筛选更靠近首屏。
+- 主要修改文件或模块：`frontend/src/pages/FoodLibraryPage.jsx`、`frontend/src/components/food/PublicFoodBrowser.jsx`、`frontend/src/pages/FoodLibraryPage.publicBrowsing.test.jsx`。
+- 执行的测试：`CI=true npm test -- --watchAll=false --runInBand src/pages/FoodLibraryPage.publicBrowsing.test.jsx src/components/food/PublicFoodBrowser.test.jsx src/pages/PublicFoodReviewPage.test.jsx src/modals/AddFoodSheet.test.jsx src/services/foodService.publicBrowsing.test.js`；`CI=true npm test -- --watchAll=false --runInBand`；`npm run build`；`git diff --check`；编辑器错误检查。
+- 测试结果：食物库相关专项5套件46项通过；前端全量42套件301项通过；Production Build成功；目标文件无编辑器错误；搜索、分类、intake type、公共食品分页、公共食品详情、复制到我的食品、添加食品Sheet和个人食品停用/启用/永久删除相关回归通过。
+- 未完成事项：本地生产预览因没有可用认证账号只能验证登录页，用户需在真实登录态下人工检查320/375/390px和桌面宽度的首屏层级、Tab、搜索筛选、横向滚动、详情和添加流程。编号7、9、17继续保持待部署后验收；编号16保持已完成。
+- 风险或注意事项：未修改数据库、Migration、公共食品数据或审核状态；Migration 028仍未部署；远程Feedback保持pending 19、completed 4；未执行push。
+- Git Commit ID：`3901f34c3a8ed4e92a38673966091074fdbab98f`
+
 ## DEV-20260806-007
 
 - 日期：2026-08-06
