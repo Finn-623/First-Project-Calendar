@@ -1,3 +1,18 @@
+## DEV-20260806-005
+
+- 日期：2026-08-06
+- 状态：反馈优先级最终分级同步完成，等待用户最终确认编号7页面
+- 任务目标：将用户最新确认的编号10-14、18执行优先级同步到远程数据库和当前界面所使用的数据源。
+- 实际完成内容：通过管理员正常 username-login 和 `set_version_feedback_priority` RPC，将编号10、11、12、13、14从P2更新为P3，将编号18从P1更新为P2；其他反馈未更新。
+- 远程结果：总数23，pending 19，completed 4；最终当前priority为P0=5、P1=6、P2=7、P3=5。
+- 最终分级：P0为5、6、8、19、20；P1为7、9、16、17、21、31；P2为1、2、3、4、15、18、30；P3为10、11、12、13、14。
+- 字段保护：六条目标记录的 `submitted_priority`、`feedback_number`、title、description、status、target_version、completed_at、completed_version均未变化；六条记录的 `priority_assigned_at`已更新，`priority_assigned_by`均为当前管理员。
+- 执行的测试或检查：Git预检；`npx supabase migration list --linked`；管理员正常登录；六条目标记录更新前后快照；六次管理员RPC HTTP 200；全表priority/status统计；不可变字段比较；`git diff --check`。
+- 测试结果：编号18 P1→P2，编号10-14 P2→P3；不可变字段差异为空；未新增或删除反馈；034/035保持远程一致，028仍未部署。未执行代码测试，因为本轮未修改代码。
+- 未完成事项：用户仍需重新进行编号7页面最终验收。
+- 风险或注意事项：未修改业务代码，未新增或部署Migration，未修改公共食品及审核状态，未执行push。
+- Git Commit ID：未提交
+
 ## DEV-20260806-004
 
 - 日期：2026-08-06
