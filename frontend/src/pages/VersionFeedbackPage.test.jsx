@@ -1002,4 +1002,175 @@ describe('VersionFeedbackPage admin completion flow', () => {
     expect(within(screen.getByTestId('completed-feedback-section')).queryByText('管理员处理建议')).toBeNull();
     expect(screen.getByRole('button', { name: '标记为已完成' })).toBeTruthy();
   });
+
+  test('paginates the complete sorted result into 10, 10, and 1 records', async () => {
+    const rows = Array.from({ length: 21 }, (_, index) => ({
+      id: `page-${index + 1}`,
+      user_id: `user-${index + 1}`,
+      title: `分页建议${index + 1}`,
+      description: '内容',
+      status: 'pending',
+      priority: 'P2',
+      submitted_priority: 'P2',
+      feedback_number: `FB-v0.1.3-${String(index + 1).padStart(3, '0')}`,
+      created_at: `2026-07-${String(index + 1).padStart(2, '0')}T10:00:00.000Z`,
+      updated_at: `2026-07-${String(index + 1).padStart(2, '0')}T10:00:00.000Z`,
+    }));
+    versionFeedbackService.listFeedback.mockResolvedValueOnce({
+      success: true,
+      data: rows,
+      totalCount: 21,
+    });
+
+    renderPage();
+    openHistoryTab();
+    expect(await screen.findByText('分页建议1')).toBeTruthy();
+    expect(screen.getByText('共 21 条 · 第 1 / 3 页')).toBeTruthy();
+    expect(screen.getAllByText(/分页建议/)).toHaveLength(10);
+    expect(screen.getByRole('button', { name: '上一页' }).disabled).toBe(true);
+
+    fireEvent.click(screen.getByRole('button', { name: '下一页' }));
+    expect(await screen.findByText('分页建议11')).toBeTruthy();
+    expect(screen.getByText('共 21 条 · 第 2 / 3 页')).toBeTruthy();
+    expect(screen.getAllByText(/分页建议/)).toHaveLength(10);
+
+    fireEvent.click(screen.getByRole('button', { name: '下一页' }));
+    expect(await screen.findByText('分页建议21')).toBeTruthy();
+    expect(screen.getByText('共 21 条 · 第 3 / 3 页')).toBeTruthy();
+    expect(screen.getAllByText(/分页建议/)).toHaveLength(1);
+    expect(screen.getByRole('button', { name: '下一页' }).disabled).toBe(true);
+  });
+
+  test('shows account_type admins controls for pending and completed feedback from other users', async () => {
+    useStore.mockReturnValue({
+      user: { id: 'admin-1' },
+      profile: { role: 'user', account_type: 'admin', is_admin: false },
+    });
+    versionFeedbackService.listFeedback.mockResolvedValueOnce({
+      success: true,
+      data: [
+        {
+          id: 'other-pending',
+          user_id: 'other-user',
+          title: '他人待处理建议',
+          description: '内容',
+          status: 'pending',
+          priority: 'P2',
+          submitted_priority: 'P1',
+          feedback_number: 'FB-v0.1.3-101',
+          created_at: '2026-07-20T10:00:00.000Z',
+          updated_at: '2026-07-20T10:00:00.000Z',
+        },
+        {
+          id: 'other-completed',
+          user_id: 'other-user-2',
+          title: '他人已完成建议',
+          description: '内容',
+          status: 'completed',
+          priority: 'P3',
+          submitted_priority: 'P2',
+          feedback_number: 'FB-v0.1.3-102',
+          created_at: '2026-07-21T10:00:00.000Z',
+          updated_at: '2026-07-21T10:00:00.000Z',
+          completed_at: '2026-07-22T10:00:00.000Z',
+          completed_version: 'v0.1.3',
+        },
+      ],
+      totalCount: 2,
+    });
+    versionFeedbackService.updateFeedbackPriority
+      .mockResolvedValueOnce({
+        success: true,
+        data: {
+          id: 'other-pending',
+          user_id: 'other-user',
+          title: '他人待处理建议',
+          description: '内容',
+          status: 'pending',
+          priority: 'P0',
+          submitted_priority: 'P1',
+          feedback_number: 'FB-v0.1.3-101',
+          priority_assigned_at: '2026-08-06T00:00:00.000Z',
+          priority_assigned_by: 'admin-1',
+          created_at: '2026-07-20T10:00:00.000Z',
+          updated_at: '2026-08-06T00:00:00.000Z',
+        },
+      })
+      .mockResolvedValueOnce({
+        success: true,
+        data: {
+          id: 'other-completed',
+          user_id: 'other-user-2',
+          title: '他人已完成建议',
+          description: '内容',
+          status: 'completed',
+          priority: 'P1',
+          submitted_priority: 'P2',
+          feedback_number: 'FB-v0.1.3-102',
+          priority_assigned_at: '2026-08-06T00:01:00.000Z',
+          priority_assigned_by: 'admin-1',
+          created_at: '2026-07-21T10:00:00.000Z',
+          updated_at: '2026-08-06T00:01:00.000Z',
+          completed_at: '2026-07-22T10:00:00.000Z',
+          completed_version: 'v0.1.3',
+        },
+      });
+
+    renderPage();
+    openHistoryTab();
+    await screen.findByText('他人待处理建议');
+    const pendingPriority = screen.getByRole('combobox', { name: '调整FB-v0.1.3-101优先级' });
+    const completedPriority = screen.getByRole('combobox', { name: '调整FB-v0.1.3-102优先级' });
+    expect(pendingPriority).toBeTruthy();
+    expect(completedPriority).toBeTruthy();
+
+    fireEvent.change(pendingPriority, { target: { value: 'P0' } });
+    await waitFor(() => expect(versionFeedbackService.updateFeedbackPriority).toHaveBeenCalledWith({
+      feedbackId: 'other-pending',
+      priority: 'P0',
+    }));
+    expect(await within(screen.getByTestId('pending-feedback-section')).findByText(/当前优先级：P0 ·/)).toBeTruthy();
+    expect(within(screen.getByTestId('pending-feedback-section')).getByText(/用户选择：P1 ·/)).toBeTruthy();
+    expect(within(screen.getByTestId('pending-feedback-section')).getByText('FB-v0.1.3-101')).toBeTruthy();
+
+    fireEvent.change(completedPriority, { target: { value: 'P1' } });
+    await waitFor(() => expect(versionFeedbackService.updateFeedbackPriority).toHaveBeenCalledWith({
+      feedbackId: 'other-completed',
+      priority: 'P1',
+    }));
+    expect(await within(screen.getByTestId('completed-feedback-section')).findByText(/当前优先级：P1 ·/)).toBeTruthy();
+    expect(within(screen.getByTestId('completed-feedback-section')).getByText(/用户选择：P2 ·/)).toBeTruthy();
+    expect(within(screen.getByTestId('completed-feedback-section')).getByText('FB-v0.1.3-102')).toBeTruthy();
+  });
+
+  test('shows an error and retains the current priority when the admin RPC fails', async () => {
+    versionFeedbackService.listFeedback.mockResolvedValueOnce({
+      success: true,
+      data: [{
+        id: 'failed-priority',
+        user_id: 'other-user',
+        title: '优先级失败建议',
+        description: '内容',
+        status: 'pending',
+        priority: 'P2',
+        submitted_priority: 'P2',
+        feedback_number: 'FB-v0.1.3-103',
+        created_at: '2026-07-20T10:00:00.000Z',
+        updated_at: '2026-07-20T10:00:00.000Z',
+      }],
+      totalCount: 1,
+    });
+    versionFeedbackService.updateFeedbackPriority.mockResolvedValueOnce({
+      success: false,
+      error: '优先级更新失败',
+    });
+
+    renderPage();
+    openHistoryTab();
+    const prioritySelect = await screen.findByRole('combobox', { name: '调整FB-v0.1.3-103优先级' });
+    fireEvent.change(prioritySelect, { target: { value: 'P0' } });
+
+    await waitFor(() => expect(toast.error).toHaveBeenCalledWith('优先级更新失败'));
+    expect(prioritySelect.value).toBe('P2');
+  });
 });

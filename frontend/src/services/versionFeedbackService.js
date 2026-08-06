@@ -87,7 +87,7 @@ export const versionFeedbackService = {
     }
   },
 
-  async listFeedback({ userId, isAdmin, limit = 10, cursor = null }) {
+  async listFeedback({ userId, isAdmin }) {
     if (!supabase) {
       return { success: false, error: 'Supabase 尚未配置' };
     }
@@ -97,44 +97,36 @@ export const versionFeedbackService = {
     }
 
     try {
-      const safeLimit = Math.max(1, Math.min(Number(limit) || 10, 30));
-
       let query = supabase
         .from('version_feedback')
-        .select('id, feedback_number, user_id, title, description, status, submitted_priority, target_version, priority, priority_assigned_at, priority_assigned_by, created_at, completed_at, completed_version, updated_at')
+        .select('id, feedback_number, user_id, title, description, status, submitted_priority, target_version, priority, priority_assigned_at, priority_assigned_by, created_at, completed_at, completed_version, updated_at', { count: 'exact' })
         .order('priority', { ascending: true })
         .order('created_at', { ascending: true })
-        .limit(safeLimit + 1);
+        .order('id', { ascending: true });
 
       if (!isAdmin) {
         query = query.eq('user_id', userId);
       }
 
-      if (cursor) {
-        query = query.lt('created_at', cursor);
-      }
-
-      const { data, error } = await query;
+      const { data, error, count } = await query;
       if (error) {
         return { success: false, error: normalizeError(error) };
       }
 
-      const rawRows = data || [];
-      const hasMore = rawRows.length > safeLimit;
-      const selectedRows = hasMore ? rawRows.slice(0, safeLimit) : rawRows;
-      const rows = selectedRows.map(normalizeFeedbackRow);
-      const nextCursor = hasMore ? rows[rows.length - 1]?.created_at : null;
+      const rows = (data || []).map(normalizeFeedbackRow);
 
       if (!isAdmin) {
         return {
           success: true,
           data: rows,
-          hasMore,
-          nextCursor,
+          totalCount: count ?? rows.length,
         };
       }
 
-      const submitterIds = [...new Set(rows.map((item) => item.user_id).filter(Boolean))];
+      const submitterIds = [...new Set([
+        ...rows.map((item) => item.user_id),
+        ...rows.map((item) => item.priority_assigned_by),
+      ].filter(Boolean))];
       const submitterMap = await loadSubmitterMap(submitterIds);
       const enriched = rows.map((item) => ({
         ...item,
@@ -145,8 +137,7 @@ export const versionFeedbackService = {
       return {
         success: true,
         data: enriched,
-        hasMore,
-        nextCursor,
+        totalCount: count ?? enriched.length,
       };
     } catch (error) {
       return { success: false, error: normalizeError(error) };
