@@ -1,3 +1,18 @@
+## DEV-20260806-007
+
+- 日期：2026-08-06
+- 状态：P1编号17新会话首页入口修复完成，等待用户人工验收
+- 任务目标：用户重新进入程序时默认进入首页，同时保留正常应用内导航和同一标签页刷新当前路由的行为。
+- 实际完成内容：认证路由在当前标签页首次恢复已登录会话时仅执行一次`replace('/')`；使用`sessionStorage`区分新启动会话与刷新；退出或无会话时清除入口标记，使同一标签页再次登录仍回到首页。登录成功原有首页跳转保持不变。Store日期初始化、今日完成后选择下一日、删除今日历史后恢复真实今日的业务规则均未修改。
+- 主要修改文件或模块：`frontend/src/App.js`、`frontend/src/App.logoutRouting.test.jsx`。
+- 遇到的问题：App路由测试使用简化的React Router mock，初次加入入口组件后缺少`useNavigate` mock；已补齐测试mock并增加新会话/刷新回归覆盖。
+- 解决方式：新增认证路由入口组件，在路由渲染前完成一次性入口判断；避免全局location监听和持续重定向，不干扰应用内导航。
+- 执行的测试：`CI=true npm test -- --watchAll=false --runInBand src/App.logoutRouting.test.jsx`；`CI=true npm test -- --watchAll=false --runInBand`；`npm run build`；`git diff --check`；编辑器错误检查。
+- 测试结果：App专项7项通过；前端全量42套件300项通过；Production Build成功；目标文件无编辑器错误；保留既有`fs.F_OK`弃用及测试环境warning。
+- 未完成事项：用户需在真实浏览器中验收新标签页/重新登录进入首页、同标签页刷新保留当前路由，以及应用内导航不被打断。编号9真实iPhone Safari验收仍待用户完成；编号7仍未标记completed。
+- 风险或注意事项：`sessionStorage`按浏览器标签页生命周期区分刷新与新启动；无法使用Storage时保持当前路由，不强制跳转。未修改数据库、Migration、远程Feedback、公共食品或审核状态，Migration 028仍未部署，未执行push。
+- Git Commit ID：`b6bf251`
+
 ## DEV-20260806-006
 
 - 日期：2026-08-06
