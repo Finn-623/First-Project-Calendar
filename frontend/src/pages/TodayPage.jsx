@@ -123,6 +123,8 @@ export const TodayPage = () => {
   const [fabOpen, setFabOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [deleteDialogKind, setDeleteDialogKind] = useState('timeline-item');
+  const [endEventDialogOpen, setEndEventDialogOpen] = useState(false);
+  const [pendingEndEvent, setPendingEndEvent] = useState(null);
   const [pendingDeleteItem, setPendingDeleteItem] = useState(null);
   const [pendingDeleteFood, setPendingDeleteFood] = useState(null);
   const [deletingItemId, setDeletingItemId] = useState(null);
@@ -707,6 +709,46 @@ export const TodayPage = () => {
     }
   };
 
+  const handleEndEventClick = (item) => {
+    if (!user?.id || !item?.id || item.type !== 'event' || item.ended_at || endingItemId) return;
+    setPendingEndEvent(item);
+    setEndEventDialogOpen(true);
+  };
+
+  const handleConfirmEndEvent = async () => {
+    const item = pendingEndEvent;
+    if (!user?.id || !item?.id || item.type !== 'event' || item.ended_at || endingItemId) return;
+
+    setEndingItemId(item.id);
+    const endedAt = new Date().toISOString();
+
+    try {
+      const { data, error } = await timelineService.updateTimelineItemByUser(item.id, user.id, {
+        status: 'completed',
+        ended_at: endedAt,
+      });
+
+      if (error) throw error;
+      if (!data) throw new Error('事件结束失败，请刷新后重试');
+
+      updateTimelineItemInState(item.id, (current) => ({ ...current, ...data, ended_at: data.ended_at || endedAt }));
+      timelineRealtimeService.broadcast({
+        type: 'timeline_updated',
+        user_id: user.id,
+        record_date: currentDateStr,
+        entity_id: data.id || item.id,
+        operation_id: createOperationId(),
+      });
+      setEndEventDialogOpen(false);
+      setPendingEndEvent(null);
+      showSuccess('事件已结束');
+    } catch (error) {
+      toast.error(error?.message || '结束事件失败，请稍后重试');
+    } finally {
+      setEndingItemId(null);
+    }
+  };
+
   const prepareActivityUpdates = (item, updates) => {
     const next = {
       ...updates,
@@ -1251,6 +1293,7 @@ export const TodayPage = () => {
                 onEditRecord={(it) => setEditActivitySheet({ open: true, item: it })}
                 onDelete={handleDeleteClick}
                 onEnd={handleEndTimelineItem}
+                onEndEvent={handleEndEventClick}
                 ending={endingItemId === item.id}
                 deleting={deletingItemId === item.id}
                 deletingFoodEntryKey={deletingFoodEntryKey}
@@ -1391,6 +1434,30 @@ export const TodayPage = () => {
               className="bg-[#D27D67] hover:bg-[#bf6e59]"
             >
               {deletingItemId || deletingFoodEntryKey ? '删除中...' : '确认删除'}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      <AlertDialog open={endEventDialogOpen} onOpenChange={setEndEventDialogOpen}>
+        <AlertDialogContent className="max-w-[92vw] sm:max-w-md rounded-2xl">
+          <AlertDialogHeader>
+            <AlertDialogTitle>确认结束事件</AlertDialogTitle>
+            <AlertDialogDescription>
+              确定结束“{pendingEndEvent?.title || '这个事件'}”吗？事件会保留在时间轴中。
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={Boolean(endingItemId)}>取消</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={(event) => {
+                event.preventDefault();
+                void handleConfirmEndEvent();
+              }}
+              disabled={Boolean(endingItemId)}
+              className="bg-[#6B8067] hover:bg-[#5a6d57]"
+            >
+              {endingItemId ? '结束中...' : '确认结束'}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

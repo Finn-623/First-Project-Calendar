@@ -4,7 +4,14 @@ describe('timelineCacheService', () => {
   beforeEach(() => timelineCacheService.__resetMemoryForTests());
 
   test('按用户和日期隔离并恢复完整时间线快照', async () => {
-    const timeline = [{ id: 'meal-1', type: 'meal', foods: [{ entryId: 'entry-1', name: '燕麦', cal: 100 }] }];
+    const timeline = [{
+      id: 'event-1',
+      type: 'event',
+      title: '项目会议',
+      status: 'completed',
+      ended_at: '2026-08-03T01:00:00.000Z',
+      foods: [],
+    }];
     await timelineCacheService.putSnapshot('user-a', '2026-08-03', timeline);
 
     const snapshot = await timelineCacheService.getActiveSnapshot('user-a');

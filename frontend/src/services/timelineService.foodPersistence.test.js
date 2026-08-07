@@ -9,6 +9,7 @@ const createQuery = ({ awaited, maybeSingle, single } = {}) => {
   const query = {
     select: jest.fn(() => query),
     insert: jest.fn(() => query),
+    update: jest.fn(() => query),
     delete: jest.fn(() => query),
     eq: jest.fn(() => query),
     in: jest.fn(() => query),
@@ -147,5 +148,33 @@ describe('timelineService 食品记录持久化与恢复', () => {
     expect(mealSpy).not.toHaveBeenCalled();
     foodSpy.mockRestore();
     mealSpy.mockRestore();
+  });
+
+  test('普通事件结束复用status和ended_at并保留用户归属条件', async () => {
+    const updateQuery = createQuery({ maybeSingle: {
+      data: {
+        ...mealRow,
+        item_type: 'other',
+        title: '项目会议',
+        status: 'completed',
+        ended_at: '2026-07-28T12:00:01.000Z',
+      },
+      error: null,
+    } });
+    supabase.from.mockReturnValueOnce(updateQuery);
+
+    const result = await timelineService.updateTimelineItemByUser(
+      '11111111-1111-4111-8111-111111111111',
+      'user-1',
+      { status: 'completed', ended_at: '2026-07-28T12:00:01.000Z' },
+    );
+
+    expect(result.error).toBeNull();
+    expect(updateQuery.update).toHaveBeenCalledWith(expect.objectContaining({
+      status: 'completed',
+      ended_at: '2026-07-28T12:00:01.000Z',
+    }));
+    expect(updateQuery.eq).toHaveBeenCalledWith('id', '11111111-1111-4111-8111-111111111111');
+    expect(updateQuery.eq).toHaveBeenCalledWith('user_id', 'user-1');
   });
 });

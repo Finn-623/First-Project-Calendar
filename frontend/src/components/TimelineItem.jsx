@@ -28,6 +28,7 @@ export const TimelineItem = ({
   onEditRecord,
   onDelete,
   onEnd,
+  onEndEvent,
   deleting = false,
   ending = false,
   deletingFoodEntryKey = null,
@@ -110,7 +111,7 @@ export const TimelineItem = ({
           </div>
         </div>
 
-        <div className="flex items-center gap-2 shrink-0">
+        <div className="flex flex-wrap items-center justify-end gap-2 shrink-0">
           {isMeal && totals && totals.cal > 0 && (
             <div className="text-right">
               <p className="font-num text-sm font-medium text-[#2C332F]">
@@ -137,6 +138,18 @@ export const TimelineItem = ({
               className="h-8 px-2.5 rounded-lg border border-[#E5E5E0] text-[#5E6660] text-[12px]"
             >
               编辑
+            </button>
+          ) : null}
+
+          {item.type === 'event' && !isRunning && !item.ended_at && onEndEvent ? (
+            <button
+              type="button"
+              onClick={() => onEndEvent(item)}
+              disabled={ending}
+              data-testid={`end-event-${item.id}`}
+              className="h-8 px-2.5 rounded-lg border border-[#6B8067] text-[#6B8067] text-[12px] disabled:opacity-60 disabled:cursor-not-allowed"
+            >
+              {ending ? '结束中...' : '结束事件'}
             </button>
           ) : null}
 
@@ -254,6 +267,11 @@ export const TimelineItem = ({
             </div>
           ) : null}
           {isRunning ? <p className="text-[12px] text-[#6B8067] mt-1">进行中</p> : null}
+          {item.type === 'event' && item.ended_at ? (
+            <p className="mt-1 inline-flex items-center rounded-full border border-[#D7E8E0] bg-[#EEF7F2] px-2 py-0.5 text-[11px] text-[#4B5E55]" data-testid={`ended-event-${item.id}`}>
+              已结束
+            </p>
+          ) : null}
           {isRunning && elapsedDurationSeconds != null ? (
             <p className="font-num tabular-nums text-[12px] text-[#2C332F] mt-1">已进行 {formatDuration(elapsedDurationSeconds)}</p>
           ) : null}
