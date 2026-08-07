@@ -73,6 +73,7 @@ export const TimelineItem = ({
   const canDelete = !readOnly && !isRunning && Boolean(onDelete) && (
     !isMeal || allowMealDelete
   );
+  const isEvent = item.type === 'event';
 
   const titleClass = layout === 'home-time-left'
     ? 'text-[13.5px] font-medium text-[#2C332F] break-words leading-5'
@@ -123,7 +124,7 @@ export const TimelineItem = ({
             </div>
           )}
 
-          {canEdit ? (
+          {!isEvent && canEdit ? (
             <button
               type="button"
               onClick={() => {
@@ -153,7 +154,7 @@ export const TimelineItem = ({
             </button>
           ) : null}
 
-          {canDelete ? (
+          {!isEvent && canDelete ? (
             <button
               type="button"
               onClick={() => onDelete && onDelete(item)}
@@ -294,6 +295,35 @@ export const TimelineItem = ({
               >
                 {ending ? '结束中...' : '结束'}
               </button>
+            </div>
+          ) : null}
+
+          {isEvent && (canEdit || canDelete) ? (
+            <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1" data-testid={`event-actions-${item.id}`}>
+              {canEdit ? (
+                <button
+                  type="button"
+                  onClick={() => onEditRecord && onEditRecord(item)}
+                  aria-label={`编辑${item.title}`}
+                  data-testid={`edit-record-${item.id}`}
+                  className="min-h-10 px-1 text-[12px] text-[#5E6660] hover:text-[#2C332F]"
+                >
+                  编辑
+                </button>
+              ) : null}
+              {canEdit && canDelete ? <span className="text-[11px] text-[#B6BBB6]" aria-hidden="true">·</span> : null}
+              {canDelete ? (
+                <button
+                  type="button"
+                  onClick={() => onDelete && onDelete(item)}
+                  disabled={deleting}
+                  aria-label={`删除${item.title}`}
+                  data-testid={`delete-timeline-${item.id}`}
+                  className="min-h-10 px-1 text-[12px] text-[#D27D67] hover:text-[#B85F4D] disabled:opacity-60 disabled:cursor-not-allowed"
+                >
+                  删除
+                </button>
+              ) : null}
             </div>
           ) : null}
         </div>

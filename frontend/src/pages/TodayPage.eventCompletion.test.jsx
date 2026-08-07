@@ -26,7 +26,9 @@ jest.mock('../modals/AddSnackSheet', () => ({ AddSnackSheet: () => null }));
 jest.mock('../modals/AddTrainingSheet', () => ({ AddTrainingSheet: () => null }));
 jest.mock('../modals/AddEventSheet', () => ({ AddEventSheet: () => null }));
 jest.mock('../modals/EditTimeSheet', () => ({ EditTimeSheet: () => null }));
-jest.mock('../modals/EditActivitySheet', () => ({ EditActivitySheet: () => null }));
+jest.mock('../modals/EditActivitySheet', () => ({ EditActivitySheet: ({ open }) => (
+  open ? <div data-testid="edit-activity-sheet" /> : null
+) }));
 jest.mock('../components/ui/alert-dialog', () => ({
   AlertDialog: ({ open, children }) => (open ? <div role="dialog">{children}</div> : null),
   AlertDialogContent: ({ children }) => <div>{children}</div>,
@@ -98,10 +100,31 @@ describe('TodayPage 普通事件结束', () => {
   test('普通事件显示结束事件，固定三餐不显示', () => {
     mountPage(new Date(2026, 6, 28, 12, 0), [event, fixedMeal('breakfast'), fixedMeal('lunch'), fixedMeal('dinner')]);
 
-    expect(screen.getByTestId(`end-event-${event.id}`)).toBeTruthy();
+    const endButton = screen.getByTestId(`end-event-${event.id}`);
+    const editButton = screen.getByTestId(`edit-record-${event.id}`);
+    const deleteButton = screen.getByTestId(`delete-timeline-${event.id}`);
+    expect(endButton).toBeTruthy();
+    expect(endButton.className).toContain('border-[#6B8067]');
+    expect(editButton.className).not.toContain('border');
+    expect(deleteButton.className).not.toContain('border');
+    expect(screen.getByTestId(`event-actions-${event.id}`).contains(editButton)).toBe(true);
+    expect(screen.getByTestId(`event-actions-${event.id}`).contains(deleteButton)).toBe(true);
+    expect(screen.getByTestId('meal-time-trigger-breakfast-1')).toBeTruthy();
+    expect(screen.getByTestId('meal-time-trigger-lunch-1')).toBeTruthy();
+    expect(screen.getByTestId('meal-time-trigger-dinner-1')).toBeTruthy();
     expect(screen.queryByTestId('end-event-breakfast-1')).toBeNull();
     expect(screen.queryByTestId('end-event-lunch-1')).toBeNull();
     expect(screen.queryByTestId('end-event-dinner-1')).toBeNull();
+  });
+
+  test('编辑小字入口仍打开编辑Sheet，删除小字入口仍保留确认流程', () => {
+    mountPage();
+
+    fireEvent.click(screen.getByTestId(`edit-record-${event.id}`));
+    expect(screen.getByTestId('edit-activity-sheet')).toBeTruthy();
+
+    fireEvent.click(screen.getByTestId(`delete-timeline-${event.id}`));
+    expect(screen.getByRole('dialog').textContent).toContain('确定删除这个活动吗？');
   });
 
   test('确认结束后保留事件、显示已结束并移除结束按钮', async () => {
@@ -121,6 +144,7 @@ describe('TodayPage 普通事件结束', () => {
     expect(screen.getByText('项目会议')).toBeTruthy();
     expect(screen.getByTestId(`ended-event-${event.id}`).textContent).toContain('已结束');
     expect(screen.queryByTestId(`end-event-${event.id}`)).toBeNull();
+    expect(screen.getByTestId(`edit-record-${event.id}`)).toBeTruthy();
     expect(screen.getByTestId(`delete-timeline-${event.id}`)).toBeTruthy();
   });
 
@@ -139,5 +163,17 @@ describe('TodayPage 普通事件结束', () => {
     rendered.rerender(<TodayPage />);
     expect(screen.getByTestId(`ended-event-${futureEvent.id}`)).toBeTruthy();
     expect(screen.queryByTestId(`end-event-${futureEvent.id}`)).toBeNull();
+  });
+
+  test('长标题保留换行能力，结束事件按钮保持独立可见', () => {
+    const longEvent = {
+      ...event,
+      title: '这是一个很长的普通事件标题用于验证窄屏布局不会挤掉结束事件按钮',
+    };
+    mountPage(new Date(2026, 6, 28, 12, 0), [longEvent]);
+
+    expect(screen.getByTestId(`end-event-${longEvent.id}`)).toBeTruthy();
+    expect(screen.getByText(longEvent.title).className).toContain('break-words');
+    expect(screen.getByTestId(`event-actions-${longEvent.id}`)).toBeTruthy();
   });
 });
