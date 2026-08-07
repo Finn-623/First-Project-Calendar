@@ -1,3 +1,17 @@
+## DEV-20260807-003
+
+- 日期：2026-08-07
+- 状态：普通事件卡片操作层级调整完成，等待部署后人工UI验收
+- 任务目标：让“结束事件”成为普通事件卡片唯一醒目的主要操作，将编辑和删除保留为卡片内容下方的小字操作。
+- 实际完成内容：`type=event`且未结束时，右侧只显示“结束事件”边框按钮；编辑使用中性色小字，删除使用警示色小字，二者移动到事件备注、状态和时长信息下方。已结束事件右侧不显示结束按钮，继续显示“已结束”Badge及编辑/删除入口。按钮实际保留至少40px高度点击区，长标题允许换行。
+- 业务边界：未改变结束事件的确认、`status/ended_at`持久化、删除、编辑、Realtime、缓存或历史逻辑；早餐、午餐、晚餐、加餐、训练及其他非普通事件保持原有操作布局。
+- 主要修改文件或模块：`frontend/src/components/TimelineItem.jsx`、`frontend/src/pages/TodayPage.eventCompletion.test.jsx`。
+- 执行的测试：`CI=true npm test -- --watchAll=false --runInBand src/pages/TodayPage.eventCompletion.test.jsx`；`CI=true npm test -- --watchAll=false --runInBand`；`npm run build`；`git diff --check`；编辑器错误检查。
+- 测试结果：结束事件专项1套件5项通过；前端全量43套件309项通过；Production Build成功；目标文件无编辑器错误。覆盖主按钮唯一性、编辑/删除小字入口、删除确认、编辑Sheet、已结束状态、三餐布局、未来事件和长标题换行。
+- 未完成事项：320px、375px、390px真实设备/浏览器登录态人工UI验收待部署后完成。
+- 风险或注意事项：本轮未修改数据库、Migration、公共食品或审核状态；Migration 028仍未部署；未执行远程写入验收；未执行push。
+- Git Commit ID：功能提交 `622b1627d0a9cd9ee4c155e8f4541c2b07bfb1de`
+
 ## DEV-20260807-002
 
 - 日期：2026-08-07
