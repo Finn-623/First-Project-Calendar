@@ -1,3 +1,18 @@
+## DEV-20260807-001
+
+- 日期：2026-08-07
+- 状态：P1编号31未来日期固定餐次状态修复完成，等待真实登录态人工验收
+- 任务目标：修复未来日期添加普通事件后仍显示空固定三餐并被误解为未完成记录的问题，同时保留未来日期主动添加早餐、午餐、晚餐食品的能力。
+- 实际完成内容：确认普通事件只持久化为`item_type=other`，未创建空餐次；固定餐次来自Store的前端占位。未来日期空固定餐次现在显示为“计划餐次，尚未开始”，时间轴标题显示为“计划时间轴”；用户仍可直接从占位餐次添加食品，已有食品的未来餐次正常显示。今天和历史日期保持原有空餐次行为。
+- 主要修改文件或模块：`frontend/src/components/TimelineItem.jsx`、`frontend/src/pages/TodayPage.jsx`、`frontend/src/pages/TodayPage.nonTodayNotice.test.jsx`。
+- 遇到的问题：首次专项测试发现新增条件渲染存在一个JSX多余括号，4个页面测试套件未编译。
+- 解决方式：删除多余括号后重跑同一专项测试命令，确认页面组件正常编译并通过。
+- 执行的测试：`CI=true npm test -- --watchAll=false --runInBand src/pages/TodayPage.nonTodayNotice.test.jsx src/pages/TodayPage.foodPersistence.test.jsx src/pages/TodayPage.foodDeletion.test.jsx src/pages/TodayPage.mealTimeEditing.test.jsx src/services/timelineService.foodPersistence.test.js src/services/timelineCacheService.test.js src/services/timelineRealtimeService.test.js`；`git diff --check`；编辑器错误检查。
+- 测试结果：专项7套件36项通过；首次编译失败已修复；目标文件无编辑器错误；测试日志仅有既有Supabase环境变量缺失提示。
+- 未完成事项：尚未执行完整前端测试、Production Build和真实登录态移动端/桌面人工验收；未进行远程数据库测试清理。
+- 风险或注意事项：未修改数据库、Migration、缓存/Realtime持久化协议、公共食品或审核状态；Migration 028仍未部署；未执行push。
+- Git Commit ID：`cdefee3d512ccb73726c0631f7b0d155dc243a23`
+
 ## DEV-20260806-008
 
 - 日期：2026-08-06
