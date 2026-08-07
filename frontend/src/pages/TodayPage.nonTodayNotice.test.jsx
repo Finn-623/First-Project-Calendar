@@ -44,9 +44,9 @@ let storeState;
 
 const formatDateLabel = (date) => `${date.getMonth() + 1}月${date.getDate()}日`;
 
-const mountPage = (selectedDate = new Date(2026, 6, 28, 12, 0)) => {
+const mountPage = (selectedDate = new Date(2026, 6, 28, 12, 0), timeline = []) => {
   storeState = {
-    timeline: [],
+    timeline,
     setTimeline: jest.fn(),
     plan: null,
     dateLabel: formatDateLabel(selectedDate),
@@ -119,5 +119,32 @@ describe('TodayPage 非本日日期固定提示', () => {
     mountPage(new Date(2027, 0, 2, 12, 0));
     expect(screen.getByTestId('non-today-date-notice').textContent)
       .toContain('2027年1月2日的记录与计划');
+  });
+
+  test('未来日期的空固定餐次是计划占位，不显示未完成状态', () => {
+    const futureTimeline = [
+      { id: 'event-1', type: 'event', title: '未来会议', time: '10:00', foods: [] },
+      { id: 'breakfast-1', type: 'meal', subtype: 'breakfast', title: '早餐', time: '08:00', foods: [], fixed: true },
+      { id: 'lunch-1', type: 'meal', subtype: 'lunch', title: '午餐', time: '12:30', foods: [], fixed: true },
+      { id: 'dinner-1', type: 'meal', subtype: 'dinner', title: '晚餐', time: '19:00', foods: [], fixed: true },
+    ];
+
+    mountPage(new Date(2026, 6, 29, 12, 0), futureTimeline);
+
+    expect(screen.getByText('计划时间轴')).toBeTruthy();
+    expect(screen.getByText('未来会议')).toBeTruthy();
+    expect(screen.getAllByText('计划餐次，尚未开始')).toHaveLength(3);
+    expect(screen.queryByText('未完成')).toBeNull();
+  });
+
+  test('未来日期主动添加餐次食品后显示食品，不再显示计划占位', () => {
+    mountPage(new Date(2026, 6, 29, 12, 0), [
+      { id: 'breakfast-1', type: 'meal', subtype: 'breakfast', title: '早餐', time: '08:00', foods: [{ foodId: 'food-1', name: '燕麦', grams: 50, cal: 100, p: 4, f: 2, c: 18 }], fixed: true },
+      { id: 'lunch-1', type: 'meal', subtype: 'lunch', title: '午餐', time: '12:30', foods: [], fixed: true },
+      { id: 'dinner-1', type: 'meal', subtype: 'dinner', title: '晚餐', time: '19:00', foods: [], fixed: true },
+    ]);
+
+    expect(screen.getByText('燕麦')).toBeTruthy();
+    expect(screen.getAllByText('计划餐次，尚未开始')).toHaveLength(2);
   });
 });

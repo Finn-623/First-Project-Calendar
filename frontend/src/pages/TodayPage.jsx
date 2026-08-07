@@ -178,8 +178,9 @@ export const TodayPage = () => {
     [deviceTodayStr, selectedLocalDateStr]
   );
   const isViewingToday = currentDateStr === todaySydneyStr;
+  const isViewingFutureDate = currentDateStr > todaySydneyStr;
   const isViewingRecordingDate = currentDateStr === recordingDateStr;
-  const dateSectionTitle = isViewingToday ? 'TODAY' : '历史记录';
+  const dateSectionTitle = isViewingToday ? 'TODAY' : isViewingFutureDate ? '计划日期' : '历史记录';
   const weekDateStrings = useMemo(() => getWeekDateStrings(currentDateStr), [currentDateStr]);
   const [currentYear, currentMonth] = currentDateStr.split('-').map(Number);
   const showBackToToday = currentDateStr !== todaySydneyStr;
@@ -1196,7 +1197,7 @@ export const TodayPage = () => {
 
       <section className="mt-6 px-3">
         <div className="px-2 flex items-center justify-between mb-2">
-          <h2 className="text-[13px] font-medium text-[#2C332F] tracking-wide">今日时间轴</h2>
+          <h2 className="text-[13px] font-medium text-[#2C332F] tracking-wide">{isViewingFutureDate ? '计划时间轴' : '今日时间轴'}</h2>
           <span className="text-[11px] text-[#858C88]">{sorted.length} 项</span>
         </div>
 
@@ -1254,6 +1255,7 @@ export const TodayPage = () => {
                 deleting={deletingItemId === item.id}
                 deletingFoodEntryKey={deletingFoodEntryKey}
                 now={now}
+                isFutureDate={isViewingFutureDate}
               />
             );
           })}

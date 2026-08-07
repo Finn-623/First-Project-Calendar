@@ -35,6 +35,7 @@ export const TimelineItem = ({
   now,
   layout = 'default',
   allowMealDelete = false,
+  isFutureDate = false,
 }) => {
   const Icon = iconFor(item);
   const accent = accentFor(item);
@@ -158,7 +159,20 @@ export const TimelineItem = ({
       {isMeal ? (
         <div className="mt-3">
           {empty ? (
-            <button
+            isFixedMeal && isFutureDate ? (
+              <div className="space-y-2">
+                <p className="text-center text-[11px] text-[#858C88]">计划餐次，尚未开始</p>
+                <button
+                  type="button"
+                  onClick={() => !readOnly && onAddFood && onAddFood(item)}
+                  data-testid={`add-food-${item.id}`}
+                  disabled={readOnly}
+                  className="w-full h-10 rounded-xl border border-dashed border-[#D9DDD8] text-[#858C88] text-[12px] flex items-center justify-center gap-1.5 hover:border-[#6B8067]/40 hover:text-[#6B8067]"
+                >
+                  <Plus size={14} strokeWidth={1.8} /> 添加食物
+                </button>
+              </div>
+            ) : <button
               type="button"
               onClick={() => !readOnly && onAddFood && onAddFood(item)}
               data-testid={`add-food-${item.id}`}
