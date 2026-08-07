@@ -1,3 +1,20 @@
+## DEV-20260807-002
+
+- 日期：2026-08-07
+- 状态：记录首页普通事件“结束事件”功能完成，等待真实登录态人工验收
+- 任务目标：允许用户结束普通`other`事件，同时保留事件、历史记录、删除和编辑能力；固定三餐及其他特殊记录不增加该按钮。
+- 当前事件数据结构：数据库`timeline_items`中的普通事件使用`item_type=other`，前端映射为`type=event`；现有字段包括`status`、`started_at`、`ended_at`、`duration_minutes`、标题、时间和备注。普通手动事件创建时默认`status=completed`但`ended_at=null`，因此不能仅凭`status`判断用户已经结束。
+- 实际完成内容：复用现有`status`和`ended_at`字段；点击普通事件“结束事件”后以用户确认作为前置，将`status`写为`completed`并写入真实`ended_at`，事件继续留在时间轴；结束后显示“已结束”Badge并隐藏按钮。固定早餐、午餐、晚餐、加餐、训练和正在进行的特殊记录不显示普通事件按钮。未来事件不会按当前时间自动结束，用户主动操作后才结束。
+- 删除与结束的区别：结束只更新状态并保留事件；删除仍走原有删除确认和永久删除流程。
+- 数据链路：`timelineService.updateTimelineItemByUser`保留用户归属条件；Store本地状态立即合并返回记录；Realtime继续通过现有`timeline_items`更新订阅触发当天重新读取；IndexedDB快照保存完整`status/ended_at`；History标准化读取并保留这两个字段。未新增Migration，Migration 028仍未部署。
+- 主要修改文件或模块：`frontend/src/components/TimelineItem.jsx`、`frontend/src/pages/TodayPage.jsx`、`frontend/src/pages/TodayPage.eventCompletion.test.jsx`、`frontend/src/services/timelineService.foodPersistence.test.js`、`frontend/src/services/timelineCacheService.test.js`。
+- 执行的测试：结束事件专项`CI=true npm test -- --watchAll=false --runInBand src/pages/TodayPage.eventCompletion.test.jsx src/services/timelineService.foodPersistence.test.js src/services/timelineCacheService.test.js src/services/timelineRealtimeService.test.js`；TodayPage既有回归专项；前端全量`CI=true npm test -- --watchAll=false --runInBand`；`npm run build`；`git diff --check`；编辑器错误检查。
+- 测试结果：结束事件数据链专项4套件15项通过；TodayPage既有回归4套件25项通过；前端全量43套件307项通过；Production Build成功；目标文件无编辑器错误。测试日志保留既有Supabase环境变量和React异步`act`提示，未造成失败。
+- 远程验收：未执行。共享浏览器均处于登录页，没有可用正常测试账号会话；未创建临时事件、未写入远程数据、未使用service-role、未产生测试残留。需要用户在正常测试账号下完成创建、结束、刷新、Realtime、删除清理验收。
+- 未完成事项：真实登录态下验证320px布局、普通事件创建/结束/刷新、跨设备Realtime及临时数据清理。
+- 风险或注意事项：现有历史普通事件若`ended_at`为空，会按未结束事件显示按钮，这是基于旧数据无法推断实际完成时间的保守行为；未修改数据库结构、公共食品、审核状态或Migration 028；未执行push。
+- Git Commit ID：功能提交 `a898b94e14f8535587a03536d2ceda1f842cd552`
+
 ## DEV-20260807-001
 
 - 日期：2026-08-07
