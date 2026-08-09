@@ -227,7 +227,7 @@ describe('VersionFeedbackPage history', () => {
   test('requires a priority before submitting and sends the selected priority with the current version', async () => {
     versionFeedbackService.createFeedback.mockResolvedValue({
       success: true,
-      data: { id: 'created-1', submitted_priority: 'P0', priority: 'P0', target_version: '0.1.3' },
+      data: { id: 'created-1', submitted_priority: 'P0', priority: 'P0', target_version: '0.2.1' },
     });
 
     renderPage();
@@ -246,7 +246,7 @@ describe('VersionFeedbackPage history', () => {
         title: '一个有效建议',
         description: '这是一个足够详细的修改意见。',
         submittedPriority: 'P0',
-        targetVersion: '0.1.3',
+        targetVersion: '0.2.1',
       });
     });
   });

@@ -82,7 +82,7 @@ describe('SettingsPage 导航与退出账号', () => {
     render(<SettingsPage />);
 
     const recordSettingsEntry = screen.getByTestId('settings-entry-record-settings');
-    const versionFooter = screen.getByRole('link', { name: /版本 v0\.1\.3/ });
+    const versionFooter = screen.getByRole('link', { name: /版本 v0\.2\.1/ });
     const logoutEntry = screen.getByTestId('settings-entry-account-actions');
 
     expect(Boolean(recordSettingsEntry.compareDocumentPosition(logoutEntry) & Node.DOCUMENT_POSITION_FOLLOWING)).toBe(true);
@@ -173,7 +173,7 @@ describe('SettingsPage 导航与退出账号', () => {
     const page = screen.getByTestId('settings-page');
     const recordSettingsEntry = screen.getByTestId('settings-entry-record-settings');
     const logoutEntry = screen.getByTestId('settings-entry-account-actions');
-    const versionFooter = screen.getByRole('link', { name: /版本 v0\.1\.3/ });
+    const versionFooter = screen.getByRole('link', { name: /版本 v0\.2\.1/ });
     expect(Boolean(recordSettingsEntry.compareDocumentPosition(logoutEntry) & Node.DOCUMENT_POSITION_FOLLOWING)).toBe(true);
     expect(Boolean(logoutEntry.compareDocumentPosition(versionFooter) & Node.DOCUMENT_POSITION_FOLLOWING)).toBe(true);
     expect(logoutEntry.disabled).toBe(false);
