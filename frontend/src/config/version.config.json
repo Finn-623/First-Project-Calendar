@@ -1,5 +1,5 @@
 {
-  "status": "development",
-  "releasedAt": null,
-  "summary": "P0 与 P1 功能、公共食品闭环和结束事件已完成开发，准备发布 v0.2.1。"
+  "status": "released",
+  "releasedAt": "2026-08-09T11:57:04+10:00",
+  "summary": "P0 与 P1 功能、公共食品闭环和结束事件已随 v0.2.1 正式发布。"
 }

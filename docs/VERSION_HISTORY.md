@@ -2,9 +2,25 @@
 
 | 版本号 | 状态 | 上线时间 | 版本概述 | 详细文档 |
 |---|---|---|---|---|
+| v0.2.1 | 已正式上线 | 2026-08-09 11:57:04（Australia/Sydney） | 公共食品、个人食品、记录稳定性、反馈体验与结束事件 | docs/version-updates/v0.2.1.md |
 | v0.1.3 | 已正式上线 | 2026-07-28 15:55:36（Australia/Sydney） | 基础记录闭环与稳定性收尾 | docs/version-updates/v0.1.3.md |
 | v0.1.2 | 已正式上线 | 2026-07-28 11:53（Australia/Sydney） | 历史记录、设置、摄入计划与记录体验集中完善 | docs/version-updates/v0.1.2.md |
 | v0.1.1 | 开发中 | 尚未正式上线 | 已形成真实数据闭环并完成结构化版本记录展示 | docs/version-updates/v0.1.1.md |
+
+## v0.2.1 正式上线
+
+- 日期：2026-08-09
+- 类型：Release
+- 状态：Frontend Production 已部署，等待指定P1与结束事件人工验收
+- 上线时间：2026-08-09 11:57:04（Australia/Sydney）
+- 发布范围：已完成的P0、已完成开发的P1，以及普通事件“结束事件”。
+- 下一版本：v0.2.2仅处理P2 #1、#2、#3、#4、#15、#18、#30；P3 #10–#14不进入v0.2.2。
+- 功能与版本同步Commit：`bc30d1e81b6e1ed89601e3c3fc9631a830c02aab`
+- 首次Production部署ID：`dpl_4mzwfdXrQW3E8CJRMiStZW8jD7Cj`
+- Production URL：`https://frontend-nu-khaki-18.vercel.app`
+- 验证：版本校验、43个前端套件、309个测试和Production Build通过；根地址与BrowserRouter深链接返回200，username-login正常。
+- 数据库：未执行db push；Migration 028仍未部署；029–035维持已远程状态。
+- Feedback：#7、#9、#17、#21、#31与结束事件等待用户人工验收，未提前修改远程状态。
 
 ## v0.1.3 正式上线
 
