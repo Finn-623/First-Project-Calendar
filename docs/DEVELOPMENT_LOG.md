@@ -38,7 +38,13 @@
 - 测试结果：版本配置专项2套件3项通过；版本一致性校验通过；前端全量43套件309项通过；Production Build成功。保留既有React异步`act`、测试环境Supabase变量缺失及Node `fs.F_OK`弃用提示，无测试或构建失败。
 - 功能与版本同步 Commit ID：`bc30d1e81b6e1ed89601e3c3fc9631a830c02aab`
 
-## DEV-20260809-002
+## DEV-20260810-001
+
+- 日期：2026-08-10
+- 状态：v0.2.1.1 紧急更新
+- 目标：个人食品添加/编辑支持 kcal/kJ 输入与自动转换，默认为 kcal。
+- 记录：实现了 energyConverter 工具，并在 FoodLibraryPage 添加了单位切换逻辑，确保了转换精度且内部统一存储 kcal。
+- Git Commit ID：fd01beeca4ee9f8d956ea5d61355c0a0d5969841
 
 - 日期：2026-08-09
 - 状态：版本规划决策记录
