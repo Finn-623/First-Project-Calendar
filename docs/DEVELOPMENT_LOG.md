@@ -10,7 +10,7 @@
 - 警告：测试保留既有Supabase环境变量缺失、React异步`act`提示；Build保留Node `fs.F_OK`弃用提示。真实登录态、iPhone和部署后页面验收未在本地盘点中完成。
 - 未完成事项：不得将未人工验收项目标记为completed；不得push、部署Production或执行db push。
 - 风险或注意事项：本轮仅同步状态文档，未修改代码、数据库结构、Migration、远程Feedback业务状态或公共食品数据。
-- Git Commit ID：待本次文档提交生成
+- Git Commit ID：`b6ae0b0aaaa9e508ca4ee952c3a1cd04decbda1b`
 
 ## DEV-20260807-003
 
