@@ -1,6 +1,10 @@
 # Changelog
 
-## v0.2.1.1 - 待正式上线
+## v0.2.1.1 - 2026-08-09 16:58:47（Australia/Sydney）正式上线
+
+> 功能部署 Commit：`ebe7d90edbff35e55079dc7cc17ba603368852e4`
+> Deployment：`dpl_CLJWRGxCphMfSY5Qm1QcEk5pLeJm`
+> Production：`https://frontend-nu-khaki-18.vercel.app`
 
 ### 紧急更新
 

@@ -1,5 +1,5 @@
 {
-  "status": "development",
-  "releasedAt": null,
+  "status": "released",
+  "releasedAt": "2026-08-09T16:58:47+10:00",
   "summary": "个人食品添加与编辑支持 kcal / kJ 能量输入转换，默认使用 kcal，内部继续统一保存 kcal。"
 }

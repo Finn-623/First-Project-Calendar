@@ -1,3 +1,16 @@
+## DEV-20260809-006
+
+- 日期：2026-08-09
+- 状态：v0.2.1.1紧急Frontend Production发布完成
+- 任务目标：正式发布个人食品新增/编辑kcal与kJ输入转换，默认kcal且内部继续保存kcal。
+- 实际完成内容：同步应用与版本页到v0.2.1.1；普通Push后从最新HEAD手动执行Vercel Frontend Production部署；正式alias切换成功。未修改数据库字段、食品数据或业务权限。
+- Production记录：功能部署Commit `ebe7d90edbff35e55079dc7cc17ba603368852e4`；Deployment ID `dpl_CLJWRGxCphMfSY5Qm1QcEk5pLeJm`；上线时间2026-08-09 16:58:47（Australia/Sydney）；URL `https://frontend-nu-khaki-18.vercel.app`。
+- 技术验收：根地址、登录、食物库、设置及Feedback深链接均HTTP 200；线上bundle包含v0.2.1.1及kcal/kJ功能；username-login正常。
+- 执行的测试：版本专项2套件3项；前端全量`CI=true npm test -- --watchAll=false --runInBand`；`npm run build`；`git diff --check`；Migration清单只读核对；Production HTTP与bundle验证。
+- 测试结果：全量44套件314项通过；Production Build成功。保留既有React异步act、测试环境Supabase变量缺失、依赖弃用与Vercel npm audit提示，无测试或构建失败。
+- 风险或注意事项：用户仍需在Production人工验收新增/编辑个人食品的kcal/kJ切换、保存回读、时间轴热量统计与移动端横向布局；未执行db push，未部署任何Migration，028仍为LOCAL ONLY。
+- Git Commit ID：发布记录独立提交（完整ID在提交完成后记录于任务最终汇报）。
+
 ## DEV-20260809-005
 
 - 日期：2026-08-09
