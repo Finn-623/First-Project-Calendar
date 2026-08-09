@@ -1,3 +1,17 @@
+## DEV-20260809-001
+
+- 日期：2026-08-09
+- 状态：P1阶段收尾盘点完成，等待统一部署后验收
+- 任务目标：核对P1清单、Git状态、Migration状态和本地全量验证结果，不新增功能、不修改业务逻辑。
+- 实际完成内容：确认正式P1为7、9、16、17、21、31；同步编号7、9、21的旧明细状态为代码完成待部署/真机验收；确认编号16已完成；单独列出结束事件为新增待验收功能；建立编号7、9、17、21、31及结束事件的统一部署后验收顺序。
+- 主要修改文件或模块：`docs/feedback/all-feedback-priority-review.md`、`docs/PROJECT_STATUS.md`、`docs/DEVELOPMENT_LOG.md`。
+- 执行的检查：`git status --porcelain=v1 --untracked-files=all`；`git branch --show-current`；`git rev-parse HEAD`；`git log -15 --oneline`；`git rev-list --left-right --count origin/supabase-v1...HEAD`；`git diff --check`；`npx --yes supabase migration list --linked`；`CI=true npm test -- --watchAll=false --runInBand`；`npm run build`。
+- 检查结果：工作区干净，分支为`supabase-v1`，HEAD为`e2241d0ab0d17869614be00313124ad1c1bc323f`，ahead/behind为0/73；全量43套件309项通过；Production Build成功；远端Migration 001、003-027及029-035与本地一致，028未部署。
+- 警告：测试保留既有Supabase环境变量缺失、React异步`act`提示；Build保留Node `fs.F_OK`弃用提示。真实登录态、iPhone和部署后页面验收未在本地盘点中完成。
+- 未完成事项：不得将未人工验收项目标记为completed；不得push、部署Production或执行db push。
+- 风险或注意事项：本轮仅同步状态文档，未修改代码、数据库结构、Migration、远程Feedback业务状态或公共食品数据。
+- Git Commit ID：待本次文档提交生成
+
 ## DEV-20260807-003
 
 - 日期：2026-08-07
