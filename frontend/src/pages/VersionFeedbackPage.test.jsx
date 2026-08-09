@@ -246,7 +246,7 @@ describe('VersionFeedbackPage history', () => {
         title: '一个有效建议',
         description: '这是一个足够详细的修改意见。',
         submittedPriority: 'P0',
-        targetVersion: '0.2.1',
+        targetVersion: '0.2.1.1',
       });
     });
   });

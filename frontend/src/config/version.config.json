@@ -1,5 +1,5 @@
 {
-  "status": "released",
-  "releasedAt": "2026-08-09T11:57:04+10:00",
-  "summary": "P0 与 P1 功能、公共食品闭环和结束事件已随 v0.2.1 正式发布。"
+  "status": "development",
+  "releasedAt": null,
+  "summary": "个人食品添加与编辑支持 kcal / kJ 能量输入转换，默认使用 kcal，内部继续统一保存 kcal。"
 }

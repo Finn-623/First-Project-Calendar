@@ -1,5 +1,13 @@
 # Changelog
 
+## v0.2.1.1 - 待正式上线
+
+### 紧急更新
+
+- 个人食品新增和编辑支持 kcal / kJ 能量输入切换，默认使用 kcal。
+- kcal 与 kJ 在表单中自动转换，内部及数据库继续统一保存 kcal。
+- 不涉及数据库字段、Migration或公共食品数据变更。
+
 ## v0.2.1 - 2026-08-09 11:57:04（Australia/Sydney）正式上线
 
 > 功能与版本同步 Commit：`bc30d1e81b6e1ed89601e3c3fc9631a830c02aab`
