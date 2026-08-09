@@ -10,6 +10,7 @@ import { Button } from '../components/ui/button';
 import { Textarea } from '../components/ui/textarea';
 import { Switch } from '../components/ui/switch';
 import { PublicFoodBrowser } from '../components/food/PublicFoodBrowser';
+import { convertEnergy } from '../lib/energyConverter';
 import {
   Dialog,
   DialogContent,
@@ -51,6 +52,7 @@ const emptyPrivateForm = () => ({
   category: '',
   intakeTypes: [],
   calories: '',
+  energyUnit: 'kcal',
   protein: '',
   fat: '',
   carbs: '',
@@ -229,7 +231,10 @@ export const FoodLibraryPage = () => {
 
   const validatePrivateForm = () => {
     const name = privateForm.name.trim();
-    const calories = parseNumber(privateForm.calories);
+    const rawCalories = parseNumber(privateForm.calories);
+    const calories = privateForm.energyUnit === 'kJ' 
+      ? convertEnergy(rawCalories, 'kJ', 'kcal')
+      : rawCalories;
     const protein = parseNumber(privateForm.protein);
     const fat = parseNumber(privateForm.fat);
     const carbs = parseNumber(privateForm.carbs);
@@ -436,6 +441,7 @@ export const FoodLibraryPage = () => {
       category: normalizeCategory(food.primary_category || food.category),
       intakeTypes: food.intake_types || food.intakeTypes || [],
       calories: String(food.calories ?? food.cal100 ?? 0),
+      energyUnit: 'kcal',
       protein: String(food.protein ?? food.p100 ?? 0),
       fat: String(food.fat ?? food.f100 ?? 0),
       carbs: String(food.carbs ?? food.c100 ?? 0),
@@ -667,6 +673,17 @@ export const FoodLibraryPage = () => {
     showSuccess(food.isActive ? '公共食品已停用' : '公共食品已启用');
   };
 
+
+// Inside FoodLibraryPage
+  const handleEnergyUnitChange = (newUnit) => {
+    const convertedCalories = convertEnergy(privateForm.calories, privateForm.energyUnit, newUnit);
+    setPrivateForm((prev) => ({
+      ...prev,
+      calories: String(convertedCalories),
+      energyUnit: newUnit,
+    }));
+  };
+
   const renderPrivateFoodFields = () => (
     <div className="space-y-3 max-h-[68dvh] overflow-y-auto pr-1">
       <Input placeholder="食品名称（必填）" value={privateForm.name} onChange={(e) => updatePrivateForm('name', e.target.value)} data-testid="private-food-name" />
@@ -690,13 +707,21 @@ export const FoodLibraryPage = () => {
       </div>
       <div>
         <p className="text-xs font-medium text-[#5E6660] mb-2">每100g营养</p>
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-          <Input type="number" placeholder="热量 kcal" value={privateForm.calories} onChange={(e) => updatePrivateForm('calories', e.target.value)} />
+        <div className="grid grid-cols-2 gap-2">
+          <div className="flex gap-2 col-span-2">
+            <Input type="number" placeholder={`热量 ${privateForm.energyUnit}`} value={privateForm.calories} onChange={(e) => updatePrivateForm('calories', e.target.value)} />
+            <select value={privateForm.energyUnit} onChange={(e) => handleEnergyUnitChange(e.target.value)} className="h-10 rounded-md border border-[#E5E5E0] bg-white px-3 text-sm text-[#2C332F]">
+              <option value="kcal">kcal</option>
+              <option value="kJ">kJ</option>
+            </select>
+          </div>
+          <p className="text-[10px] text-[#858C88] col-span-2">≈ {convertEnergy(privateForm.calories, privateForm.energyUnit, privateForm.energyUnit === 'kcal' ? 'kJ' : 'kcal')} {privateForm.energyUnit === 'kcal' ? 'kJ' : 'kcal'}</p>
           <Input type="number" placeholder="蛋白 g" value={privateForm.protein} onChange={(e) => updatePrivateForm('protein', e.target.value)} />
           <Input type="number" placeholder="脂肪 g" value={privateForm.fat} onChange={(e) => updatePrivateForm('fat', e.target.value)} />
           <Input type="number" placeholder="碳水 g" value={privateForm.carbs} onChange={(e) => updatePrivateForm('carbs', e.target.value)} />
         </div>
       </div>
+      ... (rest of portions and notes)
       <section className="rounded-xl border border-[#E5E5E0] bg-[#FAFAF8] p-3" data-testid="private-portions-editor">
         <div className="flex items-center justify-between gap-2">
           <div><p className="text-sm font-medium text-[#2C332F]">可用分量</p><p className="text-[11px] text-[#858C88] mt-0.5">没有分量时仍可按克记录</p></div>
