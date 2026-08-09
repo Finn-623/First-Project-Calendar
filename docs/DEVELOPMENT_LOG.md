@@ -1,3 +1,17 @@
+## DEV-20260809-004
+
+- 日期：2026-08-09
+- 状态：v0.2.1 Feedback 发布收尾完成
+- 任务目标：将已完成开发并随 v0.2.1 Production 上线的 P0/P1 修改意见统一归档到已完成建议历史，不影响后续版本反馈。
+- 实际完成内容：使用正式管理员 username-login 会话，通过现有 `complete_version_feedback` RPC 逐项完成 #5、#6、#8、#19、#20、#7、#9、#16、#17、#21、#31；11项均写入 `completed_version=v0.2.1` 和数据库正常完成时间。
+- 数据完整性：处理前24条（pending 20、completed 4），处理后24条（pending 9、completed 15）；编号、标题、描述、submitted_priority、当前priority、target_version、创建时间和提交人归属均保持不变；已完成页包含全部11项，pending页不再包含这些记录。
+- 版本边界：P2 #1–#4、#15、#18、#30和P3 #10–#14未修改；#1–#4保留历史 `completed/v0.1.3`，#15、#18、#30及#10–#14保持pending；新增 `FB-v0.2.1-001` 保持pending。没有明确对应“结束事件”的原始Feedback，未创建记录。
+- 主要修改文件或模块：`docs/food-data-quality/v0.2.1-feedback-review.md`、`docs/feedback/all-feedback-priority-review.md`、`docs/PROJECT_STATUS.md`、`docs/DEVELOPMENT_LOG.md`。
+- 执行的验证：管理员身份与目标项目门禁；目标反馈前后字段快照；11次RPC返回；pending/completed独立查询；非目标P2/P3及新增反馈前后对比；`git diff --check`和Git状态检查。
+- 验证结果：远程收尾通过，11/11均为 `completed/v0.2.1`；P2/P3未发生字段变化；页面数据源已支持并返回完成版本。未修改业务代码，未运行前端测试或Build。
+- 风险或注意事项：本轮不改变 v0.1.3 历史完成记录，不把P2/P3或新增反馈误标为完成；v0.2.1上线时间保持2026-08-09 11:57:04（Australia/Sydney）；未重新部署Production、未执行db push，Migration 028仍未部署。
+- Git Commit ID：本任务独立文档提交（完整ID在提交完成后记录于任务最终汇报）。
+
 ## DEV-20260809-003
 
 - 日期：2026-08-09
