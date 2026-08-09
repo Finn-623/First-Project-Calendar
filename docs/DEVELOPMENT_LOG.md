@@ -1,3 +1,16 @@
+## DEV-20260809-005
+
+- 日期：2026-08-09
+- 状态：Feedback #15 priority与v0.2.2范围校准完成
+- 任务目标：按用户最终确认将 `FB-v0.1.3-015` 当前执行priority由P2修正为P3，并让v0.2.2只包含当前真正未完成的P2。
+- 实际完成内容：使用正式管理员 username-login 会话调用现有 `set_version_feedback_priority` RPC；#15由P2更新为P3，status保持pending，submitted_priority保持P2，编号、正文、创建时间、target/completed字段及用户归属均未变化。
+- 版本范围：v0.2.2当前明确只处理pending P2 #18、#30；#1–#4保持历史 `completed/v0.1.3`，不重新列为开发任务；pending P3为#10–#15。`FB-v0.2.1-001`保持P1/pending，版本归属等待用户确认。
+- 主要修改文件或模块：`docs/PROJECT_STATUS.md`、`docs/ROADMAP.md`、`docs/DEVELOPMENT_LOG.md`、`docs/feedback/all-feedback-priority-review.md`、`docs/food-data-quality/v0.2.1-feedback-review.md`。
+- 执行的验证：管理员身份与项目门禁；#15前后字段快照；pending P2/P3完整集合；#1–#4历史完成状态；新增Feedback状态；`git diff --check`和Git状态检查。
+- 验证结果：远程priority修正成功且仅写入1条目标记录；当前pending P2为#18、#30，pending P3为#10–#15；`FB-v0.2.1-001`保持P1/pending。
+- 风险或注意事项：历史开发日志中的旧范围记录保留其发生时事实，本条为最新决策并取代旧规划；v0.2.1上线版本、上线时间、部署Commit和已完成Feedback均未修改；未修改业务代码、数据库结构或Migration，未重新部署Production，Migration 028仍未部署。
+- Git Commit ID：本任务独立文档提交（完整ID在提交完成后记录于任务最终汇报）。
+
 ## DEV-20260809-004
 
 - 日期：2026-08-09
