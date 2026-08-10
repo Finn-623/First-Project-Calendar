@@ -11,7 +11,7 @@
 - 测试结果：Migration契约62项通过；专项5套件44项通过；前端全量44套件318项通过；Production Build成功。测试保留既有React异步`act`、缺少测试环境Supabase变量及Node `fs.F_OK`弃用提示，无失败。
 - 未完成事项：按项目生产安全边界未执行远程Migration或部署；Migration 036部署后才能在真实Supabase环境启用新RPC。
 - 风险或注意事项：Migration新增`food_entries.client_mutation_id`、`portion_snapshot`和部分唯一索引，不改写既有行；Supabase仍是唯一事实来源，IndexedDB仅保存已确认或当前乐观UI快照。Migration 028仍保持未部署，不是036的依赖。
-- Git Commit ID：本任务独立提交（完整ID在提交完成后记录于任务最终汇报）。
+- Git Commit ID：`7fabe66a611f1d193e85ad03f58603043719d3fe`。
 
 ## DEV-20260809-006
 

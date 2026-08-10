@@ -11,7 +11,7 @@
 - 测试内容：Migration 036专项3项、全部Migration契约62项；前端新增/回读/失败回滚/幂等/History与HistoryDetail回归；前端全量与Production Build。
 - 测试结果：Migration 62/62、专项44/44、前端全量318/318通过；Production Build成功；未执行远程Migration和真实数据写入。
 - 相关 DEV 编号：`DEV-20260810-002`。
-- 相关 Commit ID：本任务独立提交（完整ID在提交完成后记录于任务最终汇报）。
+- 相关 Commit ID：`7fabe66a611f1d193e85ad03f58603043719d3fe`。
 
 ## DB-20260805-003
 
