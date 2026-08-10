@@ -148,6 +148,7 @@ describe('TodayPage 食品记录持久化', () => {
       dateStr: '2026-07-28',
       meal: expect.objectContaining({ id: 'm1-local', subtype: 'breakfast' }),
       food: expect.objectContaining({ name: '测试燕麦', grams: 50 }),
+      operationId: expect.stringMatching(/^op-/),
     }));
     await waitFor(() => {
       expect(storeState.timeline[0].id).toBe(persistedMealId);
@@ -160,7 +161,7 @@ describe('TodayPage 食品记录持久化', () => {
     expect(toast.success).toHaveBeenCalled();
   });
 
-  test('写入失败保留失败记录供重试且不显示成功提示', async () => {
+  test('写入失败回滚乐观记录且不污染本地快照或显示成功提示', async () => {
     timelineService.createFoodEntryForMeal.mockResolvedValue({
       data: null,
       error: new Error('数据库写入失败'),
@@ -172,9 +173,7 @@ describe('TodayPage 食品记录持久化', () => {
 
     await waitFor(() => expect(toast.error).toHaveBeenCalledWith('数据库写入失败'));
     expect(storeState.timeline[0].id).toBe('m1-local');
-    expect(storeState.timeline[0].foods).toEqual([
-      expect.objectContaining({ name: '测试燕麦', sync_status: 'failed', sync_error: '数据库写入失败' }),
-    ]);
+    expect(storeState.timeline[0].foods).toHaveLength(0);
     expect(toast.success).not.toHaveBeenCalled();
   });
 

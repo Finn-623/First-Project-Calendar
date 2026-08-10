@@ -175,6 +175,15 @@ export const AddFoodSheet = ({ open, onOpenChange, targetTitle, onConfirm }) => 
         foodId: selected.id,
         name: selected.name,
         grams: Number(grams) || 0,
+        unit: 'g',
+        portion: selectedPortion ? {
+          id: selectedPortion.id || null,
+          name: selectedPortion.name || null,
+          amount: selectedPortion.amount ?? null,
+          unit: selectedPortion.unit || 'g',
+          grams: selectedPortion.grams ?? null,
+          quantity: portionQuantity,
+        } : null,
         ...macros,
       });
       if (saved && typeof saved.then === 'function') {

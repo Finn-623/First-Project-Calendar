@@ -1,3 +1,18 @@
+## DB-20260810-001
+
+- 日期：2026-08-10
+- 修改原因：新增食品记录原本由客户端分开创建餐次和food entry，无法保证原子性、失败回滚和网络重试幂等，且可能产生空餐或重复记录。
+- 实际修改内容：新增`food_entries.client_mutation_id TEXT`与`portion_snapshot JSONB`；新增`(user_id, client_mutation_id)`非空部分唯一索引；新增authenticated-only `create_food_entry_for_meal(DATE, JSONB, JSONB, TEXT)` SECURITY INVOKER RPC。函数从`auth.uid()`获取用户，在事务内校验record date、meal、quantity、source food UUID和快照字段，锁定用户/日期/餐次，复用或创建meal并新增food entry；相同mutation幂等返回原记录。
+- 涉及的表和字段：`timeline_items.user_id/event_date/event_time/item_type/title/notes/details/sort_order`；`food_entries.user_id/timeline_item_id/source_food_id/food_name_snapshot/quantity/unit_snapshot/*_snapshot/client_mutation_id/portion_snapshot`。
+- Migration 文件路径：`supabase/migrations/036_create_food_entry_transaction.sql`。
+- 对现有数据的影响：两个新增字段均可空，Migration不回填或修改既有记录；唯一索引只约束新写入的非空mutation ID。RPC只写当前登录用户数据，现有历史归档、食品库和其他用户记录不变。
+- 风险：前端新提交链路依赖Migration 036；部署前RPC不可用并会返回真实函数不存在错误。Migration尚未远程部署。现有触发器仍会拒绝失效source food，异常会回滚整个事务。
+- 回滚方式：以后续Migration撤销函数、部分唯一索引和两个新增字段；回滚前客户端必须恢复到不调用该RPC的版本。不得重写已应用Migration。
+- 测试内容：Migration 036专项3项、全部Migration契约62项；前端新增/回读/失败回滚/幂等/History与HistoryDetail回归；前端全量与Production Build。
+- 测试结果：Migration 62/62、专项44/44、前端全量318/318通过；Production Build成功；未执行远程Migration和真实数据写入。
+- 相关 DEV 编号：`DEV-20260810-002`。
+- 相关 Commit ID：本任务独立提交（完整ID在提交完成后记录于任务最终汇报）。
+
 ## DB-20260805-003
 
 - 日期：2026-08-05

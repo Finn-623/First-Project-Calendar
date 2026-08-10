@@ -288,6 +288,7 @@ export const TodayPage = () => {
         dateStr: currentDateStr,
         meal: targetMeal,
         food,
+        operationId,
       });
       if (error || !data?.meal?.id || !data?.foodEntry?.entryId) {
         throw error || new Error('食品记录保存失败');
@@ -342,11 +343,7 @@ export const TodayPage = () => {
       }
       setTimeline((currentTimeline) => currentTimeline.map((item) => ({
         ...item,
-        foods: (item.foods || []).map((entry) => (
-          entry.entryId === optimisticEntryId
-            ? { ...entry, sync_status: 'failed', sync_error: error?.message || '食品记录保存失败' }
-            : entry
-        )),
+        foods: (item.foods || []).filter((entry) => entry.entryId !== optimisticEntryId),
       })));
       toast.error(error?.message || '食品记录保存失败，请稍后重试');
       return false;

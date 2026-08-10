@@ -1,3 +1,18 @@
+## DEV-20260810-002
+
+- 日期：2026-08-10
+- 任务状态：代码修复、自动化测试与Production Build完成；Migration 036待授权部署。
+- 任务目标：修复新增食品记录时提示失败，并保证新增、回读、失败回滚、幂等和历史功能不回归。
+- 实际完成内容：将原先客户端依次写`timeline_items`和`food_entries`的两阶段流程收敛为`create_food_entry_for_meal`事务RPC；以`auth.uid()`确定用户归属，以`record_date + meal`复用或创建餐次，以`client_mutation_id`保证重试幂等，并完整保存quantity、unit、portion和营养快照。前端提交前校验日期、餐次和quantity；成功后使用Supabase返回的真实meal/food entry ID替换乐观项，后续仍由Supabase回读并同步IndexedDB快照；失败时删除乐观项，不把半完成或失败伪记录写入本地快照。
+- 主要修改文件或模块：`TodayPage.jsx`、`AddFoodSheet.jsx`、`timelineService.js`、相关测试及Migration 036。
+- 遇到的问题：原实现分两次独立请求创建餐次和food entry，第二步失败时只能再发删除请求补偿；补偿本身也可能失败并留下空餐，网络重试也没有数据库幂等键。服务层没有输出Supabase结构化错误，只把错误交给通用UI提示。近期IndexedDB快照会持久化当前乐观状态，使失败项可能进入本地恢复路径。
+- 解决方式：数据库函数在单事务中完成权限校验、字段校验、餐次锁定/复用和food entry新增；任何异常自动整体回滚。部分唯一索引保证同一用户mutation只生成一条food entry；前端记录Supabase `code/message/details/hint`及安全的日期、餐次、operation ID诊断上下文，同时向用户显示真实`error.message`。
+- 执行的测试：`node --test supabase/migrations/*.test.mjs`；新增记录/History/HistoryDetail/Store专项5套件；`CI=true npm test -- --watchAll=false --runInBand`；`npm run build`；`git diff --check`。
+- 测试结果：Migration契约62项通过；专项5套件44项通过；前端全量44套件318项通过；Production Build成功。测试保留既有React异步`act`、缺少测试环境Supabase变量及Node `fs.F_OK`弃用提示，无失败。
+- 未完成事项：按项目生产安全边界未执行远程Migration或部署；Migration 036部署后才能在真实Supabase环境启用新RPC。
+- 风险或注意事项：Migration新增`food_entries.client_mutation_id`、`portion_snapshot`和部分唯一索引，不改写既有行；Supabase仍是唯一事实来源，IndexedDB仅保存已确认或当前乐观UI快照。Migration 028仍保持未部署，不是036的依赖。
+- Git Commit ID：本任务独立提交（完整ID在提交完成后记录于任务最终汇报）。
+
 ## DEV-20260809-006
 
 - 日期：2026-08-09

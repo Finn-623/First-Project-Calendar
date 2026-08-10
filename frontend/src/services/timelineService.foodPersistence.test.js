@@ -2,7 +2,7 @@ import { supabase } from '../lib/supabaseClient';
 import { timelineService } from './timelineService';
 
 jest.mock('../lib/supabaseClient', () => ({
-  supabase: { from: jest.fn() },
+  supabase: { from: jest.fn(), rpc: jest.fn() },
 }));
 
 const createQuery = ({ awaited, maybeSingle, single } = {}) => {
@@ -71,52 +71,82 @@ describe('timelineService 食品记录持久化与恢复', () => {
     expect(foodQuery.in).toHaveBeenCalledWith('timeline_item_id', [mealRow.id]);
   });
 
-  test('临时固定餐次复用已有数据库餐次并只新增food entry', async () => {
-    const existingMealQuery = createQuery({ maybeSingle: { data: mealRow, error: null } });
-    const foodInsertQuery = createQuery({ single: { data: entryRow, error: null } });
-    supabase.from
-      .mockReturnValueOnce(existingMealQuery)
-      .mockReturnValueOnce(foodInsertQuery);
+  test('使用事务RPC新增food entry并提交日期、餐次、数量与分量快照', async () => {
+    supabase.rpc.mockResolvedValue({
+      data: { meal: mealRow, food_entry: { ...entryRow, portion_snapshot: { name: '碗', quantity: 1 } } },
+      error: null,
+    });
 
     const result = await timelineService.createFoodEntryForMeal({
       userId: 'user-1',
       dateStr: '2026-07-28',
       meal: { id: 'm1-local', subtype: 'breakfast', title: '早餐', time: '08:00' },
-      food: { foodId: entryRow.source_food_id, name: '测试燕麦', grams: 50, cal: 190, p: 6.5, f: 3.5, c: 32 },
+      food: { foodId: entryRow.source_food_id, name: '测试燕麦', grams: 50, unit: 'g', portion: { name: '碗', quantity: 1 }, cal: 190, p: 6.5, f: 3.5, c: 32 },
+      operationId: 'op-create-1',
     });
 
     expect(result.error).toBeNull();
     expect(result.data.meal.id).toBe(mealRow.id);
     expect(result.data.foodEntry.entryId).toBe(entryRow.id);
-    expect(foodInsertQuery.insert).toHaveBeenCalledWith([expect.objectContaining({
-      timeline_item_id: mealRow.id,
-      user_id: 'user-1',
-      quantity: 50,
-    })]);
+    expect(supabase.rpc).toHaveBeenCalledWith('create_food_entry_for_meal', expect.objectContaining({
+      record_date: '2026-07-28',
+      meal: expect.objectContaining({ subtype: 'breakfast', time: '08:00' }),
+      food: expect.objectContaining({ quantity: 50, unit: 'g', portion: { name: '碗', quantity: 1 } }),
+      mutation_id: 'op-create-1',
+    }));
   });
 
-  test('食品写入失败时清理本次新建餐次，不留下孤立餐次', async () => {
-    const noExistingMealQuery = createQuery({ maybeSingle: { data: null, error: null } });
-    const mealInsertQuery = createQuery({ single: { data: mealRow, error: null } });
-    const foodInsertQuery = createQuery({ single: { data: null, error: new Error('food insert failed') } });
-    const cleanupQuery = createQuery({ awaited: { data: null, error: null } });
-    supabase.from
-      .mockReturnValueOnce(noExistingMealQuery)
-      .mockReturnValueOnce(mealInsertQuery)
-      .mockReturnValueOnce(foodInsertQuery)
-      .mockReturnValueOnce(cleanupQuery);
+  test('事务RPC失败时返回Supabase真实错误且不执行客户端半完成写入或清理', async () => {
+    const databaseError = Object.assign(new Error('food insert failed'), { code: '23503', details: 'source food missing' });
+    supabase.rpc.mockResolvedValue({ data: null, error: databaseError });
 
     const result = await timelineService.createFoodEntryForMeal({
       userId: 'user-1',
       dateStr: '2026-07-28',
       meal: { id: 'm1-local', subtype: 'breakfast', title: '早餐', time: '08:00' },
       food: { foodId: entryRow.source_food_id, name: '测试燕麦', grams: 50, cal: 190, p: 6.5, f: 3.5, c: 32 },
+      operationId: 'op-failed-1',
     });
 
     expect(result.error.message).toBe('food insert failed');
-    expect(cleanupQuery.delete).toHaveBeenCalledTimes(1);
-    expect(cleanupQuery.eq).toHaveBeenCalledWith('id', mealRow.id);
-    expect(cleanupQuery.eq).toHaveBeenCalledWith('user_id', 'user-1');
+    expect(result.error.code).toBe('23503');
+    expect(supabase.from).not.toHaveBeenCalled();
+  });
+
+  test('相同mutation id重试由RPC幂等返回同一记录', async () => {
+    supabase.rpc.mockResolvedValue({ data: { meal: mealRow, food_entry: entryRow }, error: null });
+    const input = {
+      userId: 'user-1', dateStr: '2026-07-28',
+      meal: { id: 'm1-local', subtype: 'breakfast', title: '早餐', time: '08:00' },
+      food: { foodId: entryRow.source_food_id, name: '测试燕麦', grams: 50, cal: 190, p: 6.5, f: 3.5, c: 32 },
+      operationId: 'op-retry-1',
+    };
+
+    const first = await timelineService.createFoodEntryForMeal(input);
+    const retry = await timelineService.createFoodEntryForMeal(input);
+
+    expect(first.data.foodEntry.entryId).toBe(entryRow.id);
+    expect(retry.data.foodEntry.entryId).toBe(entryRow.id);
+    expect(supabase.rpc).toHaveBeenCalledTimes(2);
+    expect(supabase.rpc.mock.calls[0][1].mutation_id).toBe(supabase.rpc.mock.calls[1][1].mutation_id);
+  });
+
+  test.each([
+    [{ dateStr: '28/07/2026' }, '记录日期格式无效'],
+    [{ food: { name: '测试燕麦', grams: 0 } }, '请输入有效的食品克重'],
+    [{ meal: { subtype: 'invalid', title: '无效餐次' } }, '目标餐次类型无效'],
+  ])('无效字段在调用Supabase前失败：%s', async (override, expectedMessage) => {
+    const result = await timelineService.createFoodEntryForMeal({
+      userId: 'user-1',
+      dateStr: '2026-07-28',
+      meal: { id: 'm1-local', subtype: 'breakfast', title: '早餐', time: '08:00' },
+      food: { name: '测试燕麦', grams: 50 },
+      operationId: 'op-validation',
+      ...override,
+    });
+
+    expect(result.error.message).toBe(expectedMessage);
+    expect(supabase.rpc).not.toHaveBeenCalled();
   });
 
   test('自定义空餐次清理严格先删除food entry再删除meal', async () => {

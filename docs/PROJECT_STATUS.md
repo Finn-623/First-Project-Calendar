@@ -1,5 +1,11 @@
 # 当前项目进度
 
+## 历史食品记录新增修复（2026-08-10）
+
+- 新增记录已改为Migration 036事务RPC：餐次与food entry同事务、`auth.uid()`归属、mutation幂等、失败整体回滚；前端失败时同步撤销乐观状态，避免污染IndexedDB快照。
+- 本地Migration契约62项、前端全量44套件318项及Production Build通过；Today、History、HistoryDetail查看/编辑/删除回归通过。
+- Migration 036尚未获远程部署授权；部署前正式环境不会启用新RPC。Migration 028仍保持LOCAL ONLY且不是036依赖。
+
 ## Release Strategy
 
 - **当前正式发布版本：v0.2.1.1**。已于2026-08-09 16:58:47（Australia/Sydney）完成Frontend Production紧急发布，仅增加个人食品 kcal/kJ 输入与转换，内部继续保存kcal。

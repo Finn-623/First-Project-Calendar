@@ -176,12 +176,14 @@ export const timelineService = {
    * Persist one food entry and ensure its meal exists first. The returned IDs
    * are the database IDs used by refresh, navigation and later deletion.
    */
-  async createFoodEntryForMeal({ userId, dateStr, meal, food }) {
-    let createdMealId = null;
-
+  async createFoodEntryForMeal({ userId, dateStr, meal, food, operationId }) {
     try {
-      if (!userId || !dateStr || !meal || !food) {
+      if (!userId || !dateStr || !meal || !food || !operationId) {
         return { data: null, error: new Error('缺少食品记录保存参数') };
+      }
+
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) {
+        return { data: null, error: new Error('记录日期格式无效') };
       }
 
       const quantity = Number(food.grams);
@@ -194,116 +196,61 @@ export const timelineService = {
         return { data: null, error: new Error('目标餐次类型无效') };
       }
 
-      let persistedMeal = null;
-      const isDefaultMeal = ['breakfast', 'lunch', 'dinner'].includes(itemType);
-      if (isLikelySupabaseUuid(meal.id)) {
-        const { data: existingMeal, error: existingMealError } = await supabase
-          .from('timeline_items')
-          .select('*')
-          .eq('id', meal.id)
-          .eq('user_id', userId)
-          .eq('event_date', dateStr)
-          .maybeSingle();
+      const { data, error } = await supabase.rpc('create_food_entry_for_meal', {
+        record_date: dateStr,
+        meal: {
+          id: isLikelySupabaseUuid(meal.id) ? meal.id : null,
+          subtype: itemType,
+          title: meal.title || '餐次',
+          time: meal.time || meal.event_time || '12:00',
+          notes: meal.notes || null,
+          details: meal.details || {},
+          sort_order: Number.isFinite(Number(meal.sort_order)) ? Number(meal.sort_order) : 0,
+        },
+        food: {
+          food_id: food.foodId || null,
+          name: String(food.name || '').trim(),
+          quantity,
+          unit: food.unit || 'g',
+          calories: Number(food.cal || 0),
+          protein: Number(food.p || 0),
+          fat: Number(food.f || 0),
+          carbs: Number(food.c || 0),
+          portion: food.portion || null,
+        },
+        mutation_id: operationId,
+      });
 
-        if (existingMealError) return { data: null, error: existingMealError };
-        if (!existingMeal) return { data: null, error: new Error('目标餐次不存在，请刷新后重试') };
-        persistedMeal = normalizeTimelineItem(existingMeal);
-      } else {
-        const existingMealResult = isDefaultMeal
-          ? await supabase
-            .from('timeline_items')
-            .select('*')
-            .eq('user_id', userId)
-            .eq('event_date', dateStr)
-            .eq('item_type', itemType)
-            .order('created_at', { ascending: true })
-            .limit(1)
-            .maybeSingle()
-          : { data: null, error: null };
-        const { data: existingMeal, error: existingMealError } = existingMealResult;
-
-        if (existingMealError) return { data: null, error: existingMealError };
-
-        if (existingMeal) {
-          persistedMeal = normalizeTimelineItem(existingMeal);
-        } else {
-          const created = await this.createTimelineItem(userId, {
-            event_date: dateStr,
-            event_time: meal.time || meal.event_time,
-            item_type: itemType,
-            title: meal.title || '餐次',
-            notes: meal.notes || null,
-            details: meal.details || {},
-            sort_order: Number.isFinite(Number(meal.sort_order)) ? Number(meal.sort_order) : 0,
-          });
-          if (created.error?.code === '23505' && isDefaultMeal) {
-            const retry = await supabase
-              .from('timeline_items')
-              .select('*')
-              .eq('user_id', userId)
-              .eq('event_date', dateStr)
-              .eq('item_type', itemType)
-              .maybeSingle();
-            if (retry.error || !retry.data) {
-              return { data: null, error: retry.error || created.error };
-            }
-            persistedMeal = normalizeTimelineItem(retry.data);
-          } else if (created.error || !created.data?.id) {
-            return { data: null, error: created.error || new Error('餐次创建失败') };
-          } else {
-            persistedMeal = created.data;
-            createdMealId = created.data.id;
-          }
-        }
+      if (error) {
+        console.error('create_food_entry_for_meal failed', {
+          code: error.code,
+          message: error.message,
+          details: error.details,
+          hint: error.hint,
+          recordDate: dateStr,
+          mealType: itemType,
+          operationId,
+        });
+        return { data: null, error };
       }
 
-      const { data: foodEntry, error: foodEntryError } = await supabase
-        .from('food_entries')
-        .insert([{
-          user_id: userId,
-          timeline_item_id: persistedMeal.id,
-          source_food_id: food.foodId || null,
-          food_name_snapshot: food.name,
-          quantity,
-          unit_snapshot: food.unit || 'g',
-          calories_snapshot: Number(food.cal || 0),
-          protein_snapshot: Number(food.p || 0),
-          fat_snapshot: Number(food.f || 0),
-          carbs_snapshot: Number(food.c || 0),
-        }])
-        .select('*')
-        .single();
-
-      if (foodEntryError || !foodEntry?.id) {
-        if (createdMealId) {
-          await supabase
-            .from('timeline_items')
-            .delete()
-            .eq('id', createdMealId)
-            .eq('user_id', userId);
-        }
-        return { data: null, error: foodEntryError || new Error('食品记录创建失败') };
+      const mealRow = data?.meal;
+      const foodEntryRow = data?.food_entry;
+      if (!mealRow?.id || !foodEntryRow?.id) {
+        const responseError = new Error('数据库未返回完整的食品记录');
+        console.error('create_food_entry_for_meal returned incomplete data', { recordDate: dateStr, mealType: itemType, operationId });
+        return { data: null, error: responseError };
       }
 
       return {
         data: {
-          meal: persistedMeal,
-          foodEntry: normalizeFoodEntry(foodEntry),
+          meal: normalizeTimelineItem(mealRow),
+          foodEntry: normalizeFoodEntry(foodEntryRow),
         },
         error: null,
       };
     } catch (err) {
-      if (createdMealId) {
-        try {
-          await supabase
-            .from('timeline_items')
-            .delete()
-            .eq('id', createdMealId)
-            .eq('user_id', userId);
-        } catch {
-          // The original persistence error is more useful to the caller.
-        }
-      }
+      console.error('createFoodEntryForMeal unexpected failure', err);
       return { data: null, error: err };
     }
   },
