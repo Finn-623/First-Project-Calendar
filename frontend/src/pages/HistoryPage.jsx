@@ -6,6 +6,7 @@ import { showSuccess } from '../lib/notifications';
 import { useStore } from '../store';
 import { sumTimelineMacros } from '../mockData';
 import { historyService } from '../services/historyService';
+import { formatBusinessDateLabel } from '../lib/businessDate';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -18,9 +19,7 @@ import {
 } from '../components/ui/alert-dialog';
 
 const formatDateRangeLabel = (dateStr) => {
-  const date = new Date(`${dateStr}T00:00:00`);
-  if (Number.isNaN(date.getTime())) return dateStr;
-  return `${date.getFullYear()}年${date.getMonth() + 1}月${date.getDate()}日`;
+  return formatBusinessDateLabel(dateStr, { includeYear: true });
 };
 
 export const HistoryPage = () => {

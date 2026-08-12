@@ -114,7 +114,7 @@ const AddPickerMenu = ({ onSnack, onTraining, onEvent, testIdPrefix = 'picker' }
 );
 
 export const TodayPage = () => {
-  const { timeline, setTimeline, plan, dateLabel, endDay, dayInitialized, timelineSyncError, currentDate, recordingDateStr, setSelectedDate, goHome, user, loadHistory, markFoodEntryPendingDelete, clearFoodEntryPendingDelete } = useStore();
+  const { timeline, setTimeline, plan, dateLabel, endDay, dayInitialized, timelineSyncError, currentDate, selectedDateStr, recordingDateStr, setSelectedDate, goHome, user, loadHistory, markFoodEntryPendingDelete, clearFoodEntryPendingDelete } = useStore();
   const [foodSheet, setFoodSheet] = useState({ open: false, target: null });
   const [snackSheetOpen, setSnackSheetOpen] = useState(false);
   const [trainingOpen, setTrainingOpen] = useState(false);
@@ -170,7 +170,7 @@ export const TodayPage = () => {
     [timeline]
   );
 
-  const currentDateStr = useMemo(() => getSydneyDateString(currentDate), [currentDate]);
+  const currentDateStr = selectedDateStr || getSydneyDateString(currentDate);
   const todaySydneyStr = useMemo(() => getSydneyDateString(now), [now]);
   const selectedLocalDateStr = useMemo(() => getLocalDateKey(currentDate), [currentDate]);
   const deviceTodayStr = useMemo(() => getLocalDateKey(now), [now]);

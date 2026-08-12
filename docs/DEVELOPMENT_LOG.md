@@ -1,3 +1,17 @@
+## DEV-20260812-002
+
+- 日期：2026-08-12
+- 任务状态：代码修复、专项/全量测试与Production Build完成；Production连续三日验收待完成。
+- 任务目标：修复结束本日后相邻历史日期消失、被覆盖或整体向前错位的数据正确性问题。
+- 最小复现：准备Day A/Day B/Day C三个连续业务日及明显不同内容；应用原实现同时用`recordingDateStr`、浏览器本地`toDateStr(currentDate)`和`getSydneyDateString(currentDate)`生成归档、Today写入、实时刷新与IndexedDB key。在时区/午夜/缓存恢复使Date瞬间跨Sydney日界时，同一页面可为同一选择日期产生相邻两个key；结束Day C的upsert因此可能写到错误`archive_date`并覆盖该日期快照，随后历史看起来整体错位。
+- 真正根因：业务日期被建模为可携带时区的`Date`，并存在本地日期与Sydney日期两套推导；结束本日归档使用本地`toDateStr(currentDate)`，Today、缓存和实时同步则再次将该Date按Sydney转换。`daily_archives`的`ON CONFLICT(user_id,archive_date)`本身正确，覆盖是错误日期key触发的结果，不是数据库唯一键缺少日期。
+- 修复方式：新增统一business date工具，Sydney“今天”只从瞬间计算一次；其余业务日始终使用严格`YYYY-MM-DD`字符串做加减、查询、归档、History路由和IndexedDB key，禁止通过UTC timestamp或`new Date('YYYY-MM-DD')`回推；Store新增唯一`selectedDateStr`作为当前查看日事实来源，Date仅用当日中午构造作UI兼容展示；结束本日只归档该字符串并创建下一字符串日期，不更新旧记录日期；History按DATE字符串排序和格式化。
+- 修改范围：`businessDate.js`及测试、`store.jsx`连续三日回归、Today、History、historyService。未修改timeline/food数据库结构、Migration 028/036/037或任何现有历史数据。
+- 测试结果：日期/History/Timeline/IndexedDB专项10套件75项通过；前端全量45套件327/327通过；Production Build成功。覆盖Sydney 23:30/00:30、DST跨年、三日隔离、结束本日、刷新/缓存恢复、History列表/详情和自动归档既有契约。
+- 线上数据处理：不自动移动任何真实历史数据；部署前只做只读/测试账号核查，若发现疑似错位将单独统计并等待确认后再制定修复脚本。
+- 未完成事项：提交、push、Production部署，以及正式测试账号Day A/B/C创建、Day C结束、刷新、重新登录、History/HistoryDetail核对与清理。
+- Git Commit ID：待提交后回填。
+
 ## DEV-20260812-001
 
 - 日期：2026-08-12

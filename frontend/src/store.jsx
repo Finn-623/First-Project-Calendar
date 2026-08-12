@@ -11,11 +11,14 @@ import { timelineRealtimeService } from './services/timelineRealtimeService';
 import { timelineCacheService } from './services/timelineCacheService';
 import { filterMeaningfulTimelineItems } from './lib/dayRecordUtils';
 import { filterPendingDeletedFoodEntries, mergeRemoteTimelineWithLocalPending } from './lib/timelinePendingMerge';
+import { createDisplayDateFromBusinessDate, formatBusinessDateLabel } from './lib/businessDate';
 
 const StoreContext = createContext(null);
 
 const weekdays = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
-export const formatDateLabel = (d) => `${d.getMonth() + 1}月${d.getDate()}日 · ${weekdays[d.getDay()]}`;
+export const formatDateLabel = (d) => typeof d === 'string'
+  ? formatBusinessDateLabel(d)
+  : `${d.getMonth() + 1}月${d.getDate()}日 · ${weekdays[d.getDay()]}`;
 export const toDateStr = (d) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 
 const freshTimeline = () => ([
@@ -62,7 +65,7 @@ const normalizePlan = (target) => {
   };
 };
 
-const createDateFromString = (dateStr) => new Date(`${dateStr}T00:00:00`);
+const createDateFromString = (dateStr) => createDisplayDateFromBusinessDate(dateStr);
 
 const DATE_STATE_CACHE_KEYWORDS = [
   'recordingdate',
@@ -116,6 +119,7 @@ export const StoreProvider = ({ children, user: initialUser, session: initialSes
   const [authError, setAuthError] = useState(null);
 
   const [currentDate, setCurrentDate] = useState(() => createDateFromString(getSydneyDateString()));
+  const [selectedDateStr, setSelectedDateStr] = useState(() => getSydneyDateString());
   const [recordingDateStr, setRecordingDateStr] = useState(() => getSydneyDateString());
   const [timeline, setTimeline] = useState(freshTimeline());
   const [plan, setPlan] = useState(null);
@@ -197,6 +201,7 @@ export const StoreProvider = ({ children, user: initialUser, session: initialSes
     setFoods((prev) => (prev || []).filter((item) => item?.visibility === 'public'));
     setPublicFoods((prev) => (prev || []).filter((item) => item?.visibility === 'public'));
     setCurrentDate(createDateFromString(today));
+    setSelectedDateStr(today);
     setRecordingDateStr(today);
     setDayInitialized(false);
     setTimelineSyncError(null);
@@ -235,6 +240,7 @@ export const StoreProvider = ({ children, user: initialUser, session: initialSes
     selectedTodayDateRef.current = today;
     setRecordingDateStr(today);
     setCurrentDate(createDateFromString(today));
+    setSelectedDateStr(today);
     setTimeline(nextFreshTimeline);
     timelineCacheRef.current.set(today, cloneTimeline(nextFreshTimeline));
     setDayInitialized(true);
@@ -282,6 +288,7 @@ export const StoreProvider = ({ children, user: initialUser, session: initialSes
       }
       setRecordingDateStr(resolved.selectedDate);
       setCurrentDate(createDateFromString(resolved.selectedDate));
+      setSelectedDateStr(resolved.selectedDate);
       if (cached?.timeline) {
         setTimeline(mergePersistedTimelineWithFixedMeals(cached.timeline));
       } else if (getSydneyDateString(currentDateRef.current) !== resolved.selectedDate) {
@@ -652,7 +659,7 @@ export const StoreProvider = ({ children, user: initialUser, session: initialSes
         .filter(({ detail }) => !detail?.error)
         .map(({ dateStr, detail }) => ({
           dateStr,
-          dateLabel: detail.dateLabel || formatDateLabel(new Date(`${dateStr}T00:00:00`)),
+          dateLabel: detail.dateLabel || formatDateLabel(dateStr),
           timeline: detail.timeline || [],
           totals: detail.nutrition || sumTimelineMacros(detail.timeline || []),
           isEmptyDay: detail.isEmptyDay === true,
@@ -686,6 +693,7 @@ export const StoreProvider = ({ children, user: initialUser, session: initialSes
     if (!userId || !dateStr) return { success: false, error: '缺少必要参数' };
 
     setCurrentDate(createDateFromString(dateStr));
+    setSelectedDateStr(dateStr);
 
     const epoch = requestEpochRef.current;
     const [profileResult, foodsResult, planResult, planHistoryResult, historyResult, runningResult, timelineResult] = await Promise.allSettled([
@@ -803,12 +811,13 @@ export const StoreProvider = ({ children, user: initialUser, session: initialSes
     const nextDateStr = typeof nextDate === 'string' ? nextDate : getSydneyDateString(nextDate);
     if (!nextDateStr) return;
 
-    const activeDateStr = getSydneyDateString(currentDate);
+    const activeDateStr = selectedDateStr;
     timelineCacheRef.current.set(activeDateStr, cloneTimeline(timeline));
 
     setCurrentDate(createDateFromString(nextDateStr));
+    setSelectedDateStr(nextDateStr);
     setTimeline(resolveTimelineForDate(nextDateStr));
-  }, [currentDate, resolveTimelineForDate, timeline]);
+  }, [resolveTimelineForDate, selectedDateStr, timeline]);
 
   const goHome = useCallback(async (userId = user?.id) => {
     if (!userId) {
@@ -982,6 +991,7 @@ export const StoreProvider = ({ children, user: initialUser, session: initialSes
         selectedTodayDateRef.current = cached.recordDate;
         setRecordingDateStr(cached.recordDate);
         setCurrentDate(createDateFromString(cached.recordDate));
+        setSelectedDateStr(cached.recordDate);
         setTimeline(mergePersistedTimelineWithFixedMeals(cached.timeline));
         setDayInitialized(true);
       }
@@ -1007,7 +1017,7 @@ export const StoreProvider = ({ children, user: initialUser, session: initialSes
     let disposed = false;
     const onInvalidate = (message) => {
       if (disposed || message?.user_id !== userId) return;
-      const activeDate = getSydneyDateString(currentDateRef.current);
+      const activeDate = selectedDateStr;
       if (message?.record_date && message.record_date !== activeDate) {
         timelineCacheRef.current.delete(message.record_date);
         return;
@@ -1015,9 +1025,9 @@ export const StoreProvider = ({ children, user: initialUser, session: initialSes
 
       if (realtimeReloadTimerRef.current) window.clearTimeout(realtimeReloadTimerRef.current);
       realtimeReloadTimerRef.current = window.setTimeout(async () => {
-        const dateToReload = getSydneyDateString(currentDateRef.current);
+        const dateToReload = selectedDateStr;
         const { data, error } = await timelineService.getTimelineByDate(userId, dateToReload);
-        if (!disposed && !error && getSydneyDateString(currentDateRef.current) === dateToReload) {
+        if (!disposed && !error && selectedDateStr === dateToReload) {
           setTimelineSyncError(null);
           reconcileConfirmedFoodDeletes(data);
           setTimeline((currentTimeline) => {
@@ -1044,7 +1054,7 @@ export const StoreProvider = ({ children, user: initialUser, session: initialSes
       }
       void timelineRealtimeService.stop();
     };
-  }, [reconcileConfirmedFoodDeletes, user?.id]);
+  }, [reconcileConfirmedFoodDeletes, selectedDateStr, user?.id]);
 
   const signIn = useCallback(async (username, password) => {
     setAuthLoading(true);
@@ -1145,7 +1155,7 @@ export const StoreProvider = ({ children, user: initialUser, session: initialSes
 
     endDaySubmittingRef.current = true;
 
-    const dateStr = toDateStr(currentDate);
+    const dateStr = selectedDateStr;
     const timelineToArchive = filterMeaningfulTimelineItems(timeline);
     const totals = sumTimelineMacros(timelineToArchive);
 
@@ -1157,9 +1167,10 @@ export const StoreProvider = ({ children, user: initialUser, session: initialSes
         }
 
         // 关键操作：立即推进日期、清空timeline、返回成功
-        const nextDateStr = addDaysToDateString(toDateStr(currentDate), 1);
+        const nextDateStr = addDaysToDateString(dateStr, 1);
         setRecordingDateStr(nextDateStr);
         setCurrentDate(createDateFromString(nextDateStr));
+        setSelectedDateStr(nextDateStr);
         setTimeline(freshTimeline());
 
         // 非关键操作：异步加载历史记录（不阻塞返回）
@@ -1173,15 +1184,15 @@ export const StoreProvider = ({ children, user: initialUser, session: initialSes
       .finally(() => {
         endDaySubmittingRef.current = false;
       });
-  }, [currentDate, loadHistory, timeline, user?.id]);
+  }, [loadHistory, selectedDateStr, timeline, user?.id]);
 
   useEffect(() => {
-    const dateKey = getSydneyDateString(currentDate);
+    const dateKey = selectedDateStr;
     timelineCacheRef.current.set(dateKey, cloneTimeline(timeline));
     if (user?.id && cacheReadyToWriteRef.current && !logoutCompletedRef.current) {
       void timelineCacheService.putSnapshot(user.id, dateKey, cloneTimeline(timeline), { pendingDeleteEntryIds });
     }
-  }, [currentDate, pendingDeleteEntryIds, timeline, user?.id]);
+  }, [pendingDeleteEntryIds, selectedDateStr, timeline, user?.id]);
 
   const markFoodEntryPendingDelete = useCallback((entryId) => {
     if (!entryId) return;
@@ -1221,9 +1232,10 @@ export const StoreProvider = ({ children, user: initialUser, session: initialSes
     deletePlan,
 
     currentDate,
+    selectedDateStr,
     recordingDateStr,
     setSelectedDate,
-    dateLabel: formatDateLabel(currentDate),
+    dateLabel: formatDateLabel(selectedDateStr),
     timeline,
     setTimeline,
     plan,

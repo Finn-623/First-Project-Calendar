@@ -7,26 +7,14 @@ import { supabase } from '../lib/supabaseClient';
 import { hasMeaningfulTimelineItems } from '../lib/dayRecordUtils';
 import { normalizeSnackType } from '../constants/snackTypes';
 import { normalizeStrengthBodyParts } from '../constants/trainingBodyParts';
+import {
+  SYDNEY_TIME_ZONE,
+  addDaysToDateString,
+  formatBusinessDateLabel,
+  getSydneyDateString,
+} from '../lib/businessDate';
 
-export const SYDNEY_TIME_ZONE = 'Australia/Sydney';
-
-export const getSydneyDateString = (date = new Date()) => new Intl.DateTimeFormat('en-CA', {
-  timeZone: SYDNEY_TIME_ZONE,
-  year: 'numeric',
-  month: '2-digit',
-  day: '2-digit',
-}).format(date);
-
-export const addDaysToDateString = (dateStr, days = 1) => {
-  const [year, month, day] = dateStr.split('-').map(Number);
-  const next = new Date(Date.UTC(year, month - 1, day + days));
-  return new Intl.DateTimeFormat('en-CA', {
-    timeZone: SYDNEY_TIME_ZONE,
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-  }).format(next);
-};
+export { SYDNEY_TIME_ZONE, addDaysToDateString, getSydneyDateString };
 
 export const getSydneyMidnightDelayMs = (date = new Date()) => {
   const nextDateStr = addDaysToDateString(getSydneyDateString(date), 1);
@@ -47,13 +35,7 @@ export const getSydneyMidnightDelayMs = (date = new Date()) => {
   return Math.max(1000, low - date.getTime());
 };
 
-const formatHistoryLabel = (dateStr) => {
-  const date = new Date(`${dateStr}T00:00:00`);
-  if (Number.isNaN(date.getTime())) return dateStr;
-
-  const weekdays = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
-  return `${date.getMonth() + 1}月${date.getDate()}日 · ${weekdays[date.getDay()]}`;
-};
+const formatHistoryLabel = (dateStr) => formatBusinessDateLabel(dateStr);
 
 const toMealType = (item) => {
   if (item?.type !== 'meal') {
@@ -210,7 +192,7 @@ export const historyService = {
           ...(archiveDates || []).map((item) => item.archive_date).filter(Boolean),
           ...(legacyDates || []).map((item) => item.event_date).filter(Boolean),
         ]),
-      ].sort((a, b) => new Date(b) - new Date(a)).slice(0, limit);
+      ].sort((a, b) => String(b).localeCompare(String(a))).slice(0, limit);
 
       return { data: uniqueDates, error: archiveError || legacyError || null };
     } catch (err) {

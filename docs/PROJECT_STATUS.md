@@ -1,5 +1,11 @@
 # 当前项目进度
 
+## 连续日期历史错位修复（2026-08-12）
+
+- 根因是当前业务日同时由浏览器本地Date、Sydney转换Date和`recordingDateStr`推导；结束本日、Today写入、Realtime与IndexedDB可能使用相邻日期key，错误key再触发合法的`user_id,archive_date` upsert覆盖。
+- 已统一使用严格Sydney业务日`YYYY-MM-DD`字符串：Store的`selectedDateStr`是唯一当前查看日来源，Date只用于UI；归档、Timeline、History/HistoryDetail、Realtime、缓存均复用该key，推进日只创建下一key而不修改旧数据。
+- 日期/History/Timeline/IndexedDB专项75项、前端全量45套件327项及Production Build通过；未改数据库结构，未移动任何现有历史。Production连续三日最终验收待完成。
+
 ## 建议提交失败修复（2026-08-12）
 
 - Production原始错误为`P0001: invalid target version`：正式应用版本`0.2.1.1`为四段，而Migration 035的反馈版本/编号/RLS/编号函数仅接受三段版本。

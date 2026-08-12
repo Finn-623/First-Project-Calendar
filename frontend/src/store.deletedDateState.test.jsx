@@ -71,6 +71,7 @@ const StoreProbe = () => {
   const [route, setRoute] = useState('home');
   const {
     currentDate,
+    selectedDateStr,
     recordingDateStr,
     timeline,
     history,
@@ -97,6 +98,7 @@ const StoreProbe = () => {
     <div>
       <span data-testid="route">{route}</span>
       <span data-testid="current-date">{toDateStr(currentDate)}</span>
+      <span data-testid="selected-date">{selectedDateStr}</span>
       <span data-testid="recording-date">{recordingDateStr}</span>
       <span data-testid="day-initialized">{String(dayInitialized)}</span>
       <span data-testid="timeline-sync-error">{timelineSyncError || 'none'}</span>
@@ -250,6 +252,43 @@ describe('Store 删除日期后的首页状态恢复', () => {
       expect(screen.getByTestId('current-date').textContent).toBe('2026-07-28');
       expect(screen.getByTestId('recording-date').textContent).toBe('2026-07-28');
     });
+  });
+
+  test('连续三天使用独立业务日期 key，结束 Day C 不会覆盖或移动 Day A/Day B', async () => {
+    const stored = new Map([
+      ['2026-07-25', [{ id: 'day-a', type: 'event', title: 'Day A 独立记录', time: '08:00' }]],
+      ['2026-07-26', [{ id: 'day-b', type: 'event', title: 'Day B 独立记录', time: '09:00' }]],
+    ]);
+    historyService.getHistoryDates.mockImplementation(async () => ({ data: [...stored.keys()], error: null }));
+    historyService.getHistoryDetail.mockImplementation(async (_userId, dateStr) => ({
+      timeline: stored.get(dateStr) || [],
+      nutrition: { calories: 0, protein: 0, fat: 0, carbs: 0 },
+      isEmptyDay: false,
+      isCompleted: true,
+    }));
+    historyService.saveDayArchive.mockImplementation(async (_userId, dateStr, timeline) => {
+      stored.set(dateStr, timeline);
+      return { data: { archive_date: dateStr }, error: null };
+    });
+
+    renderStore();
+    await waitFor(() => expect(screen.getByTestId('selected-date').textContent).toBe('2026-07-27'));
+    fireEvent.click(screen.getByTestId('set-stale-timeline'));
+    fireEvent.click(screen.getByTestId('end-day'));
+
+    await waitFor(() => {
+      expect(historyService.saveDayArchive).toHaveBeenCalledWith(
+        'user-1',
+        '2026-07-27',
+        expect.arrayContaining([expect.objectContaining({ title: '旧缓存记录' })]),
+        expect.any(Object),
+      );
+      expect(screen.getByTestId('selected-date').textContent).toBe('2026-07-28');
+    });
+    expect(stored.get('2026-07-25')[0].title).toBe('Day A 独立记录');
+    expect(stored.get('2026-07-26')[0].title).toBe('Day B 独立记录');
+    expect(stored.get('2026-07-27')[0].title).toBe('旧缓存记录');
+    expect([...stored.keys()].sort()).toEqual(['2026-07-25', '2026-07-26', '2026-07-27']);
   });
 
   test('关键路径：删除真实本日历史后停留历史页，再回首页恢复真实本日', async () => {
