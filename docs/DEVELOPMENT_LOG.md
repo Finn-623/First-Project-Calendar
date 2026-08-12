@@ -5902,3 +5902,13 @@
 - 未完成事项：P0编号19继续等待用户在最新本地Production页面完成最终验收；远程Feedback保持pending。
 - 风险或注意事项：未修改搜索、筛选、详情、权限或远程数据逻辑；未部署Migration 028；未push。
 - Git Commit ID：由本独立提交承载，以Git历史为准。
+## DEV-20260812-004
+
+- 日期：2026-08-12
+- 状态：代码与 Migration 039 已部署，等待 Production 双设备最终验收
+- 任务目标：统一 Home、History、HistoryDetail 的每日记录事实来源，修复相邻日期内容互换及删除历史后 Home 仍显示旧快照。
+- 真正根因：Home 日期导航只切换日期标签并同步读取 `timelineCache/history`，远程校准另行只查 live `timeline_items`；History/HistoryDetail 则 archive-first 读取 `daily_archives`。多个无日期请求令牌的异步结果可跨日期覆盖当前 `timeline`。删除过去日期时仅删 Map/IndexedDB key，没有在 Home 正停留该日期时清空 React timeline；Realtime 也未订阅 `daily_archives`。
+- 修复方式：新增 canonical `dailyRecordService.getDailyRecord(userId, businessDate)`，统一 archive-first/live-second 结果为 `{businessDate,status,timeline,meals,foodEntries,totals,archiveId,updatedAt}`；Home 切日与 Realtime 均以不可变日期和递增请求号校准，Supabase 成功结果覆盖缓存；过去日期 Home mutation 直接更新同一 archive；删除立即清理当前 Home、内存及 IndexedDB；Migration 039 发布 `daily_archives` 完整 Realtime 行以支持精确日期失效。
+- 测试结果：日期/Home/History/HistoryDetail/Realtime 专项 39/39；前端全量 47 suites、335/335；Migration 契约 68/68；Production Build 成功。
+- 数据库：Migration 039 已部署；仅启用 `daily_archives` Realtime 与 `REPLICA IDENTITY FULL`，不修改用户数据。Migration 028 保持未部署。
+- Fix Commit ID：e85ef5c2e7eba300695dd3bb295fa46a41298adc

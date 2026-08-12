@@ -1,5 +1,13 @@
 # 当前项目进度
 
+## Home / History 统一数据源 P0（2026-08-12）
+
+- 已确认 Production 中 2026-08-11 archive 为 2502 kcal、4 meals、17 foods，而 2026-08-12 是独立 live 数据；错误显示来自 Home 的 live-only 查询、日期无关的 React timeline 及迟到异步结果，History 则独立使用 archive-first 查询。
+- 新增 canonical daily-record service，Home、History、HistoryDetail 统一为 Supabase archive-first/live-second 数据规则；日期请求、内存及 IndexedDB key 均绑定 user + business date，远程成功结果具有最高优先级。
+- Home 过去日期编辑与 HistoryDetail 编辑写同一 archive；删除历史会同步清空 Home 当前日期及缓存；Migration 039 已部署，跨标签/设备 archive insert/update/delete 可按 business date 失效。
+- 日期/History/Realtime 专项39项、前端全量47套件335项、Migration契约68项和Production Build全部通过。Fix Commit `e85ef5c2e7eba300695dd3bb295fa46a41298adc`。Migration 028未处理。
+- 当前状态：等待最新前端 Production 部署及真实测试账号执行 Home↔History 双向编辑、删除、刷新、重登和双设备验收；完成前不关闭P0。
+
 ## 跨日覆盖与自动结束联合修复（2026-08-12）
 
 - Production取证确认08-10/08-11为不同archive ID与不同payload hash，但两日内容/17 food/2502 kcal完全相同；08-10在原自动归档count=0后于08-11 22:25被旧手动结束链路覆盖。08-12 live timeline/food仍真实存在。

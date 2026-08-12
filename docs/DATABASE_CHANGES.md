@@ -590,3 +590,12 @@
 	- 前端构建通过。
 - 相关 DEV 编号：`DEV-20260726-047`
 - 相关 Commit ID：af41edba4079504f5235c43a3cd2fc7c47834980
+## DB-20260812-004
+
+- 日期：2026-08-12
+- 修改原因：让 Home、History 与 HistoryDetail 在 archive 变化后按同一 business date 实时失效，避免已删除/编辑 archive 被本地快照继续显示。
+- Migration：`039_daily_archive_realtime_consistency.sql`，已部署到 Production。
+- 实际修改：`public.daily_archives REPLICA IDENTITY FULL`；若尚未发布则加入 `supabase_realtime` publication。
+- 数据影响：不新增、更新、删除或搬动任何用户历史记录；Migration 028保持未部署。
+- 测试：Migration契约68/68；前端全量47 suites、335/335；Production Build成功。
+- 相关 Commit ID：e85ef5c2e7eba300695dd3bb295fa46a41298adc
