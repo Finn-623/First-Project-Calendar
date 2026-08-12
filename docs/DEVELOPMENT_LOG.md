@@ -5914,3 +5914,5 @@
 - 数据库：Migration 039 已部署；仅启用 `daily_archives` Realtime 与 `REPLICA IDENTITY FULL`，不修改用户数据。Migration 028 保持未部署。
 - Fix Commit ID：e85ef5c2e7eba300695dd3bb295fa46a41298adc
 - Live adapter补充 Commit ID：02cc779ff5d94ad5ffa3627724352b157e8a6549
+- Production Deployment：`dpl_5nexskg5XbVuJnHqBU7pmcKWUaSf`（READY，正式别名已切换）。真实验收：Home/History的08-11均为2502 kcal，Home/History的08-12均为1391 kcal；临时08-05 archive 444 kcal完成Home 08:00→08:15、HistoryDetail 08:15→08:30双向同步，整日删除后Home立即为空且刷新不恢复，历史列表不再含08-05，测试数据已清理。
+- 未关闭项：当前环境没有第二台独立已登录测试设备；已完成同客户端Realtime/广播自动化契约，但不将其冒充真实双设备验收，P0继续保持未关闭。

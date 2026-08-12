@@ -7,7 +7,8 @@
 - Home 过去日期编辑与 HistoryDetail 编辑写同一 archive；删除历史会同步清空 Home 当前日期及缓存；Migration 039 已部署，跨标签/设备 archive insert/update/delete 可按 business date 失效。
 - Production真实验收额外发现live food rows只参与汇总、未挂回meal foods，造成History 12显示1391 kcal而Home 12显示0；补充Commit `02cc779ff5d94ad5ffa3627724352b157e8a6549`已修正统一adapter。
 - 日期/History/Realtime 专项40项、前端全量47套件336项、Migration契约68项和Production Build全部通过。主Fix Commit `e85ef5c2e7eba300695dd3bb295fa46a41298adc`。Migration 028未处理。
-- 当前状态：等待最新前端 Production 部署及真实测试账号执行 Home↔History 双向编辑、删除、刷新、重登和双设备验收；完成前不关闭P0。
+- Production `dpl_5nexskg5XbVuJnHqBU7pmcKWUaSf`已READY。真实网页确认Home/History的08-11均为2502 kcal、08-12均为1391 kcal；隔离临时08-05记录完成Home→History与History→Home时间编辑同步、History删除→Home即时空状态、刷新不恢复，测试数据已清理。
+- 当前状态：功能、删除、刷新与单客户端真实验收通过；尚无第二台独立已登录测试设备完成真实双设备修改/删除验证，因此按P0关闭条件继续标记为未关闭。
 
 ## 跨日覆盖与自动结束联合修复（2026-08-12）
 
