@@ -1,3 +1,15 @@
+## DB-20260812-002
+
+- 日期：2026-08-12
+- 修改原因：自动归档此前只能由Cron使用service role调用；若Cron延迟/缺失，登录、刷新和Sydney跨日不会补偿，前一日无法自动结束。
+- 实际修改内容：新增`public.auto_archive_my_previous_day(DATE)` authenticated-only SECURITY DEFINER包装函数。函数不接受user ID，从`auth.uid()`取得调用者并复用`auto_archive_user_records(UUID,DATE)`事务核心，因此自动/手动触发共享同一资格检查、日期验证、advisory lock、`user_id+archive_date`唯一归档和防重日志。
+- 权限：PUBLIC及anon撤销；仅authenticated可执行；匿名远程验证返回42501。用户不能指定或归档其他用户。
+- 数据影响：Migration不读取或改写既有历史；只有应用显式调用且用户已启用自动归档、目标严格为用户时区前一日并已到配置时间时才可能归档。重复/双设备调用由原核心锁和日志幂等处理。
+- Migration文件：`supabase/migrations/038_authenticated_previous_day_auto_archive.sql`；已部署正式库。Migration 028未部署且未修改。
+- 测试结果：全部Migration/auto-archive契约82/82、前端330/330、Build通过；Production三日最终验收待完成。
+- 相关DEV：`DEV-20260812-003`。
+- 相关Commit ID：待提交后回填。
+
 ## DB-20260812-001
 
 - 日期：2026-08-12

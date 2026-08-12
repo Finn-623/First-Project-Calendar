@@ -118,6 +118,16 @@ const sumTotals = (timeline = []) => timeline.reduce((acc, item) => {
   return acc;
 }, { calories: 0, protein: 0, fat: 0, carbs: 0 });
 
+export const normalizeArchiveTotals = (totals, timeline = []) => {
+  const source = totals || sumTotals(timeline);
+  return {
+    cal: Number(source?.cal ?? source?.calories ?? 0),
+    p: Number(source?.p ?? source?.protein ?? 0),
+    f: Number(source?.f ?? source?.fat ?? 0),
+    c: Number(source?.c ?? source?.carbs ?? 0),
+  };
+};
+
 export const historyService = {
   /**
    * Check whether a day is already completed for a user.
@@ -221,7 +231,7 @@ export const historyService = {
 
       if (archiveRow) {
         const timeline = (archiveRow.timeline || []).map(normalizeArchivedTimelineItem);
-        const nutrition = archiveRow.totals || sumTotals(timeline);
+        const nutrition = normalizeArchiveTotals(archiveRow.totals, timeline);
         const isCompleted = archiveRow.is_completed === true || Boolean(archiveRow.completed_at);
         const isEmptyDay = isCompleted && !hasMeaningfulTimelineItems(timeline);
 
@@ -358,6 +368,17 @@ export const historyService = {
 
   async updateDayArchive(userId, dateStr, timeline = [], totals = null) {
     return this.saveDayArchive(userId, dateStr, timeline, totals);
+  },
+
+  async autoArchivePreviousDay(dateStr) {
+    try {
+      const { data, error } = await supabase.rpc('auto_archive_my_previous_day', {
+        target_date: dateStr,
+      });
+      return { data: Array.isArray(data) ? data[0] : data, error };
+    } catch (error) {
+      return { data: null, error };
+    }
   },
 
   /**

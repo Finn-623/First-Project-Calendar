@@ -252,6 +252,17 @@ export const StoreProvider = ({ children, user: initialUser, session: initialSes
     }
 
     const today = getSydneyDateString();
+    const previousDate = addDaysToDateString(today, -1);
+    const automaticArchive = await historyService.autoArchivePreviousDay(previousDate);
+    if (automaticArchive?.error) {
+      console.error('Automatic previous-day archive failed', {
+        code: automaticArchive.error?.code,
+        message: automaticArchive.error?.message,
+        details: automaticArchive.error?.details,
+        hint: automaticArchive.error?.hint,
+        businessDate: previousDate,
+      });
+    }
     const { data: completion, error } = await historyService.getDayCompletion(userId, today);
     if (error) {
       return { success: false, error };
@@ -262,6 +273,7 @@ export const StoreProvider = ({ children, user: initialUser, session: initialSes
       today,
       selectedDate: completion?.is_completed ? addDaysToDateString(today, 1) : today,
       isTodayCompleted: completion?.is_completed === true,
+      automaticArchive: automaticArchive?.data || null,
     };
   }, []);
 

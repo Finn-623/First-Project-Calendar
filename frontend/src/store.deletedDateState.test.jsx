@@ -59,6 +59,7 @@ jest.mock('./services/historyService', () => {
     getSydneyMidnightDelayMs: () => 60 * 60 * 1000,
     historyService: {
       getDayCompletion: jest.fn(),
+      autoArchivePreviousDay: jest.fn(),
       getHistoryDates: jest.fn().mockResolvedValue({ data: [], error: null }),
       getHistoryDetail: jest.fn(),
       saveDayArchive: jest.fn(),
@@ -206,6 +207,7 @@ describe('Store 删除日期后的首页状态恢复', () => {
     timelineService.getTimelineByDate.mockResolvedValue({ data: [], error: null });
     timelineService.getRunningTimelineItems.mockResolvedValue({ data: [], error: null });
     historyService.getDayCompletion.mockResolvedValue({ data: null, error: null });
+    historyService.autoArchivePreviousDay.mockResolvedValue({ data: { result_status: 'disabled', deleted_count: 0 }, error: null });
     historyService.getHistoryDates.mockResolvedValue({ data: [], error: null });
     historyService.getHistoryDetail.mockResolvedValue({
       timeline: [],
@@ -251,6 +253,22 @@ describe('Store 删除日期后的首页状态恢复', () => {
       expect(screen.getByTestId('route').textContent).toBe('home');
       expect(screen.getByTestId('current-date').textContent).toBe('2026-07-28');
       expect(screen.getByTestId('recording-date').textContent).toBe('2026-07-28');
+    });
+  });
+
+  test('登录或跨日恢复先幂等归档Sydney前一业务日，再加载新Today', async () => {
+    historyService.autoArchivePreviousDay.mockResolvedValue({
+      data: { result_status: 'archived', deleted_count: 4 },
+      error: null,
+    });
+    historyService.getHistoryDates.mockResolvedValue({ data: ['2026-07-26'], error: null });
+
+    renderStore();
+
+    await waitFor(() => {
+      expect(historyService.autoArchivePreviousDay).toHaveBeenCalledWith('2026-07-26');
+      expect(screen.getByTestId('selected-date').textContent).toBe('2026-07-27');
+      expect(screen.getByTestId('history-count').textContent).toBe('1');
     });
   });
 

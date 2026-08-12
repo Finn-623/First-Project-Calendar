@@ -1,5 +1,12 @@
 # 当前项目进度
 
+## 跨日覆盖与自动结束联合修复（2026-08-12）
+
+- Production取证确认08-10/08-11为不同archive ID与不同payload hash，但两日内容/17 food/2502 kcal完全相同；08-10在原自动归档count=0后于08-11 22:25被旧手动结束链路覆盖。08-12 live timeline/food仍真实存在。
+- 原自动记录设置只保存配置，归档依赖Cron Edge Function；Cron确实00:05执行，但客户端无登录/跨日补偿。自动RPC写长键totals而History只读短键，导致自动归档消耗显示0。
+- Migration 038已部署：authenticated客户端只能以`auth.uid()`复用既有事务自动归档核心补偿前一Sydney业务日；Store在登录/启动/午夜/恢复统一触发。History兼容手动和自动totals格式。Migration 028未处理。
+- 前端全量46套件330项、Migration/auto-archive契约82项及Production Build通过。08-10原始内容缺乏可靠恢复来源，未猜测或修改现有历史；Production自动归档三日验收待完成。
+
 ## 连续日期历史错位修复（2026-08-12）
 
 - 根因是当前业务日同时由浏览器本地Date、Sydney转换Date和`recordingDateStr`推导；结束本日、Today写入、Realtime与IndexedDB可能使用相邻日期key，错误key再触发合法的`user_id,archive_date` upsert覆盖。

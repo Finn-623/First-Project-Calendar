@@ -50,6 +50,7 @@ jest.mock('./services/historyService', () => ({
   addDaysToDateString: (value) => value,
   getSydneyMidnightDelayMs: () => 60 * 60 * 1000,
   historyService: {
+    autoArchivePreviousDay: jest.fn().mockResolvedValue({ data: { result_status: 'disabled' }, error: null }),
     getDayCompletion: jest.fn().mockResolvedValue({ data: null, error: null }),
     getHistoryDates: jest.fn().mockResolvedValue({ data: [], error: null }),
     getHistoryDetail: jest.fn().mockResolvedValue({ data: null, error: null }),
