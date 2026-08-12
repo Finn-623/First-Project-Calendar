@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { CheckSquare, ChevronRight, Square, Trash2, ArrowLeft } from 'lucide-react';
 import { toast } from 'sonner';
@@ -23,13 +23,17 @@ const formatDateRangeLabel = (dateStr) => {
 };
 
 export const HistoryPage = () => {
-  const { history, plan, setHistory, resetDeletedDateState } = useStore();
+  const { history, plan, user, loadHistory, setHistory, resetDeletedDateState } = useStore();
   const navigate = useNavigate();
   const location = useLocation();
   const [isBatchDeleteMode, setIsBatchDeleteMode] = useState(false);
   const [selectedDateKeys, setSelectedDateKeys] = useState([]);
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [deleting, setDeleting] = useState(false);
+
+  useEffect(() => {
+    if (user?.id) void loadHistory(user.id);
+  }, [loadHistory, user?.id]);
 
   // 判断是否从设置进来
   const isFromSettings = location.state?.returnTo === 'settings';

@@ -10,6 +10,7 @@ let mockLocation;
 let mockHistory;
 const mockSetHistory = jest.fn();
 const mockResetDeletedDateState = jest.fn();
+const mockLoadHistory = jest.fn();
 
 jest.mock('react-router-dom', () => ({
   useNavigate: () => mockNavigate,
@@ -63,9 +64,17 @@ describe('HistoryPage 返回导航', () => {
     useStore.mockImplementation(() => ({
       history: mockHistory,
       plan: { calories: 2000 },
+      user: { id: 'user-1' },
+      loadHistory: mockLoadHistory,
       setHistory: mockSetHistory,
       resetDeletedDateState: mockResetDeletedDateState,
     }));
+  });
+
+  test('直接进入或刷新History时从Supabase重新读取当前用户历史', async () => {
+    mockLoadHistory.mockResolvedValue({ success: true, data: mockHistory });
+    renderPage();
+    await waitFor(() => expect(mockLoadHistory).toHaveBeenCalledWith('user-1'));
   });
 
   test('历史列表顶部始终显示适合手机点击的返回按钮', () => {
