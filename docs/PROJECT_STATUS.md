@@ -5,7 +5,8 @@
 - Production原始错误为`P0001: invalid target version`：正式应用版本`0.2.1.1`为四段，而Migration 035的反馈版本/编号/RLS/编号函数仅接受三段版本。
 - Migration 037已部署到正式Supabase并统一兼容三段或四段版本；authenticated owner写入、匿名拒绝、跨用户拒绝、失败零残留、持久化回读及测试数据清理均已验证，Migration 028保持未部署。
 - 前端现在提交完整pending payload，结构化记录Supabase `code/message/details/hint/payload`，失败保留表单并恢复状态；同步提交锁防重复点击，成功后即时合并返回记录并从Supabase强制回读。
-- 反馈专项42/42、Migration契约65/65、前端全量44套件322/322及Production Build通过；Frontend Production部署和正式网页最终人工验收待完成。
+- 反馈专项42/42、Migration契约65/65、前端全量44套件322/322及Production Build通过；修复Commit `623c9a351b865090336c74358b2ad842893793ad`已push，Production Deployment `dpl_Do8QJbMFcPjbgYp4czNunbb71xiL`为READY。
+- 正式网页登录、提交成功提示、即时历史显示、刷新持久化、重复点击单条写入、未完成/已完成历史和测试数据删除均通过；清理后刷新残留0，可以将该Bug标记为已完成。
 
 ## 历史食品记录新增修复（2026-08-10）
 
