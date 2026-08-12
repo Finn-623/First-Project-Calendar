@@ -5909,6 +5909,8 @@
 - 任务目标：统一 Home、History、HistoryDetail 的每日记录事实来源，修复相邻日期内容互换及删除历史后 Home 仍显示旧快照。
 - 真正根因：Home 日期导航只切换日期标签并同步读取 `timelineCache/history`，远程校准另行只查 live `timeline_items`；History/HistoryDetail 则 archive-first 读取 `daily_archives`。多个无日期请求令牌的异步结果可跨日期覆盖当前 `timeline`。删除过去日期时仅删 Map/IndexedDB key，没有在 Home 正停留该日期时清空 React timeline；Realtime 也未订阅 `daily_archives`。
 - 修复方式：新增 canonical `dailyRecordService.getDailyRecord(userId, businessDate)`，统一 archive-first/live-second 结果为 `{businessDate,status,timeline,meals,foodEntries,totals,archiveId,updatedAt}`；Home 切日与 Realtime 均以不可变日期和递增请求号校准，Supabase 成功结果覆盖缓存；过去日期 Home mutation 直接更新同一 archive；删除立即清理当前 Home、内存及 IndexedDB；Migration 039 发布 `daily_archives` 完整 Realtime 行以支持精确日期失效。
-- 测试结果：日期/Home/History/HistoryDetail/Realtime 专项 39/39；前端全量 47 suites、335/335；Migration 契约 68/68；Production Build 成功。
+- Production补充根因：首次真实验收时 History 12 的数据库汇总为1391 kcal，但 Home 12为0；live adapter查询了food rows用于汇总，却未按`timeline_item_id`挂回meal的`foods`，导致Home/HistoryDetail重算为空。已集中补齐live food adapter。
+- 测试结果：日期/Home/History/HistoryDetail/Realtime 专项 40/40；前端全量 47 suites、336/336；Migration 契约 68/68；Production Build 成功。
 - 数据库：Migration 039 已部署；仅启用 `daily_archives` Realtime 与 `REPLICA IDENTITY FULL`，不修改用户数据。Migration 028 保持未部署。
 - Fix Commit ID：e85ef5c2e7eba300695dd3bb295fa46a41298adc
+- Live adapter补充 Commit ID：02cc779ff5d94ad5ffa3627724352b157e8a6549
