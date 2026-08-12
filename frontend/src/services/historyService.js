@@ -301,7 +301,7 @@ export const historyService = {
 
       return {
         timeline: normalizedTimeline,
-        nutrition,
+        nutrition: normalizeArchiveTotals(nutrition, normalizedTimeline),
         target,
         error: null,
         isCompleted: false,
