@@ -1,15 +1,16 @@
 ## DEV-20260812-003
 
 - 日期：2026-08-12
-- 任务状态：Production只读取证、代码/Migration修复、远程038部署、专项/全量测试及Build完成；Production自动归档三日验收待完成。
+- 任务状态：Production取证、代码/Migration修复、038部署、测试、Build、push、Production部署及自动归档三日验收全部完成。
 - Production真实数据状态：正式Finn账号2026-08-10与08-11各有独立archive ID，payload SHA-256不同，但两日均为6项、4餐、17 food、2502 kcal/180.1P/58.4F/303.3C且标题序列相同；08-10 archive创建于Sydney 08-11 00:05，随后在08-11 22:25被更新，自动归档日志该日`archived_record_count=0`；08-11在Sydney 08-12 00:05由自动归档写入，日志count=6。08-12仍有3条live timeline、2餐、12 food、1391 kcal，数据真实存在。
 - Bug A根因：旧手动结束链路从`currentDate(Date)`分别用浏览器本地与Sydney日期推导archive key和timeline payload，Date状态错位时可把下一日payload upsert到前一日archive。此前`fa1c457...`已将业务日期收敛为`selectedDateStr`，本轮只读证据确认08-10曾在原始自动归档空快照后被旧手动链路以08-11 payload覆盖。两个archive不是UI缓存复用；IndexedDB按`project+user+date`隔离、HistoryDetail按路由date查询、Realtime按selectedDateStr隔离。
 - Bug B根因：“自动记录”设置只保存`user_record_settings`；真正归档依赖外部Cron调用Edge Function。Cron实际00:05执行，但客户端登录/恢复/跨日没有补偿触发。另有格式不一致：手动归档totals为`cal/p/f/c`，自动RPC为`calories/protein/fat/carbs`，History只读短键，因此自动归档日消耗显示为0。
 - 修复方式：History统一兼容两种totals并输出UI短键；新增authenticated-only `auto_archive_my_previous_day(DATE)`，从`auth.uid()`确定用户并复用既有`auto_archive_user_records`事务核心、资格判断、advisory lock、唯一archive/log实现；Store在登录、启动、可见性和Sydney午夜同步的统一`resolveHomeTargetDate`入口先补偿归档前一业务日，成功/幂等完成后再加载新Today，失败记录完整结构化错误且不丢Supabase数据。
 - 数据恢复判断：08-10原live timeline/food已被自动归档事务删除，现archive在22:25被覆盖；当前库无旧archive版本、删除前food rows或可证明的原始payload。禁止根据08-11猜测恢复，现阶段存在无法可靠恢复的08-10原始历史。
-- 测试结果：新增totals兼容、登录跨日补偿、权限契约；前端全量46套件330/330，Migration/auto-archive契约82/82，Production Build成功。Migration 038已部署；匿名调用42501，登录测试用户重复调用均稳定返回disabled且无写入。
-- 未完成事项：提交/push/Production部署；用连续A/B/C不同数据验证不手动结束B时登录自动归档、消耗、幂等、刷新/重登、详情和清理。
-- Git Commit ID：待提交后回填。
+- 测试与上线：前端全量46套件330/330，Migration/auto-archive契约82/82，Production Build成功。Migration 038已部署；匿名调用42501。功能提交`ab91cf01bfa286c19c5b150f572a3fdcbfb29fd2`，History回读补充`89ec58508f46e1304d56a42a7a3679974f00dd1b`，live totals补充`92b7a9132f34cf4f459ffbfcdc17ab77b9f33b52`均已push。
+- Production三日验收：测试账号Day A=111 kcal归档、Day B=222 kcal live、Day C独立事件；没有手动结束B，登录最新Production后038自动将B归档并删除其live timeline，Today只显示C。History强制Supabase回读后显示A=111、B=222且日期不同，C保持独立live日；B自动归档长键totals正确显示。测试数据最终原子清理：1条live timeline、2个archive、3个日期状态，设置恢复原本不存在状态。
+- Production Deployment ID：`dpl_E9Z2f2P7hbcehuNQNWrfZ2ZBE4RD`。
+- Git Commit ID：`ab91cf01bfa286c19c5b150f572a3fdcbfb29fd2`（核心修复）。
 
 ## DEV-20260812-002
 

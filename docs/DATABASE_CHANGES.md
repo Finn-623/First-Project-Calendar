@@ -6,9 +6,9 @@
 - 权限：PUBLIC及anon撤销；仅authenticated可执行；匿名远程验证返回42501。用户不能指定或归档其他用户。
 - 数据影响：Migration不读取或改写既有历史；只有应用显式调用且用户已启用自动归档、目标严格为用户时区前一日并已到配置时间时才可能归档。重复/双设备调用由原核心锁和日志幂等处理。
 - Migration文件：`supabase/migrations/038_authenticated_previous_day_auto_archive.sql`；已部署正式库。Migration 028未部署且未修改。
-- 测试结果：全部Migration/auto-archive契约82/82、前端330/330、Build通过；Production三日最终验收待完成。
+- 测试结果：全部Migration/auto-archive契约82/82、前端330/330、Build通过；Production未手动结束Day B的自动归档、幂等、A/B隔离、消耗显示和清理通过。
 - 相关DEV：`DEV-20260812-003`。
-- 相关Commit ID：待提交后回填。
+- 相关Commit ID：`ab91cf01bfa286c19c5b150f572a3fdcbfb29fd2`。
 
 ## DB-20260812-001
 
