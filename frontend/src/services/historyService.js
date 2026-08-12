@@ -102,6 +102,32 @@ const normalizeDbTimelineItem = (item) => {
   };
 };
 
+const normalizeDbFoodEntry = (entry) => ({
+  entryId: entry?.id,
+  foodEntryId: entry?.id,
+  foodId: entry?.source_food_id || null,
+  name: entry?.food_name_snapshot || '',
+  grams: Number(entry?.quantity || 0),
+  unit: entry?.unit_snapshot || 'g',
+  cal: Number(entry?.calories_snapshot || 0),
+  p: Number(entry?.protein_snapshot || 0),
+  f: Number(entry?.fat_snapshot || 0),
+  c: Number(entry?.carbs_snapshot || 0),
+});
+
+export const attachFoodEntriesToTimeline = (timeline = [], foodEntries = []) => {
+  const foodsByTimelineId = new Map();
+  (foodEntries || []).forEach((entry) => {
+    const current = foodsByTimelineId.get(entry.timeline_item_id) || [];
+    current.push(normalizeDbFoodEntry(entry));
+    foodsByTimelineId.set(entry.timeline_item_id, current);
+  });
+  return (timeline || []).map((item) => normalizeDbTimelineItem({
+    ...item,
+    foods: foodsByTimelineId.get(item.id) || [],
+  }));
+};
+
 const sumTotals = (timeline = []) => timeline.reduce((acc, item) => {
   if (item?.type !== 'meal') {
     return acc;
@@ -282,7 +308,7 @@ export const historyService = {
       }
 
       // Calculate nutrition
-      const normalizedTimeline = (timeline || []).map(normalizeDbTimelineItem);
+      const normalizedTimeline = attachFoodEntriesToTimeline(timeline, foodEntries);
       const nutrition = foodEntries?.reduce(
         (acc, entry) => ({
           calories: acc.calories + (entry.calories_snapshot || 0),
