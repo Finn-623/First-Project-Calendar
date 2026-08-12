@@ -4,7 +4,8 @@
 
 - 根因是当前业务日同时由浏览器本地Date、Sydney转换Date和`recordingDateStr`推导；结束本日、Today写入、Realtime与IndexedDB可能使用相邻日期key，错误key再触发合法的`user_id,archive_date` upsert覆盖。
 - 已统一使用严格Sydney业务日`YYYY-MM-DD`字符串：Store的`selectedDateStr`是唯一当前查看日来源，Date只用于UI；归档、Timeline、History/HistoryDetail、Realtime、缓存均复用该key，推进日只创建下一key而不修改旧数据。
-- 日期/History/Timeline/IndexedDB专项75项、前端全量45套件327项及Production Build通过；未改数据库结构，未移动任何现有历史。Production连续三日最终验收待完成。
+- 日期/History/Timeline/IndexedDB专项75项、前端全量45套件327项及Production Build通过；未改数据库结构，未移动任何现有历史。修复Commit `fa1c457c5c9c96c2c3e72fa8beee2e4bad6fd7b9`已push，Production Deployment `dpl_HLs4Sx5DYsLNAJPF59jhsJUzjciS`为READY。
+- Production连续三日验收通过：8月10日101g、11日202g、12日独立事件在结束本日、刷新、退出重登后均保持原日期和内容，HistoryDetail逐日匹配；测试数据已清理且归档/timeline残留0。正式库现有6个归档的可关联日期错位统计为0，可将该Bug标记为已完成。
 
 ## 建议提交失败修复（2026-08-12）
 

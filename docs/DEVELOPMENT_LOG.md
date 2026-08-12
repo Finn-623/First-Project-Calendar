@@ -1,16 +1,16 @@
 ## DEV-20260812-002
 
 - 日期：2026-08-12
-- 任务状态：代码修复、专项/全量测试与Production Build完成；Production连续三日验收待完成。
+- 任务状态：代码修复、专项/全量测试、Production Build、push、Production部署及连续三日真实验收全部完成。
 - 任务目标：修复结束本日后相邻历史日期消失、被覆盖或整体向前错位的数据正确性问题。
 - 最小复现：准备Day A/Day B/Day C三个连续业务日及明显不同内容；应用原实现同时用`recordingDateStr`、浏览器本地`toDateStr(currentDate)`和`getSydneyDateString(currentDate)`生成归档、Today写入、实时刷新与IndexedDB key。在时区/午夜/缓存恢复使Date瞬间跨Sydney日界时，同一页面可为同一选择日期产生相邻两个key；结束Day C的upsert因此可能写到错误`archive_date`并覆盖该日期快照，随后历史看起来整体错位。
 - 真正根因：业务日期被建模为可携带时区的`Date`，并存在本地日期与Sydney日期两套推导；结束本日归档使用本地`toDateStr(currentDate)`，Today、缓存和实时同步则再次将该Date按Sydney转换。`daily_archives`的`ON CONFLICT(user_id,archive_date)`本身正确，覆盖是错误日期key触发的结果，不是数据库唯一键缺少日期。
 - 修复方式：新增统一business date工具，Sydney“今天”只从瞬间计算一次；其余业务日始终使用严格`YYYY-MM-DD`字符串做加减、查询、归档、History路由和IndexedDB key，禁止通过UTC timestamp或`new Date('YYYY-MM-DD')`回推；Store新增唯一`selectedDateStr`作为当前查看日事实来源，Date仅用当日中午构造作UI兼容展示；结束本日只归档该字符串并创建下一字符串日期，不更新旧记录日期；History按DATE字符串排序和格式化。
 - 修改范围：`businessDate.js`及测试、`store.jsx`连续三日回归、Today、History、historyService。未修改timeline/food数据库结构、Migration 028/036/037或任何现有历史数据。
 - 测试结果：日期/History/Timeline/IndexedDB专项10套件75项通过；前端全量45套件327/327通过；Production Build成功。覆盖Sydney 23:30/00:30、DST跨年、三日隔离、结束本日、刷新/缓存恢复、History列表/详情和自动归档既有契约。
-- 线上数据处理：不自动移动任何真实历史数据；部署前只做只读/测试账号核查，若发现疑似错位将单独统计并等待确认后再制定修复脚本。
-- 未完成事项：提交、push、Production部署，以及正式测试账号Day A/B/C创建、Day C结束、刷新、重新登录、History/HistoryDetail核对与清理。
-- Git Commit ID：待提交后回填。
+- 线上数据核查：只读扫描正式库全部6个现有归档，并将仍存在的源timeline ID与`archive_date/event_date`对照；明确错位0条、受影响用户0，扫描未触及上限。由于归档JSON不保证源timeline永久保留，此结果只能确认当前可验证范围，不自动移动任何历史数据；若用户仍能指出具体错位日期，应保留现场后单独审计。
+- Production部署与三日验收：修复Commit已push；Vercel Production Deployment `dpl_HLs4Sx5DYsLNAJPF59jhsJUzjciS`状态READY并切换正式alias。专用测试账号在空白的2026-08-10/11/12分别准备Day A=101g/101 kcal、Day B=202g/202 kcal、Day C独立事件；先确认A/B正确，再在正式Today结束C。History保持12→11→10，A/B未消失、未被C替代、未向前移动；三个HistoryDetail逐日内容匹配；刷新后C仍在12日，退出并重新登录后列表顺序和101/202摘要不变。最后用现有原子删除RPC清理3个归档和1个timeline item，二者残留均0。
+- Git Commit ID：`fa1c457c5c9c96c2c3e72fa8beee2e4bad6fd7b9`。
 
 ## DEV-20260812-001
 
