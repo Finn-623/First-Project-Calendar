@@ -86,6 +86,19 @@ export const createTimelineRealtimeService = ({
           source_id: 'supabase-realtime',
         });
       })
+      .on('postgres_changes', {
+        event: '*', schema: 'public', table: 'daily_archives', filter: `user_id=eq.${userId}`,
+      }, (payload) => {
+        const row = payload.new || payload.old || {};
+        emit({
+          type: `daily_archive_${String(payload.eventType || '').toLowerCase()}`,
+          user_id: row.user_id,
+          record_date: row.archive_date || null,
+          entity_id: row.id,
+          updated_at: row.updated_at || null,
+          source_id: 'supabase-realtime',
+        });
+      })
       .subscribe();
 
     return stop;

@@ -6,6 +6,7 @@ import { historyService } from './services/historyService';
 import { targetService } from './services/targetService';
 import { timelineService } from './services/timelineService';
 import { timelineCacheService } from './services/timelineCacheService';
+import { dailyRecordService } from './services/dailyRecordService';
 import { sumTimelineMacros } from './mockData';
 
 jest.mock('./lib/supabaseClient', () => ({
@@ -41,6 +42,21 @@ jest.mock('./services/timelineService', () => ({
     getRunningTimelineItems: jest.fn().mockResolvedValue({ data: [], error: null }),
   },
 }));
+
+jest.mock('./services/dailyRecordService', () => ({
+  dailyRecordService: {
+    getDailyRecord: jest.fn(),
+  },
+}));
+
+const mockCanonicalDailyReader = () => {
+  dailyRecordService.getDailyRecord.mockImplementation(async (userId, dateStr) => {
+    const result = await timelineService.getTimelineByDate(userId, dateStr);
+    return result?.error
+      ? { data: null, error: result.error }
+      : { data: { businessDate: dateStr, status: (result?.data || []).length ? 'live' : 'empty', timeline: result?.data || [] }, error: null };
+  });
+};
 
 jest.mock('./services/historyService', () => {
   const actualDate = '2026-07-27';
@@ -197,6 +213,7 @@ function renderStore() {
 describe('Store 删除日期后的首页状态恢复', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    mockCanonicalDailyReader();
     localStorage.clear();
     timelineCacheService.__resetMemoryForTests();
     foodService.getAllFoods.mockResolvedValue({ data: [], error: null });
@@ -503,6 +520,36 @@ describe('Store 删除日期后的首页状态恢复', () => {
     });
   });
 
+  test('快速切换日期时较晚返回的旧日期请求不能覆盖当前日期', async () => {
+    renderStore();
+    await waitFor(() => expect(screen.getByTestId('selected-date').textContent).toBe('2026-07-27'));
+
+    let resolveOldDate;
+    dailyRecordService.getDailyRecord.mockImplementation((_userId, dateStr) => {
+      if (dateStr === '2026-07-28') {
+        return new Promise((resolve) => { resolveOldDate = resolve; });
+      }
+      return Promise.resolve({
+        data: { businessDate: dateStr, status: 'live', timeline: [{ id: 'day-27', type: 'event', title: '27日记录', time: '09:00', foods: [] }] },
+        error: null,
+      });
+    });
+
+    fireEvent.click(screen.getByTestId('select-next'));
+    fireEvent.click(screen.getByTestId('select-today'));
+    await waitFor(() => expect(screen.getByTestId('timeline-title').textContent).toBe('27日记录'));
+
+    await act(async () => {
+      resolveOldDate({
+        data: { businessDate: '2026-07-28', status: 'live', timeline: [{ id: 'day-28', type: 'event', title: '28日记录', time: '09:00', foods: [] }] },
+        error: null,
+      });
+    });
+
+    expect(screen.getByTestId('selected-date').textContent).toBe('2026-07-27');
+    expect(screen.getByTestId('timeline-title').textContent).toBe('27日记录');
+  });
+
   test('本日已结束且历史存在时点击首页保持下一日', async () => {
     historyService.getDayCompletion.mockResolvedValue({ data: { is_completed: true }, error: null });
 
@@ -649,6 +696,7 @@ describe('Store 删除日期后的首页状态恢复', () => {
 describe('Store 刷新缓存优先恢复', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    mockCanonicalDailyReader();
     timelineCacheService.__resetMemoryForTests();
     foodService.getAllFoods.mockResolvedValue({ data: [], error: null });
     foodService.loadPublicFoods.mockResolvedValue({ data: [], error: null });

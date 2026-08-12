@@ -250,6 +250,8 @@ export const historyService = {
           dateLabel: archiveRow.archive_label || formatHistoryLabel(dateStr),
           isCompleted,
           isEmptyDay,
+          archiveId: archiveRow.id,
+          updatedAt: archiveRow.updated_at || archiveRow.completed_at || archiveRow.created_at || null,
         };
       }
 

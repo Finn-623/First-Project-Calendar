@@ -47,10 +47,11 @@ describe('timelineRealtimeService', () => {
     await service.start({ userId: 'user-a', onInvalidate: listener });
 
     expect(mock.client.channel).toHaveBeenCalledTimes(1);
-    expect(mock.channel.on).toHaveBeenCalledTimes(2);
+    expect(mock.channel.on).toHaveBeenCalledTimes(3);
     expect(mock.handlers.map(({ config }) => config)).toEqual([
       expect.objectContaining({ table: 'timeline_items', filter: 'user_id=eq.user-a' }),
       expect.objectContaining({ table: 'food_entries', filter: 'user_id=eq.user-a' }),
+      expect.objectContaining({ table: 'daily_archives', filter: 'user_id=eq.user-a' }),
     ]);
 
     mock.handlers[0].handler({

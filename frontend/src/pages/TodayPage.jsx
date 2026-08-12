@@ -16,7 +16,7 @@ import { showSuccess } from '../lib/notifications';
 import { useStore } from '../store';
 import { timelineService } from '../services/timelineService';
 import { timelineRealtimeService } from '../services/timelineRealtimeService';
-import { addDaysToDateString, getSydneyDateString } from '../services/historyService';
+import { addDaysToDateString, getSydneyDateString, historyService } from '../services/historyService';
 import { combineLocalDateAndTime, diffSecondsBetween, getLocalDateKey, getLocalTimeInputValue, secondsToDurationMinutes } from '../lib/localDateTime';
 import { useCurrentTime } from '../hooks/useCurrentTime';
 import { beginCreatePerfFlow, markCreatePerf, summarizeCreatePerfFlow } from '../lib/timelineCreatePerf';
@@ -203,6 +203,19 @@ export const TodayPage = () => {
     }
   };
 
+  const isArchivedBusinessDate = currentDateStr < recordingDateStr;
+  const persistArchivedTimeline = async (nextTimeline) => {
+    const cleaned = (nextTimeline || []).filter((item) => item?.type !== 'meal' || (item?.foods || []).length > 0);
+    const { error } = await historyService.updateDayArchive(user.id, currentDateStr, cleaned, sumTimelineMacros(cleaned));
+    if (error) throw error;
+    setTimeline(cleaned);
+    timelineRealtimeService.broadcast({
+      type: 'daily_archive_updated', user_id: user.id, record_date: currentDateStr, operation_id: createOperationId(),
+    });
+    await refreshDayState();
+    return cleaned;
+  };
+
   const appendTimelineItem = (item, flowId = null) => {
     setTimeline((prev) => {
       const existingIndex = prev.findIndex((currentItem) => currentItem.id === item.id);
@@ -357,6 +370,17 @@ export const TodayPage = () => {
     if (!user?.id || !targetMeal || addingFoodGuardRef.current) return false;
 
     addingFoodGuardRef.current = true;
+    if (isArchivedBusinessDate) {
+      const nextTimeline = timeline.map((item) => item.id === targetMeal.id
+        ? { ...item, foods: [...(item.foods || []), { ...food, entryId: `archived-food-${Date.now()}-${Math.random().toString(36).slice(2, 8)}` }] }
+        : item);
+      setFoodSheet({ open: false, target: null });
+      void persistArchivedTimeline(nextTimeline)
+        .then(() => showSuccess(`已添加 ${food.name} 到 ${targetMeal.title}`))
+        .catch((error) => toast.error(error?.message || '食品记录保存失败，请稍后重试'))
+        .finally(() => { addingFoodGuardRef.current = false; });
+      return true;
+    }
     const operationId = createOperationId();
     const optimisticEntryId = `pending-${operationId}`;
     const optimisticFood = {
@@ -563,6 +587,17 @@ export const TodayPage = () => {
       sort_order: timeline.length + 1,
     };
 
+    if (isArchivedBusinessDate) {
+      const archivedItem = {
+        ...buildBaseSessionItem({ ...payloadToSave, time: payloadToSave.event_time }),
+        type: 'event',
+        detail: payload.detail || '',
+      };
+      await persistArchivedTimeline([...timeline, archivedItem]);
+      showSuccess(`已添加 ${payload.title}`);
+      return;
+    }
+
     try {
       if (perfFlowId) {
         markCreatePerf(perfFlowId, 'insert_request_sent');
@@ -643,6 +678,17 @@ export const TodayPage = () => {
       duration_minutes: durationMinutes || null,
       sort_order: timeline.length + 1,
     };
+
+    if (isArchivedBusinessDate) {
+      const archivedItem = {
+        ...buildBaseSessionItem({ ...payloadToSave, time: payloadToSave.event_time }),
+        type: payload.tab === 'anaerobic' ? 'anaerobic' : 'aerobic',
+        bodyParts: payload.bodyParts || [],
+      };
+      await persistArchivedTimeline([...timeline, archivedItem]);
+      showSuccess(`已添加 ${title}`);
+      return;
+    }
 
     try {
       if (perfFlowId) {
@@ -781,6 +827,16 @@ export const TodayPage = () => {
     setSavingEditItemId(item.id);
 
     const payload = prepareActivityUpdates(item, updates);
+    if (isArchivedBusinessDate) {
+      try {
+        await persistArchivedTimeline(timeline.map((row) => row.id === item.id ? { ...row, ...payload } : row));
+        showSuccess('记录已更新');
+      } catch (error) {
+        toast.error(error?.message || '更新失败，请稍后重试');
+        throw error;
+      }
+      return;
+    }
     const operationId = createOperationId();
     updateTimelineItemInState(item.id, (current) => ({ ...current, ...payload, sync_status: 'pending' }));
 
@@ -835,6 +891,22 @@ export const TodayPage = () => {
       throw error;
     }
     if (savingEditItemId === item.id || newTime === item.time) return;
+
+    if (isArchivedBusinessDate) {
+      setSavingEditItemId(item.id);
+      try {
+        await persistArchivedTimeline(timeline.map((row) => row.id === item.id
+          ? { ...row, time: newTime, event_time: newTime }
+          : row));
+        showSuccess('时间已更新');
+      } catch (error) {
+        toast.error(error?.message || '时间保存失败，请稍后重试');
+        throw error;
+      } finally {
+        setSavingEditItemId(null);
+      }
+      return;
+    }
 
     setSavingEditItemId(item.id);
     const previousTime = item.time;
@@ -999,6 +1071,22 @@ export const TodayPage = () => {
         item.id === mealItem.id ? { ...item, foods: [] } : item
       ));
       const operationId = createOperationId();
+      if (isArchivedBusinessDate) {
+        try {
+          await persistArchivedTimeline(nextTimeline);
+          setDeleteDialogOpen(false);
+          setPendingDeleteFood(null);
+          setPendingDeleteItem(null);
+          showSuccess('食物已删除');
+        } catch (error) {
+          setTimeline(rollbackTimeline);
+          toast.error(error?.message || '删除失败，请稍后重试');
+        } finally {
+          deletingFoodGuardRef.current = false;
+          setDeletingFoodEntryKey(null);
+        }
+        return;
+      }
       if (hasPersistedFoodEntry) markFoodEntryPendingDelete?.(entryId);
       if (isUnsyncedLocalFood) {
         cancelledFoodOperationsRef.current.set(targetFood.clientMutationId, {
@@ -1085,6 +1173,14 @@ export const TodayPage = () => {
     setDeletingItemId(item.id);
 
     try {
+      if (isArchivedBusinessDate) {
+        await persistArchivedTimeline(timeline.filter((row) => row.id !== item.id));
+        setDeleteDialogOpen(false);
+        setPendingDeleteItem(null);
+        setPendingDeleteFood(null);
+        showSuccess('活动已删除');
+        return;
+      }
       if (isLikelySupabaseUuid(item.id)) {
         const { error } = await timelineService.deleteTimelineItemByUser(item.id, user.id);
         if (error) {
