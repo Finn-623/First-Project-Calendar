@@ -1,3 +1,19 @@
+## DEV-20260812-001
+
+- 日期：2026-08-12
+- 任务状态：代码修复、Migration 037正式部署、远程权限验收、自动化测试与Production Build完成；Frontend Production发布及网页验收待完成。
+- 任务目标：修复正式网页“添加建议 / 提交修改意见”返回“操作失败，请稍后重试”，并保证提交、历史回读、权限隔离、失败恢复和既有管理员功能不回归。
+- Production真实错误：`code=P0001`、`message=invalid target version`、`details=null`、`hint=null`。实际payload为`user_id=<当前auth.uid()>`、诊断标题与说明、`submitted_priority=P2`、`target_version=0.2.1.1`；用户归属匹配且失败后插入行数为0。
+- 真正根因：Migration 035的`version_feedback.target_version`约束、INSERT policy、编号约束及`next_version_feedback_number`函数只接受三段版本号；当前正式应用已升级为四段版本`0.2.1.1`，前端按真实版本提交后由编号函数抛出`P0001`。服务层又把该错误压缩成通用提示，掩盖了数据库原因。
+- 实际完成内容：新增Migration 037，在不改写035的前提下让反馈版本、反馈编号、RLS policy和原子编号分配函数兼容三段或四段版本；保留authenticated-only、`user_id=auth.uid()`、pending和P0-P3约束。前端提交显式写入pending及全部必填字段；Supabase失败时记录`code/message/details/hint/payload`并保留真实message；同步ref阻止同一提交过程中的重复点击；成功后先合并服务端返回行并强制回读历史，失败时保留表单并恢复按钮。
+- 主要修改文件或模块：`VersionFeedbackPage.jsx`、`versionFeedbackService.js`、对应专项测试、Migration 037及其契约测试。
+- 远程Migration与权限验证：Migration 037已部署；普通登录用户成功创建并回读`FB-v0.2.1.1-001`，归属当前`auth.uid()`；匿名及为其他用户写入均以`42501`拒绝；非法版本继续以`P0001`拒绝且残留0；单次标记写入查询仅1条；所有远程契约测试数据已清理。Migration 028未部署且未修改。
+- 执行的测试：反馈页面与服务专项；`node --test supabase/migrations/*.test.mjs`；`CI=true npm test -- --watchAll=false --runInBand`；`npm run build`；正式Supabase普通/匿名/越权/失败回滚/持久化契约。
+- 测试结果：专项2套件42项通过；Migration契约65/65通过；前端全量44套件322/322通过；Production Build成功。保留既有React异步`act`、测试环境Supabase变量缺失及Node弃用提示，无测试或构建失败。
+- 未完成事项：完成Git提交、push、Frontend Production部署、正式网页真实提交/即时历史/刷新持久化/重复点击及测试数据清理验收后回填结果。
+- 风险或注意事项：Migration 037只调整反馈版本格式相关约束、policy和编号函数，不涉及timeline、food_entries、Migration 028或036；管理员查看、分级、编辑状态链路未更改。
+- Git Commit ID：待提交后回填。
+
 ## DEV-20260810-002
 
 - 日期：2026-08-10

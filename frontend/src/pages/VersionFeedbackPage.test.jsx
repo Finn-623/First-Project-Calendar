@@ -251,6 +251,60 @@ describe('VersionFeedbackPage history', () => {
     });
   });
 
+  test('prevents duplicate creates while one suggestion submission is in flight', async () => {
+    let resolveCreate;
+    versionFeedbackService.createFeedback.mockImplementation(() => new Promise((resolve) => {
+      resolveCreate = resolve;
+    }));
+
+    renderPage();
+    fillFeedbackForm();
+    fireEvent.click(screen.getByRole('radio', { name: 'P1 · 下个版本上线前完成' }));
+    const submitButton = screen.getByRole('button', { name: '提交修改意见' });
+    fireEvent.click(submitButton);
+    fireEvent.submit(submitButton.closest('form'));
+
+    expect(versionFeedbackService.createFeedback).toHaveBeenCalledTimes(1);
+
+    await act(async () => {
+      resolveCreate({
+        success: true,
+        data: {
+          id: 'created-once',
+          user_id: 'user-1',
+          title: '一个有效建议',
+          description: '这是一个足够详细的修改意见。',
+          status: 'pending',
+          submitted_priority: 'P1',
+          priority: 'P1',
+          target_version: '0.2.1.1',
+          created_at: '2026-08-12T00:00:00.000Z',
+        },
+      });
+    });
+  });
+
+  test('preserves the form and restores submission controls after Supabase rejects the insert', async () => {
+    versionFeedbackService.createFeedback.mockResolvedValue({
+      success: false,
+      error: '操作失败：invalid target version',
+      diagnostic: { code: 'P0001', message: 'invalid target version', details: null, hint: null },
+    });
+
+    renderPage();
+    fillFeedbackForm();
+    fireEvent.click(screen.getByRole('radio', { name: 'P2 · 本大版本完成' }));
+    fireEvent.click(screen.getByRole('button', { name: '提交修改意见' }));
+
+    await waitFor(() => {
+      expect(toast.error).toHaveBeenCalledWith('操作失败：invalid target version');
+      expect(screen.getByRole('button', { name: '提交修改意见' }).disabled).toBe(false);
+    });
+    expect(screen.getByLabelText('建议标题').value).toBe('一个有效建议');
+    expect(screen.getByLabelText('详细说明').value).toBe('这是一个足够详细的修改意见。');
+    expect(screen.getByRole('radio', { name: 'P2 · 本大版本完成' }).checked).toBe(true);
+  });
+
   test('keeps all feedback form controls at mobile-safe font size and width constraints', () => {
     renderPage();
     fireEvent.click(screen.getByRole('tab', { name: '提交建议' }));

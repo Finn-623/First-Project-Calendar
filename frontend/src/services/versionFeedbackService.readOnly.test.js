@@ -19,6 +19,15 @@ function createMutationQuery(result) {
   return query;
 }
 
+function createInsertQuery(result) {
+  const query = {
+    insert: jest.fn(() => query),
+    select: jest.fn(() => query),
+    single: jest.fn().mockResolvedValue(result),
+  };
+  return query;
+}
+
 function createListQuery(result) {
   const query = {
     select: jest.fn(() => query),
@@ -132,6 +141,76 @@ describe('versionFeedbackService completed feedback guards', () => {
     expect(result.success).toBe(true);
     expect(result.data.feedback_number).toBe('FB-v0.1.3-001');
     expect(result.data.priority_assigned_by).toBe('admin-1');
+  });
+});
+
+describe('versionFeedbackService feedback creation', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  test('writes all required fields for the authenticated owner and returns the persisted row', async () => {
+    const row = {
+      id: 'feedback-1',
+      feedback_number: 'FB-v0.2.1.1-001',
+      user_id: 'user-1',
+      title: '建议标题',
+      description: '建议详细内容',
+      status: 'pending',
+      submitted_priority: 'P1',
+      priority: 'P1',
+      target_version: '0.2.1.1',
+      created_at: '2026-08-12T00:00:00.000Z',
+    };
+    const query = createInsertQuery({ data: row, error: null });
+    supabase.from.mockReturnValue(query);
+
+    const result = await versionFeedbackService.createFeedback({
+      userId: 'user-1',
+      title: '建议标题',
+      description: '建议详细内容',
+      submittedPriority: 'P1',
+      targetVersion: '0.2.1.1',
+    });
+
+    expect(supabase.from).toHaveBeenCalledWith('version_feedback');
+    expect(query.insert).toHaveBeenCalledWith({
+      user_id: 'user-1',
+      title: '建议标题',
+      description: '建议详细内容',
+      status: 'pending',
+      submitted_priority: 'P1',
+      target_version: '0.2.1.1',
+    });
+    expect(result).toEqual({ success: true, data: expect.objectContaining(row) });
+  });
+
+  test('keeps the database diagnostics and submitted payload when creation fails', async () => {
+    const databaseError = { code: 'P0001', message: 'invalid target version', details: null, hint: null };
+    const query = createInsertQuery({ data: null, error: databaseError });
+    supabase.from.mockReturnValue(query);
+    const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+
+    const result = await versionFeedbackService.createFeedback({
+      userId: 'user-1',
+      title: '建议标题',
+      description: '建议详细内容',
+      submittedPriority: 'P2',
+      targetVersion: '0.2.1.1',
+    });
+
+    expect(result.success).toBe(false);
+    expect(result.error).toContain('invalid target version');
+    expect(result.diagnostic).toEqual(expect.objectContaining({
+      code: 'P0001',
+      message: 'invalid target version',
+      payload: expect.objectContaining({ user_id: 'user-1', target_version: '0.2.1.1' }),
+    }));
+    expect(consoleSpy).toHaveBeenCalledWith(
+      '[versionFeedbackService] createFeedback failed',
+      result.diagnostic
+    );
+    consoleSpy.mockRestore();
   });
 });
 

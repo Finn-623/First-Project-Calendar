@@ -62,6 +62,7 @@ export const VersionFeedbackPage = ({ completedOnly = false }) => {
   const [formData, setFormData] = useState({ title: '', description: '', submittedPriority: '' });
   const [errors, setErrors] = useState({});
   const mountedRef = useRef(false);
+  const submittingRef = useRef(false);
 
   const availableVersions = useMemo(() => {
     const values = VERSION_RECORDS
@@ -196,7 +197,7 @@ export const VersionFeedbackPage = ({ completedOnly = false }) => {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    if (submitting || !user?.id) return;
+    if (submittingRef.current || !user?.id) return;
 
     const validated = validateFeedbackForm(formData);
     if (!validated.valid) {
@@ -204,28 +205,34 @@ export const VersionFeedbackPage = ({ completedOnly = false }) => {
       return;
     }
 
+    submittingRef.current = true;
     setSubmitting(true);
     setErrors({});
 
-    const result = await versionFeedbackService.createFeedback({
-      userId: user.id,
-      title: validated.normalized.title,
-      description: validated.normalized.description,
-      submittedPriority: validated.normalized.submittedPriority,
-      targetVersion: APP_VERSION_META.version,
-    });
+    try {
+      const result = await versionFeedbackService.createFeedback({
+        userId: user.id,
+        title: validated.normalized.title,
+        description: validated.normalized.description,
+        submittedPriority: validated.normalized.submittedPriority,
+        targetVersion: APP_VERSION_META.version,
+      });
 
-    if (!result.success) {
-      toast.error(result.error || '提交失败，请稍后重试');
-      setSubmitting(false);
-      return;
+      if (!result.success) {
+        toast.error(result.error || '提交失败，请稍后重试');
+        return;
+      }
+
+      setFormData({ title: '', description: '', submittedPriority: '' });
+      setPendingItems((items) => sortHistoryItems(mergeHistory([result.data, ...items])));
+      setPendingTotalCount((count) => count + 1);
+      showSuccess('修改意见已提交');
+      setActiveTab('history');
+      await loadHistory({ force: true });
+    } finally {
+      submittingRef.current = false;
+      if (mountedRef.current) setSubmitting(false);
     }
-
-    setFormData({ title: '', description: '', submittedPriority: '' });
-    setSubmitting(false);
-    showSuccess('修改意见已提交');
-    setActiveTab('history');
-    loadHistory({ force: true });
   };
 
   const handleEditStart = (item) => {

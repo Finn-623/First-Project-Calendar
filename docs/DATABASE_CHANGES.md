@@ -1,3 +1,17 @@
+## DB-20260812-001
+
+- 日期：2026-08-12
+- 修改原因：当前应用版本为四段`0.2.1.1`，Migration 035的反馈版本、编号、INSERT policy及编号分配函数只允许三段版本，导致登录用户提交建议时原子插入以`P0001: invalid target version`回滚。
+- 实际修改内容：新增Migration 037，将`version_feedback_target_version_check`、`version_feedback_number_format_check`、`version_feedback_insert_own`和`next_version_feedback_number(TEXT)`统一调整为接受三段或四段数字版本（可带既有预发布后缀）；继续使用事务advisory lock和版本计数器生成`FB-v<version>-NNN`。
+- 涉及的表和函数：`public.version_feedback.target_version/feedback_number`相关约束与INSERT policy；`public.next_version_feedback_number(TEXT)`。没有新增表或字段，没有改写既有反馈。
+- Migration 文件路径：`supabase/migrations/037_allow_four_part_feedback_versions.sql`。
+- 权限与数据影响：仍仅允许authenticated角色写入，且必须`user_id=auth.uid()`、`status=pending`、`completed_at IS NULL`及P0-P3原始优先级；匿名和跨用户写入继续被RLS拒绝。管理员查看、优先级、状态及已完成内容保护不变。
+- 部署与验证：037已部署正式Supabase；普通用户四段版本创建及回读成功，编号为`FB-v0.2.1.1-NNN`；匿名与跨用户写入均返回`42501`；非法版本返回`P0001`且零残留；远程测试记录已清理。Migration 028保持LOCAL ONLY且未修改。
+- 测试结果：Migration契约65/65、反馈专项42/42、前端全量322/322及Production Build通过。
+- 回滚方式：以后续Migration恢复原约束/policy/函数；不得重写已部署的035或037。回滚前必须确保应用不再提交四段版本。
+- 相关 DEV 编号：`DEV-20260812-001`。
+- 相关 Commit ID：待提交后回填。
+
 ## DB-20260810-001
 
 - 日期：2026-08-10

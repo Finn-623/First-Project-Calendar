@@ -1,5 +1,12 @@
 # 当前项目进度
 
+## 建议提交失败修复（2026-08-12）
+
+- Production原始错误为`P0001: invalid target version`：正式应用版本`0.2.1.1`为四段，而Migration 035的反馈版本/编号/RLS/编号函数仅接受三段版本。
+- Migration 037已部署到正式Supabase并统一兼容三段或四段版本；authenticated owner写入、匿名拒绝、跨用户拒绝、失败零残留、持久化回读及测试数据清理均已验证，Migration 028保持未部署。
+- 前端现在提交完整pending payload，结构化记录Supabase `code/message/details/hint/payload`，失败保留表单并恢复状态；同步提交锁防重复点击，成功后即时合并返回记录并从Supabase强制回读。
+- 反馈专项42/42、Migration契约65/65、前端全量44套件322/322及Production Build通过；Frontend Production部署和正式网页最终人工验收待完成。
+
 ## 历史食品记录新增修复（2026-08-10）
 
 - 新增记录已改为Migration 036事务RPC：餐次与food entry同事务、`auth.uid()`归属、mutation幂等、失败整体回滚；前端失败时同步撤销乐观状态，避免污染IndexedDB快照。

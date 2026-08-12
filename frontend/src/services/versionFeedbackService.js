@@ -1,7 +1,8 @@
 import { supabase } from '../lib/supabaseClient';
 
 function normalizeError(error) {
-  const message = String(error?.message || '').toLowerCase();
+  const originalMessage = String(error?.message || '').trim();
+  const message = originalMessage.toLowerCase();
 
   if (message.includes('network') || message.includes('fetch')) {
     return '网络错误，请检查网络后重试';
@@ -15,7 +16,19 @@ function normalizeError(error) {
     return '会话已过期，请重新登录';
   }
 
-  return '操作失败，请稍后重试';
+  return originalMessage ? `操作失败：${originalMessage}` : '操作失败，请稍后重试';
+}
+
+function reportSupabaseError(operation, error, payload) {
+  const diagnostic = {
+    code: error?.code ?? null,
+    message: error?.message ?? null,
+    details: error?.details ?? null,
+    hint: error?.hint ?? null,
+    payload,
+  };
+  console.error(`[versionFeedbackService] ${operation} failed`, diagnostic);
+  return diagnostic;
 }
 
 function normalizeFeedbackRow(row) {
@@ -64,26 +77,37 @@ export const versionFeedbackService = {
       return { success: false, error: '缺少用户信息，请重新登录' };
     }
 
+    const payload = {
+      user_id: userId,
+      title,
+      description,
+      status: 'pending',
+      submitted_priority: submittedPriority,
+      target_version: targetVersion,
+    };
+
     try {
       const { data, error } = await supabase
         .from('version_feedback')
-        .insert({
-          user_id: userId,
-          title,
-          description,
-          submitted_priority: submittedPriority,
-          target_version: targetVersion,
-        })
+        .insert(payload)
         .select('*')
         .single();
 
       if (error) {
-        return { success: false, error: normalizeError(error) };
+        return {
+          success: false,
+          error: normalizeError(error),
+          diagnostic: reportSupabaseError('createFeedback', error, payload),
+        };
       }
 
       return { success: true, data: normalizeFeedbackRow(data) };
     } catch (error) {
-      return { success: false, error: normalizeError(error) };
+      return {
+        success: false,
+        error: normalizeError(error),
+        diagnostic: reportSupabaseError('createFeedback', error, payload),
+      };
     }
   },
 
